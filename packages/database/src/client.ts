@@ -16,6 +16,10 @@ const globalForPrisma = globalThis as unknown as {
  * Instancia global de Prisma Client
  * Usar este para todas las queries a la base de datos
  *
+ * IMPORTANTE: Configurado para Supabase Pooler (PgBouncer)
+ * - pgbouncer: true → Desactiva prepared statements
+ * - connection_limit: 1 → Evita saturación del pool
+ *
  * @example
  * ```ts
  * const users = await db.user.findMany()
@@ -23,6 +27,9 @@ const globalForPrisma = globalThis as unknown as {
  */
 export const db = globalForPrisma.prisma ?? new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  // Configuración para Supabase Pooler (PgBouncer)
+  // Referencia: https://www.prisma.io/docs/guides/performance-and-optimization/connection-management#pgbouncer
+  datasourceUrl: process.env.DATABASE_URL,
 })
 
 // En desarrollo, guardar la instancia globalmente para hot reload
