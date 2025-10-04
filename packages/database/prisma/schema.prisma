@@ -1,0 +1,147 @@
+// Prisma Schema para Plataforma Inmobiliaria
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ==================== MODELS ====================
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  role      UserRole @default(CLIENT)
+  phone     String?
+  avatar    String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  properties   Property[]   @relation("AgentProperties")
+  favorites    Favorite[]
+  appointments Appointment[] @relation("ClientAppointments")
+  agentAppointments Appointment[] @relation("AgentAppointments")
+
+  @@map("users")
+}
+
+model Property {
+  id          String       @id @default(uuid())
+  title       String
+  description String?      @db.Text
+  price       Decimal      @db.Decimal(12, 2)
+  type        PropertyType
+  status      PropertyStatus @default(AVAILABLE)
+  bedrooms    Int?
+  bathrooms   Decimal?     @db.Decimal(3, 1)
+  area        Decimal?     @db.Decimal(10, 2) // m²
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?      @map("zip_code")
+  latitude    Decimal?     @db.Decimal(10, 8)
+  longitude   Decimal?     @db.Decimal(11, 8)
+  agentId     String       @map("agent_id")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  agent        User          @relation("AgentProperties", fields: [agentId], references: [id], onDelete: Cascade)
+  images       PropertyImage[]
+  favorites    Favorite[]
+  appointments Appointment[]
+
+  @@index([type, status])
+  @@index([city, state])
+  @@index([price])
+  @@index([agentId])
+  @@map("properties")
+}
+
+model PropertyImage {
+  id         String   @id @default(uuid())
+  url        String
+  alt        String?
+  order      Int      @default(0)
+  propertyId String   @map("property_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("property_images")
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  propertyId String   @map("property_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@index([userId])
+  @@index([propertyId])
+  @@map("favorites")
+}
+
+model Appointment {
+  id          String            @id @default(uuid())
+  userId      String            @map("user_id")
+  propertyId  String            @map("property_id")
+  agentId     String            @map("agent_id")
+  scheduledAt DateTime          @map("scheduled_at")
+  status      AppointmentStatus @default(PENDING)
+  notes       String?           @db.Text
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  user     User     @relation("ClientAppointments", fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  agent    User     @relation("AgentAppointments", fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([propertyId])
+  @@index([agentId])
+  @@index([scheduledAt])
+  @@map("appointments")
+}
+
+// ==================== ENUMS ====================
+
+enum UserRole {
+  CLIENT
+  AGENT
+  ADMIN
+}
+
+enum PropertyType {
+  SALE
+  RENT
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  PENDING
+  SOLD
+  RENTED
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}

@@ -1,0 +1,26 @@
+{
+"$schema": "https://turbo.build/schema.json",
+"experimentalPassThroughEnv": ["FORCE_COLOR", "TERM"],
+"tasks": {
+  "dev": {
+    "cache": false,
+    "persistent": true
+  },
+  "build": {
+    "dependsOn": ["^build"],
+    "outputs": [".next/**", "dist/**"]
+  },
+  "lint": {
+    "cache": true,
+    "outputs": []
+  },
+  "type-check": {
+    "cache": true,
+    "outputs": []
+  },
+  "format": {
+    "cache": false,
+    "outputs": []
+  }
+}
+}
