@@ -4,6 +4,7 @@
  */
 
 import { LoginForm } from '@/components/auth/login-form'
+import { GoogleButton } from '@/components/auth/google-button'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -21,7 +22,23 @@ export default function LoginPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 space-y-6">
+          {/* Google OAuth */}
+          <GoogleButton />
+
+          {/* Separador */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-2 text-gray-500">
+                o continúa con email
+              </span>
+            </div>
+          </div>
+
+          {/* Email/Password Form */}
           <LoginForm />
         </div>
 
