@@ -2,10 +2,10 @@
 
 /**
  * USER MENU - Menu del usuario con avatar
- * Dropdown con opciones: Perfil, Configuración, Logout
+ * Dropdown con opciones: Perfil, Logout
  */
 
-import { User as UserIcon, Settings, LogOut } from 'lucide-react'
+import { User as UserIcon, LogOut } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -19,14 +19,13 @@ import { Badge } from '@/components/ui/badge'
 import { logoutAction } from '@/app/actions/auth'
 import { useRouter } from 'next/navigation'
 
+// Type para el usuario desde DB (SafeUser del repository)
 interface User {
+  id: string
   email: string
-  user_metadata?: {
-    name?: string
-    full_name?: string
-    role?: string
-    avatar_url?: string
-  }
+  name: string | null
+  role: string
+  avatar: string | null
 }
 
 interface UserMenuProps {
@@ -37,21 +36,25 @@ export function UserMenu({ user }: UserMenuProps) {
   const router = useRouter()
 
   // Obtener nombre del usuario
-  const name =
-    user.user_metadata?.name ||
-    user.user_metadata?.full_name ||
-    user.email.split('@')[0]
+  const name = user.name || user.email.split('@')[0]
 
   // Obtener iniciales para avatar
-  const initials = name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+  const initials =
+    name
+      ?.split(' ')
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2) || 'U'
 
-  // Obtener role
-  const role = user.user_metadata?.role || 'CLIENT'
+  // Traducir rol a español
+  const roleLabels: Record<string, string> = {
+    CLIENT: 'Cliente',
+    AGENT: 'Agente',
+    ADMIN: 'Administrador',
+  }
+  const roleLabel = roleLabels[user.role] || user.role
 
   const handleLogout = async () => {
     await logoutAction()
@@ -62,13 +65,15 @@ export function UserMenu({ user }: UserMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none">
         <div className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer">
-          <Avatar>
-            <AvatarImage src={user.user_metadata?.avatar_url} alt={name} />
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={user.avatar || undefined} alt={name} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col items-start">
+          <div className="hidden md:flex flex-col items-start">
             <span className="text-sm font-medium">{name}</span>
-            <span className="text-xs text-muted-foreground">{user.email}</span>
+            <Badge variant="secondary" className="text-xs">
+              {roleLabel}
+            </Badge>
           </div>
         </div>
       </DropdownMenuTrigger>
@@ -80,18 +85,14 @@ export function UserMenu({ user }: UserMenuProps) {
               {user.email}
             </p>
             <Badge variant="secondary" className="w-fit mt-1">
-              {role}
+              {roleLabel}
             </Badge>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push('/dashboard/profile')}>
+        <DropdownMenuItem onClick={() => router.push('/dashboard/perfil')}>
           <UserIcon className="mr-2 h-4 w-4" />
-          <span>Perfil</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push('/dashboard/settings')}>
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Configuración</span>
+          <span>Mi Perfil</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="text-destructive">

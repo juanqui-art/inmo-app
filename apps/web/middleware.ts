@@ -1,26 +1,36 @@
 /**
- * MIDDLEWARE - Protección de Rutas
+ * MIDDLEWARE - Protección de Rutas con Control de Roles
  *
  * ¿Qué hace?
  * 1. Se ejecuta ANTES de cada request
  * 2. Verifica si el usuario está autenticado
- * 3. Refresca tokens expirados automáticamente
- * 4. Redirige a /login si no está autenticado
+ * 3. Valida permisos según rol del usuario (CLIENT, AGENT, ADMIN)
+ * 4. Refresca tokens expirados automáticamente
+ * 5. Redirige según permisos y estado de autenticación
  *
- * ¿Dónde se ejecuta?
- * - Todas las rutas definidas en 'matcher'
- * - NO se ejecuta en /login, /signup (públicas)
+ * Roles y Rutas:
+ * - CLIENT: /perfil/* (favoritos, citas)
+ * - AGENT: /dashboard/* (gestión de propiedades y citas)
+ * - ADMIN: /admin/* (panel de administración)
  */
 
 import { createServerClient } from '@supabase/ssr'
 import { type NextRequest, NextResponse } from 'next/server'
+import { userRepository } from '@repo/database'
+
+// Mapeo de rutas a roles permitidos
+const routePermissions: Record<string, string[]> = {
+  '/dashboard': ['AGENT', 'ADMIN'],
+  '/admin': ['ADMIN'],
+  '/perfil': ['CLIENT', 'AGENT', 'ADMIN'],
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Rutas que no requieren autenticación
-  const publicPaths = ['/login', '/signup', '/']
-  const isPublicPath = publicPaths.some((path) => pathname === path)
+  // Rutas públicas (no requieren autenticación)
+  // const publicPaths = ['/login', '/signup', '/', '/propiedades']
+  // const isPublicPath = publicPaths.some((path) => pathname === path || pathname.startsWith('/propiedades/'))
 
   let supabaseResponse = NextResponse.next({
     request,
@@ -49,30 +59,71 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Verificar usuario
+  // Verificar usuario autenticado
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Rutas protegidas (requieren auth)
-  const protectedPaths = ['/dashboard']
-  const isProtectedPath = protectedPaths.some((path) =>
-    pathname.startsWith(path)
+  // Obtener ruta protegida que coincida
+  const protectedRoute = Object.keys(routePermissions).find((route) =>
+    pathname.startsWith(route)
   )
 
-  if (isProtectedPath && !user) {
-    // No hay sesión, redirigir a login
+  // Si es ruta protegida y no hay usuario, redirigir a login
+  if (protectedRoute && !user) {
     const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('redirect', pathname)
     return NextResponse.redirect(loginUrl)
   }
 
-  // Si está autenticado y va a login/signup, redirigir a dashboard
+  // Si hay usuario y está en ruta protegida, verificar permisos
+  if (protectedRoute && user) {
+    const allowedRoles = routePermissions[protectedRoute]
+
+    // Obtener rol del usuario desde la base de datos
+    const dbUser = await userRepository.findById(user.id)
+
+    if (!dbUser) {
+      // Usuario no existe en DB, logout
+      await supabase.auth.signOut()
+      const loginUrl = new URL('/login', request.url)
+      return NextResponse.redirect(loginUrl)
+    }
+
+    // Verificar si el rol del usuario está permitido para esta ruta
+    if (allowedRoles && !allowedRoles.includes(dbUser.role)) {
+      // No tiene permisos, redirigir según rol
+      const redirectUrl = getDefaultRouteForRole(dbUser.role, request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+  }
+
+  // Si está autenticado y va a login/signup, redirigir según rol
   if (user && (pathname === '/login' || pathname === '/signup')) {
-    const dashboardUrl = new URL('/dashboard', request.url)
-    return NextResponse.redirect(dashboardUrl)
+    const dbUser = await userRepository.findById(user.id)
+    if (dbUser) {
+      const redirectUrl = getDefaultRouteForRole(dbUser.role, request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
   }
 
   return supabaseResponse
+}
+
+/**
+ * Obtiene la ruta por defecto según el rol del usuario
+ */
+function getDefaultRouteForRole(role: string, baseUrl: string): URL {
+  switch (role) {
+    case 'ADMIN':
+      return new URL('/admin', baseUrl)
+    case 'AGENT':
+      return new URL('/dashboard', baseUrl)
+    case 'CLIENT':
+      return new URL('/perfil', baseUrl)
+    default:
+      return new URL('/', baseUrl)
+  }
 }
 
 // Configurar dónde se ejecuta el middleware

@@ -7,7 +7,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Heart, Calendar, Building2, PlusCircle, Users, Settings } from 'lucide-react'
+import { Home, Calendar, Building2, Users, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ModeToggle } from '@/components/mode-toggle'
 import { Separator } from '@/components/ui/separator'
@@ -30,43 +30,31 @@ const navItems: NavItem[] = [
     title: 'Dashboard',
     href: '/dashboard',
     icon: Home,
-    roles: ['CLIENT', 'AGENT', 'ADMIN'],
+    roles: ['AGENT', 'ADMIN'],
   },
   {
-    title: 'Favoritos',
-    href: '/dashboard/favorites',
-    icon: Heart,
-    roles: ['CLIENT'],
-  },
-  {
-    title: 'Mis Citas',
-    href: '/dashboard/appointments',
-    icon: Calendar,
-    roles: ['CLIENT', 'AGENT'],
-  },
-  {
-    title: 'Mis Propiedades',
-    href: '/dashboard/properties',
+    title: 'Propiedades',
+    href: '/dashboard/propiedades',
     icon: Building2,
     roles: ['AGENT', 'ADMIN'],
   },
   {
-    title: 'Nueva Propiedad',
-    href: '/dashboard/properties/new',
-    icon: PlusCircle,
+    title: 'Citas',
+    href: '/dashboard/citas',
+    icon: Calendar,
     roles: ['AGENT', 'ADMIN'],
   },
   {
-    title: 'Usuarios',
-    href: '/dashboard/users',
+    title: 'Clientes',
+    href: '/dashboard/clientes',
     icon: Users,
-    roles: ['ADMIN'],
+    roles: ['AGENT', 'ADMIN'],
   },
   {
-    title: 'Configuración',
-    href: '/dashboard/settings',
+    title: 'Perfil',
+    href: '/dashboard/perfil',
     icon: Settings,
-    roles: ['CLIENT', 'AGENT', 'ADMIN'],
+    roles: ['AGENT', 'ADMIN'],
   },
 ]
 

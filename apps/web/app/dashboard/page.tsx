@@ -1,41 +1,42 @@
 /**
  * DASHBOARD - Página principal
  * Vista general con estadísticas y accesos rápidos
+ * Solo accesible para AGENT y ADMIN
  */
 
-import { getUserWithRole } from '@/lib/auth'
-import { Building2, Heart, Calendar, TrendingUp } from 'lucide-react'
+import { requireRole } from '@/lib/auth'
+import { Building2, Calendar, Users, TrendingUp } from 'lucide-react'
 
 export default async function DashboardPage() {
-  const { dbUser, email } = await getUserWithRole()
+  const user = await requireRole(['AGENT', 'ADMIN'])
 
   // Stats básicas (después conectaremos con datos reales)
   const stats = [
     {
       title: 'Propiedades',
-      value: dbUser.role === 'AGENT' ? '12' : '0',
-      description: dbUser.role === 'AGENT' ? 'Propiedades activas' : 'Propiedades disponibles',
+      value: '12',
+      description: 'Propiedades activas',
       icon: Building2,
       trend: '+2 esta semana',
     },
     {
-      title: 'Favoritos',
-      value: '5',
-      description: 'Propiedades guardadas',
-      icon: Heart,
-      trend: '+1 esta semana',
-    },
-    {
       title: 'Citas',
-      value: '3',
+      value: '8',
       description: 'Citas programadas',
       icon: Calendar,
-      trend: '2 pendientes',
+      trend: '3 pendientes',
+    },
+    {
+      title: 'Clientes',
+      value: '24',
+      description: 'Clientes activos',
+      icon: Users,
+      trend: '+5 este mes',
     },
     {
       title: 'Visitas',
-      value: dbUser.role === 'AGENT' ? '245' : '12',
-      description: dbUser.role === 'AGENT' ? 'Visitas este mes' : 'Propiedades vistas',
+      value: '245',
+      description: 'Visitas este mes',
       icon: TrendingUp,
       trend: '+12% vs mes anterior',
     },
@@ -46,12 +47,10 @@ export default async function DashboardPage() {
       {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          Bienvenido, {dbUser.name || 'Usuario'}
+          Bienvenido, {user.name || 'Usuario'}
         </h1>
         <p className="text-muted-foreground">
-          {dbUser.role === 'AGENT'
-            ? 'Gestiona tus propiedades y citas'
-            : 'Encuentra tu propiedad ideal'}
+          Gestiona tus propiedades y citas con clientes
         </p>
       </div>
 
@@ -98,26 +97,24 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      {dbUser.role === 'AGENT' && (
-        <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Accesos Rápidos</h2>
-          <div className="flex gap-4">
-            <a
-              href="/dashboard/properties/new"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
-            >
-              <Building2 className="h-4 w-4" />
-              Nueva Propiedad
-            </a>
-            <a
-              href="/dashboard/properties"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-border hover:bg-accent transition-colors text-sm font-medium"
-            >
-              Ver Mis Propiedades
-            </a>
-          </div>
+      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold mb-4">Accesos Rápidos</h2>
+        <div className="flex gap-4">
+          <a
+            href="/dashboard/propiedades/nueva"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
+          >
+            <Building2 className="h-4 w-4" />
+            Nueva Propiedad
+          </a>
+          <a
+            href="/dashboard/propiedades"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-border hover:bg-accent transition-colors text-sm font-medium"
+          >
+            Ver Mis Propiedades
+          </a>
         </div>
-      )}
+      </div>
     </div>
   )
 }
