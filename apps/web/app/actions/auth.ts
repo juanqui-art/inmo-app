@@ -81,9 +81,20 @@ export async function signupAction(_prevState: any, formData: FormData) {
     }
   }
 
-  // 5. Revalidar cache y redirigir
+  // 5. Revalidar
   revalidatePath('/', 'layout')
-  redirect('/dashboard')
+
+  // 6. Redirigir según rol
+  switch (role) {
+    case 'ADMIN':
+      redirect('/admin')
+    case 'AGENT':
+      redirect('/dashboard')
+    case 'CLIENT':
+      redirect('/perfil')
+    default:
+      redirect('/')
+  }
 }
 
 /**
@@ -92,8 +103,8 @@ export async function signupAction(_prevState: any, formData: FormData) {
  * Flujo:
  * 1. Validar email y password
  * 2. Autenticar con Supabase
- * 3. Supabase guarda la sesión en cookies automáticamente
- * 4. Redirigir a dashboard
+ * 3. Obtener rol del usuario desde DB
+ * 4. Redirigir según rol (CLIENT → /perfil, AGENT/ADMIN → /dashboard)
  */
 export async function loginAction(_prevState: any, formData: FormData) {
   // 1. Extraer datos
@@ -117,7 +128,7 @@ export async function loginAction(_prevState: any, formData: FormData) {
   const supabase = await createClient()
 
   // 4. Iniciar sesión
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { data: authData, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
@@ -129,9 +140,38 @@ export async function loginAction(_prevState: any, formData: FormData) {
     }
   }
 
-  // 5. Revalidar y redirigir
+  if (!authData.user) {
+    return {
+      error: { general: 'No se pudo iniciar sesión' },
+    }
+  }
+
+  // 5. Obtener rol del usuario desde DB para redirigir correctamente
+  const { userRepository } = await import('@repo/database')
+  const dbUser = await userRepository.findById(authData.user.id)
+
+  if (!dbUser) {
+    // Usuario en Auth pero no en DB (caso edge)
+    await supabase.auth.signOut()
+    return {
+      error: { general: 'Usuario no encontrado en la base de datos' },
+    }
+  }
+
+  // 6. Revalidar
   revalidatePath('/', 'layout')
-  redirect('/dashboard')
+
+  // 7. Redirigir según rol
+  switch (dbUser.role) {
+    case 'ADMIN':
+      redirect('/admin')
+    case 'AGENT':
+      redirect('/dashboard')
+    case 'CLIENT':
+      redirect('/perfil')
+    default:
+      redirect('/')
+  }
 }
 
 /**
