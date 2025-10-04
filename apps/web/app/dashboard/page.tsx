@@ -1,75 +1,123 @@
 /**
- * DASHBOARD - Página protegida
- * Solo usuarios autenticados pueden verla
+ * DASHBOARD - Página principal
+ * Vista general con estadísticas y accesos rápidos
  */
 
-import { getUser, logoutAction } from '@/app/actions/auth'
-import { Button } from '@repo/ui'
-import { redirect } from 'next/navigation'
+import { getUserWithRole } from '@/lib/auth'
+import { Building2, Heart, Calendar, TrendingUp } from 'lucide-react'
 
 export default async function DashboardPage() {
-  try {
-    // Obtener usuario actual
-    const user = await getUser()
+  const { dbUser, email } = await getUserWithRole()
 
-    console.log('Dashboard - User:', user) // Debug
+  // Stats básicas (después conectaremos con datos reales)
+  const stats = [
+    {
+      title: 'Propiedades',
+      value: dbUser.role === 'AGENT' ? '12' : '0',
+      description: dbUser.role === 'AGENT' ? 'Propiedades activas' : 'Propiedades disponibles',
+      icon: Building2,
+      trend: '+2 esta semana',
+    },
+    {
+      title: 'Favoritos',
+      value: '5',
+      description: 'Propiedades guardadas',
+      icon: Heart,
+      trend: '+1 esta semana',
+    },
+    {
+      title: 'Citas',
+      value: '3',
+      description: 'Citas programadas',
+      icon: Calendar,
+      trend: '2 pendientes',
+    },
+    {
+      title: 'Visitas',
+      value: dbUser.role === 'AGENT' ? '245' : '12',
+      description: dbUser.role === 'AGENT' ? 'Visitas este mes' : 'Propiedades vistas',
+      icon: TrendingUp,
+      trend: '+12% vs mes anterior',
+    },
+  ]
 
-    // Si no hay usuario (por seguridad extra), redirigir
-    if (!user) {
-      console.log('Dashboard - No user, redirecting to login')
-      redirect('/login')
-    }
+  return (
+    <div className="space-y-6">
+      {/* Welcome Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Bienvenido, {dbUser.name || 'Usuario'}
+        </h1>
+        <p className="text-muted-foreground">
+          {dbUser.role === 'AGENT'
+            ? 'Gestiona tus propiedades y citas'
+            : 'Encuentra tu propiedad ideal'}
+        </p>
+      </div>
 
-    return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-gray-600">Bienvenido</p>
-              <p className="text-lg font-semibold">{user.email}</p>
+      {/* Stats Grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon
+          return (
+            <div
+              key={stat.title}
+              className="rounded-lg border border-border bg-card p-6 shadow-sm transition-colors hover:bg-accent/50"
+            >
+              <div className="flex items-center justify-between space-x-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {stat.title}
+                  </p>
+                  <p className="text-2xl font-bold">{stat.value}</p>
+                </div>
+                <div className="rounded-full bg-primary/10 p-3">
+                  <Icon className="h-4 w-4 text-primary" />
+                </div>
+              </div>
+              <div className="mt-4 space-y-1">
+                <p className="text-xs text-muted-foreground">{stat.description}</p>
+                <p className="text-xs font-medium text-primary">{stat.trend}</p>
+              </div>
             </div>
+          )
+        })}
+      </div>
 
-            <div>
-              <p className="text-sm text-gray-600">ID de usuario</p>
-              <p className="text-sm font-mono">{user.id}</p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-600">Metadata</p>
-              <pre className="text-xs bg-gray-100 p-2 rounded mt-1">
-                {JSON.stringify(user.user_metadata, null, 2)}
-              </pre>
-            </div>
-
-            <form action={logoutAction}>
-              <Button type="submit" variant="destructive">
-                Cerrar sesión
-              </Button>
-            </form>
-          </div>
+      {/* Recent Activity */}
+      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold mb-4">Actividad Reciente</h2>
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            No hay actividad reciente para mostrar.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Cuando agregues propiedades a favoritos o programes citas, aparecerán aquí.
+          </p>
         </div>
       </div>
+
+      {/* Quick Actions */}
+      {dbUser.role === 'AGENT' && (
+        <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-semibold mb-4">Accesos Rápidos</h2>
+          <div className="flex gap-4">
+            <a
+              href="/dashboard/properties/new"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
+            >
+              <Building2 className="h-4 w-4" />
+              Nueva Propiedad
+            </a>
+            <a
+              href="/dashboard/properties"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-border hover:bg-accent transition-colors text-sm font-medium"
+            >
+              Ver Mis Propiedades
+            </a>
+          </div>
+        </div>
+      )}
     </div>
-    )
-  } catch (error) {
-    console.error('Dashboard error:', error)
-    return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <h1 className="text-xl font-bold text-red-800 mb-2">Error</h1>
-            <p className="text-red-600">
-              Hubo un error al cargar el dashboard. Revisa los logs del servidor.
-            </p>
-            <pre className="mt-4 text-xs bg-white p-2 rounded">
-              {error instanceof Error ? error.message : 'Error desconocido'}
-            </pre>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  )
 }

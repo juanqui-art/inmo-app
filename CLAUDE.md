@@ -193,6 +193,35 @@ $$;
 - **Git Strategy**: Main branch, feature branches for new work
 - **Commit Format**: Conventional commits (feat/fix/refactor/docs)
 
+### 🔧 Monorepo Configuration (CRITICAL)
+
+**Prisma Client Setup:**
+- ✅ Prisma generates client in **root** `node_modules/.prisma/client`
+- ✅ Schema output: `../../../node_modules/.prisma/client` (from `packages/database/prisma/`)
+- ✅ `@prisma/client` is hoisted to root by Bun workspaces
+- ✅ Postinstall hook auto-generates client: `cd packages/database && bun run db:generate`
+
+**Next.js Transpilation (REQUIRED):**
+- ✅ Internal packages export TypeScript directly (`"main": "./src/index.ts"`)
+- ✅ Next.js configured to transpile workspace packages via `transpilePackages`
+- ⚠️ **MUST restart dev server when changing `next.config.ts`**
+- ⚠️ **MUST add new packages to `transpilePackages` array**
+
+**Troubleshooting:**
+```bash
+# Error: "@prisma/client did not initialize yet"
+cd packages/database && bunx prisma generate
+
+# Error: "Cannot find module @repo/database"
+# Check that package is in transpilePackages in next.config.ts
+
+# Changes in packages/ not reflected
+rm -rf apps/web/.next && bun run dev  # Clear Turbopack cache
+
+# Prisma Client types not found
+bun install  # Triggers postinstall hook
+```
+
 ---
 
 ## Technology Stack
@@ -239,6 +268,10 @@ $$;
 
   Database operations
 
+  # Generate Prisma Client (after schema changes)
+  cd packages/database && bunx prisma generate
+  # Or from root: bun install (triggers postinstall hook)
+
   # Create new migration
   cd packages/database && bunx prisma migrate dev --name <migration_name>
 
@@ -250,6 +283,11 @@ $$;
 
   # Push schema changes without migration (development)
   cd packages/database && bunx prisma db push
+
+  # IMPORTANT: After schema changes
+  # 1. Generate client: bunx prisma generate
+  # 2. Restart dev server: bun run dev
+  # 3. Generated client location: node_modules/.prisma/client (root, not packages/)
 
   Supabase operations
 
@@ -270,9 +308,15 @@ $$;
   Monorepo Structure
 
   - Turborepo manages the monorepo with intelligent caching and parallel execution
-  - Workspaces in root package.json manage dependencies across apps and packages
-  - Path aliases: @/ resolves to apps/web/src/, @repo/database, @repo/ui for packages
-  - Apps and packages can share code via internal package references
+  - Bun workspaces manage dependencies across apps and packages
+  - Path aliases: @/ resolves to apps/web/, @repo/* for internal packages
+  - Apps and packages share code via internal package references
+
+  **Package Resolution:**
+  - Internal packages (`@repo/*`) export TypeScript directly for faster development
+  - Next.js transpiles workspace packages via `transpilePackages` config
+  - Dependencies are hoisted to root `node_modules` by Bun (e.g., `@prisma/client`)
+  - Prisma Client generated in root `node_modules/.prisma/client` (required for hoisted packages)
 
   Next.js App Architecture (apps/web)
 
@@ -291,6 +335,28 @@ $$;
   - Query utilities provide reusable database operations
   - Shared types exported from Prisma client and Supabase
   - Zod schemas for runtime validation (derived from Prisma schema)
+
+  **Prisma in Monorepo (Important):**
+  - Prisma Client generates to **root** `node_modules/.prisma/client`
+  - `@prisma/client` package is hoisted to root by Bun workspaces
+  - Schema output path: `../../../node_modules/.prisma/client` (relative from `packages/database/prisma/`)
+  - Postinstall hook auto-generates client after `bun install`
+  - Must run `bunx prisma generate` after schema changes
+
+  **Why this configuration:**
+  ```
+  Flow: @repo/database imports @prisma/client
+        ↓
+        @prisma/client (hoisted in root node_modules/@prisma/client)
+        ↓
+        require('.prisma/client')  ← looks in node_modules/.prisma/client
+        ↓
+        ✅ Generated client in node_modules/.prisma/client (root)
+  ```
+
+  If client was in `packages/database/node_modules/.prisma/client`:
+  - ❌ @prisma/client (root) can't find it
+  - ❌ Error: "did not initialize yet"
 
   Authentication & Authorization
 
@@ -401,6 +467,160 @@ $$;
   - Supabase managed service for database, auth, storage
   - Environment: Production, Staging (preview deployments)
   - Database migrations: Run via Supabase CLI or Prisma Migrate before deploy
+
+---
+
+## 📦 Working with Internal Packages
+
+### Adding a New Internal Package
+
+When creating a new package in `packages/`, follow this checklist:
+
+**1. Create package structure:**
+```bash
+mkdir -p packages/new-package/src
+cd packages/new-package
+```
+
+**2. Create `package.json`:**
+```json
+{
+  "name": "@repo/new-package",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    // Add runtime dependencies here
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}
+```
+
+**3. Create `tsconfig.json`:**
+```json
+{
+  "extends": "@repo/typescript-config/tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+**4. Create `src/index.ts`:**
+```ts
+// Export your package's public API
+export * from './your-module'
+```
+
+**5. Add to Next.js transpilePackages:**
+```ts
+// apps/web/next.config.ts
+const nextConfig: NextConfig = {
+  transpilePackages: [
+    '@repo/database',
+    '@repo/ui',
+    '@repo/new-package'  // ← Add your new package here
+  ],
+}
+```
+
+**6. Install dependencies:**
+```bash
+bun install  # From project root
+```
+
+**7. Restart dev server:**
+```bash
+bun run dev  # next.config.ts changes require restart
+```
+
+### Why TypeScript Exports Work
+
+**Traditional approach (compile to JS):**
+```
+packages/database/
+├── src/index.ts        # Source code
+├── dist/index.js       # Compiled output
+└── package.json        # "main": "./dist/index.js"
+
+❌ Slow: Must compile before use
+❌ Complex: Watch mode, build pipelines
+✅ Fast prod builds
+✅ Framework agnostic
+```
+
+**Our approach (transpilePackages):**
+```
+packages/database/
+├── src/index.ts        # Source code
+└── package.json        # "main": "./src/index.ts"
+
+✅ Fast dev: No compile step
+✅ Simple: No build tooling needed
+✅ Hot reload: Instant changes
+❌ Next.js only (Turbopack transpiles)
+```
+
+### When to Migrate to Compiled Packages
+
+Consider compiling packages to JavaScript when:
+
+- [ ] You have **>10 internal packages** (transpilation overhead)
+- [ ] You're adding **other frameworks** (Remix, Vite, mobile apps)
+- [ ] **Build time exceeds 10 seconds** (transpilation slows down)
+- [ ] You want to **publish packages to npm**
+
+**Migration path:**
+1. Add `build` script to package: `"build": "tsc"`
+2. Update `main` to point to `dist`: `"main": "./dist/index.js"`
+3. Configure Turborepo pipeline for builds
+4. Remove from `transpilePackages`
+
+See [Turborepo docs](https://turbo.build/repo/docs/handbook/package-development) for details.
+
+### Common Issues
+
+**Issue: "Cannot find module @repo/package"**
+```bash
+# Solution 1: Check transpilePackages
+# apps/web/next.config.ts should include the package
+
+# Solution 2: Reinstall dependencies
+bun install
+
+# Solution 3: Clear Next.js cache
+rm -rf apps/web/.next && bun run dev
+```
+
+**Issue: Changes in package not reflected**
+```bash
+# Solution 1: Clear Turbopack cache
+rm -rf apps/web/.next && bun run dev
+
+# Solution 2: Restart dev server
+# Ctrl+C, then bun run dev
+
+# Solution 3: Check file is exported
+# Verify src/index.ts exports the changed file
+```
+
+**Issue: Type errors in package**
+```bash
+# Check package types
+cd packages/your-package && bun run type-check
+
+# Check all packages
+bun run type-check  # From root
+```
 
 ---
 
@@ -537,13 +757,115 @@ bun run type-check    # Find TypeScript errors
 bun run lint          # Find code issues
 bun run format        # Auto-fix formatting
 
-# Database (when you set it up)
-bunx prisma studio    # Visual DB browser
-bunx prisma db push   # Quick schema sync (dev only)
+# Database
+cd packages/database && bunx prisma studio    # Visual DB browser
+cd packages/database && bunx prisma generate  # Regenerate client
+cd packages/database && bunx prisma db push   # Quick schema sync (dev only)
 
 # Git
 git status            # See what changed
 git add -p            # Review changes before committing
 git log --oneline -5  # See recent commits
 ```
+
+---
+
+## 🎓 Lessons Learned & Best Practices
+
+### Monorepo + Next.js + Prisma
+
+**Problem We Solved:**
+- Initial error: `@prisma/client did not initialize yet`
+- Root cause: Combination of Bun workspace hoisting + Turbopack + Prisma Client generation
+
+**Key Insights:**
+
+1. **Dependency Hoisting** (Bun workspaces)
+   - Bun hoists common dependencies to root `node_modules`
+   - `@prisma/client` installed in `packages/database/package.json` → hoisted to root
+   - Package looks for generated client relative to itself (root)
+
+2. **Prisma Client Generation**
+   - Generated code must be where `@prisma/client` package expects it
+   - Default `output` doesn't work in hoisted monorepos
+   - Solution: `output = "../../../node_modules/.prisma/client"` (points to root)
+
+3. **Next.js Transpilation**
+   - Turbopack doesn't transpile `node_modules` by default (performance)
+   - Internal packages export `.ts` files directly
+   - Solution: `transpilePackages: ['@repo/database', '@repo/ui']`
+
+**Decision Matrix: TypeScript vs JavaScript Packages**
+
+| Criteria | Use TypeScript (`transpilePackages`) | Use JavaScript (compile) |
+|----------|-------------------------------------|--------------------------|
+| Team size | < 5 developers | > 5 developers |
+| Package count | < 10 packages | > 10 packages |
+| Frameworks | Next.js only | Multiple (Next.js + Remix + mobile) |
+| Build time | < 10 seconds | > 10 seconds |
+| Dev velocity | ⭐⭐⭐⭐⭐ Instant changes | ⭐⭐⭐ Need compilation |
+| Setup complexity | ⭐⭐⭐⭐⭐ Simple | ⭐⭐ Complex (watch, pipelines) |
+| Production builds | ⭐⭐⭐⭐ Fast enough | ⭐⭐⭐⭐⭐ Fastest |
+| Publishing to npm | ❌ Not possible | ✅ Ready to publish |
+
+**Our Choice:** TypeScript exports with `transpilePackages`
+- **Why:** Small team, fast iteration, Next.js only, simple setup
+- **Trade-off:** Slightly slower prod builds (~300ms) for much faster dev experience
+
+### Debugging Monorepo Issues
+
+**Step-by-step troubleshooting:**
+
+```bash
+# 1. Verify package resolution
+bun pm ls @repo/database
+# Should show: @repo/database@workspace:packages/database
+
+# 2. Check if package exports exist
+ls -la packages/database/src/index.ts
+# Should exist and export { db }
+
+# 3. Verify transpilePackages config
+cat apps/web/next.config.ts
+# Should include '@repo/database'
+
+# 4. Check Prisma Client generation
+ls -la node_modules/.prisma/client
+# Should exist with index.d.ts, index.js, etc.
+
+# 5. Test import in Node.js (bypass Next.js)
+node -e "const { db } = require('@repo/database'); console.log(typeof db)"
+# Should print: object
+
+# 6. Clear all caches
+rm -rf apps/web/.next node_modules/.cache
+bun install
+bun run dev
+```
+
+**Common Gotchas:**
+
+1. ✅ **DO**: Add new packages to `transpilePackages` immediately
+2. ✅ **DO**: Restart dev server after `next.config.ts` changes
+3. ✅ **DO**: Run `bunx prisma generate` after schema changes
+4. ❌ **DON'T**: Forget postinstall hook in root `package.json`
+5. ❌ **DON'T**: Mix Prisma output paths (always use root)
+6. ❌ **DON'T**: Import from `packages/` directly (use `@repo/*`)
+
+### Future-Proofing
+
+**When to revisit this setup:**
+
+- [ ] Adding a second app (mobile, admin panel, etc.)
+- [ ] Package count grows beyond 10
+- [ ] Build time exceeds 10 seconds
+- [ ] Want to publish packages to npm
+- [ ] Team grows beyond 10 developers
+
+**Migration path to compiled packages:**
+1. Start with one stable package (`@repo/ui`)
+2. Add build tooling (tsup, esbuild, or tsc)
+3. Update Turborepo pipeline
+4. Test thoroughly
+5. Migrate remaining packages incrementally
 

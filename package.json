@@ -13,7 +13,8 @@
     "start": "cd apps/web && bun run start",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
-    "format": "turbo run format"
+    "format": "turbo run format",
+    "postinstall": "cd packages/database && bun run db:generate"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
