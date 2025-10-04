@@ -1,26 +1,31 @@
 {
-"$schema": "https://turbo.build/schema.json",
-"experimentalPassThroughEnv": ["FORCE_COLOR", "TERM"],
-"tasks": {
-  "dev": {
-    "cache": false,
-    "persistent": true
-  },
-  "build": {
-    "dependsOn": ["^build"],
-    "outputs": [".next/**", "dist/**"]
-  },
-  "lint": {
-    "cache": true,
-    "outputs": []
-  },
-  "type-check": {
-    "cache": true,
-    "outputs": []
-  },
-  "format": {
-    "cache": false,
-    "outputs": []
+  "$schema": "https://turbo.build/schema.json",
+  "globalPassThroughEnv": ["FORCE_COLOR", "TERM"],
+  "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["@repo/database#db:generate"]
+    },
+    "build": {
+      "dependsOn": ["^build", "@repo/database#db:generate"],
+      "outputs": [".next/**"]
+    },
+    "@repo/database#db:generate": {
+      "cache": true,
+      "outputs": ["../../node_modules/.prisma/**"]
+    },
+    "lint": {
+      "cache": true,
+      "outputs": []
+    },
+    "type-check": {
+      "cache": true,
+      "outputs": []
+    },
+    "format": {
+      "cache": false,
+      "outputs": []
+    }
   }
-}
 }

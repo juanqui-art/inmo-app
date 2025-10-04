@@ -1,12 +1,15 @@
-// Export Prisma Client
+/**
+ * @repo/database
+ *
+ * Paquete de acceso a base de datos usando Prisma ORM
+ * Provee type-safe queries y mutations
+ */
+
+// Export Prisma Client instance
 export { db } from './client'
 
-// Export Supabase Clients
-export { createSupabaseClient, createSupabaseServerClient } from './client'
-
-// Re-export Prisma types
+// Re-export Prisma types para conveniencia
 export * from '@prisma/client'
 
-// Export queries (to be created later)
-// export * from './queries/properties'
-// export * from './queries/users'
+// Export repositories (implementados a continuación)
+export * from './repositories'

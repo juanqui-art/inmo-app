@@ -1,0 +1,8 @@
+/**
+ * REPOSITORIES
+ *
+ * Export all repositories para fácil importación
+ */
+
+export * from './users'
+export * from './properties'

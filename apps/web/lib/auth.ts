@@ -4,7 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
-import { db } from '@repo/database'
+import { userRepository } from '@repo/database'
 import { redirect } from 'next/navigation'
 
 /**
@@ -30,18 +30,8 @@ export async function getCurrentUser() {
 export async function getUserWithRole() {
   const authUser = await getCurrentUser()
 
-  // Obtener usuario de la BD con su rol
-  const dbUser = await db.user.findUnique({
-    where: { id: authUser.id },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      avatar: true,
-      phone: true,
-    },
-  })
+  // Obtener usuario de la BD usando el repository
+  const dbUser = await userRepository.findById(authUser.id)
 
   if (!dbUser) {
     throw new Error('User not found in database')

@@ -18,6 +18,7 @@
         "@radix-ui/react-separator": "^1.1.7",
         "@radix-ui/react-slot": "^1.2.3",
         "@repo/database": "workspace:*",
+        "@repo/supabase": "workspace:*",
         "@repo/ui": "workspace:*",
         "@supabase/ssr": "^0.7.0",
         "clsx": "^2.1.1",
@@ -44,10 +45,21 @@
       "version": "0.0.0",
       "dependencies": {
         "@prisma/client": "^6.1.0",
-        "@supabase/supabase-js": "^2.47.13",
       },
       "devDependencies": {
         "prisma": "^6.1.0",
+        "typescript": "^5",
+      },
+    },
+    "packages/supabase": {
+      "name": "@repo/supabase",
+      "version": "0.0.0",
+      "dependencies": {
+        "@supabase/ssr": "^0.7.0",
+        "@supabase/supabase-js": "^2.47.13",
+      },
+      "devDependencies": {
+        "@types/node": "^20",
         "typescript": "^5",
       },
     },
@@ -258,6 +270,8 @@
     "@radix-ui/rect": ["@radix-ui/rect@1.1.1", "", {}, "sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw=="],
 
     "@repo/database": ["@repo/database@workspace:packages/database"],
+
+    "@repo/supabase": ["@repo/supabase@workspace:packages/supabase"],
 
     "@repo/typescript-config": ["@repo/typescript-config@workspace:packages/typescript-config"],
 
