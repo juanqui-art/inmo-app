@@ -12,6 +12,189 @@ This is a **real estate platform** built as a monorepo containing:
 - **UI Package** (`packages/ui`): Shared components library with shadcn/ui
 - **Supabase**: PostgreSQL database, authentication, storage, and realtime subscriptions
 
+---
+
+## Current Implementation Status
+
+### ✅ Completed Features
+
+**Monorepo Architecture** (Commit: `655bd4a`)
+- Turborepo configured with intelligent caching
+- Bun workspaces managing dependencies
+- 3 packages created: `@repo/typescript-config`, `@repo/database`, `@repo/ui`
+- Path aliases configured (`@/` for apps/web, `@repo/*` for packages)
+
+**Database Setup** (Commit: `655bd4a`)
+- Supabase project created (Region: US East)
+- Prisma schema with 5 models:
+  - `User` (id, email, name, role, phone, avatar, createdAt, updatedAt)
+  - `Property` (title, description, price, type, bedrooms, bathrooms, area, lat, lng, etc.)
+  - `PropertyImage` (url, alt, order)
+  - `Favorite` (userId, propertyId)
+  - `Appointment` (userId, propertyId, agentId, scheduledAt, status)
+- Row Level Security (RLS) policies enabled on all tables
+- Database trigger: Auto-creates user in `public.users` when auth user is created
+
+**Email/Password Authentication** (Commit: `bf30c9c`)
+- Supabase Auth integration with `@supabase/ssr`
+- 3 Supabase clients created:
+  - `lib/supabase/client.ts` - Browser client (Client Components)
+  - `lib/supabase/server.ts` - Server client (Server Components/Actions)
+  - `middleware.ts` - Middleware client (Route protection)
+- Zod validation schemas (`lib/validations/auth.ts`)
+- Server Actions: `signupAction`, `loginAction`, `logoutAction`
+- Auth components:
+  - `components/auth/login-form.tsx` - Email/password login
+  - `components/auth/signup-form.tsx` - Registration with role selection
+- Auth pages:
+  - `app/(auth)/login/page.tsx`
+  - `app/(auth)/signup/page.tsx`
+- Protected route: `app/dashboard/page.tsx`
+- Middleware protecting `/dashboard` routes
+
+**Google OAuth Authentication** (Commit: `8a2bb36`)
+- Google OAuth configured in Supabase Dashboard
+- Google Cloud Console credentials configured
+- Components:
+  - `components/auth/google-button.tsx` - OAuth initiation button
+- Routes:
+  - `app/auth/callback/route.ts` - OAuth callback handler
+- Updated login/signup pages with Google sign-in option
+- Database trigger handles both email/password (`name`) and OAuth (`full_name`) metadata
+
+### 📁 Key Files Created
+
+```
+apps/web/
+├── app/
+│   ├── (auth)/
+│   │   ├── login/page.tsx          # Login page (email + Google)
+│   │   └── signup/page.tsx         # Signup page (email + Google)
+│   ├── auth/
+│   │   └── callback/route.ts       # OAuth callback handler
+│   ├── dashboard/
+│   │   └── page.tsx                # Protected dashboard
+│   └── actions/
+│       └── auth.ts                 # Server Actions (signup, login, logout)
+├── components/
+│   └── auth/
+│       ├── login-form.tsx          # Email/password login form
+│       ├── signup-form.tsx         # Email/password signup form
+│       └── google-button.tsx       # Google OAuth button
+├── lib/
+│   ├── supabase/
+│   │   ├── client.ts               # Browser Supabase client
+│   │   └── server.ts               # Server Supabase client
+│   └── validations/
+│       └── auth.ts                 # Zod schemas (login, signup)
+└── middleware.ts                   # Route protection + session refresh
+
+packages/
+├── database/
+│   ├── prisma/
+│   │   └── schema.prisma           # Database schema (5 models)
+│   └── src/
+│       └── client.ts               # Prisma singleton + exports
+├── ui/
+│   └── src/
+│       └── components/
+│           ├── button.tsx          # Button with variants
+│           └── input.tsx           # Input component
+└── typescript-config/
+    ├── tsconfig.base.json          # Strict TypeScript config
+    └── tsconfig.nextjs.json        # Next.js specific config
+```
+
+### 🔒 Security Configuration
+
+**Row Level Security (RLS)**
+- All tables have RLS enabled
+- Policies created for:
+  - Users: Can read own profile, update own profile
+  - Properties: Public read, agents can create/update own properties
+  - Favorites: Users can CRUD own favorites
+  - Appointments: Users can read/create, agents can update
+
+**Database Trigger** (Supabase SQL)
+```sql
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.users (id, email, name, role, created_at, updated_at)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(
+      NEW.raw_user_meta_data->>'full_name',  -- Google OAuth
+      NEW.raw_user_meta_data->>'name',       -- Email/Password
+      split_part(NEW.email, '@', 1)          -- Fallback
+    ),
+    COALESCE(NEW.raw_user_meta_data->>'role', 'CLIENT')::public."UserRole",
+    NOW(),
+    NOW()
+  );
+  RETURN NEW;
+END;
+$$;
+```
+
+**User Roles**
+- `CLIENT`: Default role, can browse properties, save favorites, book appointments
+- `AGENT`: Can create/manage properties, view appointments
+- `ADMIN`: Full access (to be implemented)
+
+### ⏭️ Next Steps (Recommended Priority)
+
+**Option A: Dashboard Layout + Navigation** ⭐ (Recommended first)
+- Create sidebar with navigation
+- User menu with logout
+- Role-based dashboard views
+- Breadcrumbs and layout components
+- Files to create:
+  - `app/dashboard/layout.tsx`
+  - `components/dashboard/sidebar.tsx`
+  - `components/dashboard/user-menu.tsx`
+
+**Option B: Properties CRUD**
+- Create/read/update/delete properties (AGENT only)
+- Property form with Zod validation
+- Server Actions for property operations
+- List properties in dashboard
+- Files to create:
+  - `app/dashboard/properties/page.tsx`
+  - `app/dashboard/properties/new/page.tsx`
+  - `app/actions/properties.ts`
+  - `components/properties/property-form.tsx`
+  - `lib/validations/property.ts`
+
+**Option C: Supabase Storage Setup**
+- Configure storage buckets (properties, avatars)
+- RLS policies for storage
+- Image upload component
+- Server Actions for file upload
+- Next.js Image optimization
+- Files to create:
+  - `lib/storage/client.ts`
+  - `components/ui/image-upload.tsx`
+  - `app/actions/storage.ts`
+
+### 📝 Important Notes for Future Sessions
+
+- **Supabase Region**: US East (aws-1-us-east-2)
+- **Supabase Project**: pexsmszavuffgdamwrlj
+- **Database Connection**: Using pooler (transaction + session)
+- **Auth Flow**: Middleware checks session via `supabase.auth.getUser()` (NOT cookies)
+- **Middleware Protection**: `/dashboard` routes require authentication
+- **Public Routes**: `/`, `/login`, `/signup`
+- **Git Strategy**: Main branch, feature branches for new work
+- **Commit Format**: Conventional commits (feat/fix/refactor/docs)
+
+---
+
 ## Technology Stack
 
 - **Monorepo**: Turborepo (or Bun workspaces)
