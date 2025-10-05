@@ -9,7 +9,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -44,6 +44,22 @@ interface ImageGalleryProps {
   propertyId: string
   onImageDeleted?: () => void
   onImagesReordered?: () => void
+}
+
+// Skeleton loading component
+function ImageGallerySkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="aspect-square bg-muted rounded-lg animate-pulse" />
+        ))}
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Cargando imágenes...
+      </p>
+    </div>
+  )
 }
 
 // Componente sortable individual
@@ -132,10 +148,16 @@ function SortableImageItem({
 }
 
 export function ImageGallery({ images, propertyId, onImageDeleted, onImagesReordered }: ImageGalleryProps) {
+  const [isMounted, setIsMounted] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [localImages, setLocalImages] = useState<PropertyImage[]>([...images].sort((a, b) => a.order - b.order))
   const [isReordering, setIsReordering] = useState(false)
+
+  // Fix hydration mismatch: solo renderizar después de montar en cliente
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Configurar sensores para drag & drop
   const sensors = useSensors(
@@ -144,6 +166,11 @@ export function ImageGallery({ images, propertyId, onImageDeleted, onImagesReord
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
+
+  // Mostrar skeleton mientras no está montado (evita hydration mismatch)
+  if (!isMounted) {
+    return <ImageGallerySkeleton />
+  }
 
   // Manejar reordenamiento
   const handleDragEnd = async (event: DragEndEvent) => {
