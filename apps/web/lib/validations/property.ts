@@ -17,8 +17,7 @@ export const createPropertySchema = z.object({
   description: z
     .string()
     .min(20, 'La descripción debe tener al menos 20 caracteres')
-    .max(2000, 'La descripción no puede exceder 2000 caracteres')
-    .optional(),
+    .max(2000, 'La descripción no puede exceder 2000 caracteres'),
 
   price: z
     .number({ message: 'El precio debe ser un número' })
@@ -87,8 +86,9 @@ export const createPropertySchema = z.object({
 
   zipCode: z
     .string()
-    .length(6, 'El código postal debe tener exactamente 6 dígitos')
-    .regex(/^\d{6}$/, 'El código postal debe contener solo números')
+    .min(4, 'El código postal debe tener al menos 4 caracteres')
+    .max(10, 'El código postal no puede exceder 10 caracteres')
+    .regex(/^[A-Z0-9-\s]+$/i, 'El código postal solo puede contener letras, números, guiones y espacios')
     .optional(),
 
   latitude: z
@@ -102,7 +102,20 @@ export const createPropertySchema = z.object({
     .min(-180, 'Longitud inválida')
     .max(180, 'Longitud inválida')
     .optional(),
-})
+}).refine(
+  (data) => {
+    // Si se llena address, city, o state, todos deben estar presentes
+    const hasAnyLocation = data.address || data.city || data.state
+    if (hasAnyLocation) {
+      return data.city && data.state
+    }
+    return true
+  },
+  {
+    message: 'Si proporcionas información de ubicación, debes incluir al menos Ciudad y Provincia',
+    path: ['city'], // El error se mostrará en el campo city
+  }
+)
 
 /**
  * Schema para actualizar una propiedad
@@ -193,8 +206,9 @@ export const updatePropertySchema = z.object({
 
   zipCode: z
     .string()
-    .length(6, 'El código postal debe tener exactamente 6 dígitos')
-    .regex(/^\d{6}$/, 'El código postal debe contener solo números')
+    .min(4, 'El código postal debe tener al menos 4 caracteres')
+    .max(10, 'El código postal no puede exceder 10 caracteres')
+    .regex(/^[A-Z0-9-\s]+$/i, 'El código postal solo puede contener letras, números, guiones y espacios')
     .optional()
     .nullable(),
 

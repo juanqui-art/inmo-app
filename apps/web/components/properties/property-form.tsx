@@ -52,9 +52,18 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
   const [state, formAction, isPending] = useActionState<PropertyFormState | null>(action, null)
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form action={formAction} className="space-y-8">
       {/* Hidden ID for edit */}
       {property && <input type="hidden" name="id" value={property.id} />}
+
+      {/* SECCIÓN 1: Información Básica */}
+      <div className="space-y-4">
+        <div className="border-b pb-2">
+          <h3 className="text-lg font-semibold">Información Básica</h3>
+          <p className="text-sm text-muted-foreground">
+            Campos obligatorios para publicar la propiedad
+          </p>
+        </div>
 
       {/* Title */}
       <div className="space-y-2">
@@ -75,13 +84,16 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description">Descripción</Label>
+        <Label htmlFor="description">
+          Descripción <span className="text-destructive">*</span>
+        </Label>
         <Textarea
           id="description"
           name="description"
           defaultValue={property?.description || ''}
-          placeholder="Describe las características de la propiedad..."
+          placeholder="Describe las características de la propiedad... (mínimo 20 caracteres)"
           rows={5}
+          required
         />
         {state?.error?.description && (
           <p className="text-sm text-destructive">{state.error.description[0]}</p>
@@ -167,6 +179,17 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
           )}
         </div>
       </div>
+      </div>
+      {/* FIN SECCIÓN 1 */}
+
+      {/* SECCIÓN 2: Características */}
+      <div className="space-y-4">
+        <div className="border-b pb-2">
+          <h3 className="text-lg font-semibold">Características</h3>
+          <p className="text-sm text-muted-foreground">
+            Información adicional sobre la propiedad (opcional)
+          </p>
+        </div>
 
       {/* Bedrooms, Bathrooms, Area Row */}
       <div className="grid gap-6 md:grid-cols-3">
@@ -220,6 +243,17 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
           )}
         </div>
       </div>
+      </div>
+      {/* FIN SECCIÓN 2 */}
+
+      {/* SECCIÓN 3: Ubicación */}
+      <div className="space-y-4">
+        <div className="border-b pb-2">
+          <h3 className="text-lg font-semibold">Ubicación</h3>
+          <p className="text-sm text-muted-foreground">
+            Si proporcionas ubicación, debes incluir al menos Ciudad y Provincia
+          </p>
+        </div>
 
       {/* Address */}
       <div className="space-y-2">
@@ -272,13 +306,15 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
             id="zipCode"
             name="zipCode"
             defaultValue={property?.zipCode || ''}
-            placeholder="170150"
+            placeholder="170150 o 12345"
           />
           {state?.error?.zipCode && (
             <p className="text-sm text-destructive">{state.error.zipCode[0]}</p>
           )}
         </div>
       </div>
+      </div>
+      {/* FIN SECCIÓN 3 */}
 
       {/* Status (solo para editar) */}
       {property && (
