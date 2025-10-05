@@ -83,7 +83,7 @@ export default async function EditarPropiedadPage({
             {/* Galería de imágenes existentes */}
             <div>
               <h3 className="text-sm font-medium mb-3">Imágenes Actuales</h3>
-              <ImageGallery images={property.images} />
+              <ImageGallery images={property.images} propertyId={id} />
             </div>
 
             {/* Upload de nuevas imágenes */}
