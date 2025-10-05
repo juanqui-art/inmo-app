@@ -53,12 +53,6 @@ export async function createPropertyAction(_prevState: any, formData: FormData) 
   try {
     // 4. Crear propiedad usando el repository
     await propertyRepository.create(validatedData.data, user.id)
-
-    // 5. Revalidar cache
-    revalidatePath('/dashboard/propiedades')
-
-    // 6. Redirigir a la lista
-    redirect('/dashboard/propiedades')
   } catch (error) {
     console.error('Error creating property:', error)
     return {
@@ -67,6 +61,12 @@ export async function createPropertyAction(_prevState: any, formData: FormData) 
       },
     }
   }
+
+  // 5. Revalidar cache
+  revalidatePath('/dashboard/propiedades')
+
+  // 6. Redirigir a la lista (fuera del try/catch para que funcione)
+  redirect('/dashboard/propiedades')
 }
 
 /**
@@ -107,17 +107,11 @@ export async function updatePropertyAction(_prevState: any, formData: FormData) 
     }
   }
 
+  const { id, ...updateData } = validatedData.data
+
   try {
     // 4. Actualizar (repository verifica ownership)
-    const { id, ...updateData } = validatedData.data
     await propertyRepository.update(id, updateData, user.id)
-
-    // 5. Revalidar
-    revalidatePath('/dashboard/propiedades')
-    revalidatePath(`/dashboard/propiedades/${id}/editar`)
-
-    // 6. Redirigir
-    redirect('/dashboard/propiedades')
   } catch (error) {
     console.error('Error updating property:', error)
     return {
@@ -126,6 +120,13 @@ export async function updatePropertyAction(_prevState: any, formData: FormData) 
       },
     }
   }
+
+  // 5. Revalidar
+  revalidatePath('/dashboard/propiedades')
+  revalidatePath(`/dashboard/propiedades/${id}/editar`)
+
+  // 6. Redirigir (fuera del try/catch para que funcione)
+  redirect('/dashboard/propiedades')
 }
 
 /**
