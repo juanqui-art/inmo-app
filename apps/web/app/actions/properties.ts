@@ -194,6 +194,9 @@ export async function uploadPropertyImagesAction(
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
 
+      // Validar que el archivo exista
+      if (!file) continue
+
       // Subir a Storage
       const url = await uploadPropertyImage(file, propertyId)
 

@@ -69,8 +69,9 @@ export async function deletePropertyImage(path: string): Promise<void> {
   const supabase = await createClient()
 
   // Extraer path de la URL si es una URL completa
-  const filePath = path.includes('property-images/')
-    ? path.split('property-images/')[1]
+  const splitPath = path.split('property-images/')
+  const filePath = path.includes('property-images/') && splitPath[1]
+    ? splitPath[1]
     : path
 
   const { error } = await supabase.storage

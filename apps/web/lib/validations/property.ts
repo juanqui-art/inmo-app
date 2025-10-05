@@ -21,12 +21,12 @@ export const createPropertySchema = z.object({
     .optional(),
 
   price: z
-    .number({ invalid_type_error: 'El precio debe ser un número' })
+    .number({ message: 'El precio debe ser un número' })
     .positive('El precio debe ser mayor a 0')
     .max(1000000000, 'El precio es demasiado alto'),
 
   transactionType: z.enum(['SALE', 'RENT'], {
-    errorMap: () => ({ message: 'Tipo de transacción inválido' }),
+    message: 'Tipo de transacción inválido',
   }),
 
   category: z.enum([
@@ -43,26 +43,26 @@ export const createPropertySchema = z.object({
     'WAREHOUSE',
     'FARM',
   ], {
-    errorMap: () => ({ message: 'Tipo de inmueble inválido' }),
+    message: 'Tipo de inmueble inválido',
   }),
 
   status: z.enum(['AVAILABLE', 'PENDING', 'SOLD', 'RENTED']).default('AVAILABLE'),
 
   bedrooms: z
-    .number({ invalid_type_error: 'Los dormitorios deben ser un número' })
+    .number({ message: 'Los dormitorios deben ser un número' })
     .int('Los dormitorios deben ser un número entero')
     .min(0, 'Los dormitorios no pueden ser negativos')
     .max(50, 'Los dormitorios son demasiados')
     .optional(),
 
   bathrooms: z
-    .number({ invalid_type_error: 'Los baños deben ser un número' })
+    .number({ message: 'Los baños deben ser un número' })
     .min(0, 'Los baños no pueden ser negativos')
     .max(50, 'Los baños son demasiados')
     .optional(),
 
   area: z
-    .number({ invalid_type_error: 'El área debe ser un número' })
+    .number({ message: 'El área debe ser un número' })
     .positive('El área debe ser mayor a 0')
     .max(1000000, 'El área es demasiado grande')
     .optional(),
@@ -124,7 +124,7 @@ export const updatePropertySchema = z.object({
     .nullable(),
 
   price: z
-    .number({ invalid_type_error: 'El precio debe ser un número' })
+    .number({ message: 'El precio debe ser un número' })
     .positive('El precio debe ser mayor a 0')
     .max(1000000000, 'El precio es demasiado alto')
     .optional(),
@@ -149,7 +149,7 @@ export const updatePropertySchema = z.object({
   status: z.enum(['AVAILABLE', 'PENDING', 'SOLD', 'RENTED']).optional(),
 
   bedrooms: z
-    .number({ invalid_type_error: 'Los dormitorios deben ser un número' })
+    .number({ message: 'Los dormitorios deben ser un número' })
     .int('Los dormitorios deben ser un número entero')
     .min(0, 'Los dormitorios no pueden ser negativos')
     .max(50, 'Los dormitorios son demasiados')
@@ -157,14 +157,14 @@ export const updatePropertySchema = z.object({
     .nullable(),
 
   bathrooms: z
-    .number({ invalid_type_error: 'Los baños deben ser un número' })
+    .number({ message: 'Los baños deben ser un número' })
     .min(0, 'Los baños no pueden ser negativos')
     .max(50, 'Los baños son demasiados')
     .optional()
     .nullable(),
 
   area: z
-    .number({ invalid_type_error: 'El área debe ser un número' })
+    .number({ message: 'El área debe ser un número' })
     .positive('El área debe ser mayor a 0')
     .max(1000000, 'El área es demasiado grande')
     .optional()

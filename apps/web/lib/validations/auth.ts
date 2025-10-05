@@ -52,7 +52,7 @@ export const signupSchema = z.object({
     .regex(/[a-zA-Z]/, 'La contraseña debe contener al menos una letra')
     .regex(/[0-9]/, 'La contraseña debe contener al menos un número'),
   role: z.enum(['CLIENT', 'AGENT', 'ADMIN'], {
-    errorMap: () => ({ message: 'Rol inválido' }),
+    message: 'Rol inválido',
   }),
 })
 

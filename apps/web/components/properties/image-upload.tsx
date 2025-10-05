@@ -54,7 +54,10 @@ export function ImageUpload({ propertyId, onUploadComplete }: ImageUploadProps) 
     const newPreviews = previews.filter((_, i) => i !== index)
 
     // Limpiar URL del preview eliminado
-    URL.revokeObjectURL(previews[index])
+    const previewUrl = previews[index]
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+    }
 
     setSelectedFiles(newFiles)
     setPreviews(newPreviews)

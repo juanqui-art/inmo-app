@@ -40,7 +40,7 @@ export function LoginForm() {
           required
         />
         {/* Mostrar error si existe */}
-        {state?.error?.email && (
+        {state?.error && 'email' in state.error && state.error.email && (
           <p className="text-sm text-red-600">{state.error.email[0]}</p>
         )}
       </div>
@@ -55,13 +55,13 @@ export function LoginForm() {
           placeholder="••••••••"
           required
         />
-        {state?.error?.password && (
+        {state?.error && 'password' in state.error && state.error.password && (
           <p className="text-sm text-red-600">{state.error.password[0]}</p>
         )}
       </div>
 
       {/* Error general (credenciales inválidas) */}
-      {state?.error?.general && (
+      {state?.error && 'general' in state.error && state.error.general && (
         <p className="text-sm text-red-600">{state.error.general}</p>
       )}
 

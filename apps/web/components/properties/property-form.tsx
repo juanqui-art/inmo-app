@@ -19,6 +19,29 @@ import {
 import { Button } from '@repo/ui'
 import type { SerializedProperty } from '@repo/database'
 
+interface PropertyFormState {
+  error?: {
+    title?: string[]
+    description?: string[]
+    price?: string[]
+    transactionType?: string[]
+    category?: string[]
+    status?: string[]
+    bedrooms?: string[]
+    bathrooms?: string[]
+    area?: string[]
+    address?: string[]
+    city?: string[]
+    state?: string[]
+    zipCode?: string[]
+    latitude?: string[]
+    longitude?: string[]
+    general?: string
+  }
+  success?: boolean
+  data?: any
+}
+
 interface PropertyFormProps {
   property?: SerializedProperty
   action: any // Server Action
@@ -26,7 +49,7 @@ interface PropertyFormProps {
 }
 
 export function PropertyForm({ property, action, submitLabel }: PropertyFormProps) {
-  const [state, formAction, isPending] = useActionState(action, null)
+  const [state, formAction, isPending] = useActionState<PropertyFormState | null>(action, null)
 
   return (
     <form action={formAction} className="space-y-6">

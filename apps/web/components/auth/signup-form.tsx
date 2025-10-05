@@ -31,7 +31,7 @@ export function SignupForm() {
           placeholder="Juan Pérez"
           required
         />
-        {state?.error?.name && (
+        {state?.error && 'name' in state.error && state.error.name && (
           <p className="text-sm text-red-600">{state.error.name[0]}</p>
         )}
       </div>
@@ -46,7 +46,7 @@ export function SignupForm() {
           placeholder="tu@email.com"
           required
         />
-        {state?.error?.email && (
+        {state?.error && 'email' in state.error && state.error.email && (
           <p className="text-sm text-red-600">{state.error.email[0]}</p>
         )}
       </div>
@@ -61,7 +61,7 @@ export function SignupForm() {
           placeholder="••••••••"
           required
         />
-        {state?.error?.password && (
+        {state?.error && 'password' in state.error && state.error.password && (
           <p className="text-sm text-red-600">{state.error.password[0]}</p>
         )}
         <p className="text-xs text-gray-500">
@@ -83,13 +83,13 @@ export function SignupForm() {
           <option value="AGENT">Agente (Publico propiedades)</option>
           <option value="ADMIN">Administrador</option>
         </select>
-        {state?.error?.role && (
+        {state?.error && 'role' in state.error && state.error.role && (
           <p className="text-sm text-red-600">{state.error.role[0]}</p>
         )}
       </div>
 
       {/* Error general */}
-      {state?.error?.general && (
+      {state?.error && 'general' in state.error && state.error.general && (
         <p className="text-sm text-red-600">{state.error.general}</p>
       )}
 
