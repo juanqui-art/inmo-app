@@ -89,6 +89,7 @@ export const createPropertySchema = z.object({
     .min(4, 'El código postal debe tener al menos 4 caracteres')
     .max(10, 'El código postal no puede exceder 10 caracteres')
     .regex(/^[A-Z0-9-\s]+$/i, 'El código postal solo puede contener letras, números, guiones y espacios')
+    .or(z.literal(''))  // Permite string vacío (verdaderamente opcional)
     .optional(),
 
   latitude: z
@@ -209,6 +210,7 @@ export const updatePropertySchema = z.object({
     .min(4, 'El código postal debe tener al menos 4 caracteres')
     .max(10, 'El código postal no puede exceder 10 caracteres')
     .regex(/^[A-Z0-9-\s]+$/i, 'El código postal solo puede contener letras, números, guiones y espacios')
+    .or(z.literal(''))  // Permite string vacío (verdaderamente opcional)
     .optional()
     .nullable(),
 
