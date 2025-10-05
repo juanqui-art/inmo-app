@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     ],
   },
   serverActions: {
-    bodySizeLimit: '10mb',
+    bodySizeLimit: '5mb', // Reducido de 10mb gracias a compresión client-side
   },
 };
 

@@ -12,6 +12,7 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
+import imageCompression from 'browser-image-compression'
 import { uploadPropertyImagesAction } from '@/app/actions/properties'
 import { validateImages } from '@/lib/storage/validation'
 import { Button } from '@repo/ui'
@@ -27,6 +28,7 @@ export function ImageUpload({ propertyId, onUploadComplete }: ImageUploadProps) 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [isUploading, setIsUploading] = useState(false)
+  const [isCompressing, setIsCompressing] = useState(false)
   const [uploadProgress, setUploadProgress] = useState<Record<number, number>>({})
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -77,6 +79,24 @@ export function ImageUpload({ propertyId, onUploadComplete }: ImageUploadProps) 
     setPreviews(newPreviews)
   }
 
+  // Comprimir imagen antes de subir
+  const compressImage = async (file: File): Promise<File> => {
+    const options = {
+      maxSizeMB: 0.5, // Máximo 500KB por imagen
+      maxWidthOrHeight: 1920, // Redimensionar si es muy grande
+      useWebWorker: true, // No bloquear UI
+      fileType: file.type, // Mantener formato original (o usar 'image/webp')
+    }
+
+    try {
+      const compressedFile = await imageCompression(file, options)
+      return compressedFile
+    } catch (error) {
+      console.error('Error compressing image:', error)
+      return file // Si falla, usar original
+    }
+  }
+
   // Simular progreso de subida
   const simulateProgress = (fileIndex: number) => {
     let progress = 0
@@ -95,17 +115,24 @@ export function ImageUpload({ propertyId, onUploadComplete }: ImageUploadProps) 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) return
 
-    setIsUploading(true)
     setError(null)
     setSuccess(false)
     setUploadProgress({})
 
-    // Iniciar simulación de progreso para cada archivo
-    const progressIntervals = selectedFiles.map((_, index) => simulateProgress(index))
-
     try {
+      // Paso 1: Comprimir imágenes
+      setIsCompressing(true)
+      const compressedFiles = await Promise.all(
+        selectedFiles.map(file => compressImage(file))
+      )
+      setIsCompressing(false)
+
+      // Paso 2: Iniciar upload
+      setIsUploading(true)
+      const progressIntervals = selectedFiles.map((_, index) => simulateProgress(index))
+
       const formData = new FormData()
-      selectedFiles.forEach((file) => {
+      compressedFiles.forEach((file) => {
         formData.append('images', file)
       })
 
@@ -140,11 +167,10 @@ export function ImageUpload({ propertyId, onUploadComplete }: ImageUploadProps) 
         setTimeout(() => setSuccess(false), 3000)
       }
     } catch (err) {
-      // Limpiar intervalos
-      progressIntervals.forEach((interval) => clearInterval(interval))
       setError('Error inesperado al subir las imágenes')
       setUploadProgress({})
     } finally {
+      setIsCompressing(false)
       setIsUploading(false)
     }
   }
@@ -247,10 +273,15 @@ export function ImageUpload({ propertyId, onUploadComplete }: ImageUploadProps) 
         <Button
           type="button"
           onClick={handleUpload}
-          disabled={isUploading}
+          disabled={isUploading || isCompressing}
           className="w-full"
         >
-          {isUploading ? (
+          {isCompressing ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Optimizando imágenes...
+            </>
+          ) : isUploading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               Subiendo...
