@@ -6,7 +6,7 @@
  */
 
 import { db } from '../client'
-import type { PropertyType, PropertyStatus, Prisma } from '@prisma/client'
+import type { TransactionType, PropertyCategory, PropertyStatus, Prisma } from '@prisma/client'
 
 /**
  * Property select con relaciones incluidas
@@ -16,7 +16,8 @@ export const propertySelect = {
   title: true,
   description: true,
   price: true,
-  type: true,
+  transactionType: true,
+  category: true,
   status: true,
   bedrooms: true,
   bathrooms: true,
@@ -58,7 +59,8 @@ export type PropertyWithRelations = Prisma.PropertyGetPayload<{
  * Filtros para búsqueda de propiedades
  */
 export interface PropertyFilters {
-  type?: PropertyType
+  transactionType?: TransactionType
+  category?: PropertyCategory
   status?: PropertyStatus
   minPrice?: number
   maxPrice?: number
@@ -97,7 +99,8 @@ export class PropertyRepository {
     const { filters = {}, skip = 0, take = 20 } = params
 
     const where: Prisma.PropertyWhereInput = {
-      ...(filters.type && { type: filters.type }),
+      ...(filters.transactionType && { transactionType: filters.transactionType }),
+      ...(filters.category && { category: filters.category }),
       ...(filters.status && { status: filters.status }),
       ...(filters.agentId && { agentId: filters.agentId }),
       ...(filters.city && { city: { contains: filters.city, mode: 'insensitive' } }),
@@ -287,3 +290,51 @@ export class PropertyRepository {
  * Usar este en lugar de crear nuevas instancias
  */
 export const propertyRepository = new PropertyRepository()
+
+/**
+ * SERIALIZATION HELPERS
+ *
+ * Next.js no puede serializar objetos Decimal de Prisma cuando se pasan
+ * de Server Components a Client Components. Estos helpers convierten
+ * Decimal a number para permitir la serialización.
+ */
+
+/**
+ * Tipo serializable de PropertyWithRelations
+ * Convierte todos los Decimal a number
+ */
+export type SerializedProperty = Omit<
+  PropertyWithRelations,
+  'price' | 'bathrooms' | 'area' | 'latitude' | 'longitude'
+> & {
+  price: number
+  bathrooms: number | null
+  area: number | null
+  latitude: number | null
+  longitude: number | null
+}
+
+/**
+ * Convierte una propiedad con Decimals a formato serializable
+ */
+export function serializeProperty(
+  property: PropertyWithRelations
+): SerializedProperty {
+  return {
+    ...property,
+    price: Number(property.price),
+    bathrooms: property.bathrooms ? Number(property.bathrooms) : null,
+    area: property.area ? Number(property.area) : null,
+    latitude: property.latitude ? Number(property.latitude) : null,
+    longitude: property.longitude ? Number(property.longitude) : null,
+  }
+}
+
+/**
+ * Convierte un array de propiedades a formato serializable
+ */
+export function serializeProperties(
+  properties: PropertyWithRelations[]
+): SerializedProperty[] {
+  return properties.map(serializeProperty)
+}

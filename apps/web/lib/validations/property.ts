@@ -25,17 +25,34 @@ export const createPropertySchema = z.object({
     .positive('El precio debe ser mayor a 0')
     .max(1000000000, 'El precio es demasiado alto'),
 
-  type: z.enum(['SALE', 'RENT'], {
-    errorMap: () => ({ message: 'Tipo inválido. Debe ser SALE o RENT' }),
+  transactionType: z.enum(['SALE', 'RENT'], {
+    errorMap: () => ({ message: 'Tipo de transacción inválido' }),
+  }),
+
+  category: z.enum([
+    'HOUSE',
+    'APARTMENT',
+    'SUITE',
+    'VILLA',
+    'PENTHOUSE',
+    'DUPLEX',
+    'LOFT',
+    'LAND',
+    'COMMERCIAL',
+    'OFFICE',
+    'WAREHOUSE',
+    'FARM',
+  ], {
+    errorMap: () => ({ message: 'Tipo de inmueble inválido' }),
   }),
 
   status: z.enum(['AVAILABLE', 'PENDING', 'SOLD', 'RENTED']).default('AVAILABLE'),
 
   bedrooms: z
-    .number({ invalid_type_error: 'Las recámaras deben ser un número' })
-    .int('Las recámaras deben ser un número entero')
-    .min(0, 'Las recámaras no pueden ser negativas')
-    .max(50, 'Las recámaras son demasiadas')
+    .number({ invalid_type_error: 'Los dormitorios deben ser un número' })
+    .int('Los dormitorios deben ser un número entero')
+    .min(0, 'Los dormitorios no pueden ser negativos')
+    .max(50, 'Los dormitorios son demasiados')
     .optional(),
 
   bathrooms: z
@@ -70,8 +87,8 @@ export const createPropertySchema = z.object({
 
   zipCode: z
     .string()
-    .min(4, 'El código postal debe tener al menos 4 caracteres')
-    .max(10, 'El código postal no puede exceder 10 caracteres')
+    .length(6, 'El código postal debe tener exactamente 6 dígitos')
+    .regex(/^\d{6}$/, 'El código postal debe contener solo números')
     .optional(),
 
   latitude: z
@@ -112,15 +129,30 @@ export const updatePropertySchema = z.object({
     .max(1000000000, 'El precio es demasiado alto')
     .optional(),
 
-  type: z.enum(['SALE', 'RENT']).optional(),
+  transactionType: z.enum(['SALE', 'RENT']).optional(),
+
+  category: z.enum([
+    'HOUSE',
+    'APARTMENT',
+    'SUITE',
+    'VILLA',
+    'PENTHOUSE',
+    'DUPLEX',
+    'LOFT',
+    'LAND',
+    'COMMERCIAL',
+    'OFFICE',
+    'WAREHOUSE',
+    'FARM',
+  ]).optional(),
 
   status: z.enum(['AVAILABLE', 'PENDING', 'SOLD', 'RENTED']).optional(),
 
   bedrooms: z
-    .number({ invalid_type_error: 'Las recámaras deben ser un número' })
-    .int('Las recámaras deben ser un número entero')
-    .min(0, 'Las recámaras no pueden ser negativas')
-    .max(50, 'Las recámaras son demasiadas')
+    .number({ invalid_type_error: 'Los dormitorios deben ser un número' })
+    .int('Los dormitorios deben ser un número entero')
+    .min(0, 'Los dormitorios no pueden ser negativos')
+    .max(50, 'Los dormitorios son demasiados')
     .optional()
     .nullable(),
 
@@ -161,8 +193,8 @@ export const updatePropertySchema = z.object({
 
   zipCode: z
     .string()
-    .min(4, 'El código postal debe tener al menos 4 caracteres')
-    .max(10, 'El código postal no puede exceder 10 caracteres')
+    .length(6, 'El código postal debe tener exactamente 6 dígitos')
+    .regex(/^\d{6}$/, 'El código postal debe contener solo números')
     .optional()
     .nullable(),
 

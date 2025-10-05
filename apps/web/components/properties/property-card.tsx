@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Building2, Bed, Bath, Maximize } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import type { PropertyWithRelations } from '@repo/database'
 
 interface PropertyCardProps {
@@ -15,17 +16,33 @@ interface PropertyCardProps {
 }
 
 export function PropertyCard({ property, actions }: PropertyCardProps) {
-  // Formatear precio
-  const formattedPrice = new Intl.NumberFormat('es-MX', {
+  // Formatear precio para Ecuador (USD con formato europeo: punto para miles, coma para decimales)
+  const formattedPrice = new Intl.NumberFormat('de-DE', {
     style: 'currency',
-    currency: 'MXN',
+    currency: 'USD',
     minimumFractionDigits: 0,
   }).format(Number(property.price))
 
-  // Traducir tipo
-  const typeLabels: Record<string, string> = {
+  // Traducir tipo de transacción
+  const transactionTypeLabels: Record<string, string> = {
     SALE: 'Venta',
-    RENT: 'Renta',
+    RENT: 'Arriendo',
+  }
+
+  // Traducir categoría de inmueble
+  const categoryLabels: Record<string, string> = {
+    HOUSE: 'Casa',
+    APARTMENT: 'Departamento',
+    SUITE: 'Suite',
+    VILLA: 'Villa',
+    PENTHOUSE: 'Penthouse',
+    DUPLEX: 'Dúplex',
+    LOFT: 'Loft',
+    LAND: 'Terreno',
+    COMMERCIAL: 'Local Comercial',
+    OFFICE: 'Oficina',
+    WAREHOUSE: 'Bodega',
+    FARM: 'Finca',
   }
 
   // Traducir estado
@@ -46,21 +63,24 @@ export function PropertyCard({ property, actions }: PropertyCardProps) {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <CardHeader className="p-0">
-        {/* Image Placeholder */}
+        {/* Image */}
         <div className="relative h-48 bg-muted flex items-center justify-center">
           {property.images.length > 0 && property.images[0] ? (
-            <img
+            <Image
               src={property.images[0].url}
               alt={property.images[0].alt || property.title}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
             <Building2 className="h-16 w-16 text-muted-foreground" />
           )}
 
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex gap-2">
-            <Badge>{typeLabels[property.type]}</Badge>
+          <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
+            <Badge>{transactionTypeLabels[property.transactionType]}</Badge>
+            <Badge variant="secondary">{categoryLabels[property.category]}</Badge>
             <Badge variant={statusColors[property.status]}>
               {statusLabels[property.status]}
             </Badge>

@@ -17,10 +17,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@repo/ui'
-import type { PropertyWithRelations } from '@repo/database'
+import type { SerializedProperty } from '@repo/database'
 
 interface PropertyFormProps {
-  property?: PropertyWithRelations
+  property?: SerializedProperty
   action: any // Server Action
   submitLabel: string
 }
@@ -65,43 +65,82 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
         )}
       </div>
 
-      {/* Price & Type Row */}
+      {/* Price */}
+      <div className="space-y-2">
+        <Label htmlFor="price">
+          Precio (USD) <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="price"
+          name="price"
+          type="number"
+          step="0.01"
+          defaultValue={property?.price}
+          placeholder="150000"
+          required
+        />
+        {state?.error?.price && (
+          <p className="text-sm text-destructive">{state.error.price[0]}</p>
+        )}
+      </div>
+
+      {/* Transaction Type & Category Row */}
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Price */}
+        {/* Transaction Type */}
         <div className="space-y-2">
-          <Label htmlFor="price">
-            Precio (MXN) <span className="text-destructive">*</span>
+          <Label htmlFor="transactionType">
+            Tipo de Transacción <span className="text-destructive">*</span>
           </Label>
-          <Input
-            id="price"
-            name="price"
-            type="number"
-            step="0.01"
-            defaultValue={property?.price ? Number(property.price) : undefined}
-            placeholder="1500000"
+          <Select
+            name="transactionType"
+            defaultValue={property?.transactionType || 'SALE'}
             required
-          />
-          {state?.error?.price && (
-            <p className="text-sm text-destructive">{state.error.price[0]}</p>
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecciona operación" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="SALE">Venta</SelectItem>
+              <SelectItem value="RENT">Arriendo</SelectItem>
+            </SelectContent>
+          </Select>
+          {state?.error?.transactionType && (
+            <p className="text-sm text-destructive">
+              {state.error.transactionType[0]}
+            </p>
           )}
         </div>
 
-        {/* Type */}
+        {/* Category */}
         <div className="space-y-2">
-          <Label htmlFor="type">
-            Tipo <span className="text-destructive">*</span>
+          <Label htmlFor="category">
+            Tipo de Inmueble <span className="text-destructive">*</span>
           </Label>
-          <Select name="type" defaultValue={property?.type || 'SALE'} required>
+          <Select
+            name="category"
+            defaultValue={property?.category || 'HOUSE'}
+            required
+          >
             <SelectTrigger>
               <SelectValue placeholder="Selecciona tipo" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="SALE">Venta</SelectItem>
-              <SelectItem value="RENT">Renta</SelectItem>
+              <SelectItem value="HOUSE">Casa</SelectItem>
+              <SelectItem value="APARTMENT">Departamento</SelectItem>
+              <SelectItem value="SUITE">Suite</SelectItem>
+              <SelectItem value="VILLA">Villa</SelectItem>
+              <SelectItem value="PENTHOUSE">Penthouse</SelectItem>
+              <SelectItem value="DUPLEX">Dúplex</SelectItem>
+              <SelectItem value="LOFT">Loft</SelectItem>
+              <SelectItem value="LAND">Terreno</SelectItem>
+              <SelectItem value="COMMERCIAL">Local Comercial</SelectItem>
+              <SelectItem value="OFFICE">Oficina</SelectItem>
+              <SelectItem value="WAREHOUSE">Bodega</SelectItem>
+              <SelectItem value="FARM">Finca/Hacienda</SelectItem>
             </SelectContent>
           </Select>
-          {state?.error?.type && (
-            <p className="text-sm text-destructive">{state.error.type[0]}</p>
+          {state?.error?.category && (
+            <p className="text-sm text-destructive">{state.error.category[0]}</p>
           )}
         </div>
       </div>
@@ -110,7 +149,7 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
       <div className="grid gap-6 md:grid-cols-3">
         {/* Bedrooms */}
         <div className="space-y-2">
-          <Label htmlFor="bedrooms">Recámaras</Label>
+          <Label htmlFor="bedrooms">Dormitorios</Label>
           <Input
             id="bedrooms"
             name="bedrooms"
@@ -133,7 +172,7 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
             type="number"
             step="0.5"
             min="0"
-            defaultValue={property?.bathrooms ? Number(property.bathrooms) : undefined}
+            defaultValue={property?.bathrooms ?? undefined}
             placeholder="2.5"
           />
           {state?.error?.bathrooms && (
@@ -150,7 +189,7 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
             type="number"
             step="0.01"
             min="0"
-            defaultValue={property?.area ? Number(property.area) : undefined}
+            defaultValue={property?.area ?? undefined}
             placeholder="150"
           />
           {state?.error?.area && (
@@ -182,7 +221,7 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
             id="city"
             name="city"
             defaultValue={property?.city || ''}
-            placeholder="Guadalajara"
+            placeholder="Quito"
           />
           {state?.error?.city && (
             <p className="text-sm text-destructive">{state.error.city[0]}</p>
@@ -191,12 +230,12 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
 
         {/* State */}
         <div className="space-y-2">
-          <Label htmlFor="state">Estado</Label>
+          <Label htmlFor="state">Provincia</Label>
           <Input
             id="state"
             name="state"
             defaultValue={property?.state || ''}
-            placeholder="Jalisco"
+            placeholder="Pichincha"
           />
           {state?.error?.state && (
             <p className="text-sm text-destructive">{state.error.state[0]}</p>
@@ -210,7 +249,7 @@ export function PropertyForm({ property, action, submitLabel }: PropertyFormProp
             id="zipCode"
             name="zipCode"
             defaultValue={property?.zipCode || ''}
-            placeholder="44100"
+            placeholder="170150"
           />
           {state?.error?.zipCode && (
             <p className="text-sm text-destructive">{state.error.zipCode[0]}</p>

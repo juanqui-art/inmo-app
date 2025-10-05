@@ -5,8 +5,10 @@
  */
 
 import { requireRole } from '@/lib/auth'
-import { propertyRepository } from '@repo/database'
+import { propertyRepository, serializeProperty } from '@repo/database'
 import { PropertyForm } from '@/components/properties/property-form'
+import { ImageGallery } from '@/components/properties/image-gallery'
+import { ImageUpload } from '@/components/properties/image-upload'
 import { updatePropertyAction } from '@/app/actions/properties'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
@@ -37,6 +39,9 @@ export default async function EditarPropiedadPage({
     throw new Error('No tienes permiso para editar esta propiedad')
   }
 
+  // Serializar propiedad para Client Component
+  const serializedProperty = serializeProperty(property)
+
   return (
     <div className="space-y-6">
       {/* Back Button */}
@@ -55,13 +60,38 @@ export default async function EditarPropiedadPage({
       </div>
 
       {/* Form */}
-      <div className="max-w-3xl">
+      <div className="max-w-3xl space-y-6">
+        {/* Información de la propiedad */}
         <div className="rounded-lg border border-border bg-card p-6">
           <PropertyForm
-            property={property}
+            property={serializedProperty}
             action={updatePropertyAction}
             submitLabel="Guardar Cambios"
           />
+        </div>
+
+        {/* Sección de imágenes */}
+        <div className="rounded-lg border border-border bg-card p-6">
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold">Imágenes de la Propiedad</h2>
+              <p className="text-sm text-muted-foreground">
+                La primera imagen será la imagen principal de la propiedad
+              </p>
+            </div>
+
+            {/* Galería de imágenes existentes */}
+            <div>
+              <h3 className="text-sm font-medium mb-3">Imágenes Actuales</h3>
+              <ImageGallery images={property.images} />
+            </div>
+
+            {/* Upload de nuevas imágenes */}
+            <div>
+              <h3 className="text-sm font-medium mb-3">Agregar Más Imágenes</h3>
+              <ImageUpload propertyId={id} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
