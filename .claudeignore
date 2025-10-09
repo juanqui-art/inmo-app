@@ -1,0 +1,82 @@
+# .claudeignore - Token Optimization
+# Exclude large documentation files to reduce initial token load
+# Load these files manually with @.claude/filename.md when needed
+
+# ============================================
+# Heavy Strategy Docs (Load on Demand)
+# ============================================
+
+# Multi-Tenant SaaS Strategy (~31KB, ~14k tokens)
+# Load when: Implementing organizations, RLS, subdomain routing, Stripe
+.claude/08-multi-tenant-strategy.md
+
+# Technical Debt Audit (~15KB, ~8.5k tokens)
+# Load when: Refactoring, adding tests, error handling improvements
+.claude/07-technical-debt.md
+
+# Teaching Style Guide (~10KB, ~6k tokens)
+# Load when: Writing documentation, explaining patterns in detail
+.claude/09-teaching-style.md
+
+# Appointments Analysis (~21KB, ~11k tokens)
+# Load when: Implementing appointments feature specifically
+.claude/08-appointments-analysis.md
+
+# Research Files (~17KB, ~10k tokens)
+# Load when: Researching UI/UX patterns for AI features
+.claude/research-*.md
+
+# ============================================
+# Build Artifacts (Standard Ignores)
+# ============================================
+
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+.turbo/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Environment files (may contain secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Prisma
+*.db
+*.db-journal
+
+# Misc
+.cache/
+temp/
+tmp/

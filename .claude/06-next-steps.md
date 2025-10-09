@@ -2,7 +2,37 @@
 
 ## ⏭️ Recommended Priorities
 
-### Option A: Public Property Listings ⭐ (High Priority)
+### Option A: Multi-Tenant SaaS Infrastructure ⭐⭐⭐ (CRITICAL - Before Public Features)
+
+**Goal**: Transform single-tenant app into multi-tenant SaaS with subscriptions
+
+**Why FIRST**: This is the business model foundation. Without it, you're building a single-use product instead of a SaaS platform.
+
+**What it unlocks**:
+- Multiple agencies/agents using the same platform
+- Recurring revenue model ($29-199/mo per tenant)
+- 95-99% profit margins
+- Subdomain per tenant (agencia.tuapp.com)
+- Custom domains as premium feature (Phase 2)
+
+**For complete details, see**: @.claude/08-multi-tenant-strategy.md
+
+**High-level tasks**:
+1. Add `Organization` model to Prisma schema
+2. Migrate existing users/properties to have `organizationId`
+3. Implement RLS (Row Level Security) policies
+4. Create Stripe integration (4 pricing tiers)
+5. Enforce usage limits in Server Actions
+6. Build subdomain routing with middleware
+7. Security testing (RLS isolation tests)
+
+**Estimated time**: 3-4 weeks
+
+**After this, you can build public features knowing they'll work for ALL tenants automatically.**
+
+---
+
+### Option B: Public Property Listings ⭐ (High Priority)
 
 **Goal**: Allow visitors to browse and search properties without authentication
 
@@ -51,7 +81,7 @@ apps/web/
 
 ---
 
-### Option B: Favorites System (Medium Priority)
+### Option C: Favorites System (Medium Priority)
 
 **Goal**: Allow authenticated clients to save properties for later
 
@@ -92,7 +122,7 @@ apps/web/
 
 ---
 
-### Option C: Appointments System (Medium Priority)
+### Option D: Appointments System (Medium Priority)
 
 **Goal**: Allow clients to schedule property viewings with agents
 
@@ -144,7 +174,7 @@ apps/web/
 
 ---
 
-### Option D: Advanced Search & Filters (Low Priority)
+### Option E: Advanced Search & Filters (Low Priority)
 
 **Goal**: Powerful search capabilities for finding properties
 
@@ -198,21 +228,34 @@ apps/web/
 
 ## 🎯 Recommended Order
 
-For maximum user value:
+**CRITICAL**: Build multi-tenant infrastructure FIRST, then user-facing features.
 
-1. **Public Property Listings** (Option A) - 2-3 days
+### Phase 1: Business Model Foundation
+
+1. **Multi-Tenant SaaS Infrastructure** (Option A) - 3-4 weeks ⭐⭐⭐
+   - *Why FIRST*: Without this, you're building a single-use app, not a SaaS business
+   - *What it unlocks*: Recurring revenue, multiple customers, 95%+ margins
+   - *After this*: All features below work for ALL tenants automatically
+
+### Phase 2: User-Facing Features (After Multi-Tenant)
+
+2. **Public Property Listings** (Option B) - 2-3 days
    - *Why first*: Core feature, most visible to users, drives traffic
+   - *Now works for*: ALL tenants with their own subdomain/branding
 
-2. **Favorites System** (Option B) - 1 day
+3. **Favorites System** (Option C) - 1 day
    - *Why second*: Quick win, improves user engagement, complements listings
 
-3. **Appointments System** (Option C) - 2-3 days
+4. **Appointments System** (Option D) - 2-3 days
    - *Why third*: Key conversion feature, completes property viewing flow
 
-4. **Advanced Search** (Option D) - 3-4 days
+5. **Advanced Search** (Option E) - 3-4 days
    - *Why last*: Nice-to-have, can start with basic search and iterate
 
-**Total estimated time**: 8-11 days of focused development
+**Total estimated time**:
+- Phase 1 (Multi-Tenant): 3-4 weeks
+- Phase 2 (Features): 8-11 days
+- **TOTAL**: 5-6 weeks for SaaS MVP
 
 ---
 

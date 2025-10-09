@@ -13,17 +13,38 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
-## 📖 Complete Documentation
+## 📖 Core Documentation (Auto-loaded)
 
-For detailed information, see:
+These files load automatically on startup (~27k tokens):
 
-- **Project Overview & Tech Stack**: @.claude/01-overview.md
-- **Current Implementation Status**: @.claude/02-current-status.md
-- **Architecture & Monorepo Setup**: @.claude/03-architecture.md
-- **Database Schema & Models**: @.claude/04-database.md
-- **Development Commands & Workflows**: @.claude/05-development.md
-- **Next Steps & Roadmap**: @.claude/06-next-steps.md
-- **Technical Debt & Robustness**: @.claude/07-technical-debt.md
+- **Project Overview & Tech Stack**: @.claude/01-overview.md (~3k tokens)
+- **Current Implementation Status**: @.claude/02-current-status.md (~4.5k tokens)
+- **Architecture & Monorepo Setup**: @.claude/03-architecture.md (~6.5k tokens)
+- **Database Schema & Models**: @.claude/04-database.md (~4k tokens)
+- **Development Commands & Workflows**: @.claude/05-development.md (~4.5k tokens)
+- **Next Steps & Roadmap**: @.claude/06-next-steps.md (~5k tokens)
+
+## 🔒 Heavy Documentation (Load on Demand)
+
+**These files are in `.claudeignore` to save tokens.** Load manually when needed:
+
+- **Multi-Tenant Strategy** (~14k tokens): `@.claude/08-multi-tenant-strategy.md`
+  - **When to load**: Implementing Organization model, RLS policies, subdomain routing, Stripe integration
+  - **What's inside**: Complete SaaS architecture, pricing tiers, security patterns, subdomain setup
+
+- **Technical Debt Audit** (~8.5k tokens): `@.claude/07-technical-debt.md`
+  - **When to load**: Refactoring code, adding tests, improving error handling, security hardening
+  - **What's inside**: Phase-by-phase strengthening plan, testing strategy, observability setup
+
+- **Teaching Style Guide** (~6k tokens): `@.claude/09-teaching-style.md`
+  - **When to load**: Writing detailed documentation, explaining complex patterns with alternatives
+  - **What's inside**: Explanation framework, code comment standards, pattern templates
+
+- **Appointments Analysis** (~11k tokens): `@.claude/08-appointments-analysis.md`
+  - **When to load**: Implementing appointments/scheduling feature specifically
+  - **What's inside**: Detailed appointments system design and implementation plan
+
+**💡 How to load**: Simply type `@.claude/filename.md` in your message when you need the context
 
 ---
 
@@ -180,6 +201,7 @@ rm -rf apps/web/.next && bun run dev
 - **Development workflow**: See @.claude/05-development.md
 - **Next features**: See @.claude/06-next-steps.md
 - **Technical debt**: See @.claude/07-technical-debt.md
+- **Multi-tenant & pricing**: See @.claude/08-multi-tenant-strategy.md
 
 ---
 
