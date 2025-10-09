@@ -18,14 +18,14 @@
  * - Actualiza las cookies del response
  */
 
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClient } from "@supabase/ssr";
+import { type NextRequest, NextResponse } from "next/server";
 
 export async function updateSession(request: NextRequest) {
   // Crear una respuesta que podemos modificar
   let supabaseResponse = NextResponse.next({
     request,
-  })
+  });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -34,28 +34,28 @@ export async function updateSession(request: NextRequest) {
       cookies: {
         // Leer cookies del request
         getAll() {
-          return request.cookies.getAll()
+          return request.cookies.getAll();
         },
         // Escribir cookies en el response
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          )
+            request.cookies.set(name, value),
+          );
           supabaseResponse = NextResponse.next({
             request,
-          })
+          });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
+            supabaseResponse.cookies.set(name, value, options),
+          );
         },
       },
-    }
-  )
+    },
+  );
 
   // IMPORTANTE: No solo leer el token, sino VALIDARLO con Supabase
   // Esto refresca automáticamente tokens expirados
-  await supabase.auth.getUser()
+  await supabase.auth.getUser();
 
   // Retornar el response (con cookies actualizadas si hubo refresh)
-  return supabaseResponse
+  return supabaseResponse;
 }

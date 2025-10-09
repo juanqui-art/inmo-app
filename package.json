@@ -19,5 +19,8 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
     "turbo": "^2.5.8"
+  },
+  "dependencies": {
+    "embla-carousel-react": "^8.6.0"
   }
 }

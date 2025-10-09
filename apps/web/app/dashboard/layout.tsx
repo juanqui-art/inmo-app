@@ -7,17 +7,17 @@
  * - Solo accesible para AGENT y ADMIN
  */
 
-import { requireRole } from '@/lib/auth'
-import { Sidebar } from '@/components/dashboard/sidebar'
-import { UserMenu } from '@/components/dashboard/user-menu'
+import { Sidebar } from "@/components/dashboard/sidebar";
+import { UserMenu } from "@/components/dashboard/user-menu";
+import { requireRole } from "@/lib/auth";
 
 export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   // Verificar que el usuario sea AGENT o ADMIN
-  const user = await requireRole(['AGENT', 'ADMIN'])
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
   return (
     <div className="flex min-h-screen">
@@ -44,5 +44,5 @@ export default async function DashboardLayout({
         </main>
       </div>
     </div>
-  )
+  );
 }

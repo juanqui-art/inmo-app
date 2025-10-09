@@ -3,12 +3,12 @@
  * Solo accesible para usuarios autenticados (todos los roles)
  */
 
-import { requireAuth } from '@/lib/auth'
-import { Building2, Heart, Calendar } from 'lucide-react'
-import Link from 'next/link'
+import { Building2, Calendar, Heart } from "lucide-react";
+import Link from "next/link";
+import { requireAuth } from "@/lib/auth";
 
 export default async function PerfilPage() {
-  const user = await requireAuth()
+  const user = await requireAuth();
 
   return (
     <div className="min-h-screen bg-background">
@@ -36,7 +36,7 @@ export default async function PerfilPage() {
           {/* Welcome */}
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Hola, {user.name || 'Usuario'}
+              Hola, {user.name || "Usuario"}
             </h1>
             <p className="text-muted-foreground">
               Encuentra tu propiedad ideal
@@ -73,17 +73,13 @@ export default async function PerfilPage() {
             >
               <Calendar className="h-8 w-8 text-primary mb-4" />
               <h3 className="font-semibold mb-2">Mis Citas</h3>
-              <p className="text-sm text-muted-foreground">
-                Citas programadas
-              </p>
+              <p className="text-sm text-muted-foreground">Citas programadas</p>
             </Link>
           </div>
 
           {/* Info Message */}
           <div className="rounded-lg border border-border bg-card p-6">
-            <h2 className="text-lg font-semibold mb-2">
-              Área de Cliente
-            </h2>
+            <h2 className="text-lg font-semibold mb-2">Área de Cliente</h2>
             <p className="text-sm text-muted-foreground">
               Esta es tu área personal. Aquí podrás gestionar tus propiedades
               favoritas, ver tus citas programadas con agentes y actualizar tu
@@ -93,5 +89,5 @@ export default async function PerfilPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

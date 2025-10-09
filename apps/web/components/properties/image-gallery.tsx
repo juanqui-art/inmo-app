@@ -7,43 +7,46 @@
  * - Indicador de imagen principal
  */
 
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core'
+} from "@dnd-kit/core";
 import {
   arrayMove,
+  rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
-  rectSortingStrategy,
-} from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import { deletePropertyImageAction, reorderPropertyImagesAction } from '@/app/actions/properties'
-import { Button } from '@repo/ui'
-import { Trash2, Loader2, GripVertical } from 'lucide-react'
-import Image from 'next/image'
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { Button } from "@repo/ui";
+import { GripVertical, Loader2, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import {
+  deletePropertyImageAction,
+  reorderPropertyImagesAction,
+} from "@/app/actions/properties";
 
 interface PropertyImage {
-  id: string
-  url: string
-  alt: string | null
-  order: number
+  id: string;
+  url: string;
+  alt: string | null;
+  order: number;
 }
 
 interface ImageGalleryProps {
-  images: PropertyImage[]
-  propertyId: string
-  onImageDeleted?: () => void
-  onImagesReordered?: () => void
+  images: PropertyImage[];
+  propertyId: string;
+  onImageDeleted?: () => void;
+  onImagesReordered?: () => void;
 }
 
 // Skeleton loading component
@@ -52,14 +55,15 @@ function ImageGallerySkeleton() {
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="aspect-square bg-muted rounded-lg animate-pulse" />
+          <div
+            key={i}
+            className="aspect-square bg-muted rounded-lg animate-pulse"
+          />
         ))}
       </div>
-      <p className="text-sm text-muted-foreground">
-        Cargando imágenes...
-      </p>
+      <p className="text-sm text-muted-foreground">Cargando imágenes...</p>
     </div>
-  )
+  );
 }
 
 // Componente sortable individual
@@ -69,10 +73,10 @@ function SortableImageItem({
   onDelete,
   isDeleting,
 }: {
-  image: PropertyImage
-  index: number
-  onDelete: (id: string) => void
-  isDeleting: boolean
+  image: PropertyImage;
+  index: number;
+  onDelete: (id: string) => void;
+  isDeleting: boolean;
 }) {
   const {
     attributes,
@@ -81,20 +85,16 @@ function SortableImageItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: image.id })
+  } = useSortable({ id: image.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-  }
+  };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="relative group"
-    >
+    <div ref={setNodeRef} style={style} className="relative group">
       {/* Imagen */}
       <div className="relative aspect-square rounded-lg overflow-hidden bg-muted cursor-move">
         <Image
@@ -144,101 +144,108 @@ function SortableImageItem({
         #{index + 1}
       </span>
     </div>
-  )
+  );
 }
 
-export function ImageGallery({ images, propertyId, onImageDeleted, onImagesReordered }: ImageGalleryProps) {
-  const [isMounted, setIsMounted] = useState(false)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [localImages, setLocalImages] = useState<PropertyImage[]>([...images].sort((a, b) => a.order - b.order))
-  const [isReordering, setIsReordering] = useState(false)
+export function ImageGallery({
+  images,
+  propertyId,
+  onImageDeleted,
+  onImagesReordered,
+}: ImageGalleryProps) {
+  const [isMounted, setIsMounted] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [localImages, setLocalImages] = useState<PropertyImage[]>(
+    [...images].sort((a, b) => a.order - b.order),
+  );
+  const [isReordering, setIsReordering] = useState(false);
 
   // Fix hydration mismatch: solo renderizar después de montar en cliente
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
+    setIsMounted(true);
+  }, []);
 
   // Configurar sensores para drag & drop
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
-  )
+    }),
+  );
 
   // Mostrar skeleton mientras no está montado (evita hydration mismatch)
   if (!isMounted) {
-    return <ImageGallerySkeleton />
+    return <ImageGallerySkeleton />;
   }
 
   // Manejar reordenamiento
   const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event
+    const { active, over } = event;
 
     if (!over || active.id === over.id) {
-      return
+      return;
     }
 
-    const oldIndex = localImages.findIndex((img) => img.id === active.id)
-    const newIndex = localImages.findIndex((img) => img.id === over.id)
+    const oldIndex = localImages.findIndex((img) => img.id === active.id);
+    const newIndex = localImages.findIndex((img) => img.id === over.id);
 
     // Actualizar estado local inmediatamente (optimistic UI)
-    const newImages = arrayMove(localImages, oldIndex, newIndex)
-    setLocalImages(newImages)
+    const newImages = arrayMove(localImages, oldIndex, newIndex);
+    setLocalImages(newImages);
 
     // Actualizar en el servidor
-    setIsReordering(true)
-    setError(null)
+    setIsReordering(true);
+    setError(null);
 
     try {
-      const imageIds = newImages.map((img) => img.id)
+      const imageIds = newImages.map((img) => img.id);
 
-      const result = await reorderPropertyImagesAction(propertyId, imageIds)
+      const result = await reorderPropertyImagesAction(propertyId, imageIds);
 
       if (result.error) {
         // Revertir si hay error
-        setLocalImages(localImages)
-        setError(result.error)
+        setLocalImages(localImages);
+        setError(result.error);
       } else {
         // Callback para refrescar
-        onImagesReordered?.()
+        onImagesReordered?.();
       }
-    } catch (err) {
+    } catch (_err) {
       // Revertir si hay error
-      setLocalImages(localImages)
-      setError('Error inesperado al reordenar las imágenes')
+      setLocalImages(localImages);
+      setError("Error inesperado al reordenar las imágenes");
     } finally {
-      setIsReordering(false)
+      setIsReordering(false);
     }
-  }
+  };
 
   // Eliminar imagen
   const handleDelete = async (imageId: string) => {
-    if (!confirm('¿Estás seguro de eliminar esta imagen?')) {
-      return
+    if (!confirm("¿Estás seguro de eliminar esta imagen?")) {
+      return;
     }
 
-    setDeletingId(imageId)
-    setError(null)
+    setDeletingId(imageId);
+    setError(null);
 
     try {
-      const result = await deletePropertyImageAction(imageId)
+      const result = await deletePropertyImageAction(imageId);
 
       if (result.error) {
-        setError(result.error)
+        setError(result.error);
       } else {
         // Actualizar estado local
-        setLocalImages(localImages.filter((img) => img.id !== imageId))
+        setLocalImages(localImages.filter((img) => img.id !== imageId));
         // Callback para refrescar
-        onImageDeleted?.()
+        onImageDeleted?.();
       }
-    } catch (err) {
-      setError('Error inesperado al eliminar la imagen')
+    } catch (_err) {
+      setError("Error inesperado al eliminar la imagen");
     } finally {
-      setDeletingId(null)
+      setDeletingId(null);
     }
-  }
+  };
 
   if (localImages.length === 0) {
     return (
@@ -247,7 +254,7 @@ export function ImageGallery({ images, propertyId, onImageDeleted, onImagesReord
           No hay imágenes. Sube algunas para mostrar tu propiedad.
         </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -265,7 +272,10 @@ export function ImageGallery({ images, propertyId, onImageDeleted, onImagesReord
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <SortableContext items={localImages.map((img) => img.id)} strategy={rectSortingStrategy}>
+        <SortableContext
+          items={localImages.map((img) => img.id)}
+          strategy={rectSortingStrategy}
+        >
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {localImages.map((image, index) => (
               <SortableImageItem
@@ -283,8 +293,9 @@ export function ImageGallery({ images, propertyId, onImageDeleted, onImagesReord
       {/* Información */}
       <div className="flex items-center justify-between text-sm text-muted-foreground">
         <p>
-          {localImages.length} {localImages.length === 1 ? 'imagen' : 'imágenes'} •
-          Arrastra para reordenar
+          {localImages.length}{" "}
+          {localImages.length === 1 ? "imagen" : "imágenes"} • Arrastra para
+          reordenar
         </p>
         {isReordering && (
           <span className="flex items-center gap-2">
@@ -294,5 +305,5 @@ export function ImageGallery({ images, propertyId, onImageDeleted, onImagesReord
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -1,12 +1,15 @@
-'use client'
+"use client";
 
 /**
  * USER MENU - Menu del usuario con avatar
  * Dropdown con opciones: Perfil, Logout
  */
 
-import { User as UserIcon, LogOut } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { LogOut, User as UserIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { logoutAction } from "@/app/actions/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,52 +17,49 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Badge } from '@/components/ui/badge'
-import { logoutAction } from '@/app/actions/auth'
-import { useRouter } from 'next/navigation'
+} from "@/components/ui/dropdown-menu";
 
 // Type para el usuario desde DB (SafeUser del repository)
 interface User {
-  id: string
-  email: string
-  name: string | null
-  role: string
-  avatar: string | null
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  avatar: string | null;
 }
 
 interface UserMenuProps {
-  user: User
+  user: User;
 }
 
 export function UserMenu({ user }: UserMenuProps) {
-  const router = useRouter()
+  const router = useRouter();
 
   // Obtener nombre del usuario
-  const name = user.name || user.email.split('@')[0]
+  const name = user.name || user.email.split("@")[0];
 
   // Obtener iniciales para avatar
   const initials =
     name
-      ?.split(' ')
+      ?.split(" ")
       .filter(Boolean)
       .map((n) => n[0])
-      .join('')
+      .join("")
       .toUpperCase()
-      .slice(0, 2) || 'U'
+      .slice(0, 2) || "U";
 
   // Traducir rol a español
   const roleLabels: Record<string, string> = {
-    CLIENT: 'Cliente',
-    AGENT: 'Agente',
-    ADMIN: 'Administrador',
-  }
-  const roleLabel = roleLabels[user.role] || user.role
+    CLIENT: "Cliente",
+    AGENT: "Agente",
+    ADMIN: "Administrador",
+  };
+  const roleLabel = roleLabels[user.role] || user.role;
 
   const handleLogout = async () => {
-    await logoutAction()
-    router.push('/login')
-  }
+    await logoutAction();
+    router.push("/login");
+  };
 
   return (
     <DropdownMenu>
@@ -90,7 +90,7 @@ export function UserMenu({ user }: UserMenuProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push('/dashboard/perfil')}>
+        <DropdownMenuItem onClick={() => router.push("/dashboard/perfil")}>
           <UserIcon className="mr-2 h-4 w-4" />
           <span>Mi Perfil</span>
         </DropdownMenuItem>
@@ -101,5 +101,5 @@ export function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

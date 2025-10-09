@@ -7,129 +7,163 @@
  * - Revalidación de cache con revalidatePath
  */
 
-'use server'
+"use server";
 
-import { propertyRepository, propertyImageRepository } from '@repo/database'
-import { requireRole } from '@/lib/auth'
-import { createPropertySchema, updatePropertySchema } from '@/lib/validations/property'
-import { uploadPropertyImage, deletePropertyImage } from '@/lib/storage/client'
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
+import { propertyImageRepository, propertyRepository } from "@repo/database";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { requireRole } from "@/lib/auth";
+import { deletePropertyImage, uploadPropertyImage } from "@/lib/storage/client";
+import {
+  createPropertySchema,
+  updatePropertySchema,
+} from "@/lib/validations/property";
 
 /**
  * CREATE PROPERTY ACTION
  * Solo AGENT y ADMIN pueden crear propiedades
  */
-export async function createPropertyAction(_prevState: any, formData: FormData) {
+export async function createPropertyAction(
+  _prevState: unknown,
+  formData: FormData,
+) {
   // 1. Verificar que el usuario es AGENT o ADMIN
-  const user = await requireRole(['AGENT', 'ADMIN'])
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
   // 2. Extraer y transformar datos del formulario
   const rawData = {
-    title: formData.get('title') as string,
-    description: formData.get('description') as string,
-    price: Number(formData.get('price')),
-    transactionType: formData.get('transactionType') as 'SALE' | 'RENT',
-    category: formData.get('category') as string,
-    status: (formData.get('status') as any) || 'AVAILABLE',
-    bedrooms: formData.get('bedrooms') ? Number(formData.get('bedrooms')) : undefined,
-    bathrooms: formData.get('bathrooms') ? Number(formData.get('bathrooms')) : undefined,
-    area: formData.get('area') ? Number(formData.get('area')) : undefined,
-    address: formData.get('address') as string | undefined,
-    city: formData.get('city') as string | undefined,
-    state: formData.get('state') as string | undefined,
-    zipCode: formData.get('zipCode') as string | undefined,
-    latitude: formData.get('latitude') ? Number(formData.get('latitude')) : undefined,
-    longitude: formData.get('longitude') ? Number(formData.get('longitude')) : undefined,
-  }
+    title: formData.get("title") as string,
+    description: formData.get("description") as string,
+    price: Number(formData.get("price")),
+    transactionType: formData.get("transactionType") as "SALE" | "RENT",
+    category: formData.get("category") as string,
+    status: (formData.get("status") as string) || "AVAILABLE",
+    bedrooms: formData.get("bedrooms")
+      ? Number(formData.get("bedrooms"))
+      : undefined,
+    bathrooms: formData.get("bathrooms")
+      ? Number(formData.get("bathrooms"))
+      : undefined,
+    area: formData.get("area") ? Number(formData.get("area")) : undefined,
+    address: formData.get("address") as string | undefined,
+    city: formData.get("city") as string | undefined,
+    state: formData.get("state") as string | undefined,
+    zipCode: formData.get("zipCode") as string | undefined,
+    latitude: formData.get("latitude")
+      ? Number(formData.get("latitude"))
+      : undefined,
+    longitude: formData.get("longitude")
+      ? Number(formData.get("longitude"))
+      : undefined,
+  };
 
   // 3. Validar con Zod
-  const validatedData = createPropertySchema.safeParse(rawData)
+  const validatedData = createPropertySchema.safeParse(rawData);
 
   if (!validatedData.success) {
     return {
       error: validatedData.error.flatten().fieldErrors,
-    }
+    };
   }
 
   try {
     // 4. Crear propiedad usando el repository
-    await propertyRepository.create(validatedData.data, user.id)
+    await propertyRepository.create(validatedData.data, user.id);
   } catch (error) {
-    console.error('Error creating property:', error)
+    console.error("Error creating property:", error);
     return {
       error: {
-        general: error instanceof Error ? error.message : 'Error al crear la propiedad',
+        general:
+          error instanceof Error
+            ? error.message
+            : "Error al crear la propiedad",
       },
-    }
+    };
   }
 
   // 5. Revalidar cache
-  revalidatePath('/dashboard/propiedades')
+  revalidatePath("/dashboard/propiedades");
 
   // 6. Redirigir a la lista (fuera del try/catch para que funcione)
-  redirect('/dashboard/propiedades')
+  redirect("/dashboard/propiedades");
 }
 
 /**
  * UPDATE PROPERTY ACTION
  * Solo el owner o ADMIN pueden actualizar
  */
-export async function updatePropertyAction(_prevState: any, formData: FormData) {
+export async function updatePropertyAction(
+  _prevState: unknown,
+  formData: FormData,
+) {
   // 1. Verificar autenticación
-  const user = await requireRole(['AGENT', 'ADMIN'])
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
   // 2. Extraer datos
-  const propertyId = formData.get('id') as string
+  const propertyId = formData.get("id") as string;
 
   const rawData = {
     id: propertyId,
-    title: formData.get('title') as string | undefined,
-    description: formData.get('description') as string | undefined,
-    price: formData.get('price') ? Number(formData.get('price')) : undefined,
-    transactionType: formData.get('transactionType') as 'SALE' | 'RENT' | undefined,
-    category: formData.get('category') as string | undefined,
-    status: formData.get('status') as any | undefined,
-    bedrooms: formData.get('bedrooms') ? Number(formData.get('bedrooms')) : undefined,
-    bathrooms: formData.get('bathrooms') ? Number(formData.get('bathrooms')) : undefined,
-    area: formData.get('area') ? Number(formData.get('area')) : undefined,
-    address: formData.get('address') as string | undefined,
-    city: formData.get('city') as string | undefined,
-    state: formData.get('state') as string | undefined,
-    zipCode: formData.get('zipCode') as string | undefined,
-    latitude: formData.get('latitude') ? Number(formData.get('latitude')) : undefined,
-    longitude: formData.get('longitude') ? Number(formData.get('longitude')) : undefined,
-  }
+    title: formData.get("title") as string | undefined,
+    description: formData.get("description") as string | undefined,
+    price: formData.get("price") ? Number(formData.get("price")) : undefined,
+    transactionType: formData.get("transactionType") as
+      | "SALE"
+      | "RENT"
+      | undefined,
+    category: formData.get("category") as string | undefined,
+    status: formData.get("status") as string | undefined,
+    bedrooms: formData.get("bedrooms")
+      ? Number(formData.get("bedrooms"))
+      : undefined,
+    bathrooms: formData.get("bathrooms")
+      ? Number(formData.get("bathrooms"))
+      : undefined,
+    area: formData.get("area") ? Number(formData.get("area")) : undefined,
+    address: formData.get("address") as string | undefined,
+    city: formData.get("city") as string | undefined,
+    state: formData.get("state") as string | undefined,
+    zipCode: formData.get("zipCode") as string | undefined,
+    latitude: formData.get("latitude")
+      ? Number(formData.get("latitude"))
+      : undefined,
+    longitude: formData.get("longitude")
+      ? Number(formData.get("longitude"))
+      : undefined,
+  };
 
   // 3. Validar
-  const validatedData = updatePropertySchema.safeParse(rawData)
+  const validatedData = updatePropertySchema.safeParse(rawData);
 
   if (!validatedData.success) {
     return {
       error: validatedData.error.flatten().fieldErrors,
-    }
+    };
   }
 
-  const { id, ...updateData } = validatedData.data
+  const { id, ...updateData } = validatedData.data;
 
   try {
     // 4. Actualizar (repository verifica ownership)
-    await propertyRepository.update(id, updateData, user.id)
+    await propertyRepository.update(id, updateData, user.id);
   } catch (error) {
-    console.error('Error updating property:', error)
+    console.error("Error updating property:", error);
     return {
       error: {
-        general: error instanceof Error ? error.message : 'Error al actualizar la propiedad',
+        general:
+          error instanceof Error
+            ? error.message
+            : "Error al actualizar la propiedad",
       },
-    }
+    };
   }
 
   // 5. Revalidar
-  revalidatePath('/dashboard/propiedades')
-  revalidatePath(`/dashboard/propiedades/${id}/editar`)
+  revalidatePath("/dashboard/propiedades");
+  revalidatePath(`/dashboard/propiedades/${id}/editar`);
 
   // 6. Redirigir (fuera del try/catch para que funcione)
-  redirect('/dashboard/propiedades')
+  redirect("/dashboard/propiedades");
 }
 
 /**
@@ -138,21 +172,24 @@ export async function updatePropertyAction(_prevState: any, formData: FormData) 
  */
 export async function deletePropertyAction(propertyId: string) {
   // 1. Verificar autenticación
-  const user = await requireRole(['AGENT', 'ADMIN'])
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
   try {
     // 2. Eliminar (repository verifica ownership)
-    await propertyRepository.delete(propertyId, user.id)
+    await propertyRepository.delete(propertyId, user.id);
 
     // 3. Revalidar
-    revalidatePath('/dashboard/propiedades')
+    revalidatePath("/dashboard/propiedades");
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Error deleting property:', error)
+    console.error("Error deleting property:", error);
     return {
-      error: error instanceof Error ? error.message : 'Error al eliminar la propiedad',
-    }
+      error:
+        error instanceof Error
+          ? error.message
+          : "Error al eliminar la propiedad",
+    };
   }
 }
 
@@ -162,43 +199,44 @@ export async function deletePropertyAction(propertyId: string) {
  */
 export async function uploadPropertyImagesAction(
   propertyId: string,
-  formData: FormData
+  formData: FormData,
 ) {
   // 1. Verificar autenticación
-  const user = await requireRole(['AGENT', 'ADMIN'])
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
   try {
     // 2. Verificar que la propiedad existe y el usuario tiene permisos
-    const property = await propertyRepository.findById(propertyId)
+    const property = await propertyRepository.findById(propertyId);
     if (!property) {
-      return { error: 'Propiedad no encontrada' }
+      return { error: "Propiedad no encontrada" };
     }
 
-    if (property.agentId !== user.id && user.role !== 'ADMIN') {
-      return { error: 'No tienes permiso para modificar esta propiedad' }
+    if (property.agentId !== user.id && user.role !== "ADMIN") {
+      return { error: "No tienes permiso para modificar esta propiedad" };
     }
 
     // 3. Obtener archivos del FormData
-    const files = formData.getAll('images') as File[]
+    const files = formData.getAll("images") as File[];
 
     if (files.length === 0) {
-      return { error: 'No se enviaron imágenes' }
+      return { error: "No se enviaron imágenes" };
     }
 
     // 4. Obtener el orden inicial (contar imágenes existentes)
-    const existingCount = await propertyImageRepository.countByProperty(propertyId)
+    const existingCount =
+      await propertyImageRepository.countByProperty(propertyId);
 
     // 5. Subir imágenes y guardar en BD
-    const uploadedImages = []
+    const uploadedImages = [];
 
     for (let i = 0; i < files.length; i++) {
-      const file = files[i]
+      const file = files[i];
 
       // Validar que el archivo exista
-      if (!file) continue
+      if (!file) continue;
 
       // Subir a Storage
-      const url = await uploadPropertyImage(file, propertyId)
+      const url = await uploadPropertyImage(file, propertyId);
 
       // Guardar en BD
       const image = await propertyImageRepository.create({
@@ -206,21 +244,22 @@ export async function uploadPropertyImagesAction(
         alt: property.title,
         order: existingCount + i,
         propertyId,
-      })
+      });
 
-      uploadedImages.push(image)
+      uploadedImages.push(image);
     }
 
     // 6. Revalidar
-    revalidatePath('/dashboard/propiedades')
-    revalidatePath(`/dashboard/propiedades/${propertyId}/editar`)
+    revalidatePath("/dashboard/propiedades");
+    revalidatePath(`/dashboard/propiedades/${propertyId}/editar`);
 
-    return { success: true, images: uploadedImages }
+    return { success: true, images: uploadedImages };
   } catch (error) {
-    console.error('Error uploading images:', error)
+    console.error("Error uploading images:", error);
     return {
-      error: error instanceof Error ? error.message : 'Error al subir las imágenes',
-    }
+      error:
+        error instanceof Error ? error.message : "Error al subir las imágenes",
+    };
   }
 }
 
@@ -230,41 +269,42 @@ export async function uploadPropertyImagesAction(
  */
 export async function deletePropertyImageAction(imageId: string) {
   // 1. Verificar autenticación
-  const user = await requireRole(['AGENT', 'ADMIN'])
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
   try {
     // 2. Obtener la imagen
-    const image = await propertyImageRepository.findById(imageId)
+    const image = await propertyImageRepository.findById(imageId);
     if (!image) {
-      return { error: 'Imagen no encontrada' }
+      return { error: "Imagen no encontrada" };
     }
 
     // 3. Verificar permisos (necesita verificar la propiedad)
-    const property = await propertyRepository.findById(image.propertyId)
+    const property = await propertyRepository.findById(image.propertyId);
     if (!property) {
-      return { error: 'Propiedad no encontrada' }
+      return { error: "Propiedad no encontrada" };
     }
 
-    if (property.agentId !== user.id && user.role !== 'ADMIN') {
-      return { error: 'No tienes permiso para eliminar esta imagen' }
+    if (property.agentId !== user.id && user.role !== "ADMIN") {
+      return { error: "No tienes permiso para eliminar esta imagen" };
     }
 
     // 4. Eliminar de Storage
-    await deletePropertyImage(image.url)
+    await deletePropertyImage(image.url);
 
     // 5. Eliminar de BD
-    await propertyImageRepository.delete(imageId)
+    await propertyImageRepository.delete(imageId);
 
     // 6. Revalidar
-    revalidatePath('/dashboard/propiedades')
-    revalidatePath(`/dashboard/propiedades/${image.propertyId}/editar`)
+    revalidatePath("/dashboard/propiedades");
+    revalidatePath(`/dashboard/propiedades/${image.propertyId}/editar`);
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Error deleting image:', error)
+    console.error("Error deleting image:", error);
     return {
-      error: error instanceof Error ? error.message : 'Error al eliminar la imagen',
-    }
+      error:
+        error instanceof Error ? error.message : "Error al eliminar la imagen",
+    };
   }
 }
 
@@ -274,39 +314,42 @@ export async function deletePropertyImageAction(imageId: string) {
  */
 export async function reorderPropertyImagesAction(
   propertyId: string,
-  imageIds: string[]
+  imageIds: string[],
 ) {
   // 1. Verificar autenticación
-  const user = await requireRole(['AGENT', 'ADMIN'])
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
   try {
     // 2. Verificar permisos
-    const property = await propertyRepository.findById(propertyId)
+    const property = await propertyRepository.findById(propertyId);
     if (!property) {
-      return { error: 'Propiedad no encontrada' }
+      return { error: "Propiedad no encontrada" };
     }
 
-    if (property.agentId !== user.id && user.role !== 'ADMIN') {
-      return { error: 'No tienes permiso para modificar esta propiedad' }
+    if (property.agentId !== user.id && user.role !== "ADMIN") {
+      return { error: "No tienes permiso para modificar esta propiedad" };
     }
 
     // 3. Actualizar orden de imágenes
     const updates = imageIds.map((id, index) => ({
       id,
       order: index,
-    }))
+    }));
 
-    await propertyImageRepository.updateManyOrders(updates)
+    await propertyImageRepository.updateManyOrders(updates);
 
     // 4. Revalidar
-    revalidatePath('/dashboard/propiedades')
-    revalidatePath(`/dashboard/propiedades/${propertyId}/editar`)
+    revalidatePath("/dashboard/propiedades");
+    revalidatePath(`/dashboard/propiedades/${propertyId}/editar`);
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Error reordering images:', error)
+    console.error("Error reordering images:", error);
     return {
-      error: error instanceof Error ? error.message : 'Error al reordenar las imágenes',
-    }
+      error:
+        error instanceof Error
+          ? error.message
+          : "Error al reordenar las imágenes",
+    };
   }
 }

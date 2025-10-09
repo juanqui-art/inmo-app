@@ -3,11 +3,11 @@
  * Solo accesible para rol ADMIN
  */
 
-import { requireRole } from '@/lib/auth'
-import { Users, Building2, BarChart3, Settings } from 'lucide-react'
+import { BarChart3, Building2, Settings, Users } from "lucide-react";
+import { requireRole } from "@/lib/auth";
 
 export default async function AdminPage() {
-  const user = await requireRole(['ADMIN'])
+  const user = await requireRole(["ADMIN"]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -24,7 +24,7 @@ export default async function AdminPage() {
           {/* Welcome */}
           <div>
             <h2 className="text-2xl font-bold tracking-tight">
-              Bienvenido, {user.name || 'Administrador'}
+              Bienvenido, {user.name || "Administrador"}
             </h2>
             <p className="text-muted-foreground">
               Gestiona usuarios, propiedades y configuración de la plataforma
@@ -80,5 +80,5 @@ export default async function AdminPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

@@ -3,23 +3,23 @@
  * Muestra todas las propiedades que pertenecen al agente autenticado
  */
 
-import { requireRole } from '@/lib/auth'
-import { propertyRepository } from '@repo/database'
-import { PropertyCard } from '@/components/properties/property-card'
-import { Button } from '@repo/ui'
-import { Plus } from 'lucide-react'
-import Link from 'next/link'
-import { PropertyActions } from '@/components/properties/property-actions'
+import { propertyRepository } from "@repo/database";
+import { Button } from "@repo/ui";
+import { Plus } from "lucide-react";
+import Link from "next/link";
+import { PropertyActions } from "@/components/properties/property-actions";
+import { PropertyCard } from "@/components/properties/property-card";
+import { requireRole } from "@/lib/auth";
 
 export default async function PropiedadesPage() {
   // Verificar que el usuario es AGENT o ADMIN
-  const user = await requireRole(['AGENT', 'ADMIN'])
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
   // Obtener propiedades del agente
   const { properties } = await propertyRepository.list({
     filters: { agentId: user.id },
     take: 100, // Límite temporal
-  })
+  });
 
   return (
     <div className="space-y-6">
@@ -69,11 +69,11 @@ export default async function PropiedadesPage() {
       {properties.length > 0 && (
         <div className="mt-8 p-4 rounded-lg border border-border bg-card">
           <p className="text-sm text-muted-foreground">
-            Total: <span className="font-semibold">{properties.length}</span>{' '}
-            {properties.length === 1 ? 'propiedad' : 'propiedades'}
+            Total: <span className="font-semibold">{properties.length}</span>{" "}
+            {properties.length === 1 ? "propiedad" : "propiedades"}
           </p>
         </div>
       )}
     </div>
-  )
+  );
 }

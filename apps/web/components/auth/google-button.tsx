@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * GOOGLE OAUTH BUTTON
@@ -11,42 +11,42 @@
  * 5. Usuario autenticado
  */
 
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@repo/ui'
-import { useState } from 'react'
+import { Button } from "@repo/ui";
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export function GoogleButton() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleLogin = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      const supabase = createClient()
+      const supabase = createClient();
 
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
           // Redirigir de vuelta a nuestra app después de Google
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
+            access_type: "offline",
+            prompt: "consent",
           },
         },
-      })
+      });
 
       if (error) {
-        console.error('Google OAuth error:', error)
-        alert('Error al iniciar sesión con Google')
-        setIsLoading(false)
+        console.error("Google OAuth error:", error);
+        alert("Error al iniciar sesión con Google");
+        setIsLoading(false);
       }
       // Si no hay error, Google redirige automáticamente
     } catch (error) {
-      console.error('Unexpected error:', error)
-      setIsLoading(false)
+      console.error("Unexpected error:", error);
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Button
@@ -57,7 +57,7 @@ export function GoogleButton() {
       disabled={isLoading}
     >
       {isLoading ? (
-        'Redirigiendo...'
+        "Redirigiendo..."
       ) : (
         <div className="flex items-center justify-center gap-2">
           {/* Ícono de Google (SVG inline) */}
@@ -83,5 +83,5 @@ export function GoogleButton() {
         </div>
       )}
     </Button>
-  )
+  );
 }

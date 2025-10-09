@@ -3,9 +3,9 @@
  * URL: /signup
  */
 
-import { SignupForm } from '@/components/auth/signup-form'
-import { GoogleButton } from '@/components/auth/google-button'
-import Link from 'next/link'
+import Link from "next/link";
+import { GoogleButton } from "@/components/auth/google-button";
+import { SignupForm } from "@/components/auth/signup-form";
 
 export default function SignupPage() {
   return (
@@ -13,9 +13,7 @@ export default function SignupPage() {
       <div className="w-full max-w-md space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">
-            Crear cuenta
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Crear cuenta</h1>
           <p className="mt-2 text-sm text-gray-600">
             Únete a InmoApp y encuentra tu propiedad ideal
           </p>
@@ -44,7 +42,7 @@ export default function SignupPage() {
 
         {/* Link a Login */}
         <p className="text-center text-sm text-gray-600">
-          ¿Ya tienes cuenta?{' '}
+          ¿Ya tienes cuenta?{" "}
           <Link
             href="/login"
             className="font-medium text-blue-600 hover:text-blue-500"
@@ -54,5 +52,5 @@ export default function SignupPage() {
         </p>
       </div>
     </div>
-  )
+  );
 }

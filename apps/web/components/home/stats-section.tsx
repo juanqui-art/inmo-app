@@ -54,16 +54,21 @@
  * - https://cxl.com/blog/social-proof/
  */
 
-import { Building2, MapPin, Users, CheckCircle2 } from 'lucide-react'
+import { Building2, CheckCircle2, MapPin, Users } from "lucide-react";
 
 interface StatsProps {
-  propertyCount: number
-  cityCount: number
-  agentCount: number
-  transactionsCount?: number // Optional: "Ventas completadas"
+  propertyCount: number;
+  cityCount: number;
+  agentCount: number;
+  transactionsCount?: number; // Optional: "Ventas completadas"
 }
 
-export function StatsSection({ propertyCount, cityCount, agentCount, transactionsCount }: StatsProps) {
+export function StatsSection({
+  propertyCount,
+  cityCount,
+  agentCount,
+  transactionsCount,
+}: StatsProps) {
   /**
    * Format large numbers for display
    *
@@ -80,29 +85,31 @@ export function StatsSection({ propertyCount, cityCount, agentCount, transaction
    */
   const formatStat = (num: number): string => {
     // Don't show stats if too small
-    if (num < 10) return num.toString()
+    if (num < 10) return num.toString();
 
     // Round to nearest significant figure
     if (num >= 1000) {
-      const rounded = Math.floor(num / 100) * 100
-      return `${rounded.toLocaleString('es-ES')}+`
+      const rounded = Math.floor(num / 100) * 100;
+      return `${rounded.toLocaleString("es-ES")}+`;
     }
 
-    const rounded = Math.floor(num / 10) * 10
-    return `${rounded.toLocaleString('es-ES')}+`
-  }
+    const rounded = Math.floor(num / 10) * 10;
+    return `${rounded.toLocaleString("es-ES")}+`;
+  };
 
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto">
         {/* Grid Container */}
-        <div className="
+        <div
+          className="
           grid
           grid-cols-2
           md:grid-cols-4
           gap-8
           text-center
-        ">
+        "
+        >
           {/*
             RESPONSIVE LAYOUT:
             - Mobile: 2 columns (2x2 grid)
@@ -125,31 +132,21 @@ export function StatsSection({ propertyCount, cityCount, agentCount, transaction
             <p className="text-4xl font-bold mb-2">
               {formatStat(propertyCount)}
             </p>
-            <p className="text-gray-400">
-              Propiedades
-            </p>
+            <p className="text-gray-400">Propiedades</p>
           </div>
 
           {/* Stat 2: Cities */}
           <div className="flex flex-col items-center">
             <MapPin className="w-12 h-12 mb-4 opacity-90" />
-            <p className="text-4xl font-bold mb-2">
-              {formatStat(cityCount)}
-            </p>
-            <p className="text-gray-400">
-              Ciudades
-            </p>
+            <p className="text-4xl font-bold mb-2">{formatStat(cityCount)}</p>
+            <p className="text-gray-400">Ciudades</p>
           </div>
 
           {/* Stat 3: Agents */}
           <div className="flex flex-col items-center">
             <Users className="w-12 h-12 mb-4 opacity-90" />
-            <p className="text-4xl font-bold mb-2">
-              {formatStat(agentCount)}
-            </p>
-            <p className="text-gray-400">
-              Agentes
-            </p>
+            <p className="text-4xl font-bold mb-2">{formatStat(agentCount)}</p>
+            <p className="text-gray-400">Agentes</p>
           </div>
 
           {/* Stat 4: Transactions (Optional) */}
@@ -159,9 +156,7 @@ export function StatsSection({ propertyCount, cityCount, agentCount, transaction
               <p className="text-4xl font-bold mb-2">
                 {formatStat(transactionsCount)}
               </p>
-              <p className="text-gray-400">
-                Ventas Completadas
-              </p>
+              <p className="text-gray-400">Ventas Completadas</p>
             </div>
           )}
 
@@ -185,7 +180,7 @@ export function StatsSection({ propertyCount, cityCount, agentCount, transaction
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 /**

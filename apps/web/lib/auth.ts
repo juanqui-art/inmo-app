@@ -9,9 +9,9 @@
  * - requireOwnership: Requerir ownership (lanza error si no es dueño)
  */
 
-import { createClient } from '@/lib/supabase/server'
-import { userRepository } from '@repo/database'
-import { redirect } from 'next/navigation'
+import { userRepository } from "@repo/database";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Obtiene el usuario autenticado actual con su rol desde DB
@@ -20,25 +20,25 @@ import { redirect } from 'next/navigation'
  * Uso: const user = await getCurrentUser()
  */
 export async function getCurrentUser() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user: authUser },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!authUser) {
-    return null
+    return null;
   }
 
   // Obtener usuario completo desde DB (incluye rol)
-  const dbUser = await userRepository.findById(authUser.id)
+  const dbUser = await userRepository.findById(authUser.id);
 
   if (!dbUser) {
     // Usuario en Supabase Auth pero no en DB → logout
-    await supabase.auth.signOut()
-    return null
+    await supabase.auth.signOut();
+    return null;
   }
 
-  return dbUser
+  return dbUser;
 }
 
 /**
@@ -48,13 +48,13 @@ export async function getCurrentUser() {
  * Uso: const user = await requireAuth()
  */
 export async function requireAuth() {
-  const user = await getCurrentUser()
+  const user = await getCurrentUser();
 
   if (!user) {
-    redirect('/login')
+    redirect("/login");
   }
 
-  return user
+  return user;
 }
 
 /**
@@ -64,23 +64,23 @@ export async function requireAuth() {
  * Uso: const user = await requireRole(['AGENT', 'ADMIN'])
  */
 export async function requireRole(allowedRoles: string[]) {
-  const user = await requireAuth()
+  const user = await requireAuth();
 
   if (!allowedRoles.includes(user.role)) {
     // Redirigir a ruta por defecto según rol
     switch (user.role) {
-      case 'ADMIN':
-        redirect('/admin')
-      case 'AGENT':
-        redirect('/dashboard')
-      case 'CLIENT':
-        redirect('/perfil')
+      case "ADMIN":
+        redirect("/admin");
+      case "AGENT":
+        redirect("/dashboard");
+      case "CLIENT":
+        redirect("/perfil");
       default:
-        redirect('/')
+        redirect("/");
     }
   }
 
-  return user
+  return user;
 }
 
 /**
@@ -91,21 +91,21 @@ export async function requireRole(allowedRoles: string[]) {
  */
 export async function checkPermission(
   resourceOwnerId: string,
-  allowAdminOverride = true
+  allowAdminOverride = true,
 ): Promise<boolean> {
-  const user = await getCurrentUser()
+  const user = await getCurrentUser();
 
   if (!user) {
-    return false
+    return false;
   }
 
   // ADMIN puede todo (si está habilitado)
-  if (allowAdminOverride && user.role === 'ADMIN') {
-    return true
+  if (allowAdminOverride && user.role === "ADMIN") {
+    return true;
   }
 
   // Verificar ownership
-  return user.id === resourceOwnerId
+  return user.id === resourceOwnerId;
 }
 
 /**
@@ -116,32 +116,32 @@ export async function checkPermission(
  */
 export async function requireOwnership(
   resourceOwnerId: string,
-  errorMessage = 'No tienes permiso para realizar esta acción'
+  errorMessage = "No tienes permiso para realizar esta acción",
 ) {
-  const hasPermission = await checkPermission(resourceOwnerId)
+  const hasPermission = await checkPermission(resourceOwnerId);
 
   if (!hasPermission) {
-    throw new Error(errorMessage)
+    throw new Error(errorMessage);
   }
 }
 
 /**
  * Type para usuario seguro (usado en componentes)
  */
-export type SafeUser = Awaited<ReturnType<typeof getCurrentUser>>
+export type SafeUser = Awaited<ReturnType<typeof getCurrentUser>>;
 
 /**
  * DEPRECATED: Usar getCurrentUser() en su lugar
  */
 export async function getUserWithRole() {
-  const user = await requireAuth()
-  const supabase = await createClient()
+  const user = await requireAuth();
+  const supabase = await createClient();
   const {
     data: { user: authUser },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   return {
     ...authUser!,
     dbUser: user,
-  }
+  };
 }

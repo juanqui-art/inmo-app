@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "InmoApp - Plataforma Inmobiliaria",
-  description: "Encuentra tu propiedad ideal o gestiona tus inmuebles como agente",
+  description:
+    "Encuentra tu propiedad ideal o gestiona tus inmuebles como agente",
 };
 
 export default function RootLayout({

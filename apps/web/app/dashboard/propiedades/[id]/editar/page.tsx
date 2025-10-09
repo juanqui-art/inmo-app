@@ -4,43 +4,43 @@
  * Solo el owner o ADMIN pueden editar
  */
 
-import { requireRole } from '@/lib/auth'
-import { propertyRepository, serializeProperty } from '@repo/database'
-import { PropertyForm } from '@/components/properties/property-form'
-import { ImageGallery } from '@/components/properties/image-gallery'
-import { ImageUpload } from '@/components/properties/image-upload'
-import { updatePropertyAction } from '@/app/actions/properties'
-import { ChevronLeft } from 'lucide-react'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { propertyRepository, serializeProperty } from "@repo/database";
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { updatePropertyAction } from "@/app/actions/properties";
+import { ImageGallery } from "@/components/properties/image-gallery";
+import { ImageUpload } from "@/components/properties/image-upload";
+import { PropertyForm } from "@/components/properties/property-form";
+import { requireRole } from "@/lib/auth";
 
 interface EditarPropiedadPageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
 export default async function EditarPropiedadPage({
   params,
 }: EditarPropiedadPageProps) {
   // Verificar autenticación
-  const user = await requireRole(['AGENT', 'ADMIN'])
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
   // Obtener ID de la propiedad
-  const { id } = await params
+  const { id } = await params;
 
   // Cargar propiedad
-  const property = await propertyRepository.findById(id)
+  const property = await propertyRepository.findById(id);
 
   if (!property) {
-    notFound()
+    notFound();
   }
 
   // Verificar ownership (ADMIN puede editar cualquier propiedad)
-  if (property.agentId !== user.id && user.role !== 'ADMIN') {
-    throw new Error('No tienes permiso para editar esta propiedad')
+  if (property.agentId !== user.id && user.role !== "ADMIN") {
+    throw new Error("No tienes permiso para editar esta propiedad");
   }
 
   // Serializar propiedad para Client Component
-  const serializedProperty = serializeProperty(property)
+  const serializedProperty = serializeProperty(property);
 
   return (
     <div className="space-y-6">
@@ -74,7 +74,9 @@ export default async function EditarPropiedadPage({
         <div className="rounded-lg border border-border bg-card p-6">
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold">Imágenes de la Propiedad</h2>
+              <h2 className="text-xl font-semibold">
+                Imágenes de la Propiedad
+              </h2>
               <p className="text-sm text-muted-foreground">
                 La primera imagen será la imagen principal de la propiedad
               </p>
@@ -95,5 +97,5 @@ export default async function EditarPropiedadPage({
         </div>
       </div>
     </div>
-  )
+  );
 }

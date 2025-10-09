@@ -1,5 +1,5 @@
 // Export components
-export { Button, buttonVariants, type ButtonProps } from './components/button'
+export { Button, buttonVariants, type ButtonProps } from "./components/button";
 
 // Export utilities
-export { cn } from './lib/utils'
+export { cn } from "./lib/utils";

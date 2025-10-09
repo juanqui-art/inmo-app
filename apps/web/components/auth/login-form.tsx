@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * LOGIN FORM
@@ -15,17 +15,17 @@
  * 5. Si es exitoso, loginAction redirige automáticamente
  */
 
-import { loginAction } from '@/app/actions/auth'
-import { Button } from '@repo/ui'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useActionState } from 'react'
+import { Button } from "@repo/ui";
+import { useActionState } from "react";
+import { loginAction } from "@/app/actions/auth";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function LoginForm() {
   // useActionState maneja el estado de la Server Action
   // state contiene el resultado (error, success, etc.)
   // formAction es la función que se llama al hacer submit
-  const [state, formAction, isPending] = useActionState(loginAction, undefined)
+  const [state, formAction, isPending] = useActionState(loginAction, undefined);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -40,7 +40,7 @@ export function LoginForm() {
           required
         />
         {/* Mostrar error si existe */}
-        {state?.error && 'email' in state.error && state.error.email && (
+        {state?.error && "email" in state.error && state.error.email && (
           <p className="text-sm text-red-600">{state.error.email[0]}</p>
         )}
       </div>
@@ -55,24 +55,20 @@ export function LoginForm() {
           placeholder="••••••••"
           required
         />
-        {state?.error && 'password' in state.error && state.error.password && (
+        {state?.error && "password" in state.error && state.error.password && (
           <p className="text-sm text-red-600">{state.error.password[0]}</p>
         )}
       </div>
 
       {/* Error general (credenciales inválidas) */}
-      {state?.error && 'general' in state.error && state.error.general && (
+      {state?.error && "general" in state.error && state.error.general && (
         <p className="text-sm text-red-600">{state.error.general}</p>
       )}
 
       {/* Submit Button */}
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={isPending}
-      >
-        {isPending ? 'Iniciando sesión...' : 'Iniciar sesión'}
+      <Button type="submit" className="w-full" disabled={isPending}>
+        {isPending ? "Iniciando sesión..." : "Iniciar sesión"}
       </Button>
     </form>
-  )
+  );
 }

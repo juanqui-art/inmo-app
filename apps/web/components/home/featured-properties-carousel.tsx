@@ -68,20 +68,22 @@
  * - https://www.w3.org/WAI/tutorials/carousels/
  */
 
-'use client'
+"use client";
 
-import { useCallback, useEffect, useState } from 'react'
-import useEmblaCarousel from 'embla-carousel-react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import Link from 'next/link'
-import { PropertyCard } from '@/components/properties/property-card'
-import type { SerializedProperty } from '@/lib/utils/serialize-property'
+import useEmblaCarousel from "embla-carousel-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { PropertyCard } from "@/components/properties/property-card";
+import type { SerializedProperty } from "@/lib/utils/serialize-property";
 
 interface FeaturedPropertiesCarouselProps {
-  properties: SerializedProperty[]
+  properties: SerializedProperty[];
 }
 
-export function FeaturedPropertiesCarousel({ properties }: FeaturedPropertiesCarouselProps) {
+export function FeaturedPropertiesCarousel({
+  properties,
+}: FeaturedPropertiesCarouselProps) {
   /**
    * Embla Carousel Hook
    *
@@ -99,15 +101,15 @@ export function FeaturedPropertiesCarousel({ properties }: FeaturedPropertiesCar
    */
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
-    align: 'start',
+    align: "start",
     slidesToScroll: 1,
     skipSnaps: false,
     dragFree: false,
-  })
+  });
 
   // Track if prev/next buttons should be enabled
-  const [canScrollPrev, setCanScrollPrev] = useState(false)
-  const [canScrollNext, setCanScrollNext] = useState(false)
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
 
   /**
    * Update button states when carousel scrolls
@@ -119,11 +121,11 @@ export function FeaturedPropertiesCarousel({ properties }: FeaturedPropertiesCar
    * - Visual feedback (grayed out when disabled)
    */
   const updateButtonStates = useCallback(() => {
-    if (!emblaApi) return
+    if (!emblaApi) return;
 
-    setCanScrollPrev(emblaApi.canScrollPrev())
-    setCanScrollNext(emblaApi.canScrollNext())
-  }, [emblaApi])
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
 
   /**
    * Setup event listeners
@@ -132,21 +134,21 @@ export function FeaturedPropertiesCarousel({ properties }: FeaturedPropertiesCar
    * Prevents memory leaks
    */
   useEffect(() => {
-    if (!emblaApi) return
+    if (!emblaApi) return;
 
     // Initial state
-    updateButtonStates()
+    updateButtonStates();
 
     // Update on scroll
-    emblaApi.on('select', updateButtonStates)
-    emblaApi.on('reInit', updateButtonStates)
+    emblaApi.on("select", updateButtonStates);
+    emblaApi.on("reInit", updateButtonStates);
 
     // Cleanup
     return () => {
-      emblaApi.off('select', updateButtonStates)
-      emblaApi.off('reInit', updateButtonStates)
-    }
-  }, [emblaApi, updateButtonStates])
+      emblaApi.off("select", updateButtonStates);
+      emblaApi.off("reInit", updateButtonStates);
+    };
+  }, [emblaApi, updateButtonStates]);
 
   /**
    * Navigation functions
@@ -155,22 +157,21 @@ export function FeaturedPropertiesCarousel({ properties }: FeaturedPropertiesCar
    * Stable references for onClick handlers
    */
   const scrollPrev = useCallback(() => {
-    emblaApi?.scrollPrev()
-  }, [emblaApi])
+    emblaApi?.scrollPrev();
+  }, [emblaApi]);
 
   const scrollNext = useCallback(() => {
-    emblaApi?.scrollNext()
-  }, [emblaApi])
+    emblaApi?.scrollNext();
+  }, [emblaApi]);
 
   // Don't render if no properties
   if (properties.length === 0) {
-    return null
+    return null;
   }
 
   return (
     <section
       className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-950"
-      role="region"
       aria-label="Propiedades destacadas"
     >
       <div className="max-w-7xl mx-auto">
@@ -277,7 +278,7 @@ export function FeaturedPropertiesCarousel({ properties }: FeaturedPropertiesCar
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 /**

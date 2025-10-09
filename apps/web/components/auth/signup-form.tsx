@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * SIGNUP FORM (Registro)
@@ -10,14 +10,17 @@
  * - Rol (CLIENT, AGENT, ADMIN)
  */
 
-import { signupAction } from '@/app/actions/auth'
-import { Button } from '@repo/ui'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useActionState } from 'react'
+import { Button } from "@repo/ui";
+import { useActionState } from "react";
+import { signupAction } from "@/app/actions/auth";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function SignupForm() {
-  const [state, formAction, isPending] = useActionState(signupAction, undefined)
+  const [state, formAction, isPending] = useActionState(
+    signupAction,
+    undefined,
+  );
 
   return (
     <form action={formAction} className="space-y-4">
@@ -31,7 +34,7 @@ export function SignupForm() {
           placeholder="Juan Pérez"
           required
         />
-        {state?.error && 'name' in state.error && state.error.name && (
+        {state?.error && "name" in state.error && state.error.name && (
           <p className="text-sm text-red-600">{state.error.name[0]}</p>
         )}
       </div>
@@ -46,7 +49,7 @@ export function SignupForm() {
           placeholder="tu@email.com"
           required
         />
-        {state?.error && 'email' in state.error && state.error.email && (
+        {state?.error && "email" in state.error && state.error.email && (
           <p className="text-sm text-red-600">{state.error.email[0]}</p>
         )}
       </div>
@@ -61,7 +64,7 @@ export function SignupForm() {
           placeholder="••••••••"
           required
         />
-        {state?.error && 'password' in state.error && state.error.password && (
+        {state?.error && "password" in state.error && state.error.password && (
           <p className="text-sm text-red-600">{state.error.password[0]}</p>
         )}
         <p className="text-xs text-gray-500">
@@ -83,24 +86,20 @@ export function SignupForm() {
           <option value="AGENT">Agente (Publico propiedades)</option>
           <option value="ADMIN">Administrador</option>
         </select>
-        {state?.error && 'role' in state.error && state.error.role && (
+        {state?.error && "role" in state.error && state.error.role && (
           <p className="text-sm text-red-600">{state.error.role[0]}</p>
         )}
       </div>
 
       {/* Error general */}
-      {state?.error && 'general' in state.error && state.error.general && (
+      {state?.error && "general" in state.error && state.error.general && (
         <p className="text-sm text-red-600">{state.error.general}</p>
       )}
 
       {/* Submit Button */}
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={isPending}
-      >
-        {isPending ? 'Creando cuenta...' : 'Crear cuenta'}
+      <Button type="submit" className="w-full" disabled={isPending}>
+        {isPending ? "Creando cuenta..." : "Crear cuenta"}
       </Button>
     </form>
-  )
+  );
 }

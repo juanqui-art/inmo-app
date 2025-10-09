@@ -5,9 +5,9 @@
  * en Supabase Storage
  */
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from "@/lib/supabase/server";
 
-const BUCKET_NAME = 'property-images'
+const BUCKET_NAME = "property-images";
 
 /**
  * Sube una imagen a Supabase Storage
@@ -18,46 +18,46 @@ const BUCKET_NAME = 'property-images'
  */
 export async function uploadPropertyImage(
   file: File,
-  propertyId: string
+  propertyId: string,
 ): Promise<string> {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // Validar tipo de archivo
-  if (!file.type.startsWith('image/')) {
-    throw new Error('El archivo debe ser una imagen')
+  if (!file.type.startsWith("image/")) {
+    throw new Error("El archivo debe ser una imagen");
   }
 
   // Validar tamaño (max 5MB)
-  const MAX_SIZE = 5 * 1024 * 1024 // 5MB
+  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
   if (file.size > MAX_SIZE) {
-    throw new Error('La imagen no puede exceder 5MB')
+    throw new Error("La imagen no puede exceder 5MB");
   }
 
   // Generar nombre único: propertyId/timestamp-uuid.ext
-  const timestamp = Date.now()
-  const uuid = crypto.randomUUID().split('-')[0]
-  const extension = file.name.split('.').pop()
-  const fileName = `${propertyId}/${timestamp}-${uuid}.${extension}`
+  const timestamp = Date.now();
+  const uuid = crypto.randomUUID().split("-")[0];
+  const extension = file.name.split(".").pop();
+  const fileName = `${propertyId}/${timestamp}-${uuid}.${extension}`;
 
   // Subir archivo
   const { data, error } = await supabase.storage
     .from(BUCKET_NAME)
     .upload(fileName, file, {
-      cacheControl: '3600',
+      cacheControl: "3600",
       upsert: false,
-    })
+    });
 
   if (error) {
-    console.error('Error uploading image:', error)
-    throw new Error('Error al subir la imagen')
+    console.error("Error uploading image:", error);
+    throw new Error("Error al subir la imagen");
   }
 
   // Obtener URL pública
   const { data: publicUrlData } = supabase.storage
     .from(BUCKET_NAME)
-    .getPublicUrl(data.path)
+    .getPublicUrl(data.path);
 
-  return publicUrlData.publicUrl
+  return publicUrlData.publicUrl;
 }
 
 /**
@@ -66,21 +66,18 @@ export async function uploadPropertyImage(
  * @param path - Ruta del archivo en Storage (extraída de la URL)
  */
 export async function deletePropertyImage(path: string): Promise<void> {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // Extraer path de la URL si es una URL completa
-  const splitPath = path.split('property-images/')
-  const filePath = path.includes('property-images/') && splitPath[1]
-    ? splitPath[1]
-    : path
+  const splitPath = path.split("property-images/");
+  const filePath =
+    path.includes("property-images/") && splitPath[1] ? splitPath[1] : path;
 
-  const { error } = await supabase.storage
-    .from(BUCKET_NAME)
-    .remove([filePath])
+  const { error } = await supabase.storage.from(BUCKET_NAME).remove([filePath]);
 
   if (error) {
-    console.error('Error deleting image:', error)
-    throw new Error('Error al eliminar la imagen')
+    console.error("Error deleting image:", error);
+    throw new Error("Error al eliminar la imagen");
   }
 }
 
@@ -91,12 +88,9 @@ export async function deletePropertyImage(path: string): Promise<void> {
  * @returns URL pública
  */
 export async function getPublicUrl(path: string): Promise<string> {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
-  const { data } = supabase.storage
-    .from(BUCKET_NAME)
-    .getPublicUrl(path)
+  const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(path);
 
-  return data.publicUrl
+  return data.publicUrl;
 }
-

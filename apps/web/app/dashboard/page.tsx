@@ -4,50 +4,50 @@
  * Solo accesible para AGENT y ADMIN
  */
 
-import { requireRole } from '@/lib/auth'
-import { Building2, Calendar, Users, TrendingUp } from 'lucide-react'
+import { Building2, Calendar, TrendingUp, Users } from "lucide-react";
+import { requireRole } from "@/lib/auth";
 
 export default async function DashboardPage() {
-  const user = await requireRole(['AGENT', 'ADMIN'])
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
   // Stats básicas (después conectaremos con datos reales)
   const stats = [
     {
-      title: 'Propiedades',
-      value: '12',
-      description: 'Propiedades activas',
+      title: "Propiedades",
+      value: "12",
+      description: "Propiedades activas",
       icon: Building2,
-      trend: '+2 esta semana',
+      trend: "+2 esta semana",
     },
     {
-      title: 'Citas',
-      value: '8',
-      description: 'Citas programadas',
+      title: "Citas",
+      value: "8",
+      description: "Citas programadas",
       icon: Calendar,
-      trend: '3 pendientes',
+      trend: "3 pendientes",
     },
     {
-      title: 'Clientes',
-      value: '24',
-      description: 'Clientes activos',
+      title: "Clientes",
+      value: "24",
+      description: "Clientes activos",
       icon: Users,
-      trend: '+5 este mes',
+      trend: "+5 este mes",
     },
     {
-      title: 'Visitas',
-      value: '245',
-      description: 'Visitas este mes',
+      title: "Visitas",
+      value: "245",
+      description: "Visitas este mes",
       icon: TrendingUp,
-      trend: '+12% vs mes anterior',
+      trend: "+12% vs mes anterior",
     },
-  ]
+  ];
 
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          Bienvenido, {user.name || 'Usuario'}
+          Bienvenido, {user.name || "Usuario"}
         </h1>
         <p className="text-muted-foreground">
           Gestiona tus propiedades y citas con clientes
@@ -57,7 +57,7 @@ export default async function DashboardPage() {
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => {
-          const Icon = stat.icon
+          const Icon = stat.icon;
           return (
             <div
               key={stat.title}
@@ -75,11 +75,13 @@ export default async function DashboardPage() {
                 </div>
               </div>
               <div className="mt-4 space-y-1">
-                <p className="text-xs text-muted-foreground">{stat.description}</p>
+                <p className="text-xs text-muted-foreground">
+                  {stat.description}
+                </p>
                 <p className="text-xs font-medium text-primary">{stat.trend}</p>
               </div>
             </div>
-          )
+          );
         })}
       </div>
 
@@ -91,7 +93,8 @@ export default async function DashboardPage() {
             No hay actividad reciente para mostrar.
           </p>
           <p className="text-xs text-muted-foreground">
-            Cuando agregues propiedades a favoritos o programes citas, aparecerán aquí.
+            Cuando agregues propiedades a favoritos o programes citas,
+            aparecerán aquí.
           </p>
         </div>
       </div>
@@ -116,5 +119,5 @@ export default async function DashboardPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

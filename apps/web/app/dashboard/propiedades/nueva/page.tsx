@@ -3,15 +3,15 @@
  * Formulario para crear una nueva propiedad
  */
 
-import { requireRole } from '@/lib/auth'
-import { PropertyForm } from '@/components/properties/property-form'
-import { createPropertyAction } from '@/app/actions/properties'
-import { ChevronLeft } from 'lucide-react'
-import Link from 'next/link'
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import { createPropertyAction } from "@/app/actions/properties";
+import { PropertyForm } from "@/components/properties/property-form";
+import { requireRole } from "@/lib/auth";
 
 export default async function NuevaPropiedadPage() {
   // Verificar que el usuario es AGENT o ADMIN
-  await requireRole(['AGENT', 'ADMIN'])
+  await requireRole(["AGENT", "ADMIN"]);
 
   return (
     <div className="space-y-6">
@@ -35,9 +35,12 @@ export default async function NuevaPropiedadPage() {
       {/* Form */}
       <div className="max-w-3xl">
         <div className="rounded-lg border border-border bg-card p-6">
-          <PropertyForm action={createPropertyAction} submitLabel="Crear Propiedad" />
+          <PropertyForm
+            action={createPropertyAction}
+            submitLabel="Crear Propiedad"
+          />
         </div>
       </div>
     </div>
-  )
+  );
 }

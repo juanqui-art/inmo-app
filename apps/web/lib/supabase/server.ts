@@ -12,12 +12,12 @@
  * - Necesita usar cookies() de 'next/headers'
  */
 
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function createClient() {
   // Obtener el objeto de cookies del request
-  const cookieStore = await cookies()
+  const cookieStore = await cookies();
 
   // Crear el client de Supabase para servidor
   return createServerClient(
@@ -27,20 +27,20 @@ export async function createClient() {
       cookies: {
         // Función para LEER cookies
         getAll() {
-          return cookieStore.getAll()
+          return cookieStore.getAll();
         },
         // Función para ESCRIBIR cookies (cuando hay login/logout)
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
+              cookieStore.set(name, value, options),
+            );
           } catch {
             // Esto puede fallar en Server Components (solo lectura)
             // Los Server Actions SÍ pueden escribir cookies
           }
         },
       },
-    }
-  )
+    },
+  );
 }

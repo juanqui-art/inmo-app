@@ -51,19 +51,21 @@
  * - https://cssgrid-generator.netlify.app/
  */
 
-import Link from 'next/link'
-import { ChevronRight } from 'lucide-react'
-import { PropertyCard } from '@/components/properties/property-card'
-import type { SerializedProperty } from '@/lib/utils/serialize-property'
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { PropertyCard } from "@/components/properties/property-card";
+import type { SerializedProperty } from "@/lib/utils/serialize-property";
 
 interface RecentListingsSectionProps {
-  properties: SerializedProperty[]
+  properties: SerializedProperty[];
 }
 
-export function RecentListingsSection({ properties }: RecentListingsSectionProps) {
+export function RecentListingsSection({
+  properties,
+}: RecentListingsSectionProps) {
   // Don't render if no properties
   if (properties.length === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -80,13 +82,15 @@ export function RecentListingsSection({ properties }: RecentListingsSectionProps
         </div>
 
         {/* Grid Container */}
-        <div className="
+        <div
+          className="
           grid
           grid-cols-1
           sm:grid-cols-2
           lg:grid-cols-4
           gap-6
-        ">
+        "
+        >
           {/*
             CSS GRID BREAKDOWN:
 
@@ -145,7 +149,7 @@ export function RecentListingsSection({ properties }: RecentListingsSectionProps
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 /**
