@@ -1,0 +1,55 @@
+# .claudeignore
+# Files and directories to exclude from Claude Code context
+# This reduces token usage by not loading heavy documentation automatically
+
+# Heavy documentation (load on demand with @mention)
+# Use: "@.claude/filename.md" when you need specific context
+.claude/08-multi-tenant-strategy.md   # 14k tokens - Multi-tenant architecture
+.claude/07-technical-debt.md          # 8.5k tokens - Technical debt audit
+.claude/09-teaching-style.md          # 6k tokens - Teaching guidelines
+.claude/08-appointments-analysis.md   # 11k tokens - Appointments system design
+
+# Build outputs
+.next/
+.turbo/
+dist/
+build/
+out/
+
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.DS_Store
+*.log
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Environment (already excluded by default, but explicit)
+.env
+.env.local
+.env*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Prisma
+.prisma/
+
+# Temporary
+tmp/
+temp/

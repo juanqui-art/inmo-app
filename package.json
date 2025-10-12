@@ -21,6 +21,9 @@
     "turbo": "^2.5.8"
   },
   "dependencies": {
-    "embla-carousel-react": "^8.6.0"
+    "@gsap/react": "^2.1.2",
+    "embla-carousel-react": "^8.6.0",
+    "gsap": "^3.13.0",
+    "sonner": "^2.0.7"
   }
 }

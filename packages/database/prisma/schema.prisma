@@ -60,6 +60,8 @@ model Property {
   images       PropertyImage[]
   favorites    Favorite[]
   appointments Appointment[]
+  shares       PropertyShare[]
+  views        PropertyView[]
 
   @@index([transactionType, status])
   @@index([category])
@@ -163,4 +165,50 @@ enum AppointmentStatus {
   CONFIRMED
   CANCELLED
   COMPLETED
+}
+
+// ==================== SOCIAL FEATURES ====================
+
+model PropertyShare {
+  id         String        @id @default(uuid())
+  propertyId String        @map("property_id")
+  platform   SharePlatform
+  userId     String?       @map("user_id") // null if not logged in
+  ipAddress  String?       @map("ip_address")
+  userAgent  String?       @map("user_agent")
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([platform])
+  @@index([createdAt])
+  @@map("property_shares")
+}
+
+model PropertyView {
+  id         String   @id @default(uuid())
+  propertyId String   @map("property_id")
+  userId     String?  @map("user_id") // null if not logged in
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  viewedAt   DateTime @default(now()) @map("viewed_at")
+
+  // Relations
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([userId])
+  @@index([viewedAt])
+  @@map("property_views")
+}
+
+enum SharePlatform {
+  FACEBOOK
+  TWITTER
+  WHATSAPP
+  LINKEDIN
+  EMAIL
+  COPY_LINK
 }
