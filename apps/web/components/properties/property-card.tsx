@@ -7,12 +7,18 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { SerializedProperty } from "@/lib/utils/serialize-property";
+import { SocialShareButton } from "@/components/social/social-share-button";
+import { PropertySocialProof } from "@/components/social/property-social-proof";
 
 interface PropertyCardProps {
   property: PropertyWithRelations | SerializedProperty;
   actions?: React.ReactNode;
   onFavoriteToggle?: (propertyId: string) => void;
   isFavorite?: boolean;
+  showSocialProof?: boolean;
+  shareCount?: number;
+  viewCount?: number;
+  priority?: boolean;
 }
 
 export function PropertyCard({
@@ -20,13 +26,17 @@ export function PropertyCard({
   actions,
   onFavoriteToggle,
   isFavorite = false,
+  showSocialProof = false,
+  shareCount = 0,
+  viewCount = 0,
+  priority = false,
 }: PropertyCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showHeartAnimation, setShowHeartAnimation] = useState(false);
   const lastTapRef = useRef<number>(0);
   const touchStartRef = useRef<number>(0);
 
-  const images = property.images.length > 0 ? property.images : [];
+  const images = property.images?.length > 0 ? property.images : [];
   const hasMultipleImages = images.length > 1;
 
   // Format price
@@ -59,13 +69,13 @@ export function PropertyCard({
 
   // Navigate images
   const goToNextImage = () => {
-    if (hasMultipleImages) {
+    if (hasMultipleImages && images.length > 0) {
       setCurrentImageIndex((prev) => (prev + 1) % images.length);
     }
   };
 
   const goToPrevImage = () => {
-    if (hasMultipleImages) {
+    if (hasMultipleImages && images.length > 0) {
       setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
     }
   };
@@ -87,11 +97,11 @@ export function PropertyCard({
 
   // Touch swipe
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartRef.current = e.touches[0].clientX;
+    touchStartRef.current = e.touches[0]?.clientX || 0;
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    const touchEnd = e.changedTouches[0].clientX;
+    const touchEnd = e.changedTouches[0]?.clientX || 0;
     const diff = touchStartRef.current - touchEnd;
 
     if (Math.abs(diff) > 50) {
@@ -124,14 +134,14 @@ export function PropertyCard({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {images.length > 0 ? (
+        {images.length > 0 && images[currentImageIndex] ? (
           <Image
-            src={images[currentImageIndex].url}
-            alt={images[currentImageIndex].alt || property.title}
+            src={images[currentImageIndex]!.url}
+            alt={images[currentImageIndex]!.alt || property.title}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={currentImageIndex === 0}
+            priority={priority && currentImageIndex === 0}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gray-200">
@@ -212,24 +222,38 @@ export function PropertyCard({
           </Badge>
         </div>
 
-        {/* Favorite Button */}
-        {onFavoriteToggle && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onFavoriteToggle(property.id);
-            }}
-            className="absolute top-3 right-3 z-20 p-2 rounded-full bg-black/60 backdrop-blur-sm hover:bg-black/80 transition-colors"
-            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-          >
-            <Heart
-              className={`w-5 h-5 ${
-                isFavorite ? "fill-red-500 text-red-500" : "text-white"
-              }`}
+        {/* Action Buttons (Favorite + Share) */}
+        <div className="absolute top-3 right-3 z-20 flex flex-col gap-2">
+          {/* Favorite Button */}
+          {onFavoriteToggle && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onFavoriteToggle(property.id);
+              }}
+              className="p-2 rounded-full bg-black/60 backdrop-blur-sm hover:bg-black/80 transition-colors"
+              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              <Heart
+                className={`w-5 h-5 ${
+                  isFavorite ? "fill-red-500 text-red-500" : "text-white"
+                }`}
+              />
+            </button>
+          )}
+
+          {/* Share Button */}
+          <div className="[&>div]:relative [&_button]:bg-black/60 [&_button]:backdrop-blur-sm [&_button]:hover:bg-black/80 [&_button]:text-white [&_button]:border-0 [&_button]:p-2 [&_button]:h-auto">
+            <SocialShareButton
+              property={property as any}
+              shareCount={shareCount}
+              showCount={false}
+              variant="ghost"
+              size="icon"
             />
-          </button>
-        )}
+          </div>
+        </div>
 
         {/* Double-tap Heart Animation */}
         {showHeartAnimation && (
@@ -280,6 +304,18 @@ export function PropertyCard({
                 </div>
               )}
             </div>
+
+            {/* Social Proof */}
+            {showSocialProof && (viewCount > 0 || shareCount > 0) && (
+              <div className="mt-2 [&_*]:text-white/90">
+                <PropertySocialProof
+                  viewCount={viewCount}
+                  shareCount={shareCount}
+                  variant="compact"
+                  className="[&_svg]:text-white/80"
+                />
+              </div>
+            )}
           </Link>
         </div>
       </div>

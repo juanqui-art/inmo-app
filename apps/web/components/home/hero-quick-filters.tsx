@@ -1,7 +1,7 @@
 /**
  * HeroQuickFilters - Transaction Type Selector (Buy/Rent)
  *
- * PATTERN: Client Component with URL State
+ * PATTERN: Client Component with URL State + Magnetic Hover Effect
  *
  * WHY Client Component?
  * - Interactivity: Needs onClick handlers
@@ -30,6 +30,11 @@
  * - Back button works naturally
  * - SEO-friendly (Google indexes filtered pages)
  *
+ * ANIMATIONS (GSAP):
+ * - Magnetic effect: Buttons follow cursor subtly
+ * - Elastic return: Smooth bounce back to original position
+ * - Performance: GPU-accelerated transforms
+ *
  * PERFORMANCE:
  * - router.push(): Client-side navigation (fast)
  * - Prefetches next page on hover (instant feel)
@@ -43,15 +48,20 @@
  * RESOURCES:
  * - https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating
  * - https://web.dev/urlsearchparams/
+ * - https://gsap.com/docs/v3/Eases/
  */
 
 "use client";
 
 import { TreesIcon, Home } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
 export function HeroQuickFilters() {
   const router = useRouter();
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   /**
    * Navigate to listings page with transaction type filter
@@ -69,10 +79,53 @@ export function HeroQuickFilters() {
     router.push(`/propiedades?${params.toString()}`);
   };
 
+  // Magnetic hover effect
+  useGSAP(() => {
+    buttonRefs.current.forEach((button) => {
+      if (!button) return;
+
+      const handleMouseMove = (e: MouseEvent) => {
+        const rect = button.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        // Move button 20% towards cursor position
+        gsap.to(button, {
+          x: x * 0.2,
+          y: y * 0.2,
+          duration: 0.4,
+          ease: "power2.out",
+        });
+      };
+
+      const handleMouseLeave = () => {
+        // Return to original position with elastic bounce
+        gsap.to(button, {
+          x: 0,
+          y: 0,
+          duration: 0.6,
+          ease: "elastic.out(1, 0.3)",
+        });
+      };
+
+      button.addEventListener("mousemove", handleMouseMove);
+      button.addEventListener("mouseleave", handleMouseLeave);
+
+      // Cleanup
+      return () => {
+        button.removeEventListener("mousemove", handleMouseMove);
+        button.removeEventListener("mouseleave", handleMouseLeave);
+      };
+    });
+  });
+
   return (
     <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-      {/* Buy Button - Glassmorphism Style */}
+      {/* Buy Button - Glassmorphism Style with Magnetic Effect */}
       <button
+        ref={(el) => {
+          buttonRefs.current[0] = el;
+        }}
         type="button"
         onClick={() => handleFilter("SALE")}
         className="
@@ -95,8 +148,11 @@ export function HeroQuickFilters() {
         <span className="text-sm sm:text-base">Casas</span>
       </button>
 
-      {/* Rent Button - Glassmorphism Style */}
+      {/* Rent Button - Glassmorphism Style with Magnetic Effect */}
       <button
+        ref={(el) => {
+          buttonRefs.current[1] = el;
+        }}
         type="button"
         onClick={() => handleFilter("RENT")}
         className="

@@ -107,8 +107,8 @@ export function PublicHeader() {
     <header
       className={
         isHomepage
-          ? "absolute top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-lg border-b border-white/20"
-          : "sticky top-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-gray-700/50 shadow-sm"
+          ? "absolute top-0 left-0 right-0 z-50  "
+          : "sticky top-0 z-50 bg-gray-900/80 backdrop-blur-md "
       }
     >
       {/*

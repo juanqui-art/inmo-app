@@ -24,7 +24,7 @@ import Image from "next/image";
 
 export function HeroBackground() {
   return (
-    <div className="absolute inset-0 z-0">
+    <div className="absolute inset-0 z-0 opacity-0">
       {/* Background Image - Full Screen */}
       <Image
         src="/hero_section.jpg"

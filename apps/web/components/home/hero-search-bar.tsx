@@ -70,6 +70,8 @@
 import { Loader2, MapPin, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import { debounce } from "@/lib/utils/debounce";
 
 // Types for city autocomplete
@@ -98,7 +100,48 @@ export function HeroSearchBar() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [showChips, setShowChips] = useState(true);
+
+  // Refs for animations
+  const inputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
   const abortControllerRef = useRef<AbortController | undefined>(undefined);
+
+  // Focus animation with GSAP
+  useGSAP(
+    () => {
+      const input = inputRef.current;
+      if (!input) return;
+
+      const handleFocus = () => {
+        gsap.to(input, {
+          scale: 1.02,
+          boxShadow:
+            "0 0 0 4px rgba(255, 255, 255, 0.2), 0 20px 40px rgba(0, 0, 0, 0.3)",
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      };
+
+      const handleBlur = () => {
+        gsap.to(input, {
+          scale: 1,
+          boxShadow: "0 0 0 0px rgba(255, 255, 255, 0), 0 4px 12px rgba(0, 0, 0, 0.1)",
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      };
+
+      input.addEventListener("focus", handleFocus);
+      input.addEventListener("blur", handleBlur);
+
+      return () => {
+        input.removeEventListener("focus", handleFocus);
+        input.removeEventListener("blur", handleBlur);
+      };
+    },
+    { scope: formRef },
+  );
 
   /**
    * Debounced city search function
@@ -268,7 +311,11 @@ export function HeroSearchBar() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative w-full max-w-2xl mx-auto">
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit}
+      className="relative w-full max-w-2xl mx-auto"
+    >
       {/* Popular Cities Chips - Show when input is empty */}
       {showChips && (
         <div className="mb-4 px-1">
@@ -309,8 +356,9 @@ export function HeroSearchBar() {
         {/* Search Icon */}
         <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-white/80 pointer-events-none" />
 
-        {/* Search Input - Glassmorphism Style */}
+        {/* Search Input - Glassmorphism Style with Focus Animation */}
         <input
+          ref={inputRef}
           type="search"
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
@@ -325,10 +373,10 @@ export function HeroSearchBar() {
             backdrop-blur-lg
             rounded-xl sm:rounded-2xl
             border-2 border-white/40
-            focus:border-white/80 focus:ring-4 focus:ring-white/20
+            focus:border-white/80
             focus:outline-none
             shadow-xl hover:shadow-2xl
-            transition-all duration-200
+            transition-colors duration-200
             placeholder:text-white/60
           "
           role="combobox"
