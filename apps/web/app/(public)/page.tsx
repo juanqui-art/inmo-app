@@ -65,6 +65,7 @@ import { FeaturedPropertiesCarousel } from "@/components/home/featured-propertie
 import { HeroSection } from "@/components/home/hero-section";
 import { RecentListingsSection } from "@/components/home/recent-listings-section";
 import { StatsSection } from "@/components/home/stats-section";
+import { TrendingPropertiesSection } from "@/components/home/trending-properties-section";
 import { serializeProperties } from "@/lib/utils/serialize-property";
 
 export default async function HomePage() {
@@ -159,6 +160,9 @@ export default async function HomePage() {
       {serializedFeatured.length > 0 && (
         <FeaturedPropertiesCarousel properties={serializedFeatured} />
       )}
+
+      {/* Trending Properties (Social Commerce) */}
+      <TrendingPropertiesSection />
 
       {/* Stats Section (Social Proof) */}
       <StatsSection

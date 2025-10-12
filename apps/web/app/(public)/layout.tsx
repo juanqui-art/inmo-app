@@ -62,6 +62,7 @@
 
 import { PublicFooter } from "@/components/layout/public-footer";
 import { PublicHeader } from "@/components/layout/public-header";
+import { Toaster } from "sonner";
 
 export default function PublicLayout({
   children,
@@ -91,6 +92,14 @@ export default function PublicLayout({
         - Always at bottom
       */}
       <PublicFooter />
+
+      {/*
+        TOAST NOTIFICATIONS
+        - Success/error messages
+        - Share confirmations
+        - Copy link feedback
+      */}
+      <Toaster position="bottom-right" richColors />
     </div>
   );
 }
