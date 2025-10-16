@@ -95,7 +95,7 @@ export function PropertySocialProof({
   if (variant === "compact") {
     return (
       <div
-        className={`flex items-center gap-4 text-sm text-gray-600 ${className}`}
+        className={`flex items-center gap-4 text-sm text-oslo-gray-600 dark:text-oslo-gray-400 ${className}`}
       >
         {/* Trending badge */}
         {isTrending && (
@@ -131,11 +131,11 @@ export function PropertySocialProof({
   // Detailed variant: Card with breakdown
   return (
     <div
-      className={`rounded-lg border bg-white p-4 space-y-3 ${className}`}
+      className={`rounded-lg border border-oslo-gray-300 dark:border-oslo-gray-700 bg-white dark:bg-oslo-gray-1000 p-4 space-y-3 ${className}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-900">
+        <h3 className="text-sm font-semibold text-oslo-gray-900 dark:text-oslo-gray-50">
           Actividad Reciente
         </h3>
         {isTrending && (
@@ -150,22 +150,22 @@ export function PropertySocialProof({
       <div className="grid grid-cols-2 gap-4">
         {/* Views */}
         <div className="flex flex-col">
-          <div className="flex items-center gap-2 text-gray-600 mb-1">
+          <div className="flex items-center gap-2 text-oslo-gray-600 dark:text-oslo-gray-400 mb-1">
             <Eye className="h-4 w-4" />
             <span className="text-xs">Vistas</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-oslo-gray-900 dark:text-oslo-gray-50">
             {formatCount(viewCount)}
           </p>
         </div>
 
         {/* Shares */}
         <div className="flex flex-col">
-          <div className="flex items-center gap-2 text-gray-600 mb-1">
+          <div className="flex items-center gap-2 text-oslo-gray-600 dark:text-oslo-gray-400 mb-1">
             <Share2 className="h-4 w-4" />
             <span className="text-xs">Compartidos</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-oslo-gray-900 dark:text-oslo-gray-50">
             {formatCount(shareCount)}
           </p>
         </div>
@@ -173,7 +173,7 @@ export function PropertySocialProof({
 
       {/* Engagement message */}
       {(viewCount > 50 || shareCount > 10) && (
-        <p className="text-xs text-gray-500 border-t pt-3">
+        <p className="text-xs text-oslo-gray-500 dark:text-oslo-gray-400 border-t border-oslo-gray-200 dark:border-oslo-gray-800 pt-3">
           {isTrending
             ? "Esta propiedad está generando mucho interés"
             : "Propiedad popular entre compradores"}

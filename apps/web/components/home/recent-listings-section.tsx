@@ -69,14 +69,14 @@ export function RecentListingsSection({
   }
 
   return (
-    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-900">
+    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-oslo-gray-900">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-100">
+          <h2 className="text-3xl font-bold text-oslo-gray-100">
             Propiedades Recientes
           </h2>
-          <p className="text-gray-400 mt-2">
+          <p className="text-oslo-gray-400 mt-2">
             Las últimas propiedades agregadas a la plataforma
           </p>
         </div>
@@ -136,9 +136,9 @@ export function RecentListingsSection({
             className="
               inline-flex items-center gap-2
               px-6 py-3
-              bg-gray-800 hover:bg-gray-700
-              text-gray-100 font-semibold
-              border-2 border-gray-700
+              bg-oslo-gray-800 hover:bg-oslo-gray-700
+              text-oslo-gray-100 font-semibold
+              border-2 border-oslo-gray-700
               rounded-lg
               transition-colors duration-200
             "

@@ -1,0 +1,249 @@
+/**
+ * Navbar Scroll-Driven Animations (CSS Animation Timeline)
+ *
+ * Uses modern CSS scroll-driven animations API to create smooth navbar
+ * transitions without JavaScript. Provides progressive enhancement with
+ * fallbacks for browsers without support.
+ *
+ * Browser Support:
+ * - Chrome/Edge 115+ ✅
+ * - Safari 17.5+ ✅
+ * - Firefox 114+ ⚠️ (requires flag: layout.css.scroll-driven-animations.enabled)
+ *
+ * Coverage: ~85% of global users
+ * Fallback: Static navbar (fully functional, no animation)
+ */
+
+/* ========================================
+   HOMEPAGE NAVBAR ANIMATIONS
+   ======================================== */
+
+/**
+ * Homepage Navbar: Transparent → Opaque with blue border
+ * Triggers on scroll from 0px to 50px
+ */
+@keyframes navbar-shrink-homepage {
+  from {
+    background-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    border-bottom-color: transparent;
+  }
+  to {
+    background-color: rgba(30, 30, 30, 0.6);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(24px);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/**
+ * Navbar height shrink (all pages)
+ * 64px → 56px
+ */
+@keyframes navbar-height-shrink {
+  from {
+    height: 4rem; /* 64px */
+  }
+  to {
+    height: 3.5rem; /* 56px */
+  }
+}
+
+/**
+ * Logo text size shrink
+ * text-xl (1.25rem) → text-lg (1.125rem)
+ */
+@keyframes logo-text-shrink {
+  from {
+    font-size: 1.23rem;
+  }
+  to {
+    font-size: 1.125rem;
+  }
+}
+
+/**
+ * Logo icon size shrink
+ * 24px → 20px
+ */
+@keyframes logo-icon-shrink {
+  from {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  to {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+/* ========================================
+   OTHER PAGES NAVBAR ANIMATIONS
+   ======================================== */
+
+/**
+ * Non-homepage Navbar: Light opaque → Dark opaque
+ * Already has background, just increases opacity and shadow
+ */
+@keyframes navbar-shrink-pages {
+  from {
+    background-color: rgba(30, 30, 30, 0.8);
+    box-shadow: none;
+    backdrop-filter: blur(12px);
+  }
+  to {
+    background-color: rgba(30, 30, 30, 0.95);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(24px);
+  }
+}
+
+/* ========================================
+   APPLY ANIMATIONS (with @supports check)
+   ======================================== */
+
+/**
+ * Only apply scroll-driven animations if browser supports it
+ * This ensures graceful degradation for unsupported browsers
+ */
+@supports (animation-timeline: scroll()) {
+
+  /* Homepage navbar - identified by data attribute */
+  [data-navbar="homepage"] {
+    animation: navbar-shrink-homepage linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 90px;
+  }
+
+  /* Other pages navbar */
+  [data-navbar="pages"] {
+    animation: navbar-shrink-pages linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 90px;
+  }
+
+  /* Navbar inner container (height) - all pages */
+  [data-navbar-container="true"] {
+    animation: navbar-height-shrink linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 90px;
+  }
+
+  /* Logo text */
+  [data-navbar-logo-text="true"] {
+    animation: logo-text-shrink linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 90px;
+  }
+
+  /* Logo icon */
+  [data-navbar-logo-icon="true"] {
+    animation: logo-icon-shrink linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 50px;
+  }
+}
+
+/* ========================================
+   FALLBACK FOR UNSUPPORTED BROWSERS
+   ======================================== */
+
+/**
+ * For browsers without animation-timeline support:
+ * - Navbar stays in initial state (transparent on homepage, semi-opaque on pages)
+ * - Still fully functional, just without scroll-based animation
+ * - Progressive enhancement: core functionality works everywhere
+ */
+@supports not (animation-timeline: scroll()) {
+  /* Apply final state via media query if user has scrolled */
+  /* This is a fallback - ideally use JS detection for better UX */
+
+  [data-navbar="homepage"]:not([style*="animation-timeline"]) {
+    /* Default transparent state */
+    background-color: transparent;
+  }
+
+  [data-navbar="pages"]:not([style*="animation-timeline"]) {
+    /* Default semi-transparent state */
+    background-color: rgba(30, 30, 30, 0.8);
+  }
+}
+
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+   ======================================== */
+
+/**
+ * Hint browser to use GPU acceleration for these properties
+ * Ensures 60fps animations
+ */
+[data-navbar],
+[data-navbar-container],
+[data-navbar-logo-text],
+[data-navbar-logo-icon] {
+  will-change: auto; /* Let browser decide, avoid memory overhead */
+}
+
+/**
+ * Force hardware acceleration during scroll
+ * Only for browsers that support scroll-driven animations
+ */
+@supports (animation-timeline: scroll()) {
+  [data-navbar] {
+    transform: translateZ(0); /* Force GPU layer */
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+/**
+ * Respect user's motion preferences
+ * If user has enabled "reduce motion", disable animations
+ */
+@media (prefers-reduced-motion: reduce) {
+  [data-navbar],
+  [data-navbar-container],
+  [data-navbar-logo-text],
+  [data-navbar-logo-icon] {
+    animation: none !important;
+  }
+
+  /* Apply final scrolled state immediately */
+  [data-navbar="homepage"] {
+    background-color: rgba(30, 30, 30, 0.9);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+
+  [data-navbar-container="true"] {
+    height: 3.5rem;
+  }
+}
+
+/* ========================================
+   DEBUG MODE (commented out by default)
+   ======================================== */
+
+/**
+ * Uncomment to visualize animation ranges
+ * Shows colored backgrounds at different scroll positions
+ */
+/*
+@supports (animation-timeline: scroll()) {
+  @keyframes debug-scroll {
+    0% { background-color: red; }
+    25% { background-color: orange; }
+    50% { background-color: yellow; }
+    75% { background-color: lightgreen; }
+    100% { background-color: green; }
+  }
+
+  [data-navbar-debug="true"] {
+    animation: debug-scroll linear;
+    animation-timeline: scroll(root);
+    animation-range: 0px 200px;
+  }
+}
+*/

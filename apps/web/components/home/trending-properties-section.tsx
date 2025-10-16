@@ -83,11 +83,11 @@ export async function TrendingPropertiesSection() {
             </span>
           </div>
 
-          <h2 className="text-4xl font-extrabold text-gray-900 mb-4">
+          <h2 className="text-4xl font-extrabold text-oslo-gray-900 mb-4">
             Propiedades Más Populares
           </h2>
 
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-oslo-gray-600 max-w-2xl mx-auto">
             Las propiedades que están generando más interés entre compradores y
             que han sido compartidas miles de veces
           </p>
@@ -108,7 +108,7 @@ export async function TrendingPropertiesSection() {
                       index === 0
                         ? "bg-yellow-500" // Gold
                         : index === 1
-                          ? "bg-gray-400" // Silver
+                          ? "bg-oslo-gray-400" // Silver
                           : "bg-orange-600" // Bronze
                     }
                   `}

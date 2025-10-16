@@ -154,6 +154,9 @@ export function HeroSection() {
         <HeroBackground />
       </div>
 
+      {/* Dark Gradient Overlay - Top section for header contrast */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/15 to-transparent pointer-events-none z-[5]" />
+
       {/* Content Layer - Centered with padding for header */}
       <div className="relative z-10 w-full max-w-4xl px-4 text-center">
         {/* Heading - Specific and Contextual - Initially hidden */}

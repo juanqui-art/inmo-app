@@ -67,7 +67,7 @@ export function SignupForm() {
         {state?.error && "password" in state.error && state.error.password && (
           <p className="text-sm text-red-600">{state.error.password[0]}</p>
         )}
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-oslo-gray-500 dark:text-oslo-gray-400">
           Mínimo 8 caracteres, debe incluir letras y números
         </p>
       </div>
@@ -78,7 +78,7 @@ export function SignupForm() {
         <select
           id="role"
           name="role"
-          className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex h-10 w-full rounded-md border border-oslo-gray-300 dark:border-oslo-gray-700 bg-white dark:bg-oslo-gray-1000 px-3 py-2 text-sm text-oslo-gray-900 dark:text-oslo-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
           defaultValue="CLIENT"
         >

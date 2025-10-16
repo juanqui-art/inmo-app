@@ -400,15 +400,15 @@ export function HeroSearchBar() {
             absolute top-full mt-3 w-full
             bg-white rounded-xl sm:rounded-2xl
             shadow-2xl
-            border border-gray-200
+            border border-oslo-gray-200
             max-h-[70vh] sm:max-h-96 overflow-y-auto
             z-50
             animate-in fade-in slide-in-from-top-2 duration-200
           "
         >
           {/* Category Header */}
-          <div className="sticky top-0 px-4 sm:px-5 py-3 border-b border-gray-100 bg-gray-50/95 backdrop-blur-sm z-10">
-            <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">
+          <div className="sticky top-0 px-4 sm:px-5 py-3 border-b border-oslo-gray-100 bg-oslo-gray-50/95 backdrop-blur-sm z-10">
+            <p className="text-xs sm:text-sm font-semibold text-oslo-gray-600 uppercase tracking-wide">
               📍 Ubicaciones encontradas
             </p>
           </div>
@@ -428,7 +428,7 @@ export function HeroSearchBar() {
                   ${
                     index === selectedIndex
                       ? "bg-blue-50 border-l-4 border-blue-500"
-                      : "hover:bg-gray-50 active:bg-gray-100"
+                      : "hover:bg-oslo-gray-50 active:bg-oslo-gray-100"
                   }
                 `}
                 onClick={() => navigateToCity(city)}
@@ -441,18 +441,18 @@ export function HeroSearchBar() {
                   <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-gray-900 truncate text-base sm:text-lg">
+                  <p className="font-semibold text-oslo-gray-900 truncate text-base sm:text-lg">
                     {city.name}, {city.state}
                   </p>
                   {city.propertyCount !== undefined && (
-                    <p className="text-sm sm:text-base text-gray-500 mt-0.5">
+                    <p className="text-sm sm:text-base text-oslo-gray-500 mt-0.5">
                       {city.propertyCount.toLocaleString()} propiedades
                       disponibles
                     </p>
                   )}
                 </div>
                 <svg
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 flex-shrink-0"
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-oslo-gray-400 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -472,8 +472,8 @@ export function HeroSearchBar() {
           {/* Smart Suggestions (if query has content) */}
           {query.length >= 3 && (
             <>
-              <div className="sticky top-[52px] px-4 sm:px-5 py-3 border-t border-gray-100 bg-gray-50/95 backdrop-blur-sm z-10">
-                <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">
+              <div className="sticky top-[52px] px-4 sm:px-5 py-3 border-t border-oslo-gray-100 bg-oslo-gray-50/95 backdrop-blur-sm z-10">
+                <p className="text-xs sm:text-sm font-semibold text-oslo-gray-600 uppercase tracking-wide">
                   💡 Búsquedas relacionadas
                 </p>
               </div>
@@ -483,7 +483,7 @@ export function HeroSearchBar() {
                     px-4 sm:px-5 py-4
                     cursor-pointer
                     flex items-center gap-3 sm:gap-4
-                    hover:bg-gray-50 active:bg-gray-100
+                    hover:bg-oslo-gray-50 active:bg-oslo-gray-100
                     transition-all duration-150
                     min-h-[60px]
                   "
@@ -500,10 +500,10 @@ export function HeroSearchBar() {
                     <span className="text-lg sm:text-xl">🏠</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900 text-base sm:text-lg">
+                    <p className="font-semibold text-oslo-gray-900 text-base sm:text-lg">
                       Casas en {query} bajo $500k
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+                    <p className="text-xs sm:text-sm text-oslo-gray-500 mt-0.5">
                       Búsqueda popular
                     </p>
                   </div>
@@ -513,7 +513,7 @@ export function HeroSearchBar() {
                     px-4 sm:px-5 py-4
                     cursor-pointer
                     flex items-center gap-3 sm:gap-4
-                    hover:bg-gray-50 active:bg-gray-100
+                    hover:bg-oslo-gray-50 active:bg-oslo-gray-100
                     transition-all duration-150
                     min-h-[60px]
                   "
@@ -530,10 +530,10 @@ export function HeroSearchBar() {
                     <span className="text-lg sm:text-xl">🏢</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900 text-base sm:text-lg">
+                    <p className="font-semibold text-oslo-gray-900 text-base sm:text-lg">
                       Departamentos en {query}
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+                    <p className="text-xs sm:text-sm text-oslo-gray-500 mt-0.5">
                       Ver todos los departamentos
                     </p>
                   </div>

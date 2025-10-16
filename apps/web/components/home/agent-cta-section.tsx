@@ -72,13 +72,13 @@ import Link from "next/link";
 
 export function AgentCTASection() {
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-oslo-gray-900 to-oslo-gray-800 text-white">
       <div className="max-w-4xl mx-auto text-center">
         {/* Heading */}
         <h2 className="text-4xl font-bold mb-4">¿Eres Agente Inmobiliario?</h2>
 
         {/* Subheading */}
-        <p className="text-xl text-gray-300 mb-8">
+        <p className="text-xl text-oslo-gray-300 mb-8">
           Únete a nuestra plataforma y conecta con miles de compradores
           potenciales
         </p>
@@ -102,7 +102,7 @@ export function AgentCTASection() {
             <TrendingUp className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
             <div>
               <h3 className="font-semibold text-lg mb-1">Aumenta tus Ventas</h3>
-              <p className="text-gray-300 text-sm">
+              <p className="text-oslo-gray-300 text-sm">
                 Llega a compradores activos buscando propiedades ahora mismo
               </p>
             </div>
@@ -115,7 +115,7 @@ export function AgentCTASection() {
               <h3 className="font-semibold text-lg mb-1">
                 Gestión Simplificada
               </h3>
-              <p className="text-gray-300 text-sm">
+              <p className="text-oslo-gray-300 text-sm">
                 Administra todas tus propiedades desde un solo lugar
               </p>
             </div>
@@ -128,7 +128,7 @@ export function AgentCTASection() {
               <h3 className="font-semibold text-lg mb-1">
                 Analíticas Detalladas
               </h3>
-              <p className="text-gray-300 text-sm">
+              <p className="text-oslo-gray-300 text-sm">
                 Conoce qué propiedades reciben más interés y optimiza tu
                 estrategia
               </p>
@@ -142,7 +142,7 @@ export function AgentCTASection() {
               <h3 className="font-semibold text-lg mb-1">
                 Plataforma Confiable
               </h3>
-              <p className="text-gray-300 text-sm">
+              <p className="text-oslo-gray-300 text-sm">
                 Sistema seguro y respaldo profesional para tu negocio
               </p>
             </div>
@@ -220,7 +220,7 @@ export function AgentCTASection() {
         </div>
 
         {/* Trust Signal */}
-        <p className="text-gray-400 text-sm mt-6">
+        <p className="text-oslo-gray-400 text-sm mt-6">
           ✓ Gratis para comenzar • ✓ Sin tarjeta de crédito • ✓ Cancela cuando
           quieras
         </p>

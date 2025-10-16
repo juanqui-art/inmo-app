@@ -2,25 +2,40 @@
 
 @layer base {
   :root {
+    /* Oslo Gray - Main neutral palette */
+    --oslo-gray-50: 180 3% 94%;
+    --oslo-gray-100: 204 7% 86%;
+    --oslo-gray-200: 202 6% 75%;
+    --oslo-gray-300: 197 4% 65%;
+    --oslo-gray-400: 200 3% 55%;
+    --oslo-gray-500: 204 2% 48%;
+    --oslo-gray-600: 210 2% 39%;
+    --oslo-gray-700: 210 3% 30%;
+    --oslo-gray-800: 200 3% 21%;
+    --oslo-gray-900: 210 3% 13%;
+    --oslo-gray-1000: 180 2% 10%;
+    --oslo-gray-1100: 180 3% 6%;
+
+    /* Semantic tokens - Light mode */
     --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --foreground: var(--oslo-gray-1100);
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: var(--oslo-gray-1100);
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --popover-foreground: var(--oslo-gray-1100);
+    --primary: var(--oslo-gray-900);
+    --primary-foreground: var(--oslo-gray-50);
+    --secondary: var(--oslo-gray-100);
+    --secondary-foreground: var(--oslo-gray-900);
+    --muted: var(--oslo-gray-100);
+    --muted-foreground: var(--oslo-gray-500);
+    --accent: var(--oslo-gray-100);
+    --accent-foreground: var(--oslo-gray-900);
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --border: var(--oslo-gray-300);
+    --input: var(--oslo-gray-300);
+    --ring: var(--oslo-gray-900);
     --radius: 0.5rem;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -30,25 +45,26 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    /* Semantic tokens - Dark mode (Oslo Gray) */
+    --background: var(--oslo-gray-1100);
+    --foreground: var(--oslo-gray-50);
+    --card: var(--oslo-gray-1000);
+    --card-foreground: var(--oslo-gray-50);
+    --popover: var(--oslo-gray-1000);
+    --popover-foreground: var(--oslo-gray-50);
+    --primary: var(--oslo-gray-50);
+    --primary-foreground: var(--oslo-gray-900);
+    --secondary: var(--oslo-gray-900);
+    --secondary-foreground: var(--oslo-gray-50);
+    --muted: var(--oslo-gray-900);
+    --muted-foreground: var(--oslo-gray-400);
+    --accent: var(--oslo-gray-900);
+    --accent-foreground: var(--oslo-gray-50);
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --destructive-foreground: var(--oslo-gray-50);
+    --border: var(--oslo-gray-800);
+    --input: var(--oslo-gray-800);
+    --ring: var(--oslo-gray-300);
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -58,6 +74,21 @@
 }
 
 @theme inline {
+  /* Oslo Gray - Utility classes */
+  --color-oslo-gray-50: hsl(var(--oslo-gray-50) / <alpha-value>);
+  --color-oslo-gray-100: hsl(var(--oslo-gray-100) / <alpha-value>);
+  --color-oslo-gray-200: hsl(var(--oslo-gray-200) / <alpha-value>);
+  --color-oslo-gray-300: hsl(var(--oslo-gray-300) / <alpha-value>);
+  --color-oslo-gray-400: hsl(var(--oslo-gray-400) / <alpha-value>);
+  --color-oslo-gray-500: hsl(var(--oslo-gray-500) / <alpha-value>);
+  --color-oslo-gray-600: hsl(var(--oslo-gray-600) / <alpha-value>);
+  --color-oslo-gray-700: hsl(var(--oslo-gray-700) / <alpha-value>);
+  --color-oslo-gray-800: hsl(var(--oslo-gray-800) / <alpha-value>);
+  --color-oslo-gray-900: hsl(var(--oslo-gray-900) / <alpha-value>);
+  --color-oslo-gray-1000: hsl(var(--oslo-gray-1000) / <alpha-value>);
+  --color-oslo-gray-1100: hsl(var(--oslo-gray-1100) / <alpha-value>);
+
+  /* Semantic colors */
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-card: hsl(var(--card));
@@ -77,6 +108,8 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -85,7 +118,22 @@
   * {
     @apply border-border;
   }
+
+  /* Smooth theme transitions */
+  html {
+    transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+  }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Respect user motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

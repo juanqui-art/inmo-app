@@ -244,7 +244,7 @@ export function ImageUpload({
                   {/* Progress overlay */}
                   {isUploading && uploadProgress[index] !== undefined && (
                     <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
-                      <div className="w-3/4 bg-gray-200 rounded-full h-2 mb-2">
+                      <div className="w-3/4 bg-oslo-gray-200 dark:bg-oslo-gray-700 rounded-full h-2 mb-2">
                         <div
                           className="bg-primary h-2 rounded-full transition-all duration-300"
                           style={{ width: `${uploadProgress[index]}%` }}

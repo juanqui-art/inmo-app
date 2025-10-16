@@ -98,7 +98,7 @@ export function StatsSection({
   };
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-900 text-white">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-oslo-gray-900 text-white">
       <div className="max-w-7xl mx-auto">
         {/* Grid Container */}
         <div
@@ -132,21 +132,21 @@ export function StatsSection({
             <p className="text-4xl font-bold mb-2">
               {formatStat(propertyCount)}
             </p>
-            <p className="text-gray-400">Propiedades</p>
+            <p className="text-oslo-gray-400">Propiedades</p>
           </div>
 
           {/* Stat 2: Cities */}
           <div className="flex flex-col items-center">
             <MapPin className="w-12 h-12 mb-4 opacity-90" />
             <p className="text-4xl font-bold mb-2">{formatStat(cityCount)}</p>
-            <p className="text-gray-400">Ciudades</p>
+            <p className="text-oslo-gray-400">Ciudades</p>
           </div>
 
           {/* Stat 3: Agents */}
           <div className="flex flex-col items-center">
             <Users className="w-12 h-12 mb-4 opacity-90" />
             <p className="text-4xl font-bold mb-2">{formatStat(agentCount)}</p>
-            <p className="text-gray-400">Agentes</p>
+            <p className="text-oslo-gray-400">Agentes</p>
           </div>
 
           {/* Stat 4: Transactions (Optional) */}
@@ -156,7 +156,7 @@ export function StatsSection({
               <p className="text-4xl font-bold mb-2">
                 {formatStat(transactionsCount)}
               </p>
-              <p className="text-gray-400">Ventas Completadas</p>
+              <p className="text-oslo-gray-400">Ventas Completadas</p>
             </div>
           )}
 

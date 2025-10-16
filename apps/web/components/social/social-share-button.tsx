@@ -153,8 +153,8 @@ export function SocialShareButton({
           rounded-md font-medium transition-colors
           focus-visible:outline-none focus-visible:ring-2
           disabled:pointer-events-none disabled:opacity-50
-          ${variant === "ghost" ? "hover:bg-gray-100" : ""}
-          ${variant === "outline" ? "border border-gray-300 hover:bg-gray-100" : ""}
+          ${variant === "ghost" ? "hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-800" : ""}
+          ${variant === "outline" ? "border border-oslo-gray-300 dark:border-oslo-gray-700 hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-800" : ""}
           ${variant === "default" ? "bg-blue-600 text-white hover:bg-blue-700" : ""}
           ${size === "sm" ? "h-9 px-3 text-sm" : ""}
           ${size === "lg" ? "h-11 px-8 text-lg" : ""}
@@ -178,16 +178,16 @@ export function SocialShareButton({
           />
 
           {/* Popover Content */}
-          <div className="absolute right-0 top-full mt-2 z-50 w-64 rounded-lg border bg-white p-3 shadow-lg">
+          <div className="absolute right-0 top-full mt-2 z-50 w-64 rounded-lg border border-oslo-gray-300 dark:border-oslo-gray-700 bg-white dark:bg-oslo-gray-1000 p-3 shadow-lg">
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-900 mb-3">
+              <p className="text-sm font-medium text-oslo-gray-900 dark:text-oslo-gray-50 mb-3">
                 Compartir propiedad
               </p>
 
               {/* WhatsApp */}
               <button
                 onClick={() => handlePlatformShare("WHATSAPP")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
               >
                 <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
                   <MessageCircle className="h-4 w-4 text-white" />
@@ -198,7 +198,7 @@ export function SocialShareButton({
               {/* Facebook */}
               <button
                 onClick={() => handlePlatformShare("FACEBOOK")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
               >
                 <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
                   <Facebook className="h-4 w-4 text-white" />
@@ -209,7 +209,7 @@ export function SocialShareButton({
               {/* Twitter */}
               <button
                 onClick={() => handlePlatformShare("TWITTER")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
               >
                 <div className="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center">
                   <Twitter className="h-4 w-4 text-white" />
@@ -220,7 +220,7 @@ export function SocialShareButton({
               {/* LinkedIn */}
               <button
                 onClick={() => handlePlatformShare("LINKEDIN")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
               >
                 <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center">
                   <Linkedin className="h-4 w-4 text-white" />
@@ -231,9 +231,9 @@ export function SocialShareButton({
               {/* Email */}
               <button
                 onClick={() => handlePlatformShare("EMAIL")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
               >
-                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-oslo-gray-600 flex items-center justify-center">
                   <Mail className="h-4 w-4 text-white" />
                 </div>
                 <span className="text-sm font-medium">Email</span>
@@ -245,13 +245,13 @@ export function SocialShareButton({
               {/* Copy Link */}
               <button
                 onClick={() => handlePlatformShare("COPY_LINK")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
               >
-                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-oslo-gray-200 dark:bg-oslo-gray-800 flex items-center justify-center">
                   {copied ? (
                     <Check className="h-4 w-4 text-green-600" />
                   ) : (
-                    <LinkIcon className="h-4 w-4 text-gray-700" />
+                    <LinkIcon className="h-4 w-4 text-oslo-gray-700 dark:text-oslo-gray-300" />
                   )}
                 </div>
                 <span className="text-sm font-medium">

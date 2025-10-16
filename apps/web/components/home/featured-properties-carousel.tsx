@@ -171,17 +171,17 @@ export function FeaturedPropertiesCarousel({
 
   return (
     <section
-      className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-950"
+      className="py-12 px-4 sm:px-6 lg:px-8 bg-oslo-gray-1000"
       aria-label="Propiedades destacadas"
     >
       <div className="max-w-7xl mx-auto">
         {/* Header with navigation */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-gray-100">
+            <h2 className="text-3xl font-bold text-oslo-gray-100">
               Propiedades Destacadas
             </h2>
-            <p className="text-gray-400 mt-2">
+            <p className="text-oslo-gray-400 mt-2">
               Las mejores opciones seleccionadas para ti
             </p>
           </div>
@@ -194,11 +194,11 @@ export function FeaturedPropertiesCarousel({
               aria-label="Ver propiedades anteriores"
               className="
                 p-2 rounded-full
-                bg-gray-800 border-2 border-gray-700
-                hover:border-blue-500 hover:bg-gray-700
-                disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-gray-700
+                bg-oslo-gray-800 border-2 border-oslo-gray-700
+                hover:border-blue-500 hover:bg-oslo-gray-700
+                disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-oslo-gray-700
                 transition-all duration-200
-                text-gray-200
+                text-oslo-gray-200
               "
             >
               <ChevronLeft className="w-5 h-5" />
@@ -210,11 +210,11 @@ export function FeaturedPropertiesCarousel({
               aria-label="Ver más propiedades"
               className="
                 p-2 rounded-full
-                bg-gray-800 border-2 border-gray-700
-                hover:border-blue-500 hover:bg-gray-700
-                disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-gray-700
+                bg-oslo-gray-800 border-2 border-oslo-gray-700
+                hover:border-blue-500 hover:bg-oslo-gray-700
+                disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-oslo-gray-700
                 transition-all duration-200
-                text-gray-200
+                text-oslo-gray-200
               "
             >
               <ChevronRight className="w-5 h-5" />

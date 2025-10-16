@@ -77,7 +77,7 @@ export function PublicFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-oslo-gray-900 text-oslo-gray-300">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
@@ -100,7 +100,7 @@ export function PublicFooter() {
               <span className="font-bold text-xl text-white">InmoApp</span>
             </Link>
 
-            <p className="text-gray-400 mb-6 max-w-sm">
+            <p className="text-oslo-gray-400 mb-6 max-w-sm">
               Encuentra tu hogar ideal. Miles de propiedades en venta y renta en
               las mejores ubicaciones.
             </p>
@@ -126,8 +126,8 @@ export function PublicFooter() {
                 className="
                   w-10 h-10 flex items-center justify-center
                   rounded-full
-                  bg-gray-800 hover:bg-blue-600
-                  text-gray-400 hover:text-white
+                  bg-oslo-gray-800 hover:bg-blue-600
+                  text-oslo-gray-400 hover:text-white
                   transition-all duration-200
                   hover:scale-110
                 "
@@ -143,8 +143,8 @@ export function PublicFooter() {
                 className="
                   w-10 h-10 flex items-center justify-center
                   rounded-full
-                  bg-gray-800 hover:bg-sky-500
-                  text-gray-400 hover:text-white
+                  bg-oslo-gray-800 hover:bg-sky-500
+                  text-oslo-gray-400 hover:text-white
                   transition-all duration-200
                   hover:scale-110
                 "
@@ -160,8 +160,8 @@ export function PublicFooter() {
                 className="
                   w-10 h-10 flex items-center justify-center
                   rounded-full
-                  bg-gray-800 hover:bg-pink-600
-                  text-gray-400 hover:text-white
+                  bg-oslo-gray-800 hover:bg-pink-600
+                  text-oslo-gray-400 hover:text-white
                   transition-all duration-200
                   hover:scale-110
                 "
@@ -177,8 +177,8 @@ export function PublicFooter() {
                 className="
                   w-10 h-10 flex items-center justify-center
                   rounded-full
-                  bg-gray-800 hover:bg-blue-700
-                  text-gray-400 hover:text-white
+                  bg-oslo-gray-800 hover:bg-blue-700
+                  text-oslo-gray-400 hover:text-white
                   transition-all duration-200
                   hover:scale-110
                 "
@@ -332,10 +332,10 @@ export function PublicFooter() {
       </div>
 
       {/* Bottom Bar (Copyright) */}
-      <div className="border-t border-gray-800">
+      <div className="border-t border-oslo-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-400 text-sm">
+            <p className="text-oslo-gray-400 text-sm">
               © {currentYear} InmoApp. Todos los derechos reservados.
             </p>
 
@@ -343,19 +343,19 @@ export function PublicFooter() {
             <div className="flex gap-6 text-sm">
               <Link
                 href="/terminos"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-oslo-gray-400 hover:text-white transition-colors"
               >
                 Términos
               </Link>
               <Link
                 href="/privacidad"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-oslo-gray-400 hover:text-white transition-colors"
               >
                 Privacidad
               </Link>
               <Link
                 href="/cookies"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-oslo-gray-400 hover:text-white transition-colors"
               >
                 Cookies
               </Link>

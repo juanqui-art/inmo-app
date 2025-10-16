@@ -126,7 +126,7 @@ export function PropertyCard({
   }, [currentImageIndex]);
 
   return (
-    <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-gray-100 shadow-lg hover:shadow-2xl transition-shadow group">
+    <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-oslo-gray-100 dark:bg-oslo-gray-900 shadow-lg hover:shadow-2xl transition-shadow group">
       {/* Image Container */}
       <div
         className="relative w-full h-full cursor-pointer"
@@ -144,8 +144,8 @@ export function PropertyCard({
             priority={priority && currentImageIndex === 0}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-200">
-            <Building2 className="h-20 w-20 text-gray-400" />
+          <div className="w-full h-full flex items-center justify-center bg-oslo-gray-200 dark:bg-oslo-gray-800">
+            <Building2 className="h-20 w-20 text-oslo-gray-400 dark:text-oslo-gray-500" />
           </div>
         )}
 
@@ -162,7 +162,7 @@ export function PropertyCard({
               aria-label="Previous image"
             >
               <div className="h-full flex items-center justify-start pl-4">
-                <div className="bg-black/50 backdrop-blur-sm rounded-full p-2">
+                <div className="bg-oslo-gray-1100/60 backdrop-blur-sm rounded-full p-2">
                   <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
@@ -180,7 +180,7 @@ export function PropertyCard({
               aria-label="Next image"
             >
               <div className="h-full flex items-center justify-end pr-4">
-                <div className="bg-black/50 backdrop-blur-sm rounded-full p-2">
+                <div className="bg-oslo-gray-1100/60 backdrop-blur-sm rounded-full p-2">
                   <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -217,7 +217,7 @@ export function PropertyCard({
           <Badge className="bg-blue-600 backdrop-blur-sm border-blue-400/30 text-white font-bold px-3 py-1 shadow-lg rounded-full">
             {transactionTypeLabels[property.transactionType]}
           </Badge>
-          <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-gray-900 font-semibold rounded-full">
+          <Badge variant="secondary" className="bg-white/95 dark:bg-oslo-gray-800/95 backdrop-blur-sm text-oslo-gray-900 dark:text-oslo-gray-50 font-semibold rounded-full">
             {categoryLabels[property.category]}
           </Badge>
         </div>
@@ -232,7 +232,7 @@ export function PropertyCard({
                 e.stopPropagation();
                 onFavoriteToggle(property.id);
               }}
-              className="p-2 rounded-full bg-black/60 backdrop-blur-sm hover:bg-black/80 transition-colors"
+              className="p-2 rounded-full bg-oslo-gray-1100/60 backdrop-blur-sm hover:bg-oslo-gray-1100/80 transition-colors"
               aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
             >
               <Heart
@@ -244,7 +244,7 @@ export function PropertyCard({
           )}
 
           {/* Share Button */}
-          <div className="[&>div]:relative [&_button]:bg-black/60 [&_button]:backdrop-blur-sm [&_button]:hover:bg-black/80 [&_button]:text-white [&_button]:border-0 [&_button]:p-2 [&_button]:h-auto">
+          <div className="[&>div]:relative [&_button]:bg-oslo-gray-1100/60 [&_button]:backdrop-blur-sm [&_button]:hover:bg-oslo-gray-1100/80 [&_button]:text-white [&_button]:border-0 [&_button]:p-2 [&_button]:h-auto">
             <SocialShareButton
               property={property as any}
               shareCount={shareCount}
@@ -263,7 +263,7 @@ export function PropertyCard({
         )}
 
         {/* Info Overlay (Glassmorphism) */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent backdrop-blur-sm p-4 z-20">
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-oslo-gray-1100/90 via-oslo-gray-1100/50 to-transparent backdrop-blur-sm p-4 z-20">
           <Link href={`/dashboard/propiedades/${property.id}/editar`}>
             {/* Price */}
             <p className="text-2xl font-bold text-white mb-1">{formattedPrice}</p>
@@ -322,7 +322,7 @@ export function PropertyCard({
 
       {/* Actions (if provided) */}
       {actions && (
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t border-gray-200 z-30">
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/95 dark:bg-oslo-gray-1000/95 backdrop-blur-sm border-t border-oslo-gray-200 dark:border-oslo-gray-800 z-30">
           {actions}
         </div>
       )}
