@@ -77,8 +77,14 @@ inmo-app/
 │   │
 │   └── typescript-config/       # Shared TypeScript configs
 │
-├── CLAUDE.md                    # Main context file (imports from .claude/)
-├── .claude/                     # Detailed documentation
+├── docs/                        # Project documentation
+│   ├── AI_ASSISTANTS.md         # Context for Claude & Gemini
+│   ├── TOKEN_OPTIMIZATION.md    # Reduce AI context
+│   ├── setup/                   # Setup guides
+│   └── mcp/                     # MCP integration
+├── .claude/                     # Detailed documentation (auto-loaded)
+├── QUICK_START.md               # 5-minute onboarding
+├── README.md                    # Project overview
 ├── turbo.json                   # Turborepo config
 ├── package.json                 # Root workspace config
 └── bun.lockb                    # Bun lockfile

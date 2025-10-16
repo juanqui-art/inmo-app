@@ -235,14 +235,12 @@ export function safeAnimate(
 ): gsap.core.Tween | null {
   if (prefersReducedMotion()) {
     // Apply final state immediately without animation
-    if (typeof target === "string") {
-      const elements = document.querySelectorAll(target);
-      elements.forEach((el) => {
-        Object.assign((el as HTMLElement).style, vars);
-      });
-    } else if (target instanceof HTMLElement) {
-      Object.assign(target.style, vars);
-    }
+    const elements = gsap.utils.toArray(target);
+    elements.forEach((el) => {
+      // We can safely cast to HTMLElement as GSAP targets are elements
+      // and we are manipulating style properties.
+      Object.assign((el as HTMLElement).style, vars);
+    });
     return null;
   }
 

@@ -23,6 +23,7 @@
  */
 
 import type { Property } from "@prisma/client";
+import { env } from "@/lib/env";
 
 export type SharePlatform =
   | "FACEBOOK"
@@ -49,7 +50,7 @@ export function buildPropertyShareUrl(propertyId: string): string {
   const baseUrl =
     typeof window !== "undefined"
       ? window.location.origin
-      : process.env.NEXT_PUBLIC_SITE_URL || "https://tudominio.com";
+      : env.NEXT_PUBLIC_SITE_URL;
 
   return `${baseUrl}/propiedades/${propertyId}`;
 }

@@ -12,12 +12,12 @@
  */
 
 import { createBrowserClient } from "@supabase/ssr";
+import { env } from "@/lib/env";
 
 export function createClient() {
-  // Obtener las variables de entorno (URL y KEY de Supabase)
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
   // Crear el client que maneja cookies automáticamente
-  return createBrowserClient(supabaseUrl, supabaseAnonKey);
+  return createBrowserClient(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
 }

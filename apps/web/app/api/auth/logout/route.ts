@@ -16,6 +16,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { env } from "@/lib/env";
 
 export async function POST() {
   try {
@@ -30,7 +31,7 @@ export async function POST() {
     }
 
     // Redirect to homepage
-    return NextResponse.redirect(new URL("/", process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"), {
+    return NextResponse.redirect(new URL("/", env.NEXT_PUBLIC_SITE_URL), {
       status: 303,
     });
   } catch (error) {
