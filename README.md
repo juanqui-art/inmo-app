@@ -7,7 +7,8 @@ Modern real estate platform built with Next.js 15, Supabase, and Turborepo.
 ## 📚 Quick Links
 
 - **[Quick Start Guide](./QUICK_START.md)** - Get up and running in 5 minutes
-- **[AI Assistants Guide](./docs/AI_ASSISTANTS.md)** - Context for Claude & Gemini
+- **[Claude Context](./CLAUDE.md)** - Auto-loaded context for Claude Code
+- **[AI Assistants Guide](./docs/AI_ASSISTANTS.md)** - Complete guide for Claude & Gemini
 - **[Token Optimization](./docs/TOKEN_OPTIMIZATION.md)** - Reduce AI context usage
 - **[Setup Guides](./docs/setup/)** - Configuration & troubleshooting
 - **[MCP Integration](./docs/mcp/)** - Model Context Protocol

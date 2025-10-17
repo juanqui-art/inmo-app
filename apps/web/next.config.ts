@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@repo/database", "@repo/ui", "@repo/supabase"],
+  transpilePackages: [
+    "@repo/database",
+    "@repo/ui",
+    "@repo/supabase",
+    "react-map-gl",
+    "mapbox-gl",
+  ],
   images: {
     remotePatterns: [
       {

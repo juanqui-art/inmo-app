@@ -45,6 +45,12 @@ const clientSchema = z.object({
         .url("NEXT_PUBLIC_SITE_URL must be a valid URL")
         .optional()
         .default("http://localhost:3000"),
+
+    NEXT_PUBLIC_MAPBOX_TOKEN: z
+        .string()
+        .min(1, "NEXT_PUBLIC_MAPBOX_TOKEN is required")
+        .startsWith("pk.", "NEXT_PUBLIC_MAPBOX_TOKEN must be a valid MapBox public token (starts with 'pk.')")
+        .optional(), // Optional: only needed for /mapa page
 });
 
 /**
@@ -86,6 +92,7 @@ const parseEnv = () => {
             NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
             NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
             NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+            NEXT_PUBLIC_MAPBOX_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
         });
 
         if (!result.success) {
@@ -102,6 +109,7 @@ const parseEnv = () => {
         NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+        NEXT_PUBLIC_MAPBOX_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
         DATABASE_URL: process.env.DATABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         NODE_ENV: process.env.NODE_ENV,
