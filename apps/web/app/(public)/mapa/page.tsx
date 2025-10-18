@@ -42,6 +42,8 @@
  */
 
 import { MapView } from "@/components/map/map-view";
+import { parseMapParams } from "@/lib/utils/url-helpers";
+import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import type { Metadata } from "next";
 
 /**
@@ -65,7 +67,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function MapPage() {
+interface MapPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function MapPage(props: MapPageProps) {
+  // Await searchParams (Next.js 15 requirement)
+  const searchParams = await props.searchParams;
+
+  /**
+   * Parse viewport from URL or use defaults
+   * Enables shareable map locations like: /mapa?lat=-2.90&lng=-79.00&zoom=12
+   */
+  const defaultViewport = {
+    latitude: DEFAULT_MAP_CONFIG.AZUAY_CENTER.latitude,
+    longitude: DEFAULT_MAP_CONFIG.AZUAY_CENTER.longitude,
+    zoom: DEFAULT_MAP_CONFIG.DEFAULT_ZOOM,
+  };
+
+  const viewport = parseMapParams(searchParams, defaultViewport);
+
   /**
    * MOCK DATA for testing
    * TODO: Replace with real database query when ready
@@ -194,15 +215,14 @@ export default async function MapPage() {
   ];
 
   /**
-   * Mock data is already serialized (plain numbers)
-   * Center map on Cuenca, Ecuador
+   * Render map with mock properties and viewport from URL
    */
-  const initialCenter: [number, number] = [-79.0044, -2.8995]; // Cuenca
-
-  /**
-   * Render map with mock properties
-   */
-  return <MapView properties={properties} initialCenter={initialCenter} />;
+  return (
+    <MapView
+      properties={properties}
+      initialViewport={viewport}
+    />
+  );
 }
 
 /**
@@ -225,26 +245,37 @@ export default async function MapPage() {
 export const revalidate = 300; // 5 minutes
 
 /**
- * FUTURE ENHANCEMENTS:
+ * COMPLETED FEATURES:
+ * ✅ URL State: Shareable map positions
+ *    - Viewport syncs to URL (/mapa?lat=-2.9&lng=-79.0&zoom=12)
+ *    - Browser history support (back/forward navigation)
+ *    - Debounced updates (500ms) to avoid spam
+ *    - Server-side viewport parsing from searchParams
  *
- * 1. Bounds Fitting:
- *    Calculate optimal zoom to show all markers
- *    const bounds = getBoundsFromProperties(properties)
+ * NEXT PRIORITIES:
  *
- * 2. URL State:
- *    Save viewport in URL query params
- *    /mapa?lat=-2.9&lng=-79.0&zoom=12
+ * 1. Real Database Integration:
+ *    - Replace mock data with Prisma query
+ *    - Fetch only properties with valid coordinates
+ *    - Use propertyRepository.findMany({ where: { latitude: { not: null } } })
  *
- * 3. Server-Side Filtering:
- *    Accept search params for pre-filtering
- *    const searchParams = await props.searchParams
- *    const filtered = filterProperties(properties, searchParams)
+ * 2. Server-Side Filtering:
+ *    - Accept filter params (transactionType, category, price range)
+ *    - Pre-filter properties on server before rendering
+ *    - Example: /mapa?transactionType=SALE&minPrice=100000
+ *
+ * 3. Bounds Fitting:
+ *    - Calculate optimal zoom to show all properties
+ *    - getBoundsFromProperties(properties) helper
+ *    - Auto-fit viewport when filters change
  *
  * 4. Analytics:
- *    Track which areas users explore most
- *    Track which properties get clicked on map
+ *    - Track which areas users explore most
+ *    - Track property marker clicks
+ *    - Track search queries and filters used
  *
- * 5. Prefetching:
- *    Prefetch property details on marker hover
- *    Faster navigation to property page
+ * 5. Performance Optimizations:
+ *    - Prefetch property details on marker hover
+ *    - Implement viewport-based filtering (only show visible)
+ *    - Add property clustering for large datasets
  */
