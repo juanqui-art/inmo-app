@@ -42,7 +42,7 @@ export function MapSearchBar({ onLocationSelect }: MapSearchBarProps) {
   };
 
   return (
-    <div className="absolute top-4 left-4 z-20 w-full max-w-md">
+    <div className="absolute top-18 left-4 z-20 w-full max-w-md">
       <div className="relative">
         {/* Search Input */}
         <div className="flex items-center gap-3 bg-white/95 dark:bg-oslo-gray-900/95 backdrop-blur-sm rounded-full px-5 py-3 shadow-lg border border-oslo-gray-200 dark:border-oslo-gray-800">

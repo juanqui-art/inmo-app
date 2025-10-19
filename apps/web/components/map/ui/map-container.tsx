@@ -6,6 +6,7 @@
  * - Property markers
  * - Navigation controls
  * - Scale control
+ * - Property list drawer
  *
  * USAGE:
  * <MapContainer
@@ -20,10 +21,12 @@
  * - Render MapBox GL component
  * - Render map controls (navigation, scale)
  * - Render property markers
+ * - Render property list drawer
  */
 
 "use client";
 
+import { useState } from "react";
 import Map, {
 	NavigationControl,
 	ScaleControl,
@@ -31,6 +34,7 @@ import Map, {
 } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import { PropertyMarker } from "../property-marker";
+import { PropertyListDrawer } from "../property-list-drawer";
 import type { MapProperty } from "../map-view";
 
 // Import MapBox GL CSS
@@ -65,6 +69,11 @@ export function MapContainer({
 	mapboxToken,
 	properties,
 }: MapContainerProps) {
+	// State for highlighted property (on hover)
+	const [highlightedPropertyId, setHighlightedPropertyId] = useState<
+		string | null
+	>(null);
+
 	return (
 		<div className="relative w-full h-screen">
 			{/* Search Bar - Floating Top Left */}
@@ -85,15 +94,15 @@ export function MapContainer({
 				reuseMaps
 			>
 				{/* Navigation Controls (Zoom +/-) */}
-				<NavigationControl
-					position="bottom-right"
-					showCompass={true}
-					showZoom={true}
-					visualizePitch={true}
-				/>
+				{/*<NavigationControl*/}
+				{/*	position="bottom-right"*/}
+				{/*	showCompass={true}*/}
+				{/*	showZoom={true}*/}
+				{/*	visualizePitch={true}*/}
+				{/*/>*/}
 
 				{/* Scale Control (Distance) */}
-				<ScaleControl position="bottom-left" unit="metric" />
+				{/*<ScaleControl position="bottom-left" unit="metric" />*/}
 
 				{/* Property Markers */}
 				{properties.map((property) => {
@@ -115,6 +124,16 @@ export function MapContainer({
 					);
 				})}
 			</Map>
+
+			{/* Property List Drawer */}
+			<PropertyListDrawer
+				properties={properties}
+				onPropertyHover={setHighlightedPropertyId}
+				onPropertyClick={(id) => {
+					console.log("Property clicked from drawer:", id);
+					// TODO: Scroll to property or open details
+				}}
+			/>
 
 			{/* Properties Count Badge */}
 			{/*<div className="absolute top-20 left-4 z-10 bg-white/95 dark:bg-oslo-gray-900/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border border-oslo-gray-200 dark:border-oslo-gray-800">*/}

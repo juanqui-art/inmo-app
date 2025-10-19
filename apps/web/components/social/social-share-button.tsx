@@ -45,13 +45,11 @@ import { useState } from "react";
 import {
   Share2,
   MessageCircle,
-  Facebook,
-  Twitter,
-  Linkedin,
   Mail,
   Link as LinkIcon,
   Check,
 } from "lucide-react";
+import { SocialIcon } from "@/components/ui/social-icon";
 // No external Button component needed
 import type { Property } from "@prisma/client";
 import {
@@ -201,31 +199,31 @@ export function SocialShareButton({
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
               >
                 <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-                  <Facebook className="h-4 w-4 text-white" />
+                  <SocialIcon name="facebook" className="h-4 w-4 text-white" />
                 </div>
                 <span className="text-sm font-medium">Facebook</span>
               </button>
 
-              {/* Twitter */}
+              {/* Instagram */}
               <button
-                onClick={() => handlePlatformShare("TWITTER")}
+                onClick={() => handlePlatformShare("INSTAGRAM")}
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
               >
-                <div className="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center">
-                  <Twitter className="h-4 w-4 text-white" />
+                <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center">
+                  <SocialIcon name="instagram" className="h-4 w-4 text-white" />
                 </div>
-                <span className="text-sm font-medium">Twitter</span>
+                <span className="text-sm font-medium">Instagram</span>
               </button>
 
-              {/* LinkedIn */}
+              {/* TikTok */}
               <button
-                onClick={() => handlePlatformShare("LINKEDIN")}
+                onClick={() => handlePlatformShare("TIKTOK")}
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
               >
-                <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center">
-                  <Linkedin className="h-4 w-4 text-white" />
+                <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
+                  <SocialIcon name="tiktok" className="h-4 w-4 text-white" />
                 </div>
-                <span className="text-sm font-medium">LinkedIn</span>
+                <span className="text-sm font-medium">TikTok</span>
               </button>
 
               {/* Email */}

@@ -17,7 +17,7 @@ interface AuthButtonsProps {
 }
 
 export const AuthButtons = forwardRef<HTMLDivElement, AuthButtonsProps>(
-    ({variant, isHomepage = false, onNavigate}, ref) => {
+    ({variant   , isHomepage = false, onNavigate}, ref) => {
         if (variant === "desktop") {
             return (
                 <div ref={ref} className="flex items-center gap-3">

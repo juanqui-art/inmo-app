@@ -15,7 +15,7 @@ import { Home, Building2, Filter } from "lucide-react";
 
 export function MapFilters() {
   return (
-    <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+    <div className="absolute top-18 right-4 z-20 flex items-center gap-2">
       {/* Transaction Type Filters */}
       <div className="flex items-center gap-2 bg-white/95 dark:bg-oslo-gray-900/95 backdrop-blur-sm rounded-full px-3 py-2 shadow-lg border border-oslo-gray-200 dark:border-oslo-gray-800">
         <button

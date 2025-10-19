@@ -60,7 +60,6 @@
  * - https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts
  */
 
-import { PublicFooter } from "@/components/layout/public-footer";
 import { PublicHeader } from "@/components/layout/public-header";
 import { Toaster } from "sonner";
 
@@ -91,7 +90,6 @@ export default function PublicLayout({
         - Links, social, copyright
         - Always at bottom
       */}
-      <PublicFooter />
 
       {/*
         TOAST NOTIFICATIONS

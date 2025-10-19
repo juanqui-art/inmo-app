@@ -31,7 +31,9 @@ export type SharePlatform =
   | "WHATSAPP"
   | "LINKEDIN"
   | "EMAIL"
-  | "COPY_LINK";
+  | "COPY_LINK"
+  | "INSTAGRAM"
+  | "TIKTOK";
 
 interface ShareData {
   url: string;
@@ -230,6 +232,26 @@ export async function copyLinkToClipboard(url: string): Promise<boolean> {
   }
 }
 
+export function shareToInstagram(shareData: ShareData): void {
+  const instagramUrl = `https://www.instagram.com/`;
+
+  window.open(
+    instagramUrl,
+    "_blank",
+    "width=600,height=400,noopener,noreferrer"
+  );
+}
+
+export function shareToTikTok(shareData: ShareData): void {
+  const tiktokUrl = `https://www.tiktok.com/`;
+
+  window.open(
+    tiktokUrl,
+    "_blank",
+    "width=600,height=400,noopener,noreferrer"
+  );
+}
+
 /**
  * Generic share handler
  *
@@ -253,6 +275,10 @@ export function shareProperty(
       return shareViaEmail(shareData);
     case "COPY_LINK":
       return copyLinkToClipboard(shareData.url);
+    case "INSTAGRAM":
+      return shareToInstagram(shareData);
+    case "TIKTOK":
+      return shareToTikTok(shareData);
   }
 }
 
