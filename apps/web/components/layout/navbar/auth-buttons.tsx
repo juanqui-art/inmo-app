@@ -14,6 +14,7 @@ interface AuthButtonsProps {
     variant: "desktop" | "mobile";
     isHomepage?: boolean;
     onNavigate?: () => void;
+    // FIX: Added explicit type for aria attributes to improve accessibility
 }
 
 export const AuthButtons = forwardRef<HTMLDivElement, AuthButtonsProps>(
