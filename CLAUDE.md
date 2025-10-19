@@ -123,3 +123,14 @@ Phase 1.5: Public-facing features
 **Conventional commits:** `feat(scope):`, `fix(scope):`, `refactor(scope):`
 
 **Branch:** `main` (deploy to Vercel)
+
+**Parallel Work:** Use `git worktrees` for simultaneous feature/bugfix branches
+```bash
+# Quick setup (see docs/git-worktrees-guide.md for full guide)
+git branch feature/name && git branch bugfix/name
+git worktree add ../inmo-app-feature feature/name
+git worktree add ../inmo-app-bugfix bugfix/name
+# Then: cd ../inmo-app-feature && claude (terminal 1)
+#       cd ../inmo-app-bugfix && claude (terminal 2)
+# Finally: git merge feature/name && git merge bugfix/name
+```
