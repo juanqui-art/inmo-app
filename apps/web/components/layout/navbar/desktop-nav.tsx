@@ -25,6 +25,7 @@ interface DesktopNavProps {
     user: SafeUser;
     isHomepage: boolean;
     isMapPage?: boolean;
+    isDarkMode?: boolean;
 }
 
 export function DesktopNav({isAuthenticated, user, isHomepage, isMapPage = false}: DesktopNavProps) {
