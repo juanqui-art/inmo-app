@@ -28,11 +28,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Map, {
-	NavigationControl,
-	ScaleControl,
-	type ViewStateChangeEvent,
-} from "react-map-gl/mapbox";
+import Map, { type ViewStateChangeEvent } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import { PropertyMarker } from "../property-marker";
 import { PropertyListDrawer } from "../property-list-drawer";

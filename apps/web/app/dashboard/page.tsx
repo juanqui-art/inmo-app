@@ -13,7 +13,6 @@
 
 import { Building2, Calendar, TrendingUp, Users } from "lucide-react";
 import { requireRole } from "@/lib/auth";
-import { propertyRepository } from "@repo/database";
 import { db } from "@repo/database/src/client";
 
 export default async function DashboardPage() {
