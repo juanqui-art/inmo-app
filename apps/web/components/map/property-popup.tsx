@@ -52,6 +52,11 @@ export function PropertyPopup({
     maximumFractionDigits: 0,
   });
 
+  // Guard against missing coordinates
+  if (!property.latitude || !property.longitude) {
+    return null;
+  }
+
   return (
     <Popup
       longitude={property.longitude}
@@ -96,9 +101,13 @@ export function PropertyPopup({
           </h3>
 
           {/* Location */}
-          <p className="text-xs text-oslo-gray-600 dark:text-oslo-gray-400">
-            {property.city}, {property.state}
-          </p>
+          {(property.city || property.state) && (
+            <p className="text-xs text-oslo-gray-600 dark:text-oslo-gray-400">
+              {property.city && property.state
+                ? `${property.city}, ${property.state}`
+                : property.city || property.state}
+            </p>
+          )}
 
           {/* Features Grid */}
           <div className="flex gap-3 py-2 border-y border-oslo-gray-200 dark:border-oslo-gray-700">

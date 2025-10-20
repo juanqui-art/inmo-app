@@ -40,6 +40,7 @@ import { MapLoadingState } from "./ui/map-loading-state";
 /**
  * Minimal property data needed for map rendering
  * Flexible type that works with partial selects from Prisma
+ * Extended to support popup display and details
  */
 export interface MapProperty {
 	id: string;
@@ -48,6 +49,11 @@ export interface MapProperty {
 	transactionType: TransactionType;
 	latitude: number | null;
 	longitude: number | null;
+	city?: string;
+	state?: string;
+	bedrooms?: number | null;
+	bathrooms?: number | null;
+	area?: number | null;
 	images?: Array<{
 		url: string;
 		alt: string | null;
