@@ -27,6 +27,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Map, {
 	NavigationControl,
 	ScaleControl,
@@ -35,6 +36,7 @@ import Map, {
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import { PropertyMarker } from "../property-marker";
 import { PropertyListDrawer } from "../property-list-drawer";
+import { PropertyPopup } from "../property-popup";
 import type { MapProperty } from "../map-view";
 
 // Import MapBox GL CSS
@@ -69,10 +71,32 @@ export function MapContainer({
 	mapboxToken,
 	properties,
 }: MapContainerProps) {
+	const router = useRouter();
+
 	// State for highlighted property (on hover)
 	const [highlightedPropertyId, setHighlightedPropertyId] = useState<
 		string | null
 	>(null);
+
+	// State for selected property popup
+	const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
+		null
+	);
+
+	// Get selected property for popup
+	const selectedProperty = selectedPropertyId
+		? properties.find((p) => p.id === selectedPropertyId)
+		: null;
+
+	// Handle marker click - show popup
+	const handleMarkerClick = (property: MapProperty) => {
+		setSelectedPropertyId(property.id);
+	};
+
+	// Handle drawer property click - navigate to details
+	const handleDrawerPropertyClick = (propertyId: string) => {
+		router.push(`/propiedades/${propertyId}`);
+	};
 
 	return (
 		<div className="relative w-full h-screen">
@@ -116,23 +140,30 @@ export function MapContainer({
 							longitude={property.longitude}
 							price={property.price}
 							transactionType={property.transactionType}
-							onClick={() => {
-								console.log("Clicked property:", property.title);
-								// TODO: Open popup in Phase 4
-							}}
+							isHighlighted={highlightedPropertyId === property.id}
+							onClick={() => handleMarkerClick(property)}
 						/>
 					);
 				})}
+
+				{/* Property Popup on Marker Click */}
+				{selectedProperty && selectedProperty.latitude && selectedProperty.longitude && (
+					<PropertyPopup
+						property={selectedProperty}
+						onClose={() => setSelectedPropertyId(null)}
+						onViewDetails={() => {
+							setSelectedPropertyId(null);
+							handleDrawerPropertyClick(selectedProperty.id);
+						}}
+					/>
+				)}
 			</Map>
 
 			{/* Property List Drawer */}
 			<PropertyListDrawer
 				properties={properties}
 				onPropertyHover={setHighlightedPropertyId}
-				onPropertyClick={(id) => {
-					console.log("Property clicked from drawer:", id);
-					// TODO: Scroll to property or open details
-				}}
+				onPropertyClick={handleDrawerPropertyClick}
 			/>
 
 			{/* Properties Count Badge */}
