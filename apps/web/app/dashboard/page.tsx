@@ -2,43 +2,98 @@
  * DASHBOARD - Página principal
  * Vista general con estadísticas y accesos rápidos
  * Solo accesible para AGENT y ADMIN
+ *
+ * FEATURES:
+ * - Real-time statistics from database
+ * - Property count by status (active, draft, sold)
+ * - Appointment tracking
+ * - View statistics
+ * - Responsive grid layout
  */
 
 import { Building2, Calendar, TrendingUp, Users } from "lucide-react";
 import { requireRole } from "@/lib/auth";
+import { propertyRepository } from "@repo/database";
+import { db } from "@repo/database/src/client";
 
 export default async function DashboardPage() {
   const user = await requireRole(["AGENT", "ADMIN"]);
 
-  // Stats básicas (después conectaremos con datos reales)
+  // Fetch real data from database in parallel
+  const [propertiesData, appointmentsData, viewsData] = await Promise.all([
+    // Total properties and status breakdown
+    db.property.findMany({
+      where: { agentId: user.id },
+      select: { id: true, status: true },
+    }),
+    // Total appointments
+    db.appointment.findMany({
+      where: {
+        property: {
+          agentId: user.id,
+        },
+      },
+      select: { id: true, status: true, createdAt: true },
+    }),
+    // Total views this month
+    db.propertyView.findMany({
+      where: {
+        property: {
+          agentId: user.id,
+        },
+        createdAt: {
+          gte: new Date(new Date().setDate(1)), // First day of month
+        },
+      },
+      select: { id: true },
+    }),
+  ]);
+
+  // Calculate statistics
+  const totalProperties = propertiesData.length;
+  const activeProperties = propertiesData.filter((p) => p.status === "AVAILABLE")
+    .length;
+  const draftProperties = propertiesData.filter((p) => p.status === "DRAFT")
+    .length;
+  const soldProperties = propertiesData.filter((p) => p.status === "SOLD")
+    .length;
+
+  const totalAppointments = appointmentsData.length;
+  const pendingAppointments = appointmentsData.filter(
+    (a) => a.status === "PENDING"
+  ).length;
+
+  const totalViews = viewsData.length;
+  const uniqueClients = appointmentsData.length; // Simplified: use appointment count
+
   const stats = [
     {
       title: "Propiedades",
-      value: "12",
-      description: "Propiedades activas",
+      value: String(totalProperties),
+      description: `${activeProperties} activas, ${draftProperties} borradores`,
       icon: Building2,
-      trend: "+2 esta semana",
+      trend: `${soldProperties} vendidas`,
     },
     {
       title: "Citas",
-      value: "8",
+      value: String(totalAppointments),
       description: "Citas programadas",
       icon: Calendar,
-      trend: "3 pendientes",
+      trend: `${pendingAppointments} pendientes`,
     },
     {
       title: "Clientes",
-      value: "24",
+      value: String(uniqueClients),
       description: "Clientes activos",
       icon: Users,
-      trend: "+5 este mes",
+      trend: "Interacciones totales",
     },
     {
       title: "Visitas",
-      value: "245",
+      value: String(totalViews),
       description: "Visitas este mes",
       icon: TrendingUp,
-      trend: "+12% vs mes anterior",
+      trend: `${Math.round((totalViews / Math.max(activeProperties, 1)) * 10) / 10} promedio por propiedad`,
     },
   ];
 
