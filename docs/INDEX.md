@@ -86,6 +86,36 @@ Referencia rápida de comandos:
 
 ---
 
+### 🔍 **[BIOME_EXPLAINED.md](./BIOME_EXPLAINED.md)** ⭐ NUEVO
+**Duración de lectura:** 25-35 minutos
+
+Guía completa sobre Biome (linter + formatter):
+- ✅ Qué es Biome (reemplaza ESLint + Prettier)
+- ✅ Desglose de configuración actual
+- ✅ Cómo funciona (linting y formatting)
+- ✅ Comandos de uso diario
+- ✅ Mejores prácticas
+- ✅ Troubleshooting
+
+**Mejor para:** Entender Biome, usarlo correctamente, resolver issues.
+
+---
+
+### 🚀 **[BIOME_IMPROVEMENTS.md](./BIOME_IMPROVEMENTS.md)** ⭐ NUEVO
+**Duración de lectura:** 20-30 minutos
+
+Análisis y mejoras recomendadas para Biome:
+- ✅ Análisis de configuración actual
+- ✅ Qué está bien, qué mejorar
+- ✅ Recomendaciones concretas
+- ✅ Configuración mejorada completa
+- ✅ Plan de migración por fases
+- ✅ Análisis de impacto
+
+**Mejor para:** Mejorar tu configuración, entender trade-offs.
+
+---
+
 ### 🛠️ **[development-tasks-guide.md](./development-tasks-guide.md)**
 **Duración de lectura:** 40-50 minutos
 
@@ -277,13 +307,15 @@ Model Context Protocol - Integración de servidores MCP
 | DEVELOPMENT_SETUP.md | ~7,500 | 20-30 min | 2025-10-22 ⭐ NUEVO |
 | TURBOREPO_GUIDE.md | ~9,000 | 30-40 min | 2025-10-22 ⭐ NUEVO |
 | TURBOREPO_CHEATSHEET.md | ~3,500 | 10-15 min | 2025-10-22 ⭐ NUEVO |
+| BIOME_EXPLAINED.md | ~6,500 | 25-35 min | 2025-10-22 ⭐ NUEVO |
+| BIOME_IMPROVEMENTS.md | ~5,000 | 20-30 min | 2025-10-22 ⭐ NUEVO |
 | project-structure.md | ~8,000 | 30-40 min | 2025-10-21 |
 | node-modules-explained.md | ~7,000 | 25-35 min | 2025-10-21 |
 | development-tasks-guide.md | ~6,000 | 40-50 min | 2025-10-20 |
 | git-worktrees-guide.md | ~3,000 | 15-20 min | 2025-10-19 |
 | map-features-roadmap.md | ~7,000 | 20-30 min | 2025-10-19 |
 | ai-search-implementation.md | ~7,500 | 30-40 min | 2025-10-19 |
-| **TOTAL** | **~58,500** | **3.5-4.5 hrs** | - |
+| **TOTAL** | **~80,000** | **5-6 hrs** | - |
 
 ---
 
@@ -321,6 +353,10 @@ Model Context Protocol - Integración de servidores MCP
 
 ### ⚡ Referencia Rápida
 - [TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md)
+
+### 🛠️ Configuración & Herramientas
+- [BIOME_EXPLAINED.md](./BIOME_EXPLAINED.md)
+- [BIOME_IMPROVEMENTS.md](./BIOME_IMPROVEMENTS.md)
 
 ### 🗺️ Roadmaps y Visión
 - [map-features-roadmap.md](./map-features-roadmap.md)
@@ -378,6 +414,6 @@ Por favor:
 ---
 
 **Última actualización:** 2025-10-22
-**Versión:** 1.1
-**Cambios recientes:** Agregados TURBOREPO_GUIDE, DEVELOPMENT_SETUP, TURBOREPO_CHEATSHEET
+**Versión:** 1.2
+**Cambios recientes:** Agregados TURBOREPO_GUIDE, DEVELOPMENT_SETUP, TURBOREPO_CHEATSHEET, BIOME_EXPLAINED, BIOME_IMPROVEMENTS
 **Mantenedor:** Development Team
