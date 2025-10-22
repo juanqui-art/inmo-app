@@ -6,20 +6,17 @@
  */
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { env } from '@repo/env'
 
 /**
  * Crea un cliente de Supabase genérico
  * Útil para contexts donde no necesitas SSR (scripts, CLIs, etc.)
  */
 export function createClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Missing Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY')
-  }
-
-  return createSupabaseClient(supabaseUrl, supabaseAnonKey)
+  return createSupabaseClient(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  )
 }
 
 /**
@@ -28,14 +25,14 @@ export function createClient() {
  * Bypasea Row Level Security (RLS)
  */
 export function createAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Missing Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+  if (!env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error(
+      'SUPABASE_SERVICE_ROLE_KEY is required to create an admin client. ' +
+      'This should only be called on the server side.'
+    )
   }
 
-  return createSupabaseClient(supabaseUrl, supabaseServiceKey, {
+  return createSupabaseClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
@@ -45,20 +42,10 @@ export function createAdminClient() {
 
 /**
  * Valida que las variables de entorno de Supabase existan
+ *
+ * Note: This function is now a no-op since validation happens at module load
+ * via @repo/env. Kept for backward compatibility.
  */
 export function validateSupabaseEnv() {
-  const required = {
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  }
-
-  const missing = Object.entries(required)
-    .filter(([, value]) => !value)
-    .map(([key]) => key)
-
-  if (missing.length > 0) {
-    throw new Error(`Missing required Supabase environment variables: ${missing.join(', ')}`)
-  }
-
   return true
 }

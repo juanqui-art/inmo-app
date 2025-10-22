@@ -39,6 +39,7 @@ apps/web/
 └── middleware.ts      # Auth + routing
 
 packages/
+├── env/               # Environment variables validation (@repo/env)
 ├── database/          # Prisma schema + repositories
 ├── supabase/          # Supabase clients
 ├── ui/               # Shared UI components
@@ -55,6 +56,7 @@ packages/
 4. **Server Actions** validate auth + permissions
 5. **Forms** use Zod validation
 6. **Server Components** by default (Client only when needed)
+7. **Environment variables:** Use `import { env } from '@repo/env'` (never `process.env`)
 
 ---
 
@@ -68,9 +70,43 @@ packages/
 - `ADMIN`: Full access (future)
 
 **Connection:**
-- Pooler: `DATABASE_URL` (serverless)
-- Direct: `DIRECT_URL` (migrations)
+- Pooler (Transaction Mode): `DATABASE_URL` → port 6543 (serverless, best for Prisma)
+- Direct Connection: `DIRECT_URL` → db.*.supabase.co:5432 (migrations only)
 - Region: US East (aws-1-us-east-2)
+
+**Environment Variables:**
+- Centralized in `@repo/env` package
+- All validated with Zod at startup
+- Type-safe across monorepo
+- Access via: `import { env } from '@repo/env'`
+
+---
+
+## Environment Variables
+
+**Files Structure:**
+```
+root/
+├── .env.example              # Template (public, tracked in Git)
+├── .env.local                # Your secrets (private, in .gitignore)
+├── .env.development.example  # Development template
+└── .env.production.example   # Production template
+```
+
+**Adding New Variables:**
+1. Edit schema in `packages/env/src/index.ts`
+2. Add to `.env.example` with description
+3. Add value to `.env.local` (never commit)
+4. Restart: `bun run dev`
+
+**Variables Reference:**
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Public key (safe for browser)
+- `SUPABASE_SERVICE_ROLE_KEY` - Secret key (server only)
+- `DATABASE_URL` - Pooler connection (Transaction Mode, port 6543)
+- `DIRECT_URL` - Direct DB connection (migrations, port 5432)
+- `NEXT_PUBLIC_MAPBOX_TOKEN` - Mapbox API key (optional)
+- `NODE_ENV` - Automatically set by Next.js (don't change manually)
 
 ---
 

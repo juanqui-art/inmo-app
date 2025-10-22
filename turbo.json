@@ -1,6 +1,18 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalPassThroughEnv": ["FORCE_COLOR", "TERM"],
+  "globalPassThroughEnv": [
+    "FORCE_COLOR",
+    "TERM",
+    "NODE_ENV",
+    "DATABASE_URL",
+    "DIRECT_URL",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "NEXT_PUBLIC_MAPBOX_TOKEN",
+    "NEXT_PUBLIC_SITE_URL",
+    "NEXT_TELEMETRY_DISABLED"
+  ],
   "tasks": {
     "dev": {
       "cache": false,
