@@ -6,16 +6,17 @@
 
 ## Project Overview
 
-**Real estate platform** | Phase 1.5: Public-facing features | Next.js 15 + Supabase + Turborepo
+**Real estate platform** | Phase 1.5: Public-facing features | Next.js 16 + Supabase + Turborepo
 
-**Stack:** Next.js 15 + React 19 + TypeScript + Tailwind v4 + GSAP | Supabase Auth + Storage | Prisma + PostgreSQL | Turborepo monorepo | Bun
+**Stack:** Next.js 16 + React 19 + TypeScript + Tailwind v4 + GSAP | Supabase Auth + Storage | Prisma + PostgreSQL | Turborepo monorepo | Bun
 
 ---
 
 ## Quick Start
 
 ```bash
-bun run dev          # Start development
+bun run dev          # Start development (Turborepo orchestrates, Turbopack compiles)
+bun run dev:web      # Direct: Skip Turborepo (alternative)
 bun run type-check   # TypeScript validation (run before commits!)
 bun run lint         # Biome linting
 cd packages/database && bunx prisma studio  # DB browser
@@ -57,6 +58,26 @@ packages/
 5. **Forms** use Zod validation
 6. **Server Components** by default (Client only when needed)
 7. **Environment variables:** Use `import { env } from '@repo/env'` (never `process.env`)
+8. **Turborepo orchestrates:** `turbo.json` defines task dependencies (Prisma generation before dev/build)
+
+## Build Tools Explained
+
+**Three distinct tools** work together in your stack:
+- **Turborepo** (`turbo.json`): Monorepo task orchestrator - schedules and caches tasks
+- **Turbopack** (built in Next.js 16): Fast bundler - compiles TS/JSX → JS (default since Next.js 16)
+- **Bun** (`bun run`): Runtime + package manager - executes commands with Turborepo
+
+**Development Flow:**
+```
+bun run dev
+  ↓ (runs root script)
+turbo run dev
+  ↓ (Turborepo reads turbo.json)
+  ├─ @repo/database#db:generate (Prisma)
+  └─ next dev (in apps/web)
+      ↓
+      Turbopack compiles code → Server starts
+```
 
 ---
 
@@ -115,6 +136,8 @@ root/
 **Prisma client not found:**
 ```bash
 cd packages/database && bunx prisma generate
+# Or use Turborepo:
+turbo run @repo/database#db:generate
 ```
 
 **Package not found:**
@@ -124,6 +147,19 @@ cd packages/database && bunx prisma generate
 **Changes not reflected:**
 ```bash
 rm -rf apps/web/.next && bun run dev
+```
+
+**Turbo cache issues:**
+```bash
+# Clear Turborepo cache if builds are stale
+rm -rf .turbo
+bun run build  # Rebuilds everything
+```
+
+**Bypass Turborepo (direct dev):**
+```bash
+# If you need to skip Turborepo orchestration
+bun run dev:web  # Goes directly to apps/web
 ```
 
 ---

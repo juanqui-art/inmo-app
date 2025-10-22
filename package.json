@@ -8,13 +8,14 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "cd apps/web && bun run dev",
+    "dev": "turbo run dev",
+    "dev:web": "cd apps/web && bun run dev",
     "build": "turbo run build",
     "start": "cd apps/web && bun run start",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
     "format": "turbo run format",
-    "postinstall": "cd packages/database && bun run db:generate"
+    "postinstall": "turbo run @repo/database#db:generate"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",

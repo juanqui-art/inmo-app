@@ -8,13 +8,28 @@
 
 ## 🎯 Documentación Principal
 
-### 📐 **[project-structure.md](./project-structure.md)** ⭐ COMIENZA AQUÍ
+### 🚀 **[DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md)** ⭐ COMIENZA AQUÍ (Para Desarrolladores)
+**Duración de lectura:** 20-30 minutos
+
+Guía completa para comenzar el desarrollo:
+- ✅ Instalación y configuración inicial
+- ✅ Comandos de desarrollo esenciales
+- ✅ Navegación del proyecto
+- ✅ Tareas comunes de desarrollo
+- ✅ Troubleshooting rápido
+- ✅ Best practices
+
+**Mejor para:** Desarrolladores nuevos, iniciar el proyecto.
+
+---
+
+### 📐 **[project-structure.md](./project-structure.md)** ⭐ ARQUITECTURA
 **Duración de lectura:** 30-40 minutos
 
 Documentación completa sobre:
 - ✅ Estructura del monorepo
 - ✅ Arquitectura y patrones (Repository Pattern, Server Components)
-- ✅ Stack tecnológico (Next.js 15, React 19, Bun)
+- ✅ Stack tecnológico (Next.js 16, React 19, Bun, Turborepo)
 - ✅ Mejores prácticas implementadas
 - ✅ Análisis de calidad (9/10 rating)
 - ✅ Comparación con industry standards (Zillow, Redfin)
@@ -42,7 +57,36 @@ Explicación detallada sobre:
 
 ## 📖 Documentación Complementaria
 
-### 🚀 **[development-tasks-guide.md](./development-tasks-guide.md)**
+### 📦 **[TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md)** ⭐ NUEVO
+**Duración de lectura:** 30-40 minutos
+
+Guía completa sobre Turborepo, Turbopack y Bun:
+- ✅ Las tres herramientas explicadas
+- ✅ Configuración detallada de turbo.json
+- ✅ Flujos de desarrollo
+- ✅ Build para producción
+- ✅ Caching y performance
+- ✅ Troubleshooting
+
+**Mejor para:** Entender cómo funciona la orquestación de tareas, optimizar builds.
+
+---
+
+### 📋 **[TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md)** ⭐ NUEVO
+**Duración de lectura:** 10-15 minutos
+
+Referencia rápida de comandos:
+- ✅ Comandos Turborepo más usados
+- ✅ Comandos de base de datos
+- ✅ Troubleshooting rápido
+- ✅ Flujos de trabajo comunes
+- ✅ Shortcuts y tips
+
+**Mejor para:** Búsqueda rápida de comandos, desarrollo diario.
+
+---
+
+### 🛠️ **[development-tasks-guide.md](./development-tasks-guide.md)**
 **Duración de lectura:** 40-50 minutos
 
 Guía completa de tareas de desarrollo:
@@ -130,21 +174,24 @@ Model Context Protocol - Integración de servidores MCP
 
 ### 👨‍💻 Desarrollador Junior
 **Lectura recomendada (en orden):**
-1. [project-structure.md](./project-structure.md) - Entender la arquitectura
-2. [node-modules-explained.md](./node-modules-explained.md) - Entender módulos
-3. [development-tasks-guide.md](./development-tasks-guide.md) - Cómo desarrollar
+1. [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md) - Configuración inicial
+2. [project-structure.md](./project-structure.md) - Entender la arquitectura
+3. [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md) - Entender Turborepo/Turbopack
+4. [node-modules-explained.md](./node-modules-explained.md) - Entender módulos
+5. [development-tasks-guide.md](./development-tasks-guide.md) - Cómo desarrollar
 
-**Tiempo total:** ~2 horas
+**Tiempo total:** ~3 horas
 
 ---
 
 ### 👨‍💻 Desarrollador Senior
 **Lectura recomendada (en orden):**
-1. [project-structure.md](./project-structure.md#análisis-de-calidad) - Review análisis de calidad
-2. [node-modules-explained.md](./node-modules-explained.md#áreas-de-mejora) - Revisar áreas de mejora
-3. [development-tasks-guide.md](./development-tasks-guide.md) - Checklist de desarrollo
+1. [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md) - Optimizaciones y caché
+2. [project-structure.md](./project-structure.md#análisis-de-calidad) - Review análisis de calidad
+3. [node-modules-explained.md](./node-modules-explained.md#áreas-de-mejora) - Revisar áreas de mejora
+4. [development-tasks-guide.md](./development-tasks-guide.md) - Checklist de desarrollo
 
-**Tiempo total:** ~1 hora
+**Tiempo total:** ~1.5 horas
 
 ---
 
@@ -194,6 +241,15 @@ Model Context Protocol - Integración de servidores MCP
 
 ## ❓ Preguntas Frecuentes
 
+### "¿Cómo empiezo a desarrollar?"
+👉 Ver: [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md)
+
+### "¿Qué son Turborepo, Turbopack y Bun?"
+👉 Ver: [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md#three-tools-explained)
+
+### "¿Cuáles son los comandos más importantes?"
+👉 Ver: [TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md)
+
 ### "¿Por qué tengo múltiples node_modules?"
 👉 Ver: [node-modules-explained.md](./node-modules-explained.md)
 
@@ -218,29 +274,36 @@ Model Context Protocol - Integración de servidores MCP
 
 | Documento | Palabras | Tiempo Lectura | Última Actualización |
 |-----------|----------|----------------|----------------------|
+| DEVELOPMENT_SETUP.md | ~7,500 | 20-30 min | 2025-10-22 ⭐ NUEVO |
+| TURBOREPO_GUIDE.md | ~9,000 | 30-40 min | 2025-10-22 ⭐ NUEVO |
+| TURBOREPO_CHEATSHEET.md | ~3,500 | 10-15 min | 2025-10-22 ⭐ NUEVO |
 | project-structure.md | ~8,000 | 30-40 min | 2025-10-21 |
 | node-modules-explained.md | ~7,000 | 25-35 min | 2025-10-21 |
 | development-tasks-guide.md | ~6,000 | 40-50 min | 2025-10-20 |
 | git-worktrees-guide.md | ~3,000 | 15-20 min | 2025-10-19 |
 | map-features-roadmap.md | ~7,000 | 20-30 min | 2025-10-19 |
 | ai-search-implementation.md | ~7,500 | 30-40 min | 2025-10-19 |
-| **TOTAL** | **~39,500** | **2.5-3.5 hrs** | - |
+| **TOTAL** | **~58,500** | **3.5-4.5 hrs** | - |
 
 ---
 
 ## 🚀 Comienza Aquí
 
 **Nuevo en el proyecto?**
-1. Lee [project-structure.md](./project-structure.md) para entender la arquitectura
-2. Lee [node-modules-explained.md](./node-modules-explained.md) para entender módulos
-3. Lee [development-tasks-guide.md](./development-tasks-guide.md) para empezar a desarrollar
+1. Lee [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md) para configurar el ambiente
+2. Lee [project-structure.md](./project-structure.md) para entender la arquitectura
+3. Lee [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md) para entender Turborepo/Turbopack
+4. Lee [development-tasks-guide.md](./development-tasks-guide.md) para empezar a desarrollar
 
 **Presionado por tiempo?**
+- Usa [TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md) para comandos rápidos
 - Revisa el resumen ejecutivo en [project-structure.md](./project-structure.md#resumen-ejecutivo)
-- Mira los diagramas en ambos documentos
 
-**¿Problema con módulos?**
-- Ve directo a [node-modules-explained.md](./node-modules-explained.md#errores-comunes-y-soluciones)
+**¿Problema con setup?**
+- Ve directo a [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md#troubleshooting)
+
+**¿Problema con Turborepo?**
+- Ve directo a [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md#troubleshooting)
 
 ---
 
@@ -249,10 +312,15 @@ Model Context Protocol - Integración de servidores MCP
 ### 🎯 Guías Conceptuales
 - [project-structure.md](./project-structure.md)
 - [node-modules-explained.md](./node-modules-explained.md)
+- [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md)
 
 ### 📖 Guías Procedimentales
+- [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md)
 - [development-tasks-guide.md](./development-tasks-guide.md)
 - [git-worktrees-guide.md](./git-worktrees-guide.md)
+
+### ⚡ Referencia Rápida
+- [TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md)
 
 ### 🗺️ Roadmaps y Visión
 - [map-features-roadmap.md](./map-features-roadmap.md)
@@ -309,6 +377,7 @@ Por favor:
 
 ---
 
-**Última actualización:** 2025-10-21
-**Versión:** 1.0
+**Última actualización:** 2025-10-22
+**Versión:** 1.1
+**Cambios recientes:** Agregados TURBOREPO_GUIDE, DEVELOPMENT_SETUP, TURBOREPO_CHEATSHEET
 **Mantenedor:** Development Team
