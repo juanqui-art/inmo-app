@@ -38,7 +38,7 @@ export async function POST() {
     console.error("Unexpected logout error:", error);
     return NextResponse.json(
       { error: "Error al cerrar sesión" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

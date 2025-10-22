@@ -43,66 +43,66 @@ import { MapLoadingState } from "./ui/map-loading-state";
  * Extended to support popup display and details
  */
 export interface MapProperty {
-	id: string;
-	title: string;
-	price: number;
-	transactionType: TransactionType;
-	latitude: number | null;
-	longitude: number | null;
-	city?: string;
-	state?: string;
-	bedrooms?: number | null;
-	bathrooms?: number | null;
-	area?: number | null;
-	images?: Array<{
-		url: string;
-		alt: string | null;
-	}>;
+  id: string;
+  title: string;
+  price: number;
+  transactionType: TransactionType;
+  latitude: number | null;
+  longitude: number | null;
+  city?: string;
+  state?: string;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  area?: number | null;
+  images?: Array<{
+    url: string;
+    alt: string | null;
+  }>;
 }
 
 interface MapViewProps {
-	properties: MapProperty[];
-	initialCenter?: [number, number];
-	initialZoom?: number;
-	initialViewport?: MapViewport;
+  properties: MapProperty[];
+  initialCenter?: [number, number];
+  initialZoom?: number;
+  initialViewport?: MapViewport;
 }
 
 export function MapView({
-	properties,
-	initialCenter,
-	initialZoom,
-	initialViewport,
+  properties,
+  initialCenter,
+  initialZoom,
+  initialViewport,
 }: MapViewProps) {
-	// Hooks for business logic
-	const { mounted, mapboxToken, isError } = useMapInitialization();
-	const { mapStyle } = useMapTheme();
-	const { viewState, handleMove } = useMapViewport({
-		initialViewport,
-		initialCenter,
-		initialZoom,
-		mounted,
-	});
+  // Hooks for business logic
+  const { mounted, mapboxToken, isError } = useMapInitialization();
+  const { mapStyle } = useMapTheme();
+  const { viewState, handleMove } = useMapViewport({
+    initialViewport,
+    initialCenter,
+    initialZoom,
+    mounted,
+  });
 
-	// Error state: Missing MapBox token
-	if (isError) {
-		return <MapErrorState />;
-	}
+  // Error state: Missing MapBox token
+  if (isError) {
+    return <MapErrorState />;
+  }
 
-	// Loading state: Hydration in progress
-	if (!mounted) {
-		return <MapLoadingState />;
-	}
+  // Loading state: Hydration in progress
+  if (!mounted) {
+    return <MapLoadingState />;
+  }
 
-	// Render map
-	return (
-		<MapContainer
-			viewState={viewState}
-			onMove={handleMove}
-			mapStyle={mapStyle}
-			mapboxToken={mapboxToken!} // Safe: checked by isError
-			properties={properties}
-		/>
-	);
+  // Render map
+  return (
+    <MapContainer
+      viewState={viewState}
+      onMove={handleMove}
+      mapStyle={mapStyle}
+      mapboxToken={mapboxToken!} // Safe: checked by isError
+      properties={properties}
+    />
+  );
 }
 
 /**

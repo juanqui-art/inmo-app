@@ -217,12 +217,7 @@ export default async function MapPage(props: MapPageProps) {
   /**
    * Render map with mock properties and viewport from URL
    */
-  return (
-    <MapView
-      properties={properties}
-      initialViewport={viewport}
-    />
-  );
+  return <MapView properties={properties} initialViewport={viewport} />;
 }
 
 /**

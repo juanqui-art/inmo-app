@@ -62,7 +62,7 @@ export async function TrendingPropertiesSection() {
   }
 
   // Serialize Decimal objects to plain numbers for Client Components
-  const trending = trendingRaw.map(property => ({
+  const trending = trendingRaw.map((property) => ({
     ...property,
     price: property.price.toNumber(),
     bathrooms: property.bathrooms?.toNumber() ?? null,

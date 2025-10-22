@@ -20,20 +20,20 @@ import { useTheme } from "next-themes";
 import { MAPBOX_STYLES } from "@/lib/types/map";
 
 interface UseMapThemeReturn {
-	/** MapBox style URL (light or dark) */
-	mapStyle: string;
+  /** MapBox style URL (light or dark) */
+  mapStyle: string;
 }
 
 export function useMapTheme(): UseMapThemeReturn {
-	const { resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
-	/**
-	 * Determine map style based on theme
-	 * Light mode → light style
-	 * Dark mode → dark style
-	 */
-	const mapStyle =
-		resolvedTheme === "dark" ? MAPBOX_STYLES.DARK : MAPBOX_STYLES.LIGHT;
+  /**
+   * Determine map style based on theme
+   * Light mode → light style
+   * Dark mode → dark style
+   */
+  const mapStyle =
+    resolvedTheme === "dark" ? MAPBOX_STYLES.DARK : MAPBOX_STYLES.LIGHT;
 
-	return { mapStyle };
+  return { mapStyle };
 }

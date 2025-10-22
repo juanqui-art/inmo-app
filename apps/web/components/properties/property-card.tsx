@@ -76,7 +76,9 @@ export function PropertyCard({
 
   const goToPrevImage = () => {
     if (hasMultipleImages && images.length > 0) {
-      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+      setCurrentImageIndex(
+        (prev) => (prev - 1 + images.length) % images.length,
+      );
     }
   };
 
@@ -163,8 +165,18 @@ export function PropertyCard({
             >
               <div className="h-full flex items-center justify-start pl-4">
                 <div className="bg-oslo-gray-1100/60 backdrop-blur-sm rounded-full p-2">
-                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -181,8 +193,18 @@ export function PropertyCard({
             >
               <div className="h-full flex items-center justify-end pr-4">
                 <div className="bg-oslo-gray-1100/60 backdrop-blur-sm rounded-full p-2">
-                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -217,7 +239,10 @@ export function PropertyCard({
           <Badge className="bg-blue-600 backdrop-blur-sm border-blue-400/30 text-white font-bold px-3 py-1 shadow-lg rounded-full">
             {transactionTypeLabels[property.transactionType]}
           </Badge>
-          <Badge variant="secondary" className="bg-white/95 dark:bg-oslo-gray-800/95 backdrop-blur-sm text-oslo-gray-900 dark:text-oslo-gray-50 font-semibold rounded-full">
+          <Badge
+            variant="secondary"
+            className="bg-white/95 dark:bg-oslo-gray-800/95 backdrop-blur-sm text-oslo-gray-900 dark:text-oslo-gray-50 font-semibold rounded-full"
+          >
             {categoryLabels[property.category]}
           </Badge>
         </div>
@@ -233,7 +258,9 @@ export function PropertyCard({
                 onFavoriteToggle(property.id);
               }}
               className="p-2 rounded-full bg-oslo-gray-1100/60 backdrop-blur-sm hover:bg-oslo-gray-1100/80 transition-colors"
-              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              aria-label={
+                isFavorite ? "Remove from favorites" : "Add to favorites"
+              }
             >
               <Heart
                 className={`w-5 h-5 ${
@@ -266,7 +293,9 @@ export function PropertyCard({
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-oslo-gray-1100/90 via-oslo-gray-1100/50 to-transparent backdrop-blur-sm p-4 z-20">
           <Link href={`/dashboard/propiedades/${property.id}/editar`}>
             {/* Price */}
-            <p className="text-2xl font-bold text-white mb-1">{formattedPrice}</p>
+            <p className="text-2xl font-bold text-white mb-1">
+              {formattedPrice}
+            </p>
 
             {/* Title */}
             <h3 className="text-white font-semibold text-lg mb-1 line-clamp-1 hover:underline">
@@ -277,7 +306,9 @@ export function PropertyCard({
             {(property.city || property.state) && (
               <div className="flex items-center gap-1 text-white/90 text-sm mb-2">
                 <MapPin className="h-3.5 w-3.5" />
-                <span>{[property.city, property.state].filter(Boolean).join(", ")}</span>
+                <span>
+                  {[property.city, property.state].filter(Boolean).join(", ")}
+                </span>
               </div>
             )}
 

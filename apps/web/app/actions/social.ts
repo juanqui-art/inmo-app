@@ -39,7 +39,7 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function trackPropertyShare(
   propertyId: string,
-  platform: SharePlatform
+  platform: SharePlatform,
 ): Promise<{ success: boolean }> {
   try {
     // Get user if logged in (optional)
@@ -79,7 +79,7 @@ export async function trackPropertyShare(
  * Used for analytics and "trending" calculations
  */
 export async function trackPropertyView(
-  propertyId: string
+  propertyId: string,
 ): Promise<{ success: boolean }> {
   try {
     // Get user if logged in (optional)
@@ -118,7 +118,7 @@ export async function trackPropertyView(
  */
 export async function getPropertyShareCount(
   propertyId: string,
-  platform?: SharePlatform
+  platform?: SharePlatform,
 ): Promise<number> {
   try {
     const count = await db.propertyShare.count({
@@ -140,7 +140,9 @@ export async function getPropertyShareCount(
  *
  * Returns total views for a property
  */
-export async function getPropertyViewCount(propertyId: string): Promise<number> {
+export async function getPropertyViewCount(
+  propertyId: string,
+): Promise<number> {
   try {
     const count = await db.propertyView.count({
       where: { propertyId },
@@ -192,7 +194,7 @@ export async function getPropertySocialStats(propertyId: string): Promise<{
         acc[item.platform] = item._count.platform;
         return acc;
       },
-      {} as Record<SharePlatform, number>
+      {} as Record<SharePlatform, number>,
     );
 
     return { totalShares, totalViews, sharesByPlatform };
@@ -297,8 +299,10 @@ function anonymizeUserAgent(ua: string): string {
   // Example: "Mozilla/5.0 (Macintosh; ...) Chrome/120.0.0.0"
   // Becomes: "Chrome/120 macOS"
 
-  const browser = ua.match(/(Chrome|Firefox|Safari|Edge)\/[\d.]+/)?.[0] || "Unknown";
-  const os = ua.match(/(Windows|Macintosh|Linux|Android|iPhone)/)?.[0] || "Unknown";
+  const browser =
+    ua.match(/(Chrome|Firefox|Safari|Edge)\/[\d.]+/)?.[0] || "Unknown";
+  const os =
+    ua.match(/(Windows|Macintosh|Linux|Android|iPhone)/)?.[0] || "Unknown";
 
   return `${browser} ${os}`;
 }

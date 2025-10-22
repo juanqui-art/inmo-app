@@ -66,10 +66,13 @@ export function HeroSection() {
 
       if (prefersReducedMotion) {
         // Skip animations for users who prefer reduced motion
-        gsap.set(".hero-background, .hero-heading, .hero-search, .hero-filters", {
-          opacity: 1,
-          y: 0,
-        });
+        gsap.set(
+          ".hero-background, .hero-heading, .hero-search, .hero-filters",
+          {
+            opacity: 1,
+            y: 0,
+          },
+        );
         return;
       }
 

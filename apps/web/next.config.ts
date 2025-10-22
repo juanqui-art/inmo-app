@@ -18,9 +18,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverActions: {
-    bodySizeLimit: "5mb", // Reducido de 10mb gracias a compresión client-side
-  },
 };
 
 export default nextConfig;

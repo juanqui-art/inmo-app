@@ -66,11 +66,12 @@ export function PropertyMarker({
         }}
       >
         {/* Price Badge */}
-        <div className={`px-3 py-1.5 bg-white/95 dark:bg-oslo-gray-900/95 backdrop-blur-sm rounded-full border-2 transition-all duration-200 shadow-lg ${
-          isHighlighted
-            ? "scale-125 shadow-2xl ring-2 ring-offset-2 ring-offset-white/50 dark:ring-offset-oslo-gray-800/50"
-            : "hover:shadow-xl hover:scale-110"
-        }`}
+        <div
+          className={`px-3 py-1.5 bg-white/95 dark:bg-oslo-gray-900/95 backdrop-blur-sm rounded-full border-2 transition-all duration-200 shadow-lg ${
+            isHighlighted
+              ? "scale-125 shadow-2xl ring-2 ring-offset-2 ring-offset-white/50 dark:ring-offset-oslo-gray-800/50"
+              : "hover:shadow-xl hover:scale-110"
+          }`}
           style={{
             borderColor: markerColor,
             ...(isHighlighted && {

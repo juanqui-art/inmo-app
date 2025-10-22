@@ -32,10 +32,10 @@ export function MapSearchBar({ onLocationSelect }: MapSearchBarProps) {
 
   // Filter cities based on search term
   const filteredCities = CITIES.filter((city) =>
-    city.name.toLowerCase().includes(searchTerm.toLowerCase())
+    city.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const handleCitySelect = (city: typeof CITIES[number]) => {
+  const handleCitySelect = (city: (typeof CITIES)[number]) => {
     onLocationSelect(city.longitude, city.latitude, city.zoom);
     setSearchTerm(city.name);
     setIsOpen(false);

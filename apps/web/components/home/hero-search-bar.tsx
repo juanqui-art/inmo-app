@@ -126,7 +126,8 @@ export function HeroSearchBar() {
       const handleBlur = () => {
         gsap.to(input, {
           scale: 1,
-          boxShadow: "0 0 0 0px rgba(255, 255, 255, 0), 0 4px 12px rgba(0, 0, 0, 0.1)",
+          boxShadow:
+            "0 0 0 0px rgba(255, 255, 255, 0), 0 4px 12px rgba(0, 0, 0, 0.1)",
           duration: 0.3,
           ease: "power2.out",
         });

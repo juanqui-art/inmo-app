@@ -1,5 +1,5 @@
 /**
- * MIDDLEWARE - Protección de Rutas (Autenticación)
+ * PROXY - Protección de Rutas (Autenticación)
  *
  * ¿Qué hace?
  * 1. Se ejecuta ANTES de cada request
@@ -23,7 +23,7 @@ import { env } from "@/lib/env";
 // Rutas que requieren autenticación
 const protectedRoutes = ["/dashboard", "/admin", "/perfil"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   let supabaseResponse = NextResponse.next({
@@ -34,23 +34,24 @@ export async function middleware(request: NextRequest) {
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        for (const { name, value } of cookiesToSet) {
-          request.cookies.set(name, value);
-        }
-        supabaseResponse = NextResponse.next({
-          request,
-        });
-        for (const { name, value, options } of cookiesToSet) {
-          supabaseResponse.cookies.set(name, value, options);
-        }
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          for (const { name, value } of cookiesToSet) {
+            request.cookies.set(name, value);
+          }
+          supabaseResponse = NextResponse.next({
+            request,
+          });
+          for (const { name, value, options } of cookiesToSet) {
+            supabaseResponse.cookies.set(name, value, options);
+          }
+        },
       },
     },
-  });
+  );
 
   // Verificar usuario autenticado
   const {
@@ -79,7 +80,7 @@ export async function middleware(request: NextRequest) {
   return supabaseResponse;
 }
 
-// Configurar dónde se ejecuta el middleware
+// Configurar dónde se ejecuta el proxy
 export const config = {
   matcher: [
     /*

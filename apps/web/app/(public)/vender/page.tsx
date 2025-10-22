@@ -120,7 +120,9 @@ export default async function VenderPage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">10k+</p>
-                    <p className="text-sm text-gray-600">Visitantes mensuales</p>
+                    <p className="text-sm text-gray-600">
+                      Visitantes mensuales
+                    </p>
                   </div>
                 </div>
               </div>

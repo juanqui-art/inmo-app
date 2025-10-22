@@ -21,40 +21,40 @@ import { useState, useEffect } from "react";
 import { env } from "@/lib/env";
 
 interface UseMapInitializationReturn {
-	/** Whether component has mounted (client-side only) */
-	mounted: boolean;
-	/** MapBox GL access token (validated) */
-	mapboxToken: string | undefined;
-	/** Whether there's a configuration error (missing token) */
-	isError: boolean;
+  /** Whether component has mounted (client-side only) */
+  mounted: boolean;
+  /** MapBox GL access token (validated) */
+  mapboxToken: string | undefined;
+  /** Whether there's a configuration error (missing token) */
+  isError: boolean;
 }
 
 export function useMapInitialization(): UseMapInitializationReturn {
-	const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-	/**
-	 * Get MapBox access token
-	 * Type-safe and validated from env.ts
-	 */
-	const mapboxToken = env.NEXT_PUBLIC_MAPBOX_TOKEN;
+  /**
+   * Get MapBox access token
+   * Type-safe and validated from env.ts
+   */
+  const mapboxToken = env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
-	/**
-	 * Check for configuration errors
-	 */
-	const isError = !mapboxToken;
+  /**
+   * Check for configuration errors
+   */
+  const isError = !mapboxToken;
 
-	/**
-	 * Handle hydration
-	 * Set mounted to true after initial client render
-	 * Prevents theme flash and hydration mismatches
-	 */
-	useEffect(() => {
-		setMounted(true);
-	}, []);
+  /**
+   * Handle hydration
+   * Set mounted to true after initial client render
+   * Prevents theme flash and hydration mismatches
+   */
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-	return {
-		mounted,
-		mapboxToken,
-		isError,
-	};
+  return {
+    mounted,
+    mapboxToken,
+    isError,
+  };
 }

@@ -108,7 +108,6 @@
  * This ensures graceful degradation for unsupported browsers
  */
 @supports (animation-timeline: scroll()) {
-
   /* Homepage navbar - identified by data attribute */
   [data-navbar="homepage"] {
     animation: navbar-shrink-homepage linear both;
