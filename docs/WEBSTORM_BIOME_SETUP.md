@@ -4,6 +4,26 @@
 
 ---
 
+## ⚠️ IMPORTANT: Manual Steps Required
+
+**This setup requires manual configuration in WebStorm.** I've prepared the project with:
+- ✅ `.editorconfig` file (baseline formatting)
+- ✅ `test-biome-format.tsx` (test file)
+- ✅ This guide
+
+**You must do these 6 steps manually in WebStorm** (takes ~7 minutes):
+
+1. Install Biome plugin (Plugins → Marketplace)
+2. Set Biome as default formatter
+3. Enable "Format on Save"
+4. Verify with test file
+5. Confirm `Option+Command+L` uses Biome
+6. Delete test file
+
+**👉 See "🚀 Quick Steps For You" section below after the Current Status.**
+
+---
+
 ## 📊 Current Status
 
 **Your WebStorm Configuration:**
@@ -18,6 +38,61 @@
 - ❌ Code formatted with WebStorm ≠ Code formatted with `bun run format`
 - ❌ Conflicts between IDE and terminal formatting
 - ❌ Team members get inconsistent results
+
+---
+
+## 🚀 Quick Steps For You
+
+**What I prepared for you:**
+- ✅ `.editorconfig` - Created (baseline formatting)
+- ✅ `test-biome-format.tsx` - Created (in `apps/web/`)
+- ✅ This guide - Updated with detailed instructions
+
+**What you need to do:**
+
+### **Step 1: Install Biome Plugin** (2 minutes)
+```
+WebStorm → Preferences (Cmd+,)
+  → Plugins
+    → Marketplace
+      → Search: "Biome"
+      → Install (official by Biomejs)
+      → Restart WebStorm
+```
+
+### **Step 2: Set Biome as Default Formatter** (1 minute)
+```
+Preferences (Cmd+,)
+  → Languages & Frameworks
+    → JavaScript
+      → Code Style
+        → Formatter: [Dropdown]
+          → Select: Biome
+```
+
+### **Step 3: Enable Format on Save** (1 minute)
+```
+Preferences (Cmd+,)
+  → Tools
+    → Actions on Save
+      → Check: "Reformat code"
+```
+
+### **Step 4: Test with Test File** (2 minutes)
+1. Open: `apps/web/test-biome-format.tsx`
+2. Press: `Cmd+S` (save)
+3. Check: Code should be formatted nicely
+4. Run: `bun run format` in terminal
+5. Verify: Output is identical to what WebStorm did
+
+### **Step 5: Verify Option+Command+L Works** (1 minute)
+1. Keep test file open
+2. Press: `Option+Command+L` (format file)
+3. Check: Uses Biome format (same as Cmd+S did)
+
+### **Step 6: Cleanup** (30 seconds)
+1. Delete: `apps/web/test-biome-format.tsx`
+2. Done! 🎉
 
 ---
 

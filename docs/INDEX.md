@@ -59,7 +59,8 @@
 #### WebStorm IDE Setup
 | Documento | Tiempo | Qué Aprenderás |
 |-----------|--------|---|
-| **[WEBSTORM_BIOME_SETUP.md](./WEBSTORM_BIOME_SETUP.md)** ⭐ | 15-20 min | Configura Biome en WebStorm |
+| **[WEBSTORM_BIOME_QUICKSTART.md](./WEBSTORM_BIOME_QUICKSTART.md)** 🚀 | 5-7 min | Setup rápido (checklist) |
+| **[WEBSTORM_BIOME_SETUP.md](./WEBSTORM_BIOME_SETUP.md)** ⭐ | 15-20 min | Configura Biome en WebStorm (detallado) |
 
 ---
 
@@ -169,9 +170,10 @@ Total: ~2 horas
 |----------|----------|
 | "Cómo instalo y empiezo?" | [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md) |
 | "Qué comandos uso?" | [TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md) |
+| "Quiero configurar Biome en WebStorm YA" | [WEBSTORM_BIOME_QUICKSTART.md](./WEBSTORM_BIOME_QUICKSTART.md) (5 min) |
 | "Cómo uso Biome?" | [BIOME_EXPLAINED.md](./BIOME_EXPLAINED.md) |
 | "¿Por qué formatea diferente?" | [WEBSTORM_FORMAT_ISSUE.md](./WEBSTORM_FORMAT_ISSUE.md) |
-| "Biome no está configurado en IDE" | [WEBSTORM_BIOME_SETUP.md](./WEBSTORM_BIOME_SETUP.md) |
+| "Biome no está configurado en IDE (detallado)" | [WEBSTORM_BIOME_SETUP.md](./WEBSTORM_BIOME_SETUP.md) |
 | "¿Cómo es la estructura?" | [project-structure.md](./project-structure.md) |
 | "¿Cuáles son las variables env?" | [ENVIRONMENT_VARIABLES.md](./ENVIRONMENT_VARIABLES.md) |
 | "¿Cómo agrego una feature?" | [development-tasks-guide.md](./development-tasks-guide.md) |
@@ -183,8 +185,8 @@ Total: ~2 horas
 ## 📊 Estadísticas de Documentación
 
 ```
-Total de documentos: 23
-Total de palabras:   ~95,000
+Total de documentos: 24
+Total de palabras:   ~97,500
 Tiempo de lectura:   6-7 horas (completo)
 Última actualización: 22 Oct 2025
 
@@ -196,6 +198,7 @@ Nuevos en esta versión (Oct 22):
 ✅ BIOME_IMPROVEMENTS.md (5,000 palabras)
 ✅ WEBSTORM_BIOME_SETUP.md (4,000 palabras)
 ✅ WEBSTORM_FORMAT_ISSUE.md (3,500 palabras)
+✅ WEBSTORM_BIOME_QUICKSTART.md (2,000 palabras) - NEW!
 ```
 
 ---
