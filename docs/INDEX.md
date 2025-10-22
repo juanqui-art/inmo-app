@@ -1,436 +1,326 @@
-# 📚 Documentación de InmoApp - Índice Completo
+# 📚 InmoApp - Índice de Documentación Completo
 
 > Guía de navegación para toda la documentación del proyecto
-
-**Última actualización:** Octubre 2025
-
----
-
-## 🎯 Documentación Principal
-
-### 🚀 **[DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md)** ⭐ COMIENZA AQUÍ (Para Desarrolladores)
-**Duración de lectura:** 20-30 minutos
-
-Guía completa para comenzar el desarrollo:
-- ✅ Instalación y configuración inicial
-- ✅ Comandos de desarrollo esenciales
-- ✅ Navegación del proyecto
-- ✅ Tareas comunes de desarrollo
-- ✅ Troubleshooting rápido
-- ✅ Best practices
-
-**Mejor para:** Desarrolladores nuevos, iniciar el proyecto.
-
----
-
-### 📐 **[project-structure.md](./project-structure.md)** ⭐ ARQUITECTURA
-**Duración de lectura:** 30-40 minutos
-
-Documentación completa sobre:
-- ✅ Estructura del monorepo
-- ✅ Arquitectura y patrones (Repository Pattern, Server Components)
-- ✅ Stack tecnológico (Next.js 16, React 19, Bun, Turborepo)
-- ✅ Mejores prácticas implementadas
-- ✅ Análisis de calidad (9/10 rating)
-- ✅ Comparación con industry standards (Zillow, Redfin)
-- ✅ Áreas de mejora y recomendaciones
-
-**Mejor para:** Entender la arquitectura general, CRUD del proyecto.
-
----
-
-### 🧩 **[node-modules-explained.md](./node-modules-explained.md)** ⭐ FUNDAMENTAL
-**Duración de lectura:** 25-35 minutos
-
-Explicación detallada sobre:
-- ✅ ¿Por qué tienes múltiples `package.json` y `node_modules`?
-- ✅ Cómo funcionan los workspaces de Bun
-- ✅ Symlinks y resolución de módulos
-- ✅ Hoisting y deduplicación
-- ✅ Ejemplos prácticos paso a paso
-- ✅ Errores comunes y soluciones
-- ✅ Comandos útiles
-
-**Mejor para:** Entender el sistema de módulos, resolver problemas de instalación.
-
----
-
-## 📖 Documentación Complementaria
-
-### 📦 **[TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md)** ⭐ NUEVO
-**Duración de lectura:** 30-40 minutos
-
-Guía completa sobre Turborepo, Turbopack y Bun:
-- ✅ Las tres herramientas explicadas
-- ✅ Configuración detallada de turbo.json
-- ✅ Flujos de desarrollo
-- ✅ Build para producción
-- ✅ Caching y performance
-- ✅ Troubleshooting
-
-**Mejor para:** Entender cómo funciona la orquestación de tareas, optimizar builds.
-
----
-
-### 📋 **[TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md)** ⭐ NUEVO
-**Duración de lectura:** 10-15 minutos
-
-Referencia rápida de comandos:
-- ✅ Comandos Turborepo más usados
-- ✅ Comandos de base de datos
-- ✅ Troubleshooting rápido
-- ✅ Flujos de trabajo comunes
-- ✅ Shortcuts y tips
-
-**Mejor para:** Búsqueda rápida de comandos, desarrollo diario.
-
----
-
-### 🔍 **[BIOME_EXPLAINED.md](./BIOME_EXPLAINED.md)** ⭐ NUEVO
-**Duración de lectura:** 25-35 minutos
-
-Guía completa sobre Biome (linter + formatter):
-- ✅ Qué es Biome (reemplaza ESLint + Prettier)
-- ✅ Desglose de configuración actual
-- ✅ Cómo funciona (linting y formatting)
-- ✅ Comandos de uso diario
-- ✅ Mejores prácticas
-- ✅ Troubleshooting
-
-**Mejor para:** Entender Biome, usarlo correctamente, resolver issues.
-
----
-
-### 🚀 **[BIOME_IMPROVEMENTS.md](./BIOME_IMPROVEMENTS.md)** ⭐ NUEVO
-**Duración de lectura:** 20-30 minutos
-
-Análisis y mejoras recomendadas para Biome:
-- ✅ Análisis de configuración actual
-- ✅ Qué está bien, qué mejorar
-- ✅ Recomendaciones concretas
-- ✅ Configuración mejorada completa
-- ✅ Plan de migración por fases
-- ✅ Análisis de impacto
-
-**Mejor para:** Mejorar tu configuración, entender trade-offs.
-
----
-
-### 🌐 **[WEBSTORM_BIOME_SETUP.md](./WEBSTORM_BIOME_SETUP.md)** ⭐ NUEVO
-**Duración de lectura:** 15-20 minutos
-
-Guía de configuración de Biome en WebStorm:
-- ✅ Diagnóstico actual (Biome NO está configurado)
-- ✅ 5 pasos para setup correcto
-- ✅ Verificación de que funciona
-- ✅ Troubleshooting de problemas comunes
-- ✅ Métodos de integración (extension, external tool)
-- ✅ Setup avanzado (keyboard shortcuts, etc.)
-
-**Mejor para:** Configurar Biome en tu IDE, usar automático.
-
----
-
-### 🛠️ **[development-tasks-guide.md](./development-tasks-guide.md)**
-**Duración de lectura:** 40-50 minutos
-
-Guía completa de tareas de desarrollo:
-- Cómo agregar nuevas funcionalidades
-- Flujo de trabajo recomendado
-- Checklist de desarrollo
-- Testing y deployment
-
-**Mejor para:** Developers trabajando en nuevas features.
-
----
-
-### 🌍 **[git-worktrees-guide.md](./git-worktrees-guide.md)**
-**Duración de lectura:** 15-20 minutos
-
-Guía de Git Worktrees:
-- Cómo trabajar en múltiples branches simultáneamente
-- Setup rápido de worktrees
-- Mejores prácticas
-- Troubleshooting
-
-**Mejor para:** Trabajo en paralelo (feature + bugfix al mismo tiempo).
-
----
-
-### 🗺️ **[map-features-roadmap.md](./map-features-roadmap.md)**
-**Duración de lectura:** 20-30 minutos
-
-Roadmap de features del mapa:
-- Features planeadas
-- Estado de implementación
-- Arquitectura del mapa
-
-**Mejor para:** Entender el roadmap de features del mapa interactivo.
-
----
-
-### 🤖 **[ai-search-implementation.md](./ai-search-implementation.md)**
-**Duración de lectura:** 30-40 minutos
-
-Implementación de búsqueda por IA:
-- Arquitectura
-- Ejemplos de implementación
-- Integración con Supabase
-
-**Mejor para:** Entender cómo integrar búsqueda por IA.
-
----
-
-### 🔧 **[AI_ASSISTANTS.md](./AI_ASSISTANTS.md)**
-**Duración de lectura:** 10-15 minutos
-
-Guía para trabajar con asistentes IA (Claude, Gemini):
-- Cómo usar Claude Code
-- Optimización de prompts
-- Mejores prácticas
-
-**Mejor para:** Developers usando IA para asistencia.
-
----
-
-### 💡 **[TOKEN_OPTIMIZATION.md](./TOKEN_OPTIMIZATION.md)**
-**Duración de lectura:** 10-15 minutos
-
-Optimización de tokens para IA:
-- Cómo reducir uso de tokens
-- Estrategias de contexto
-- Máximo rendimiento
-
-**Mejor para:** Optimizar el uso de IA manteniendo calidad.
-
----
-
-## 📂 Otras Carpetas
-
-### 📁 **setup/**
-Guías de configuración inicial
-
-### 📁 **mcp/**
-Model Context Protocol - Integración de servidores MCP
-
----
-
-## 🗺️ Mapa de Documentación por Rol
-
-### 👨‍💻 Desarrollador Junior
-**Lectura recomendada (en orden):**
-1. [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md) - Configuración inicial
-2. [project-structure.md](./project-structure.md) - Entender la arquitectura
-3. [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md) - Entender Turborepo/Turbopack
-4. [node-modules-explained.md](./node-modules-explained.md) - Entender módulos
-5. [development-tasks-guide.md](./development-tasks-guide.md) - Cómo desarrollar
-
-**Tiempo total:** ~3 horas
-
----
-
-### 👨‍💻 Desarrollador Senior
-**Lectura recomendada (en orden):**
-1. [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md) - Optimizaciones y caché
-2. [project-structure.md](./project-structure.md#análisis-de-calidad) - Review análisis de calidad
-3. [node-modules-explained.md](./node-modules-explained.md#áreas-de-mejora) - Revisar áreas de mejora
-4. [development-tasks-guide.md](./development-tasks-guide.md) - Checklist de desarrollo
-
-**Tiempo total:** ~1.5 horas
-
----
-
-### 🏗️ Arquitecto / Tech Lead
-**Lectura recomendada (en orden):**
-1. [project-structure.md](./project-structure.md#resumen-ejecutivo) - Resumen ejecutivo
-2. [project-structure.md](./project-structure.md#arquitectura-y-patrones) - Patrones de arquitectura
-3. [development-tasks-guide.md](./development-tasks-guide.md) - Procesos de desarrollo
-
-**Tiempo total:** ~1.5 horas
-
----
-
-### 🚀 DevOps / SRE
-**Lectura recomendada (en orden):**
-1. [project-structure.md](./project-structure.md#stack-tecnológico) - Tech stack
-2. [node-modules-explained.md](./node-modules-explained.md#comandos-útiles) - Comandos útiles
-3. [git-worktrees-guide.md](./git-worktrees-guide.md) - Git workflow
-
-**Tiempo total:** ~1 hora
-
----
-
-## 🎓 Temas Principales
-
-### Arquitectura
-- [project-structure.md](./project-structure.md#arquitectura-y-patrones) - Patrones
-- [project-structure.md](./project-structure.md#mejores-prácticas-implementadas) - Best practices
-
-### Módulos y Dependencias
-- [node-modules-explained.md](./node-modules-explained.md) - Sistema completo
-- [project-structure.md](./project-structure.md#stack-tecnológico) - Stack usado
-
-### Desarrollo
-- [development-tasks-guide.md](./development-tasks-guide.md) - Cómo desarrollar
-- [git-worktrees-guide.md](./git-worktrees-guide.md) - Git workflow
-
-### Features
-- [map-features-roadmap.md](./map-features-roadmap.md) - Mapa
-- [ai-search-implementation.md](./ai-search-implementation.md) - Búsqueda IA
-
-### Tools y Setup
-- [AI_ASSISTANTS.md](./AI_ASSISTANTS.md) - Trabajar con IA
-- [TOKEN_OPTIMIZATION.md](./TOKEN_OPTIMIZATION.md) - Optimizar tokens
-
----
-
-## ❓ Preguntas Frecuentes
-
-### "¿Cómo empiezo a desarrollar?"
-👉 Ver: [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md)
-
-### "¿Qué son Turborepo, Turbopack y Bun?"
-👉 Ver: [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md#three-tools-explained)
-
-### "¿Cuáles son los comandos más importantes?"
-👉 Ver: [TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md)
-
-### "¿Por qué tengo múltiples node_modules?"
-👉 Ver: [node-modules-explained.md](./node-modules-explained.md)
-
-### "¿Cómo es la estructura del proyecto?"
-👉 Ver: [project-structure.md](./project-structure.md)
-
-### "¿Cuál es el flujo de desarrollo?"
-👉 Ver: [development-tasks-guide.md](./development-tasks-guide.md)
-
-### "¿Cómo trabajo en múltiples features al mismo tiempo?"
-👉 Ver: [git-worktrees-guide.md](./git-worktrees-guide.md)
-
-### "¿Cuáles son las mejores prácticas?"
-👉 Ver: [project-structure.md](./project-structure.md#mejores-prácticas-implementadas)
-
-### "¿Qué áreas pueden mejorar?"
-👉 Ver: [project-structure.md](./project-structure.md#áreas-de-mejora)
-
----
-
-## 📊 Estadísticas de Documentación
-
-| Documento | Palabras | Tiempo Lectura | Última Actualización |
-|-----------|----------|----------------|----------------------|
-| DEVELOPMENT_SETUP.md | ~7,500 | 20-30 min | 2025-10-22 ⭐ NUEVO |
-| TURBOREPO_GUIDE.md | ~9,000 | 30-40 min | 2025-10-22 ⭐ NUEVO |
-| TURBOREPO_CHEATSHEET.md | ~3,500 | 10-15 min | 2025-10-22 ⭐ NUEVO |
-| BIOME_EXPLAINED.md | ~6,500 | 25-35 min | 2025-10-22 ⭐ NUEVO |
-| BIOME_IMPROVEMENTS.md | ~5,000 | 20-30 min | 2025-10-22 ⭐ NUEVO |
-| WEBSTORM_BIOME_SETUP.md | ~4,000 | 15-20 min | 2025-10-22 ⭐ NUEVO |
-| project-structure.md | ~8,000 | 30-40 min | 2025-10-21 |
-| node-modules-explained.md | ~7,000 | 25-35 min | 2025-10-21 |
-| development-tasks-guide.md | ~6,000 | 40-50 min | 2025-10-20 |
-| git-worktrees-guide.md | ~3,000 | 15-20 min | 2025-10-19 |
-| map-features-roadmap.md | ~7,000 | 20-30 min | 2025-10-19 |
-| ai-search-implementation.md | ~7,500 | 30-40 min | 2025-10-19 |
-| **TOTAL** | **~84,000** | **5.5-6.5 hrs** | - |
+> **Última actualización:** Octubre 22, 2025 | **Versión:** 2.0
 
 ---
 
 ## 🚀 Comienza Aquí
 
-**Nuevo en el proyecto?**
-1. Lee [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md) para configurar el ambiente
-2. Lee [project-structure.md](./project-structure.md) para entender la arquitectura
-3. Lee [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md) para entender Turborepo/Turbopack
-4. Lee [development-tasks-guide.md](./development-tasks-guide.md) para empezar a desarrollar
+**¿Nuevo en el proyecto?** Sigue este orden:
 
-**Presionado por tiempo?**
-- Usa [TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md) para comandos rápidos
-- Revisa el resumen ejecutivo en [project-structure.md](./project-structure.md#resumen-ejecutivo)
+1. **[DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md)** (20-30 min) - Instala y configura todo
+2. **[project-structure.md](./project-structure.md)** (30-40 min) - Entiende la arquitectura
+3. **[TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md)** (30-40 min) - Aprende Turborepo/Turbopack/Bun
+4. **[WEBSTORM_BIOME_SETUP.md](./WEBSTORM_BIOME_SETUP.md)** (15-20 min) - Configura tu IDE
 
-**¿Problema con setup?**
-- Ve directo a [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md#troubleshooting)
-
-**¿Problema con Turborepo?**
-- Ve directo a [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md#troubleshooting)
+**Total:** ~1.5-2 horas para estar 100% listo
 
 ---
 
-## 📋 Documentación por Tipo
+## 📑 Documentación por Categoría
 
-### 🎯 Guías Conceptuales
-- [project-structure.md](./project-structure.md)
-- [node-modules-explained.md](./node-modules-explained.md)
-- [TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md)
+### 🎯 **Inicio & Setup (Lee primero)**
 
-### 📖 Guías Procedimentales
-- [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md)
-- [development-tasks-guide.md](./development-tasks-guide.md)
-- [git-worktrees-guide.md](./git-worktrees-guide.md)
-
-### ⚡ Referencia Rápida
-- [TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md)
-
-### 🛠️ Configuración & Herramientas
-- [BIOME_EXPLAINED.md](./BIOME_EXPLAINED.md)
-- [BIOME_IMPROVEMENTS.md](./BIOME_IMPROVEMENTS.md)
-- [WEBSTORM_BIOME_SETUP.md](./WEBSTORM_BIOME_SETUP.md) ← Setup WebStorm
-
-### 🗺️ Roadmaps y Visión
-- [map-features-roadmap.md](./map-features-roadmap.md)
-
-### 🔧 Referencia Técnica
-- [ai-search-implementation.md](./ai-search-implementation.md)
-- [AI_ASSISTANTS.md](./AI_ASSISTANTS.md)
-- [TOKEN_OPTIMIZATION.md](./TOKEN_OPTIMIZATION.md)
+| Documento | Tiempo | Qué Aprenderás |
+|-----------|--------|---|
+| **[DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md)** ⭐ | 20-30 min | Instalación, comandos básicos, primer dev |
+| **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** | 5-10 min | Comandos más usados en una página |
+| **[ENV_QUICK_START.md](./ENV_QUICK_START.md)** | 10 min | Variables de entorno rápido |
 
 ---
 
-## 🔄 Relaciones Entre Documentos
+### 🏗️ **Arquitectura & Estructura (Entiende el proyecto)**
+
+| Documento | Tiempo | Qué Aprenderás |
+|-----------|--------|---|
+| **[project-structure.md](./project-structure.md)** ⭐ | 30-40 min | Estructura monorepo, patrones, calidad |
+| **[node-modules-explained.md](./node-modules-explained.md)** | 25-35 min | Workspaces, symlinks, hoisting |
+| **[ENVIRONMENT_VARIABLES.md](./ENVIRONMENT_VARIABLES.md)** | 20-30 min | Variables de entorno detallado |
+| **[ENV_ARCHITECTURE.md](./ENV_ARCHITECTURE.md)** | 15-20 min | Arquitectura de configuración |
+
+---
+
+### 🛠️ **Build Tools & Configuration (Domina las herramientas)**
+
+#### Turborepo (Orquestación)
+| Documento | Tiempo | Qué Aprenderás |
+|-----------|--------|---|
+| **[TURBOREPO_GUIDE.md](./TURBOREPO_GUIDE.md)** ⭐ | 30-40 min | Cómo funciona Turborepo/Turbopack/Bun |
+| **[TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md)** | 10-15 min | Referencia rápida de comandos |
+
+#### Biome (Linting & Formatting)
+| Documento | Tiempo | Qué Aprenderás |
+|-----------|--------|---|
+| **[BIOME_EXPLAINED.md](./BIOME_EXPLAINED.md)** ⭐ | 25-35 min | Qué es Biome, cómo usarlo |
+| **[BIOME_IMPROVEMENTS.md](./BIOME_IMPROVEMENTS.md)** | 20-30 min | Mejoras recomendadas de config |
+| **[WEBSTORM_FORMAT_ISSUE.md](./WEBSTORM_FORMAT_ISSUE.md)** | 10-15 min | Por qué Cmd+Option+L formatea diferente |
+
+#### WebStorm IDE Setup
+| Documento | Tiempo | Qué Aprenderás |
+|-----------|--------|---|
+| **[WEBSTORM_BIOME_SETUP.md](./WEBSTORM_BIOME_SETUP.md)** ⭐ | 15-20 min | Configura Biome en WebStorm |
+
+---
+
+### 💻 **Desarrollo (Cómo trabajar)**
+
+| Documento | Tiempo | Qué Aprenderás |
+|-----------|--------|---|
+| **[DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md)** | 20-30 min | Setup local y flujo diario |
+| **[development-tasks-guide.md](./development-tasks-guide.md)** | 40-50 min | Agregar features, testing, deployment |
+| **[git-worktrees-guide.md](./git-worktrees-guide.md)** | 15-20 min | Trabajar en múltiples branches |
+
+---
+
+### 🎨 **Features & Roadmap**
+
+| Documento | Tiempo | Qué Aprenderás |
+|-----------|--------|---|
+| **[map-features-roadmap.md](./map-features-roadmap.md)** | 20-30 min | Roadmap del mapa interactivo |
+| **[ai-search-implementation.md](./ai-search-implementation.md)** | 30-40 min | Búsqueda por IA integrada |
+
+---
+
+### 📈 **Next.js & React 19**
+
+| Documento | Tiempo | Qué Aprenderás |
+|-----------|--------|---|
+| **[NEXTJS_CACHING_EXPLAINED.md](./NEXTJS_CACHING_EXPLAINED.md)** | 20-30 min | Cache Components en Next.js 16 |
+| **[NEXTJS_2025_UPDATES.md](./NEXTJS_2025_UPDATES.md)** | 15-20 min | Updates de Next.js 2025 |
+
+---
+
+### 🤖 **AI & Optimización**
+
+| Documento | Tiempo | Qué Aprenderás |
+|-----------|--------|---|
+| **[AI_ASSISTANTS.md](./AI_ASSISTANTS.md)** | 10-15 min | Cómo usar Claude/Gemini con el proyecto |
+| **[TOKEN_OPTIMIZATION.md](./TOKEN_OPTIMIZATION.md)** | 10-15 min | Optimizar tokens de IA |
+
+---
+
+### 📝 **Referencia General**
+
+| Documento | Tiempo | Qué Aprenderás |
+|-----------|--------|---|
+| **[README.md](./README.md)** | 5 min | Resumen del proyecto |
+
+---
+
+## 🎓 Rutas de Aprendizaje por Rol
+
+### 👨‍💻 Desarrollador Junior (Nuevo en proyecto)
+
+**Orden recomendado:**
+```
+1. DEVELOPMENT_SETUP.md         (20-30 min)
+2. project-structure.md          (30-40 min)
+3. TURBOREPO_GUIDE.md           (30-40 min)
+4. WEBSTORM_BIOME_SETUP.md      (15-20 min)
+5. development-tasks-guide.md   (40-50 min)
+
+Total: ~3 horas para estar listo
+```
+
+### 👨‍💻 Desarrollador Senior (Conoce el stack)
+
+**Orden recomendado:**
+```
+1. TURBOREPO_GUIDE.md           (30-40 min)
+2. BIOME_EXPLAINED.md           (25-35 min)
+3. BIOME_IMPROVEMENTS.md        (20-30 min)
+4. project-structure.md (quality analysis) (15 min)
+
+Total: ~1.5 horas
+```
+
+### 🏗️ Arquitecto / Tech Lead
+
+**Orden recomendado:**
+```
+1. project-structure.md          (30-40 min)
+2. ENVIRONMENT_VARIABLES.md     (20-30 min)
+3. development-tasks-guide.md   (40-50 min)
+4. NEXTJS_CACHING_EXPLAINED.md  (20-30 min)
+
+Total: ~2 horas
+```
+
+### 🚀 DevOps / SRE
+
+**Orden recomendado:**
+```
+1. project-structure.md          (30-40 min)
+2. ENVIRONMENT_VARIABLES.md     (20-30 min)
+3. TURBOREPO_GUIDE.md           (30-40 min)
+4. git-worktrees-guide.md       (15-20 min)
+
+Total: ~2 horas
+```
+
+---
+
+## ⚡ Búsqueda Rápida
+
+**¿Necesitas resolver algo rápido?**
+
+| Problema | Solución |
+|----------|----------|
+| "Cómo instalo y empiezo?" | [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md) |
+| "Qué comandos uso?" | [TURBOREPO_CHEATSHEET.md](./TURBOREPO_CHEATSHEET.md) |
+| "Cómo uso Biome?" | [BIOME_EXPLAINED.md](./BIOME_EXPLAINED.md) |
+| "¿Por qué formatea diferente?" | [WEBSTORM_FORMAT_ISSUE.md](./WEBSTORM_FORMAT_ISSUE.md) |
+| "Biome no está configurado en IDE" | [WEBSTORM_BIOME_SETUP.md](./WEBSTORM_BIOME_SETUP.md) |
+| "¿Cómo es la estructura?" | [project-structure.md](./project-structure.md) |
+| "¿Cuáles son las variables env?" | [ENVIRONMENT_VARIABLES.md](./ENVIRONMENT_VARIABLES.md) |
+| "¿Cómo agrego una feature?" | [development-tasks-guide.md](./development-tasks-guide.md) |
+| "¿Cómo trabajo con múltiples branches?" | [git-worktrees-guide.md](./git-worktrees-guide.md) |
+| "¿Qué módulos debo saber?" | [node-modules-explained.md](./node-modules-explained.md) |
+
+---
+
+## 📊 Estadísticas de Documentación
 
 ```
-project-structure.md
-    ↓
-    ├── node-modules-explained.md (¿Cómo funciona?)
-    ├── development-tasks-guide.md (¿Cómo se desarrolla?)
-    └── git-worktrees-guide.md (¿Cómo se colabora?)
-         ↓
-         ├── ai-search-implementation.md (Feature específica)
-         └── map-features-roadmap.md (Feature roadmap)
+Total de documentos: 23
+Total de palabras:   ~95,000
+Tiempo de lectura:   6-7 horas (completo)
+Última actualización: 22 Oct 2025
+
+Nuevos en esta versión (Oct 22):
+✅ TURBOREPO_GUIDE.md (9,000 palabras)
+✅ DEVELOPMENT_SETUP.md (7,500 palabras)
+✅ TURBOREPO_CHEATSHEET.md (3,500 palabras)
+✅ BIOME_EXPLAINED.md (6,500 palabras)
+✅ BIOME_IMPROVEMENTS.md (5,000 palabras)
+✅ WEBSTORM_BIOME_SETUP.md (4,000 palabras)
+✅ WEBSTORM_FORMAT_ISSUE.md (3,500 palabras)
 ```
 
 ---
 
-## 🤝 Contribuyendo a la Documentación
+## 🗂️ Estructura de Documentos
 
-Si encuentras:
-- ❌ Errores en la documentación
-- ❓ Secciones poco claras
-- 📝 Documentación faltante
-- 💡 Mejoras sugeridas
-
-Por favor:
-1. Abre un issue con etiqueta `documentation`
-2. O envía un PR actualizando el documento
-3. Mantén el mismo formato y estilo
+```
+docs/
+├── 📘 CORE DOCUMENTATION
+│   ├── INDEX.md                      (Este archivo)
+│   ├── README.md                     (Resumen general)
+│   ├── QUICK_REFERENCE.md            (Referencia rápida)
+│
+├── 🚀 GETTING STARTED
+│   ├── DEVELOPMENT_SETUP.md          (Setup + primeros pasos)
+│   ├── ENV_QUICK_START.md            (Variables rápido)
+│   └── project-structure.md          (Arquitectura)
+│
+├── 🛠️ BUILD TOOLS & CONFIGURATION
+│   ├── TURBOREPO_GUIDE.md            (Turborepo/Turbopack/Bun)
+│   ├── TURBOREPO_CHEATSHEET.md       (Referencia de comandos)
+│   ├── BIOME_EXPLAINED.md            (Qué es Biome)
+│   ├── BIOME_IMPROVEMENTS.md         (Mejoras recomendadas)
+│   ├── WEBSTORM_BIOME_SETUP.md       (Configurar en IDE)
+│   └── WEBSTORM_FORMAT_ISSUE.md      (Problema de formato)
+│
+├── 📖 ENVIRONMENT & CONFIGURATION
+│   ├── ENVIRONMENT_VARIABLES.md      (Variables detallado)
+│   └── ENV_ARCHITECTURE.md           (Arquitectura de config)
+│
+├── 💻 DEVELOPMENT WORKFLOW
+│   ├── development-tasks-guide.md    (Cómo desarrollar)
+│   ├── git-worktrees-guide.md        (Múltiples branches)
+│   └── node-modules-explained.md     (Módulos explicado)
+│
+├── 🎨 FEATURES & ROADMAP
+│   ├── map-features-roadmap.md       (Mapa interactivo)
+│   └── ai-search-implementation.md   (Búsqueda IA)
+│
+├── 📈 NEXT.JS & REACT
+│   ├── NEXTJS_CACHING_EXPLAINED.md   (Cache Components)
+│   └── NEXTJS_2025_UPDATES.md        (Updates 2025)
+│
+├── 🤖 AI & OPTIMIZATION
+│   ├── AI_ASSISTANTS.md              (Usar Claude/Gemini)
+│   └── TOKEN_OPTIMIZATION.md         (Optimizar tokens)
+│
+└── 📁 setup/                         (Setup guides)
+```
 
 ---
 
-## 📞 Contacto y Recursos
+## 🔄 Cómo Navegar
 
-### Documentos Internos
-- [CLAUDE.md](../CLAUDE.md) - Contexto para Claude Code
-- [QUICK_START.md](../QUICK_START.md) - Referencia rápida
-- [README.md](../README.md) - Descripción del proyecto
+### **Si sabes lo que necesitas:**
+→ Usa la tabla "Búsqueda Rápida" arriba ⬆️
 
-### Recursos Externos
-- [Next.js Docs](https://nextjs.org/docs)
-- [Bun Docs](https://bun.sh/docs)
-- [Prisma Docs](https://www.prisma.io/docs)
-- [Turborepo Handbook](https://turbo.build/repo/docs)
+### **Si necesitas aprender paso a paso:**
+→ Sigue tu ruta de aprendizaje por rol 📖
+
+### **Si quieres leer todo:**
+→ Sigue el orden de la tabla "Documentación por Categoría" 📑
 
 ---
 
-**Última actualización:** 2025-10-22
-**Versión:** 1.3
-**Cambios recientes:** Agregados TURBOREPO_GUIDE, DEVELOPMENT_SETUP, TURBOREPO_CHEATSHEET, BIOME_EXPLAINED, BIOME_IMPROVEMENTS, WEBSTORM_BIOME_SETUP
+## 📝 Cambios Recientes (Versión 2.0)
+
+### Oct 22, 2025
+✅ Agregados 7 nuevos documentos sobre Turborepo y Biome
+✅ Reorganizado INDEX.md con categorías claras
+✅ Agregadas rutas de aprendizaje por rol
+✅ Agregada tabla de búsqueda rápida
+✅ Actualizada estadística de documentación
+✅ Estructura más clara y navegable
+
+### Cambios Técnicos
+- Optimizadas configuraciones de Turborepo
+- Mejorada documentación de Biome
+- Agregada guía de WebStorm setup
+- Clarificado el problema de formatting
+
+---
+
+## 🎯 Próximas Actualizaciones
+
+- [ ] Agregar documentación de API routes
+- [ ] Agregar ejemplos de Server Actions
+- [ ] Agregar patterns de autenticación
+- [ ] Agregar testing guide
+- [ ] Agregar deployment guide
+
+---
+
+## 📞 Soporte
+
+**¿Pregunta sobre documentación?**
+1. Busca en "Búsqueda Rápida" arriba
+2. Si no está, revisa la categoría correspondiente
+3. Si aún no lo encuentras, crea un issue en GitHub
+
+---
+
+## ✨ Resumen
+
+```
+Esta documentación cubre TODO el proyecto:
+
+✅ Setup e instalación
+✅ Arquitectura y estructura
+✅ Build tools (Turborepo, Biome)
+✅ IDE configuration (WebStorm)
+✅ Development workflow
+✅ Features y roadmap
+✅ Optimización y performance
+✅ AI integration
+
+Total: 23 documentos, ~95,000 palabras
+
+¿Listo para empezar?
+→ Comienza con DEVELOPMENT_SETUP.md
+```
+
+---
+
+**Última Actualización:** Octubre 22, 2025
+**Versión:** 2.0
+**Próxima Review:** Cuando haya cambios significativos
 **Mantenedor:** Development Team
