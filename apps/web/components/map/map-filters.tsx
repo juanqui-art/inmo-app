@@ -11,7 +11,7 @@
 
 "use client";
 
-import { Home, Building2, Filter } from "lucide-react";
+import { Building2, Filter } from "lucide-react";
 
 export function MapFilters() {
   return (

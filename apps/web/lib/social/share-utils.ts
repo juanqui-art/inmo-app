@@ -31,9 +31,7 @@ export type SharePlatform =
   | "WHATSAPP"
   | "LINKEDIN"
   | "EMAIL"
-  | "COPY_LINK"
-  | "INSTAGRAM"
-  | "TIKTOK";
+  | "COPY_LINK";
 
 interface ShareData {
   url: string;
@@ -63,7 +61,7 @@ export function buildPropertyShareUrl(propertyId: string): string {
  * Extracts relevant data and formats for social media
  */
 export function formatPropertyShareData(
-  property: Property & { images?: { url: string }[] }
+  property: Property & { images?: { url: string }[] },
 ): ShareData {
   const url = buildPropertyShareUrl(property.id);
 
@@ -75,8 +73,7 @@ export function formatPropertyShareData(
   }).format(Number(property.price));
 
   // Transaction type label
-  const txType =
-    property.transactionType === "SALE" ? "Venta" : "Renta";
+  const txType = property.transactionType === "SALE" ? "Venta" : "Renta";
 
   // Build title
   const title = `${property.title} - ${price} (${txType})`;
@@ -129,7 +126,7 @@ export function shareToFacebook(shareData: ShareData): void {
   window.open(
     facebookUrl,
     "_blank",
-    "width=600,height=400,noopener,noreferrer"
+    "width=600,height=400,noopener,noreferrer",
   );
 }
 
@@ -146,17 +143,14 @@ export function shareToFacebook(shareData: ShareData): void {
  */
 export function shareToTwitter(shareData: ShareData): void {
   // Twitter limits, keep it short
-  const text = shareData.title.length > 200
-    ? shareData.title.substring(0, 200) + "..."
-    : shareData.title;
+  const text =
+    shareData.title.length > 200
+      ? shareData.title.substring(0, 200) + "..."
+      : shareData.title;
 
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareData.url)}`;
 
-  window.open(
-    twitterUrl,
-    "_blank",
-    "width=600,height=400,noopener,noreferrer"
-  );
+  window.open(twitterUrl, "_blank", "width=600,height=400,noopener,noreferrer");
 }
 
 /**
@@ -175,7 +169,7 @@ export function shareToLinkedIn(shareData: ShareData): void {
   window.open(
     linkedInUrl,
     "_blank",
-    "width=600,height=400,noopener,noreferrer"
+    "width=600,height=400,noopener,noreferrer",
   );
 }
 
@@ -232,25 +226,6 @@ export async function copyLinkToClipboard(url: string): Promise<boolean> {
   }
 }
 
-export function shareToInstagram(shareData: ShareData): void {
-  const instagramUrl = `https://www.instagram.com/`;
-
-  window.open(
-    instagramUrl,
-    "_blank",
-    "width=600,height=400,noopener,noreferrer"
-  );
-}
-
-export function shareToTikTok(shareData: ShareData): void {
-  const tiktokUrl = `https://www.tiktok.com/`;
-
-  window.open(
-    tiktokUrl,
-    "_blank",
-    "width=600,height=400,noopener,noreferrer"
-  );
-}
 
 /**
  * Generic share handler
@@ -260,7 +235,7 @@ export function shareToTikTok(shareData: ShareData): void {
  */
 export function shareProperty(
   platform: SharePlatform,
-  shareData: ShareData
+  shareData: ShareData,
 ): void | Promise<boolean> {
   switch (platform) {
     case "WHATSAPP":
@@ -275,10 +250,6 @@ export function shareProperty(
       return shareViaEmail(shareData);
     case "COPY_LINK":
       return copyLinkToClipboard(shareData.url);
-    case "INSTAGRAM":
-      return shareToInstagram(shareData);
-    case "TIKTOK":
-      return shareToTikTok(shareData);
   }
 }
 

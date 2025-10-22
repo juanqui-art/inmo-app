@@ -204,28 +204,6 @@ export function SocialShareButton({
                 <span className="text-sm font-medium">Facebook</span>
               </button>
 
-              {/* Instagram */}
-              <button
-                onClick={() => handlePlatformShare("INSTAGRAM")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
-              >
-                <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center">
-                  <SocialIcon name="instagram" className="h-4 w-4 text-white" />
-                </div>
-                <span className="text-sm font-medium">Instagram</span>
-              </button>
-
-              {/* TikTok */}
-              <button
-                onClick={() => handlePlatformShare("TIKTOK")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
-              >
-                <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
-                  <SocialIcon name="tiktok" className="h-4 w-4 text-white" />
-                </div>
-                <span className="text-sm font-medium">TikTok</span>
-              </button>
-
               {/* Email */}
               <button
                 onClick={() => handlePlatformShare("EMAIL")}

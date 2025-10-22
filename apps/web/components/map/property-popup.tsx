@@ -42,7 +42,7 @@ export function PropertyPopup({
   // Get first image or use placeholder
   const imageUrl =
     property.images && property.images.length > 0
-      ? property.images[0].url
+      ? property.images[0]?.url ?? "/images/property-placeholder.jpg"
       : "/images/property-placeholder.jpg";
 
   // Format price

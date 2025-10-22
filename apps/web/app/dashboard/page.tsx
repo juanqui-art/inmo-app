@@ -40,7 +40,7 @@ export default async function DashboardPage() {
         property: {
           agentId: user.id,
         },
-        createdAt: {
+        viewedAt: {
           gte: new Date(new Date().setDate(1)), // First day of month
         },
       },
@@ -50,16 +50,19 @@ export default async function DashboardPage() {
 
   // Calculate statistics
   const totalProperties = propertiesData.length;
-  const activeProperties = propertiesData.filter((p) => p.status === "AVAILABLE")
-    .length;
-  const draftProperties = propertiesData.filter((p) => p.status === "DRAFT")
-    .length;
-  const soldProperties = propertiesData.filter((p) => p.status === "SOLD")
-    .length;
+  const activeProperties = propertiesData.filter(
+    (p) => p.status === "AVAILABLE",
+  ).length;
+  const draftProperties = propertiesData.filter(
+    (p) => p.status === "PENDING",
+  ).length;
+  const soldProperties = propertiesData.filter(
+    (p) => p.status === "SOLD",
+  ).length;
 
   const totalAppointments = appointmentsData.length;
   const pendingAppointments = appointmentsData.filter(
-    (a) => a.status === "PENDING"
+    (a) => a.status === "PENDING",
   ).length;
 
   const totalViews = viewsData.length;
