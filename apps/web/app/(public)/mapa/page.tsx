@@ -49,7 +49,10 @@ import {
   dynamicFiltersToPropertyFilters,
 } from "@/lib/utils/url-helpers";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
-import { propertyRepository, serializeProperties } from "@repo/database";
+import {
+  getCachedPropertiesByBounds,
+  validateBoundsParams,
+} from "@/lib/cache/properties-cache";
 import type { Metadata } from "next";
 
 /**
@@ -113,8 +116,36 @@ export default async function MapPage(props: MapPageProps) {
   // Convert URL filters to database format
   const repositoryFilters = dynamicFiltersToPropertyFilters(dynamicFilters);
 
-  // Query properties from database using bounds + filters
-  const { properties: dbProperties } = await propertyRepository.findInBounds({
+  // Validate bounds before querying (prevents invalid coordinates)
+  validateBoundsParams({
+    minLatitude: bounds.sw_lat,
+    maxLatitude: bounds.ne_lat,
+    minLongitude: bounds.sw_lng,
+    maxLongitude: bounds.ne_lng,
+  });
+
+  /**
+   * CACHED QUERY: React.cache() + revalidateTag()
+   *
+   * This function:
+   * 1. Deduplicates identical requests in the same render
+   * 2. Caches results for 300s (ISR revalidate period)
+   * 3. Can be invalidated with revalidateTag('properties-bounds')
+   *
+   * WHY? Each URL change (viewport pan/zoom) could trigger a new query.
+   * Without cache: Every bounds change = new DB query (expensive).
+   * With cache: Identical bounds = same cached data (free).
+   *
+   * EXAMPLE FLOW:
+   * 1. User drags map → URL changes
+   * 2. Server re-renders with new bounds
+   * 3. getCachedPropertiesByBounds checks cache
+   * 4. If bounds seen before: returns cached result (instant)
+   * 5. If new bounds: queries DB once, caches result
+   *
+   * This prevents the renderización loops while keeping data fresh.
+   */
+  const { properties } = await getCachedPropertiesByBounds({
     minLatitude: bounds.sw_lat,
     maxLatitude: bounds.ne_lat,
     minLongitude: bounds.sw_lng,
@@ -122,9 +153,6 @@ export default async function MapPage(props: MapPageProps) {
     filters: repositoryFilters as any, // Type assertion for flexibility
     take: 1000,
   });
-
-  // Serialize Prisma Decimal types to numbers for Client Component
-  const properties = serializeProperties(dbProperties);
 
   /**
    * Render map with real database properties and viewport from URL
