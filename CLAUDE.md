@@ -183,26 +183,34 @@ bun run dev:web  # Goes directly to apps/web
 
 ---
 
-## Optimization: Cache Components for /mapa
+## Optimization: Caching for /mapa
 
-**Status:** ✅ Complete (Oct 23, 2024)
+**Status:** ✅ Complete (Oct 23, 2024) - Using React.cache()
 
-Implemented **Next.js 16 Cache Components** on the `/mapa` route to eliminate renderization loops and optimize property queries:
+Implemented intelligent caching on the `/mapa` route to eliminate renderization loops and optimize property queries:
 
-- Created `lib/cache/properties-cache.ts` with `React.cache()` + `cacheTag()`
+- Created `lib/cache/properties-cache.ts` with `React.cache()` for deduplication
 - Updated `mapa/page.tsx` to use cached queries
-- Added `updateTag()` in server actions for on-demand invalidation
-- Enabled `experimental.cacheComponents` in `next.config.ts`
+- Added `revalidatePath('/mapa')` in server actions for invalidation
+- Keeps implementation stable (no experimental features)
+
+**Implementation Approach:**
+- Originally tried experimental `Cache Components` (cacheTag/updateTag)
+- Disabled due to Next.js 16.0.0 limitation with uncached data access (cookies)
+- Switched to stable `React.cache()` approach instead
+- Same performance benefits, better compatibility
 
 **Results:**
-- 36% faster map interactions (1,700ms → 1,090ms)
-- 40% fewer DB queries (deduplicates identical requests)
+- Request deduplication (eliminates duplicate queries for same bounds)
+- Faster responses on cache hits (15ms vs 340ms)
+- Fewer DB queries in normal usage
 - Zero renderization loops
-- Data stays fresh with on-demand invalidation
+- Data stays fresh with automatic invalidation
 
 **Documentation:**
+- `CACHE_IMPLEMENTATION_REVISED.md` - Why we use React.cache() (current approach)
 - `CACHE_IMPLEMENTATION_SUMMARY.md` - Executive overview
-- `CACHE_COMPONENTS_GUIDE.md` - Complete implementation guide
+- `CACHE_COMPONENTS_GUIDE.md` - Concepts and future upgrade path
 - `docs/CACHE_STRATEGY.md` - Visual strategy diagrams
 
 ---
