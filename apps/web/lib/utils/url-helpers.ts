@@ -354,3 +354,236 @@ export function parseBoundsParams(
     return viewportToBounds(viewport);
   }
 }
+
+/**
+ * Filter parameters for dynamic property filtering on map
+ * Extracted from URL query params
+ */
+export interface DynamicFilterParams {
+  transactionType?: string | string[];
+  category?: string | string[];
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  minArea?: number;
+  maxArea?: number;
+  city?: string;
+  search?: string;
+}
+
+/**
+ * Parse and validate filter parameters from URL search params
+ *
+ * @param searchParams - URL search params
+ * @returns Validated filter params object
+ *
+ * @example
+ * // URL: /mapa?...&transactionType=SALE&minPrice=100000&maxPrice=300000
+ * parseFilterParams(searchParams)
+ * // Returns: { transactionType: 'SALE', minPrice: 100000, maxPrice: 300000 }
+ */
+export function parseFilterParams(
+  searchParams: URLSearchParams | Record<string, string | string[] | undefined>,
+): DynamicFilterParams {
+  const getParam = (key: string): string | string[] | undefined => {
+    if (searchParams instanceof URLSearchParams) {
+      const values = searchParams.getAll(key);
+      return values.length === 0 ? undefined : values.length === 1 ? values[0] : values;
+    }
+    return searchParams[key];
+  };
+
+  const filters: DynamicFilterParams = {};
+
+  // Transaction type filter (can be multiple)
+  const transactionType = getParam("transactionType");
+  if (transactionType) {
+    filters.transactionType = transactionType;
+  }
+
+  // Category filter (can be multiple)
+  const category = getParam("category");
+  if (category) {
+    filters.category = category;
+  }
+
+  // Price range filters
+  const minPrice = getParam("minPrice");
+  if (minPrice && !Array.isArray(minPrice)) {
+    const price = parseFloat(minPrice);
+    if (!isNaN(price) && price >= 0) {
+      filters.minPrice = price;
+    }
+  }
+
+  const maxPrice = getParam("maxPrice");
+  if (maxPrice && !Array.isArray(maxPrice)) {
+    const price = parseFloat(maxPrice);
+    if (!isNaN(price) && price >= 0) {
+      filters.maxPrice = price;
+    }
+  }
+
+  // Bedroom filter
+  const bedrooms = getParam("bedrooms");
+  if (bedrooms && !Array.isArray(bedrooms)) {
+    const num = parseInt(bedrooms);
+    if (!isNaN(num) && num > 0) {
+      filters.bedrooms = num;
+    }
+  }
+
+  // Bathroom filter
+  const bathrooms = getParam("bathrooms");
+  if (bathrooms && !Array.isArray(bathrooms)) {
+    const num = parseFloat(bathrooms);
+    if (!isNaN(num) && num > 0) {
+      filters.bathrooms = num;
+    }
+  }
+
+  // Area filter
+  const minArea = getParam("minArea");
+  if (minArea && !Array.isArray(minArea)) {
+    const num = parseFloat(minArea);
+    if (!isNaN(num) && num > 0) {
+      filters.minArea = num;
+    }
+  }
+
+  // City filter
+  const city = getParam("city");
+  if (city && !Array.isArray(city)) {
+    filters.city = city;
+  }
+
+  // Search text
+  const search = getParam("search");
+  if (search && !Array.isArray(search)) {
+    filters.search = search;
+  }
+
+  return filters;
+}
+
+/**
+ * Build filter query string from filter params
+ * Useful for constructing URLs with filters
+ *
+ * @param filters - Filter parameters
+ * @returns Query string portion (e.g., "transactionType=SALE&minPrice=100000")
+ */
+export function buildFilterUrl(filters: DynamicFilterParams): string {
+  const params = new URLSearchParams();
+
+  if (filters.transactionType) {
+    const values = Array.isArray(filters.transactionType)
+      ? filters.transactionType
+      : [filters.transactionType];
+    values.forEach((val) => params.append("transactionType", val));
+  }
+
+  if (filters.category) {
+    const values = Array.isArray(filters.category) ? filters.category : [filters.category];
+    values.forEach((val) => params.append("category", val));
+  }
+
+  if (filters.minPrice !== undefined) {
+    params.set("minPrice", filters.minPrice.toString());
+  }
+
+  if (filters.maxPrice !== undefined) {
+    params.set("maxPrice", filters.maxPrice.toString());
+  }
+
+  if (filters.bedrooms !== undefined) {
+    params.set("bedrooms", filters.bedrooms.toString());
+  }
+
+  if (filters.bathrooms !== undefined) {
+    params.set("bathrooms", filters.bathrooms.toString());
+  }
+
+  if (filters.minArea !== undefined) {
+    params.set("minArea", filters.minArea.toString());
+  }
+
+  if (filters.city !== undefined) {
+    params.set("city", filters.city);
+  }
+
+  if (filters.search !== undefined) {
+    params.set("search", filters.search);
+  }
+
+  return params.toString();
+}
+
+/**
+ * Convert DynamicFilterParams to PropertyFilters format for repository
+ * Handles single vs multiple values for transactionType and category
+ *
+ * @param dynamicFilters - URL filter parameters
+ * @returns PropertyFilters object for repository.findInBounds()
+ */
+export function dynamicFiltersToPropertyFilters(
+  dynamicFilters: DynamicFilterParams,
+): Record<string, unknown> {
+  const filters: Record<string, unknown> = {};
+
+  // For database queries, we need single values, not arrays
+  // If multiple values selected, store as is (repository will handle as OR query)
+  if (dynamicFilters.transactionType) {
+    // If array, just take first one for single filter query
+    // (OR queries would be added in future enhancement)
+    if (Array.isArray(dynamicFilters.transactionType)) {
+      if (dynamicFilters.transactionType.length === 1) {
+        filters.transactionType = dynamicFilters.transactionType[0];
+      }
+      // For multiple selections, repository needs enhancement to support it
+    } else {
+      filters.transactionType = dynamicFilters.transactionType;
+    }
+  }
+
+  if (dynamicFilters.category) {
+    if (Array.isArray(dynamicFilters.category)) {
+      if (dynamicFilters.category.length === 1) {
+        filters.category = dynamicFilters.category[0];
+      }
+    } else {
+      filters.category = dynamicFilters.category;
+    }
+  }
+
+  if (dynamicFilters.minPrice !== undefined) {
+    filters.minPrice = dynamicFilters.minPrice;
+  }
+
+  if (dynamicFilters.maxPrice !== undefined) {
+    filters.maxPrice = dynamicFilters.maxPrice;
+  }
+
+  if (dynamicFilters.bedrooms !== undefined) {
+    filters.bedrooms = dynamicFilters.bedrooms;
+  }
+
+  if (dynamicFilters.bathrooms !== undefined) {
+    filters.bathrooms = dynamicFilters.bathrooms;
+  }
+
+  if (dynamicFilters.minArea !== undefined) {
+    filters.minArea = dynamicFilters.minArea;
+  }
+
+  if (dynamicFilters.city !== undefined) {
+    filters.city = dynamicFilters.city;
+  }
+
+  if (dynamicFilters.search !== undefined) {
+    filters.search = dynamicFilters.search;
+  }
+
+  return filters;
+}

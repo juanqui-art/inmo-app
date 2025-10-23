@@ -45,8 +45,11 @@ import { MapView } from "@/components/map/map-view";
 import {
   parseBoundsParams,
   boundsToViewport,
+  parseFilterParams,
+  dynamicFiltersToPropertyFilters,
 } from "@/lib/utils/url-helpers";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
+import { propertyRepository, serializeProperties } from "@repo/database";
 import type { Metadata } from "next";
 
 /**
@@ -96,134 +99,35 @@ export default async function MapPage(props: MapPageProps) {
   const viewport = boundsToViewport(bounds);
 
   /**
-   * MOCK DATA for testing
-   * TODO: Replace with real database query when ready
+   * DYNAMIC FILTERING IMPLEMENTATION
+   *
+   * 1. Parse bounds from URL (geographic filtering)
+   * 2. Parse filter params from URL (user-applied filters)
+   * 3. Query database for properties matching bounds + filters
+   * 4. Serialize Decimal fields to numbers for client compatibility
    */
-  const properties = [
-    {
-      id: "1",
-      title: "Casa moderna en El Ejido",
-      price: 185000,
-      transactionType: "SALE" as const,
-      category: "HOUSE" as const,
-      bedrooms: 3,
-      bathrooms: 2.5,
-      area: 180,
-      city: "Cuenca",
-      state: "Azuay",
-      latitude: -2.8995,
-      longitude: -79.0044,
-      images: [],
-    },
-    {
-      id: "2",
-      title: "Departamento en Yanuncay",
-      price: 95000,
-      transactionType: "SALE" as const,
-      category: "APARTMENT" as const,
-      bedrooms: 2,
-      bathrooms: 2,
-      area: 85,
-      city: "Cuenca",
-      state: "Azuay",
-      latitude: -2.8875,
-      longitude: -79.0125,
-      images: [],
-    },
-    {
-      id: "3",
-      title: "Villa de lujo en Monay",
-      price: 320000,
-      transactionType: "SALE" as const,
-      category: "VILLA" as const,
-      bedrooms: 4,
-      bathrooms: 3.5,
-      area: 350,
-      city: "Cuenca",
-      state: "Azuay",
-      latitude: -2.9145,
-      longitude: -78.9875,
-      images: [],
-    },
-    {
-      id: "4",
-      title: "Suite en Centro Histórico",
-      price: 450,
-      transactionType: "RENT" as const,
-      category: "SUITE" as const,
-      bedrooms: 1,
-      bathrooms: 1,
-      area: 45,
-      city: "Cuenca",
-      state: "Azuay",
-      latitude: -2.9005,
-      longitude: -79.0035,
-      images: [],
-    },
-    {
-      id: "5",
-      title: "Penthouse Av. Remigio Crespo",
-      price: 245000,
-      transactionType: "SALE" as const,
-      category: "PENTHOUSE" as const,
-      bedrooms: 3,
-      bathrooms: 3,
-      area: 220,
-      city: "Cuenca",
-      state: "Azuay",
-      latitude: -2.9115,
-      longitude: -79.0095,
-      images: [],
-    },
-    {
-      id: "6",
-      title: "Casa colonial en Gualaceo",
-      price: 125000,
-      transactionType: "SALE" as const,
-      category: "HOUSE" as const,
-      bedrooms: 4,
-      bathrooms: 2,
-      area: 200,
-      city: "Gualaceo",
-      state: "Azuay",
-      latitude: -2.8942,
-      longitude: -78.7808,
-      images: [],
-    },
-    {
-      id: "7",
-      title: "Taller artesanal en Chordeleg",
-      price: 800,
-      transactionType: "RENT" as const,
-      category: "COMMERCIAL" as const,
-      bedrooms: 0,
-      bathrooms: 1,
-      area: 90,
-      city: "Chordeleg",
-      state: "Azuay",
-      latitude: -2.9711,
-      longitude: -78.7614,
-      images: [],
-    },
-    {
-      id: "8",
-      title: "Quinta con vista al río en Paute",
-      price: 280000,
-      transactionType: "SALE" as const,
-      category: "FARM" as const,
-      bedrooms: 5,
-      bathrooms: 3,
-      area: 500,
-      city: "Paute",
-      state: "Azuay",
-      latitude: -2.7761,
-      longitude: -78.7533,
-      images: [],
-    },
-  ];
+
+  // Parse filter parameters from URL
+  const dynamicFilters = parseFilterParams(searchParams);
+
+  // Convert URL filters to database format
+  const repositoryFilters = dynamicFiltersToPropertyFilters(dynamicFilters);
+
+  // Query properties from database using bounds + filters
+  const { properties: dbProperties } = await propertyRepository.findInBounds({
+    minLatitude: bounds.sw_lat,
+    maxLatitude: bounds.ne_lat,
+    minLongitude: bounds.sw_lng,
+    maxLongitude: bounds.ne_lng,
+    filters: repositoryFilters as any, // Type assertion for flexibility
+    take: 1000,
+  });
+
+  // Serialize Prisma Decimal types to numbers for Client Component
+  const properties = serializeProperties(dbProperties);
 
   /**
-   * Render map with mock properties and viewport from URL
+   * Render map with real database properties and viewport from URL
    */
   return <MapView properties={properties} initialViewport={viewport} />;
 }
@@ -250,22 +154,41 @@ export const revalidate = 300; // 5 minutes
 /**
  * COMPLETED FEATURES:
  * ✅ URL State: Shareable map positions
- *    - Viewport syncs to URL (/mapa?lat=-2.9&lng=-79.0&zoom=12)
+ *    - Bounds syncs to URL (/mapa?ne_lat=-2.85&ne_lng=-78.95&sw_lat=-2.95&sw_lng=-79.05)
  *    - Browser history support (back/forward navigation)
  *    - Debounced updates (500ms) to avoid spam
  *    - Server-side viewport parsing from searchParams
  *
+ * ✅ Smart Clustering
+ *    - K-D tree spatial indexing with Supercluster
+ *    - Dynamic bounds calculation for all zoom levels
+ *    - Glassmorphism elegant visual design
+ *
+ * ✅ Real Database Integration
+ *    - Properties fetched from PostgreSQL via Prisma
+ *    - Filtered by geographic bounds (ne_lat, ne_lng, sw_lat, sw_lng)
+ *    - Server-side data loading (no client-side fetch delay)
+ *
+ * ✅ Dynamic Filtering
+ *    - Filter by transaction type (SALE, RENT)
+ *    - Filter by category (HOUSE, APARTMENT, etc.)
+ *    - Filter by price range (minPrice, maxPrice)
+ *    - Filter by bedrooms, bathrooms, area
+ *    - Text search (title, description, address)
+ *    - All filters work in combination with bounds
+ *
  * NEXT PRIORITIES:
  *
- * 1. Real Database Integration:
- *    - Replace mock data with Prisma query
- *    - Fetch only properties with valid coordinates
- *    - Use propertyRepository.findMany({ where: { latitude: { not: null } } })
+ * 1. Filter UI Sidebar:
+ *    - Checkboxes for transactionType and category
+ *    - Range sliders for price and area
+ *    - Sync UI state ↔ URL params
+ *    - Real-time updates as user changes filters
  *
- * 2. Server-Side Filtering:
- *    - Accept filter params (transactionType, category, price range)
- *    - Pre-filter properties on server before rendering
- *    - Example: /mapa?transactionType=SALE&minPrice=100000
+ * 2. Multi-select Filters:
+ *    - Allow selecting multiple transaction types (SALE AND RENT)
+ *    - Allow selecting multiple categories
+ *    - Update repository to support OR queries
  *
  * 3. Bounds Fitting:
  *    - Calculate optimal zoom to show all properties
@@ -279,6 +202,6 @@ export const revalidate = 300; // 5 minutes
  *
  * 5. Performance Optimizations:
  *    - Prefetch property details on marker hover
- *    - Implement viewport-based filtering (only show visible)
- *    - Add property clustering for large datasets
+ *    - Cache filtering results (React Query / SWR)
+ *    - Implement progressive loading for large datasets
  */

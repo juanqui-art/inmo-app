@@ -265,6 +265,101 @@ export class PropertyRepository {
   }
 
   /**
+   * Busca propiedades dentro de un bounding box geográfico
+   * Usado para dynamic filtering en mapas
+   *
+   * @param params.minLatitude - Límite sur del bounding box
+   * @param params.maxLatitude - Límite norte del bounding box
+   * @param params.minLongitude - Límite oeste del bounding box
+   * @param params.maxLongitude - Límite este del bounding box
+   * @param params.filters - Filtros adicionales opcionales
+   * @param params.skip - Paginación
+   * @param params.take - Límite de resultados
+   *
+   * @example
+   * // Mostrar todas las propiedades en Cuenca
+   * propertyRepository.findInBounds({
+   *   minLatitude: -2.953,
+   *   maxLatitude: -2.847,
+   *   minLongitude: -79.053,
+   *   maxLongitude: -78.947,
+   *   filters: { transactionType: 'SALE', minPrice: 50000, maxPrice: 300000 }
+   * })
+   */
+  async findInBounds(params: {
+    minLatitude: number
+    maxLatitude: number
+    minLongitude: number
+    maxLongitude: number
+    filters?: PropertyFilters
+    skip?: number
+    take?: number
+  }): Promise<{ properties: PropertyWithRelations[]; total: number }> {
+    const {
+      minLatitude,
+      maxLatitude,
+      minLongitude,
+      maxLongitude,
+      filters = {},
+      skip = 0,
+      take = 1000, // Mayor por defecto para mapas
+    } = params
+
+    // Validar que las coordenadas sean válidas
+    if (minLatitude > maxLatitude) {
+      throw new Error('minLatitude debe ser menor que maxLatitude')
+    }
+    if (minLongitude > maxLongitude) {
+      throw new Error('minLongitude debe ser menor que maxLongitude')
+    }
+
+    const where: Prisma.PropertyWhereInput = {
+      // Bounding box geográfico
+      latitude: {
+        gte: minLatitude,
+        lte: maxLatitude,
+      },
+      longitude: {
+        gte: minLongitude,
+        lte: maxLongitude,
+      },
+      // Filtros adicionales (mismo patrón que list())
+      ...(filters.transactionType && { transactionType: filters.transactionType }),
+      ...(filters.category && { category: filters.category }),
+      ...(filters.status && { status: filters.status }),
+      ...(filters.agentId && { agentId: filters.agentId }),
+      ...(filters.city && { city: { contains: filters.city, mode: 'insensitive' } }),
+      ...(filters.state && { state: { contains: filters.state, mode: 'insensitive' } }),
+      ...(filters.bedrooms && { bedrooms: { gte: filters.bedrooms } }),
+      ...(filters.bathrooms && { bathrooms: { gte: filters.bathrooms } }),
+      ...(filters.minPrice && { price: { gte: filters.minPrice } }),
+      ...(filters.maxPrice && { price: { lte: filters.maxPrice } }),
+      ...(filters.minArea && { area: { gte: filters.minArea } }),
+      ...(filters.maxArea && { area: { lte: filters.maxArea } }),
+      ...(filters.search && {
+        OR: [
+          { title: { contains: filters.search, mode: 'insensitive' } },
+          { description: { contains: filters.search, mode: 'insensitive' } },
+          { address: { contains: filters.search, mode: 'insensitive' } },
+        ],
+      }),
+    }
+
+    const [properties, total] = await Promise.all([
+      db.property.findMany({
+        where,
+        select: propertySelect,
+        skip,
+        take,
+        orderBy: { createdAt: 'desc' },
+      }),
+      db.property.count({ where }),
+    ])
+
+    return { properties, total }
+  }
+
+  /**
    * Obtiene propiedades de un agente específico
    */
   async getByAgent(agentId: string, params?: { skip?: number; take?: number }) {
@@ -302,31 +397,44 @@ export const propertyRepository = new PropertyRepository()
 /**
  * Tipo serializable de PropertyWithRelations
  * Convierte todos los Decimal a number
+ * Convierte null a undefined para compatibilidad con Client Components
  */
 export type SerializedProperty = Omit<
   PropertyWithRelations,
-  'price' | 'bathrooms' | 'area' | 'latitude' | 'longitude'
+  'price' | 'bathrooms' | 'area' | 'latitude' | 'longitude' | 'city' | 'state' | 'bedrooms'
 > & {
   price: number
-  bathrooms: number | null
-  area: number | null
+  bathrooms?: number | null
+  area?: number | null
   latitude: number | null
   longitude: number | null
+  city?: string
+  state?: string
+  bedrooms?: number | null
 }
 
 /**
  * Convierte una propiedad con Decimals a formato serializable
+ * Convierte null a undefined para compatibilidad con Client Components
  */
 export function serializeProperty(
   property: PropertyWithRelations
 ): SerializedProperty {
   return {
     ...property,
+    // Core fields (Decimal → number)
     price: Number(property.price),
-    bathrooms: property.bathrooms ? Number(property.bathrooms) : null,
-    area: property.area ? Number(property.area) : null,
+    // Optional Decimal fields (null → undefined for Client Components)
+    bathrooms: property.bathrooms ? Number(property.bathrooms) : undefined,
+    area: property.area ? Number(property.area) : undefined,
+    // Geographic coordinates (can be null)
     latitude: property.latitude ? Number(property.latitude) : null,
     longitude: property.longitude ? Number(property.longitude) : null,
+    // Optional string fields
+    city: property.city ?? undefined,
+    state: property.state ?? undefined,
+    // Optional number fields
+    bedrooms: property.bedrooms ?? undefined,
   }
 }
 
