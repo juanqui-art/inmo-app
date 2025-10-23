@@ -10,7 +10,7 @@
 "use server";
 
 import { propertyImageRepository, propertyRepository } from "@repo/database";
-import { revalidatePath, updateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth";
 import { deletePropertyImage, uploadPropertyImage } from "@/lib/storage/client";
@@ -82,9 +82,8 @@ export async function createPropertyAction(
   }
 
   // 5. Revalidar caches
-  // Invalida el caché del mapa (Cache Components)
-  updateTag("properties-bounds");
-  // Invalida la lista de propiedades
+  // Invalida el mapa y lista de propiedades
+  revalidatePath("/mapa");
   revalidatePath("/dashboard/propiedades");
 
   // 6. Redirigir a la lista (fuera del try/catch para que funcione)
@@ -162,11 +161,8 @@ export async function updatePropertyAction(
   }
 
   // 5. Revalidar caches
-  // Invalida el caché del mapa (Cache Components)
-  updateTag("properties-bounds");
-  // Invalida property detail page si coordenadas cambiaron
-  updateTag(`property-${id}`);
-  // Invalida la lista de propiedades
+  // Invalida el mapa, lista de propiedades y detail page
+  revalidatePath("/mapa");
   revalidatePath("/dashboard/propiedades");
   revalidatePath(`/dashboard/propiedades/${id}/editar`);
 
@@ -187,9 +183,7 @@ export async function deletePropertyAction(propertyId: string) {
     await propertyRepository.delete(propertyId, user.id);
 
     // 3. Revalidar caches
-    // Invalida el caché del mapa (Cache Components)
-    updateTag("properties-bounds");
-    // Invalida la lista de propiedades
+    revalidatePath("/mapa");
     revalidatePath("/dashboard/propiedades");
 
     return { success: true };

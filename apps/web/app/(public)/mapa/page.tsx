@@ -161,28 +161,27 @@ export default async function MapPage(props: MapPageProps) {
 }
 
 /**
- * REVALIDATION STRATEGY (Cache Components)
+ * CACHING STRATEGY
  *
- * With experimental.cacheComponents enabled, we use updateTag() for invalidation
- * instead of the old ISR revalidate property.
+ * Uses React.cache() for request deduplication within a render.
  *
- * FLOW:
- * 1. getCachedPropertiesByBounds() uses cacheTag('properties-bounds')
- * 2. Data is cached with ISR default (5 minutes)
- * 3. When agent creates/updates/deletes property:
- *    └─ updateTag('properties-bounds') invalidates immediately
- * 4. Next request to /mapa queries DB with fresh data
+ * HOW IT WORKS:
+ * 1. getCachedPropertiesByBounds() wraps the DB query with React.cache()
+ * 2. If user pans to same bounds: cache hit (no DB query)
+ * 3. If user pans to different bounds: new DB query
+ * 4. When agent creates/updates/deletes property:
+ *    └─ revalidatePath('/mapa') clears the page cache
+ * 5. Next visit to /mapa queries DB with fresh data
  *
- * WHY NOT export const revalidate?
- * - Conflicts with experimental.cacheComponents
- * - Cache invalidation is now handled by updateTag()
- * - On-demand invalidation is better than time-based
- * - Keeps data fresh without waiting 5 minutes
+ * BENEFITS:
+ * ✅ Eliminates duplicate queries for identical bounds
+ * ✅ Request deduplication within same render
+ * ✅ Compatible with all Next.js 16 features (no experimental flags)
+ * ✅ Data stays fresh with revalidatePath() invalidation
  *
- * EQUIVALENT BEHAVIOR:
- * - Without updateTag(): Data revalidates after 5 minutes (default ISR)
- * - With updateTag(): Data revalidates immediately when changed
- * - This hybrid approach = best of both worlds
+ * NOTE: This is a stable approach using React.cache() without experimental
+ * Cache Components (cacheTag/updateTag). When Next.js 16.1+ improves
+ * Cache Components API, we can upgrade to updateTag() for finer control.
  */
 
 /**

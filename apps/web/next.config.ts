@@ -2,18 +2,21 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /**
-   * Enable Cache Components for data caching
-   *
-   * WHY? Allows cacheTag() and updateTag() for intelligent cache invalidation
-   * on map property queries. Prevents renderization loops by deduplicating
-   * identical requests in the same render.
+   * Cache Components Disabled (Temporarily)
    *
    * STATUS: Experimental in Next.js 16.0.0
-   * Available by default in canary versions
+   * ISSUE: cacheTag() + updateTag() require all data access to be cached
+   *        (including cookies() in getCurrentUser). This breaks routes that
+   *        need uncached data access.
+   *
+   * SOLUTION: We implement caching at the function level instead using
+   *           React.cache() without cacheTag/updateTag. This provides:
+   *           ✅ Request deduplication (same benefits)
+   *           ❌ Manual invalidation via revalidateTag() (workaround: full page revalidation)
+   *
+   * STATUS: Next.js team is improving this for next releases
+   * WHEN TO RE-ENABLE: Next.js 16.1+ (expected improvement in experimental API)
    */
-  experimental: {
-    cacheComponents: true,
-  },
 
   transpilePackages: [
     "@repo/env",

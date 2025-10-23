@@ -1,35 +1,37 @@
 /**
  * PROPERTIES CACHE
  *
- * Cacheador inteligente para consultas de propiedades con Cache Components de Next.js 16
+ * Cacheador inteligente para consultas de propiedades
  *
  * PATRÓN: React cache() para deduplicación de requests en el mismo render
- * + revalidateTag() para invalidación en-demanda
  *
  * WHY THIS APPROACH?
- * - Cache Components deduplican requests idénticos en el mismo render
- * - revalidateTag invalida cuando properties cambian (create/update/delete)
- * - Compatible con ISR (revalidate = 300)
+ * - React.cache() deduplica requests idénticos automáticamente
+ * - Si 2+ componentes piden los mismos bounds: 1 sola query a DB
+ * - Compatible con Next.js 16 sin experimental features
  * - Mantiene datos frescos sin loops de renderización
  *
  * FLOW:
  * 1. MapPage pide propiedades por bounds
  * 2. getCachedPropertiesByBounds usa React.cache()
- * 3. Si request idéntico: usa cache en-memory
+ * 3. Si request idéntico en el mismo render: usa cache en-memory
  * 4. Si diferente: consulta DB
- * 5. Resultado se cachea por 300s (ISR)
- * 6. Cuando agent crea property: revalidateTag('properties-bounds') invalida
+ * 5. Resultado cacheado por duración del render
+ * 6. Para invalidación: revalidatePath() o restart dev server
  *
  * VENTAJAS:
- * ✅ Cero queries a DB si URL no cambia
- * ✅ Deduplicación automática en renders múltiples
- * ✅ Revalidación limpia cuando datos cambian
+ * ✅ Cero queries duplicadas si URL no cambia
+ * ✅ Deduplicación automática dentro del mismo render
  * ✅ Type-safe con TypeScript
  * ✅ Zero client-side data fetching
+ * ✅ Sin experimental features (estable)
+ *
+ * NOTE: Cache Components (cacheTag/updateTag) disabled due to Next.js 16.0.0
+ * limitations with uncached data access (e.g., cookies()). Will re-enable
+ * when Next.js 16.1+ improves the experimental API.
  */
 
 import { cache } from 'react'
-import { cacheTag } from 'next/cache'
 import { propertyRepository, serializeProperties } from '@repo/database'
 import type { PropertyFilters } from '@repo/database'
 
@@ -81,11 +83,8 @@ export const getCachedPropertiesByBounds = cache(
       take = 1000,
     } = params
 
-    // Tag this cache for later invalidation with revalidateTag()
-    // When properties change, revalidateTag('properties-bounds') will clear this
-    cacheTag('properties-bounds')
-
     // Consultar BD
+    // React.cache() deduplicates identical calls automatically
     const { properties: dbProperties, total } =
       await propertyRepository.findInBounds({
         minLatitude,
