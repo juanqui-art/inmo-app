@@ -215,6 +215,60 @@ Implemented intelligent caching on the `/mapa` route to eliminate renderization 
 
 ---
 
+## Bug Fix: Infinite Loop in useMapViewport (RESOLVED)
+
+**What Happened:** The `/mapa` route was making infinite database queries due to a circular dependency in the `useMapViewport` hook's `useEffect`.
+
+**Root Cause Analysis:** The `searchParams` hook was included in the effect's dependency array:
+```typescript
+// ❌ BEFORE (infinite loop)
+useEffect(() => {
+  const newUrl = buildBoundsUrl(debouncedBounds);
+  router.replace(newUrl); // ← Changes URL
+}, [debouncedBounds, router, mounted, searchParams]);
+//                                     ↑ This causes the loop
+```
+
+**The Circular Dependency:**
+1. `router.replace()` executes → changes the URL
+2. URL change → `useSearchParams()` returns a new object
+3. `searchParams` in dependencies → effect runs again
+4. Back to step 1 (infinite cycle)
+
+**Solution Implemented:**
+```typescript
+// ✅ AFTER (fixed)
+const lastUrlRef = useRef<string>("");
+
+useEffect(() => {
+  if (!mounted) return;
+
+  const newUrl = buildBoundsUrl(debouncedBounds);
+
+  // Guard: Only update if URL actually changed
+  if (lastUrlRef.current !== newUrl) {
+    lastUrlRef.current = newUrl;
+    router.replace(newUrl, { scroll: false });
+  }
+}, [debouncedBounds, router, mounted]); // ← NO searchParams
+```
+
+**Fix Details:**
+- Added `useRef<string>("")` to track last built URL
+- Removed `searchParams` from dependency array
+- Added string comparison to prevent unnecessary `router.replace()` calls
+- File: `apps/web/components/map/hooks/use-map-viewport.ts` (commit `f28948e`)
+
+**Learning Resources Created:**
+1. **`docs/INFINITE_LOOP_DEEP_DIVE.md`** - Complete technical analysis with diagrams
+2. **`docs/REACT_HOOKS_ANTIPATTERNS.md`** - 11 common anti-patterns with solutions
+3. **`docs/DEBUGGING_HOOKS_GUIDE.md`** - Practical debugging techniques
+4. **`docs/INFINITE_LOOP_QUICK_REFERENCE.md`** - Quick reference card
+
+**Key Takeaway:** The dependency array should express "when should this run," NOT "what variables do I use." If an effect changes something in its dependencies, you've created a circular dependency.
+
+---
+
 ## Current Focus
 
 Phase 1.5: Public-facing features
