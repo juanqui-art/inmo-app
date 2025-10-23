@@ -189,6 +189,7 @@ export function FeaturedPropertiesCarousel({
           {/* Navigation Buttons */}
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={scrollPrev}
               disabled={!canScrollPrev}
               aria-label="Ver propiedades anteriores"
@@ -205,6 +206,7 @@ export function FeaturedPropertiesCarousel({
             </button>
 
             <button
+              type="button"
               onClick={scrollNext}
               disabled={!canScrollNext}
               aria-label="Ver más propiedades"

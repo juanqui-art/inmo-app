@@ -28,10 +28,12 @@
         "noNonNullAssertion": "warn"
       },
       "a11y": {
-        "useButtonType": "warn",
-        "noSvgWithoutTitle": "warn",
-        "useAriaPropsSupportedByRole": "warn",
-        "useKeyWithClickEvents": "warn"
+        "useButtonType": "error",
+        "noSvgWithoutTitle": "error",
+        "useAriaPropsSupportedByRole": "error",
+        "useKeyWithClickEvents": "error",
+        "useHtmlLang": "warn",
+        "useValidAriaRole": "warn"
       }
     },
     "domains": {
