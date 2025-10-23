@@ -161,23 +161,29 @@ export default async function MapPage(props: MapPageProps) {
 }
 
 /**
- * REVALIDATION STRATEGY
+ * REVALIDATION STRATEGY (Cache Components)
  *
- * Revalidate every 5 minutes
+ * With experimental.cacheComponents enabled, we use updateTag() for invalidation
+ * instead of the old ISR revalidate property.
  *
- * WHY 5 minutes?
- * - Properties don't change every second
- * - Balance between fresh data and performance
- * - Reduces database load
- * - Most users see cached version
+ * FLOW:
+ * 1. getCachedPropertiesByBounds() uses cacheTag('properties-bounds')
+ * 2. Data is cached with ISR default (5 minutes)
+ * 3. When agent creates/updates/deletes property:
+ *    └─ updateTag('properties-bounds') invalidates immediately
+ * 4. Next request to /mapa queries DB with fresh data
  *
- * ALTERNATIVES:
- * - revalidate = 0: Always fresh (no cache) - Too expensive
- * - revalidate = 60: Very fresh (1 min) - Still aggressive
- * - revalidate = 3600: Very cached (1 hour) - May be stale
- * - revalidate = false: Cache forever - Bad for dynamic data
+ * WHY NOT export const revalidate?
+ * - Conflicts with experimental.cacheComponents
+ * - Cache invalidation is now handled by updateTag()
+ * - On-demand invalidation is better than time-based
+ * - Keeps data fresh without waiting 5 minutes
+ *
+ * EQUIVALENT BEHAVIOR:
+ * - Without updateTag(): Data revalidates after 5 minutes (default ISR)
+ * - With updateTag(): Data revalidates immediately when changed
+ * - This hybrid approach = best of both worlds
  */
-export const revalidate = 300; // 5 minutes
 
 /**
  * COMPLETED FEATURES:
