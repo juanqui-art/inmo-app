@@ -3,18 +3,25 @@
  *
  * PATTERN: Custom marker showing grouped properties
  *
+ * DESIGN: Glassmorphism Elegante
+ * - Fondo translúcido con blur effect
+ * - Gradientes sutiles (cyan → pink según tamaño)
+ * - Borde delgado white/40
+ * - Sombras coloreadas multicapa
+ * - Hover: backdrop-brightness mejorado
+ *
  * FEATURES:
  * - Shows property count in cluster
  * - Color gradient based on cluster size
  * - Size scales with count
  * - Click to expand cluster (zoom in)
- * - Hover effect
+ * - Smooth hover effect
  *
  * SIZE SCALING:
- * - Small (2-5): 32px, blue-400
- * - Medium (6-10): 40px, blue-500
- * - Large (11-25): 48px, blue-600
- * - XLarge (25+): 56px, blue-700
+ * - Small (2-5): 32px, cyan→blue gradient translúcido
+ * - Medium (6-10): 40px, blue→indigo gradient translúcido
+ * - Large (11-25): 48px, purple→fuchsia gradient translúcido
+ * - XLarge (25+): 56px, pink→rose gradient translúcido
  */
 
 "use client";
@@ -47,16 +54,21 @@ function getClusterStyle(pointCount: number) {
         color: threshold.colorClass,
         textSize: threshold.textSize,
         ringColor: threshold.ringClass,
+        glass: threshold.glassClass,
+        shadow: threshold.shadowClass,
       };
     }
   }
 
   // Fallback (should never reach here due to XLARGE having POSITIVE_INFINITY)
+  const xlarge = CLUSTER_SIZE_THRESHOLDS.XLARGE;
   return {
-    size: CLUSTER_SIZE_THRESHOLDS.XLARGE.size,
-    color: CLUSTER_SIZE_THRESHOLDS.XLARGE.colorClass,
-    textSize: CLUSTER_SIZE_THRESHOLDS.XLARGE.textSize,
-    ringColor: CLUSTER_SIZE_THRESHOLDS.XLARGE.ringClass,
+    size: xlarge.size,
+    color: xlarge.colorClass,
+    textSize: xlarge.textSize,
+    ringColor: xlarge.ringClass,
+    glass: xlarge.glassClass,
+    shadow: xlarge.shadowClass,
   };
 }
 
@@ -82,41 +94,44 @@ export function ClusterMarker({
         className="cluster-marker group cursor-pointer"
         style={{ width: style.size, height: style.size }}
       >
-        {/* Cluster Circle */}
+        {/* Glassmorphism Cluster Circle */}
         <div
           className={`
             w-full h-full
             ${style.color}
+            ${style.glass}
+            ${style.shadow}
             rounded-full
             flex items-center justify-center
-            shadow-lg
-            transition-all duration-200
-            hover:scale-110 hover:shadow-xl
-            ring-4 ${style.ringColor}
-            border-2 border-white dark:border-oslo-gray-800
+            transition-all duration-300
+            hover:backdrop-brightness-110 hover:shadow-2xl
+            ring-1 ${style.ringColor}
           `}
         >
+          {/* Text with shadow for legibility */}
           <span
             className={`
               ${style.textSize}
               font-bold
               text-white
               select-none
+              drop-shadow-lg
             `}
           >
             {pointCount}
           </span>
         </div>
 
-        {/* Pulse Animation on Hover */}
+        {/* Subtle glow on hover */}
         <div
           className={`
             absolute inset-0
-            ${style.color}
             rounded-full
-            opacity-0 group-hover:opacity-30
-            animate-ping
+            opacity-0 group-hover:opacity-20
+            transition-opacity duration-300
             pointer-events-none
+            bg-gradient-to-br ${style.color}
+            blur-xl
           `}
         />
       </div>

@@ -109,34 +109,48 @@ export const CLUSTER_CONFIG = {
 /**
  * Cluster size thresholds
  * Defines visual appearance based on point count
+ *
+ * DESIGN: Glassmorphism elegante
+ * - Fondo translúcido con blur
+ * - Gradientes sutiles
+ * - Borde delgado white/40
+ * - Sombras multicapa para profundidad
  */
 export const CLUSTER_SIZE_THRESHOLDS = {
   SMALL: {
     maxPoints: 5,
     size: 32,
-    colorClass: "bg-blue-400",
+    colorClass: "bg-gradient-to-br from-cyan-400/40 to-blue-500/30",
     textSize: "text-xs",
-    ringClass: "ring-blue-400/30",
+    ringClass: "ring-cyan-300/40",
+    glassClass: "backdrop-blur-lg border border-white/40",
+    shadowClass: "shadow-lg shadow-cyan-400/20",
   },
   MEDIUM: {
     maxPoints: 10,
     size: 40,
-    colorClass: "bg-blue-500",
+    colorClass: "bg-gradient-to-br from-blue-400/40 to-indigo-500/30",
     textSize: "text-sm",
-    ringClass: "ring-blue-500/30",
+    ringClass: "ring-blue-300/40",
+    glassClass: "backdrop-blur-lg border border-white/40",
+    shadowClass: "shadow-xl shadow-blue-400/25",
   },
   LARGE: {
     maxPoints: 25,
     size: 48,
-    colorClass: "bg-blue-600",
+    colorClass: "bg-gradient-to-br from-purple-400/40 to-fuchsia-500/30",
     textSize: "text-base",
-    ringClass: "ring-blue-600/30",
+    ringClass: "ring-purple-300/40",
+    glassClass: "backdrop-blur-lg border border-white/40",
+    shadowClass: "shadow-xl shadow-purple-400/30",
   },
   XLARGE: {
     maxPoints: Number.POSITIVE_INFINITY,
     size: 56,
-    colorClass: "bg-blue-700",
+    colorClass: "bg-gradient-to-br from-pink-400/40 to-rose-500/30",
     textSize: "text-lg",
-    ringClass: "ring-blue-700/30",
+    ringClass: "ring-pink-300/40",
+    glassClass: "backdrop-blur-lg border border-white/40",
+    shadowClass: "shadow-2xl shadow-pink-400/35",
   },
 } as const;
