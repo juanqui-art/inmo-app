@@ -42,7 +42,10 @@
  */
 
 import { MapView } from "@/components/map/map-view";
-import { parseMapParams } from "@/lib/utils/url-helpers";
+import {
+  parseBoundsParams,
+  boundsToViewport,
+} from "@/lib/utils/url-helpers";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import type { Metadata } from "next";
 
@@ -76,8 +79,9 @@ export default async function MapPage(props: MapPageProps) {
   const searchParams = await props.searchParams;
 
   /**
-   * Parse viewport from URL or use defaults
-   * Enables shareable map locations like: /mapa?lat=-2.90&lng=-79.00&zoom=12
+   * Parse bounds from URL or use defaults
+   * Enables shareable map locations like: /mapa?ne_lat=-2.85&ne_lng=-78.95&sw_lat=-2.95&sw_lng=-79.05
+   * Falls back to old viewport params for backward compatibility
    */
   const defaultViewport = {
     latitude: DEFAULT_MAP_CONFIG.AZUAY_CENTER.latitude,
@@ -85,7 +89,11 @@ export default async function MapPage(props: MapPageProps) {
     zoom: DEFAULT_MAP_CONFIG.DEFAULT_ZOOM,
   };
 
-  const viewport = parseMapParams(searchParams, defaultViewport);
+  // Parse bounds from URL (with fallback to old viewport params)
+  const bounds = parseBoundsParams(searchParams, defaultViewport);
+
+  // Convert bounds to viewport for map initialization
+  const viewport = boundsToViewport(bounds);
 
   /**
    * MOCK DATA for testing

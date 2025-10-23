@@ -26,13 +26,19 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Map, { type ViewStateChangeEvent } from "react-map-gl/mapbox";
-import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
+import { DEFAULT_MAP_CONFIG, CLUSTER_CONFIG } from "@/lib/types/map";
 import { PropertyMarker } from "../property-marker";
 import { PropertyListDrawer } from "../property-list-drawer";
 import { PropertyPopup } from "../property-popup";
+import { ClusterMarker } from "../cluster-marker";
+import {
+  useMapClustering,
+  isCluster,
+  type PropertyPoint,
+} from "../hooks/use-map-clustering";
 import type { MapProperty } from "../map-view";
 
 // Import MapBox GL CSS
@@ -79,6 +85,12 @@ export function MapContainer({
     null,
   );
 
+  // Get clusters for current viewport
+  const clusters = useMapClustering({
+    properties,
+    viewState,
+  });
+
   // Get selected property for popup
   const selectedProperty = selectedPropertyId
     ? properties.find((p) => p.id === selectedPropertyId)
@@ -93,6 +105,27 @@ export function MapContainer({
   const handleDrawerPropertyClick = (propertyId: string) => {
     router.push(`/propiedades/${propertyId}`);
   };
+
+  // Handle cluster click - zoom in to expand
+  const handleClusterClick = useCallback(
+    (longitude: number, latitude: number, expansionZoom: number) => {
+      // Create proper ViewState event
+      const mockEvent: ViewStateChangeEvent = {
+        viewState: {
+          longitude,
+          latitude,
+          zoom: expansionZoom,
+          pitch: viewState.pitch,
+          bearing: viewState.bearing,
+          padding: { top: 0, bottom: 0, left: 0, right: 0 },
+        },
+        type: "move",
+        target: {} as any,
+      };
+      onMove(mockEvent);
+    },
+    [onMove, viewState],
+  );
 
   return (
     <div className="relative w-full h-screen">
@@ -124,16 +157,43 @@ export function MapContainer({
         {/* Scale Control (Distance) */}
         {/*<ScaleControl position="bottom-left" unit="metric" />*/}
 
-        {/* Property Markers */}
-        {properties.map((property) => {
-          // Skip properties without coordinates
-          if (!property.latitude || !property.longitude) return null;
+        {/* Property Markers & Clusters */}
+        {clusters.map((cluster) => {
+          // Extract coordinates (with type safety)
+          const [longitude, latitude] = cluster.geometry.coordinates as [
+            number,
+            number,
+          ];
 
+          // Render cluster marker
+          if (isCluster(cluster)) {
+            const { point_count: pointCount } = cluster.properties;
+
+            return (
+              <ClusterMarker
+                key={`cluster-${cluster.id}`}
+                latitude={latitude}
+                longitude={longitude}
+                pointCount={pointCount}
+                onClick={() => {
+                  // Zoom in using configured zoom increment
+                  const expansionZoom = Math.min(
+                    viewState.zoom + CLUSTER_CONFIG.ZOOM_INCREMENT,
+                    CLUSTER_CONFIG.MAX_ZOOM,
+                  );
+                  handleClusterClick(longitude, latitude, expansionZoom);
+                }}
+              />
+            );
+          }
+
+          // Render individual property marker
+          const property = (cluster as PropertyPoint).properties;
           return (
             <PropertyMarker
               key={property.id}
-              latitude={property.latitude}
-              longitude={property.longitude}
+              latitude={latitude}
+              longitude={longitude}
               price={property.price}
               transactionType={property.transactionType}
               isHighlighted={highlightedPropertyId === property.id}

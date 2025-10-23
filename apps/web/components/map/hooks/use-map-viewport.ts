@@ -22,7 +22,12 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ViewStateChangeEvent } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
-import { buildMapUrl, type MapViewport } from "@/lib/utils/url-helpers";
+import {
+  buildBoundsUrl,
+  viewportToBounds,
+  type MapViewport,
+  type MapBounds,
+} from "@/lib/utils/url-helpers";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 
 interface ViewState {
@@ -89,7 +94,13 @@ export function useMapViewport({
   );
 
   /**
-   * Sync viewport to URL
+   * Convert debounced viewport to bounds for URL
+   * Uses viewportToBounds which matches the clustering calculation
+   */
+  const debouncedBounds: MapBounds = viewportToBounds(debouncedViewport);
+
+  /**
+   * Sync bounds to URL (Zillow/Airbnb pattern)
    * Updates URL when user stops moving the map (debounced)
    * IMPORTANT: Only updates if URL values actually changed to prevent infinite loops
    */
@@ -97,27 +108,30 @@ export function useMapViewport({
     // Skip on initial mount (already at correct URL from server)
     if (!mounted) return;
 
-    // Get current URL params
-    const currentLat = searchParams.get("lat");
-    const currentLng = searchParams.get("lng");
-    const currentZoom = searchParams.get("zoom");
+    // Get current URL params (bounds format)
+    const currentNeLat = searchParams.get("ne_lat");
+    const currentNeLng = searchParams.get("ne_lng");
+    const currentSwLat = searchParams.get("sw_lat");
+    const currentSwLng = searchParams.get("sw_lng");
 
-    // Format new values (same precision as buildMapUrl)
-    const newLat = debouncedViewport.latitude.toFixed(4);
-    const newLng = debouncedViewport.longitude.toFixed(4);
-    const newZoom = Math.round(debouncedViewport.zoom).toString();
+    // Format new values (same precision as buildBoundsUrl)
+    const newNeLat = debouncedBounds.ne_lat.toFixed(4);
+    const newNeLng = debouncedBounds.ne_lng.toFixed(4);
+    const newSwLat = debouncedBounds.sw_lat.toFixed(4);
+    const newSwLng = debouncedBounds.sw_lng.toFixed(4);
 
     // Only update URL if values actually changed
     // This prevents infinite re-render loops
     if (
-      currentLat !== newLat ||
-      currentLng !== newLng ||
-      currentZoom !== newZoom
+      currentNeLat !== newNeLat ||
+      currentNeLng !== newNeLng ||
+      currentSwLat !== newSwLat ||
+      currentSwLng !== newSwLng
     ) {
-      const newUrl = buildMapUrl(debouncedViewport);
+      const newUrl = buildBoundsUrl(debouncedBounds);
       router.replace(newUrl, { scroll: false });
     }
-  }, [debouncedViewport, router, mounted, searchParams]);
+  }, [debouncedBounds, router, mounted, searchParams]);
 
   /**
    * Handle map movement

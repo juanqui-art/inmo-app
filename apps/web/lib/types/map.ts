@@ -88,3 +88,55 @@ export const MAPBOX_STYLES = {
   STREETS: "mapbox://styles/mapbox/streets-v12",
   SATELLITE: "mapbox://styles/mapbox/satellite-streets-v12",
 } as const;
+
+/**
+ * Clustering configuration
+ * Controls marker clustering behavior
+ */
+export const CLUSTER_CONFIG = {
+  /** Cluster radius in pixels */
+  RADIUS: 40,
+  /** Max zoom to cluster points (16 = stop clustering at zoom 16) */
+  MAX_ZOOM: 16,
+  /** Min zoom for clustering */
+  MIN_ZOOM: 0,
+  /** Min points to form cluster */
+  MIN_POINTS: 2,
+  /** Zoom increment when clicking cluster */
+  ZOOM_INCREMENT: 2,
+} as const;
+
+/**
+ * Cluster size thresholds
+ * Defines visual appearance based on point count
+ */
+export const CLUSTER_SIZE_THRESHOLDS = {
+  SMALL: {
+    maxPoints: 5,
+    size: 32,
+    colorClass: "bg-blue-400",
+    textSize: "text-xs",
+    ringClass: "ring-blue-400/30",
+  },
+  MEDIUM: {
+    maxPoints: 10,
+    size: 40,
+    colorClass: "bg-blue-500",
+    textSize: "text-sm",
+    ringClass: "ring-blue-500/30",
+  },
+  LARGE: {
+    maxPoints: 25,
+    size: 48,
+    colorClass: "bg-blue-600",
+    textSize: "text-base",
+    ringClass: "ring-blue-600/30",
+  },
+  XLARGE: {
+    maxPoints: Number.POSITIVE_INFINITY,
+    size: 56,
+    colorClass: "bg-blue-700",
+    textSize: "text-lg",
+    ringClass: "ring-blue-700/30",
+  },
+} as const;
