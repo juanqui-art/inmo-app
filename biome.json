@@ -7,7 +7,18 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!build",
+      "!coverage",
+      "!.turbo",
+      "!.idea",
+      "!.vscode",
+      ".vscode/settings.json"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -46,6 +57,16 @@
       "source": {
         "organizeImports": "on"
       }
+    }
+  },
+  "css": {
+    "parser": {
+      "cssModules": true,
+      "allowWrongLineComments": false
+    },
+    "formatter": {
+      "indentWidth": 2,
+      "indentStyle": "space"
     }
   }
 }
