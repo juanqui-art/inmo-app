@@ -18,7 +18,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ViewStateChangeEvent } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
@@ -58,7 +58,7 @@ export function useMapViewport({
   mounted,
 }: UseMapViewportProps): UseMapViewportReturn {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  useSearchParams(); // Keep for reactive updates, but don't use in effect
 
   /**
    * Viewport state
@@ -100,6 +100,22 @@ export function useMapViewport({
   const debouncedBounds: MapBounds = viewportToBounds(debouncedViewport);
 
   /**
+   * Track last URL to prevent infinite loop
+   *
+   * BUG FIX: Previous version had searchParams in useEffect dependencies,
+   * causing an infinite loop:
+   * 1. useEffect updates URL with router.replace()
+   * 2. URL changes → searchParams changes
+   * 3. searchParams in dependencies → useEffect runs again
+   * 4. Go to step 1 (infinite loop!)
+   *
+   * SOLUTION: Use useRef to track last URL built, without depending on
+   * searchParams in useEffect dependencies. This breaks the loop while
+   * still preventing duplicate URL updates.
+   */
+  const lastUrlRef = useRef<string>("");
+
+  /**
    * Sync bounds to URL (Zillow/Airbnb pattern)
    * Updates URL when user stops moving the map (debounced)
    * IMPORTANT: Only updates if URL values actually changed to prevent infinite loops
@@ -108,30 +124,16 @@ export function useMapViewport({
     // Skip on initial mount (already at correct URL from server)
     if (!mounted) return;
 
-    // Get current URL params (bounds format)
-    const currentNeLat = searchParams.get("ne_lat");
-    const currentNeLng = searchParams.get("ne_lng");
-    const currentSwLat = searchParams.get("sw_lat");
-    const currentSwLng = searchParams.get("sw_lng");
+    // Build new URL
+    const newUrl = buildBoundsUrl(debouncedBounds);
 
-    // Format new values (same precision as buildBoundsUrl)
-    const newNeLat = debouncedBounds.ne_lat.toFixed(4);
-    const newNeLng = debouncedBounds.ne_lng.toFixed(4);
-    const newSwLat = debouncedBounds.sw_lat.toFixed(4);
-    const newSwLng = debouncedBounds.sw_lng.toFixed(4);
-
-    // Only update URL if values actually changed
-    // This prevents infinite re-render loops
-    if (
-      currentNeLat !== newNeLat ||
-      currentNeLng !== newNeLng ||
-      currentSwLat !== newSwLat ||
-      currentSwLng !== newSwLng
-    ) {
-      const newUrl = buildBoundsUrl(debouncedBounds);
+    // Only update URL if it actually changed
+    // This prevents infinite re-render loops AND duplicate router.replace() calls
+    if (lastUrlRef.current !== newUrl) {
+      lastUrlRef.current = newUrl;
       router.replace(newUrl, { scroll: false });
     }
-  }, [debouncedBounds, router, mounted, searchParams]);
+  }, [debouncedBounds, router, mounted]); // ← NO searchParams (breaks the loop!)
 
   /**
    * Handle map movement
