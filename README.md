@@ -48,21 +48,110 @@ Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ```
 inmo-app/
+├── 📄 ROOT DOCUMENTATION (Entry Points)
+│   ├── README.md            # Este archivo
+│   ├── CLAUDE.md            # Auto-loaded Claude context
+│   ├── GEMINI.md            # Auto-loaded Gemini context
+│   ├── QUICK_START.md       # 5-minute onboarding
+│   ├── WARP.md              # Symlink to CLAUDE.md
+│   └── WORKTREES_CHEATSHEET.md
+│
 ├── apps/
 │   └── web/                 # Next.js application
-│       ├── app/             # App router
+│       ├── app/             # App router (pages & layouts)
 │       ├── components/      # React components
-│       └── lib/             # Utilities
+│       └── lib/             # Utilities & helpers
+│
 ├── packages/
-│   ├── database/           # Prisma schema & repositories
-│   ├── supabase/           # Supabase clients
-│   ├── ui/                 # Shared UI components
-│   └── typescript-config/  # Shared TS configs
-└── docs/                   # Documentation
-    ├── AI_ASSISTANTS.md    # AI context
-    ├── TOKEN_OPTIMIZATION.md
-    ├── setup/              # Setup guides
-    └── mcp/                # MCP integration
+│   ├── database/            # Prisma schema & repositories
+│   ├── supabase/            # Supabase clients
+│   ├── ui/                  # Shared UI components
+│   ├── env/                 # Environment variables validation
+│   └── typescript-config/   # Shared TypeScript configs
+│
+└── docs/                    # 📚 COMPREHENSIVE DOCUMENTATION
+    ├── INDEX.md             # Documentation hub & navigation
+    ├── README.md            # Docs overview
+    ├── DOCUMENTATION.md     # How to write docs
+    ├── QUICK_REFERENCE.md   # Quick command reference
+    │
+    ├── 🚀 GETTING STARTED
+    │   ├── DEVELOPMENT_SETUP.md
+    │   ├── ENV_QUICK_START.md
+    │   ├── project-structure.md
+    │   └── ENVIRONMENT_VARIABLES.md
+    │
+    ├── 🛠️ BUILD TOOLS
+    │   ├── TURBOREPO_GUIDE.md
+    │   ├── TURBOREPO_CHEATSHEET.md
+    │   ├── BIOME_EXPLAINED.md
+    │   ├── BIOME_IMPROVEMENTS.md
+    │   ├── WEBSTORM_BIOME_SETUP.md
+    │   └── WEBSTORM_FORMAT_ISSUE.md
+    │
+    ├── 💾 CACHING & OPTIMIZATION
+    │   ├── caching/
+    │   │   ├── CACHE_COMPONENTS_GUIDE.md
+    │   │   ├── CACHE_IMPLEMENTATION_REVISED.md
+    │   │   ├── CACHE_IMPLEMENTATION_SUMMARY.md
+    │   │   └── CACHE_QUICK_START.md
+    │   ├── CACHE_STRATEGY.md
+    │   └── NEXTJS_CACHING_EXPLAINED.md
+    │
+    ├── 🗺️ MAP & CLUSTERING
+    │   ├── CLUSTERING_GUIDE.md
+    │   ├── CLUSTERING_AND_BOUNDS_QUICK_REFERENCE.md
+    │   ├── CLUSTERING_EXERCISES.md
+    │   ├── GLASSMORPHISM_CLUSTERING_GUIDE.md
+    │   ├── MAP_BOUNDS_URL_GUIDE.md
+    │   └── troubleshooting/MAP_ISSUES.md
+    │
+    ├── 🐛 DEBUGGING
+    │   ├── DEBUGGING_HOOKS_GUIDE.md
+    │   ├── REACT_HOOKS_ANTIPATTERNS.md
+    │   ├── INFINITE_LOOP_DEEP_DIVE.md
+    │   ├── INFINITE_LOOP_VISUAL_GUIDE.md
+    │   ├── INFINITE_LOOP_QUICK_REFERENCE.md
+    │   └── INFINITE_LOOP_DOCS_INDEX.md
+    │
+    ├── 🎨 DESIGN & FEATURES
+    │   ├── design/
+    │   │   ├── COLOR_PALETTE.md
+    │   │   ├── DARK_MODE.md
+    │   │   └── GLASSMORPHISM_IMPLEMENTATION_SUMMARY.md
+    │   ├── features/MAP.md
+    │   └── map-features-roadmap.md
+    │
+    ├── 📊 PROGRESS & DECISIONS
+    │   ├── progress/ROADMAP.md
+    │   └── decisions/
+    │       ├── CLUSTERING_SOLUTION.md
+    │       └── MAP_BOUNDS_CALCULATION.md
+    │
+    ├── 🤖 AI & DEVELOPMENT
+    │   ├── AI_ASSISTANTS.md
+    │   ├── TOKEN_OPTIMIZATION.md
+    │   ├── ai-search-implementation.md
+    │   └── development-tasks-guide.md
+    │
+    ├── 🔧 GIT & WORKFLOW
+    │   ├── git/WORKTREES_CHEATSHEET.md
+    │   ├── git-worktrees-guide.md
+    │   └── node-modules-explained.md
+    │
+    ├── 📚 REFERENCE
+    │   ├── references/
+    │   ├── technical/
+    │   └── NEXTJS_2025_UPDATES.md
+    │
+    ├── 📖 GUIDES
+    │   ├── guides-web/
+    │   │   ├── ADDING_FEATURES.md
+    │   │   └── TESTING.md
+    │   └── setup/               # Setup & configuration
+    │
+    └── 🔌 MCP
+        └── mcp/                 # Model Context Protocol
 ```
 
 ---

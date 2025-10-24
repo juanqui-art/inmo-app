@@ -211,6 +211,7 @@ docs/
 │   ├── INDEX.md                      (Este archivo)
 │   ├── README.md                     (Resumen general)
 │   ├── QUICK_REFERENCE.md            (Referencia rápida)
+│   ├── DOCUMENTATION.md              (Guía de documentación)
 │
 ├── 🚀 GETTING STARTED
 │   ├── DEVELOPMENT_SETUP.md          (Setup + primeros pasos)
@@ -234,19 +235,75 @@ docs/
 │   ├── git-worktrees-guide.md        (Múltiples branches)
 │   └── node-modules-explained.md     (Módulos explicado)
 │
-├── 🎨 FEATURES & ROADMAP
-│   ├── map-features-roadmap.md       (Mapa interactivo)
-│   └── ai-search-implementation.md   (Búsqueda IA)
+├── 🎨 DESIGN & FEATURES
+│   ├── design/                       (Documentación de diseño)
+│   │   ├── COLOR_PALETTE.md
+│   │   ├── DARK_MODE.md
+│   │   └── GLASSMORPHISM_IMPLEMENTATION_SUMMARY.md
+│   ├── features/                     (Features en desarrollo)
+│   │   └── MAP.md
+│   └── map-features-roadmap.md       (Mapa interactivo roadmap)
+│
+├── 💾 CACHING & OPTIMIZATION
+│   ├── caching/                      (Estrategias de cacheo)
+│   │   ├── CACHE_COMPONENTS_GUIDE.md
+│   │   ├── CACHE_IMPLEMENTATION_REVISED.md
+│   │   ├── CACHE_IMPLEMENTATION_SUMMARY.md
+│   │   └── CACHE_QUICK_START.md
+│   ├── NEXTJS_CACHING_EXPLAINED.md   (Cache Components explicado)
+│   └── CACHE_STRATEGY.md             (Estrategia general de cache)
+│
+├── 🗺️ MAP & CLUSTERING
+│   ├── CLUSTERING_GUIDE.md           (Sistema de clustering)
+│   ├── CLUSTERING_AND_BOUNDS_QUICK_REFERENCE.md
+│   ├── CLUSTERING_EXERCISES.md       (Ejercicios prácticos)
+│   ├── GLASSMORPHISM_CLUSTERING_GUIDE.md
+│   ├── MAP_BOUNDS_URL_GUIDE.md       (Bounds y URL handling)
+│   └── troubleshooting/
+│       └── MAP_ISSUES.md             (Problemas del mapa)
+│
+├── 🐛 DEBUGGING & TROUBLESHOOTING
+│   ├── DEBUGGING_HOOKS_GUIDE.md      (Debug de React Hooks)
+│   ├── REACT_HOOKS_ANTIPATTERNS.md   (Anti-patterns comunes)
+│   ├── INFINITE_LOOP_DEEP_DIVE.md    (Análisis profundo)
+│   ├── INFINITE_LOOP_VISUAL_GUIDE.md (Guía visual)
+│   ├── INFINITE_LOOP_QUICK_REFERENCE.md
+│   ├── UNDERSTANDING_THE_INFINITE_LOOP.md
+│   └── INFINITE_LOOP_DOCS_INDEX.md   (Índice de infinite loops)
 │
 ├── 📈 NEXT.JS & REACT
-│   ├── NEXTJS_CACHING_EXPLAINED.md   (Cache Components)
 │   └── NEXTJS_2025_UPDATES.md        (Updates 2025)
 │
 ├── 🤖 AI & OPTIMIZATION
 │   ├── AI_ASSISTANTS.md              (Usar Claude/Gemini)
-│   └── TOKEN_OPTIMIZATION.md         (Optimizar tokens)
+│   ├── TOKEN_OPTIMIZATION.md         (Optimizar tokens)
+│   └── ai-search-implementation.md   (Búsqueda IA)
 │
-└── 📁 setup/                         (Setup guides)
+├── 🔧 GIT & WORKFLOW
+│   └── git/
+│       └── WORKTREES_CHEATSHEET.md   (Git worktrees)
+│
+├── 📊 PROGRESS & DECISIONS
+│   ├── progress/                     (Estado del proyecto)
+│   │   └── ROADMAP.md
+│   └── decisions/                    (Decisiones técnicas)
+│       ├── CLUSTERING_SOLUTION.md
+│       └── MAP_BOUNDS_CALCULATION.md
+│
+├── 📚 REFERENCES
+│   └── references/                   (Material de referencia)
+│
+├── ⚙️ TECHNICAL NOTES
+│   └── technical/                    (Notas técnicas varias)
+│
+├── 🎓 GUIDES (WEB APP)
+│   └── guides-web/                   (Guías específicas de la web)
+│       ├── ADDING_FEATURES.md
+│       └── TESTING.md
+│
+├── 📝 SETUP & MCP
+│   ├── setup/                        (Setup guides)
+│   └── mcp/                          (Model Context Protocol)
 ```
 
 ---
