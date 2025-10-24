@@ -95,6 +95,7 @@ export function MapContainer({
   const clusters = useMapClustering({
     properties,
     viewState,
+    mapRef,
   });
 
   // Get selected property for popup
@@ -152,7 +153,7 @@ export function MapContainer({
         minZoom={DEFAULT_MAP_CONFIG.MIN_ZOOM}
         maxZoom={DEFAULT_MAP_CONFIG.MAX_ZOOM}
         attributionControl={false}
-        reuseMaps
+        // reuseMaps
       >
         {/* Navigation Controls (Zoom +/-) */}
         {/*<NavigationControl*/}
