@@ -28,8 +28,10 @@
 
 "use client";
 
+import { useRef } from "react";
 import type { MapViewport } from "@/lib/utils/url-helpers";
 import type { TransactionType } from "@repo/database";
+import type { MapRef } from "react-map-gl/mapbox";
 import { useMapInitialization } from "./hooks/use-map-initialization";
 import { useMapTheme } from "./hooks/use-map-theme";
 import { useMapViewport } from "./hooks/use-map-viewport";
@@ -73,6 +75,10 @@ export function MapView({
   initialZoom,
   initialViewport,
 }: MapViewProps) {
+  // Create ref for MapBox map instance
+  // Used to get precise bounds that account for navbar
+  const mapRef = useRef<MapRef>(null);
+
   // Hooks for business logic
   const { mounted, mapboxToken, isError } = useMapInitialization();
   const { mapStyle } = useMapTheme();
@@ -81,6 +87,7 @@ export function MapView({
     initialCenter,
     initialZoom,
     mounted,
+    mapRef, // Pass ref to hook
   });
 
   // Error state: Missing MapBox token
@@ -96,6 +103,7 @@ export function MapView({
   // Render map
   return (
     <MapContainer
+      mapRef={mapRef}
       viewState={viewState}
       onMove={handleMove}
       mapStyle={mapStyle}

@@ -18,15 +18,13 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { ViewStateChangeEvent } from "react-map-gl/mapbox";
+import type { ViewStateChangeEvent, MapRef } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import {
   buildBoundsUrl,
-  viewportToBounds,
   type MapViewport,
-  type MapBounds,
 } from "@/lib/utils/url-helpers";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 
@@ -44,6 +42,7 @@ interface UseMapViewportProps {
   initialCenter?: [number, number];
   initialZoom?: number;
   mounted: boolean;
+  mapRef?: React.RefObject<MapRef | null>;
 }
 
 interface UseMapViewportReturn {
@@ -56,6 +55,7 @@ export function useMapViewport({
   initialCenter,
   initialZoom = DEFAULT_MAP_CONFIG.DEFAULT_ZOOM,
   mounted,
+  mapRef,
 }: UseMapViewportProps): UseMapViewportReturn {
   const router = useRouter();
   useSearchParams(); // Keep for reactive updates, but don't use in effect
@@ -94,10 +94,56 @@ export function useMapViewport({
   );
 
   /**
-   * Convert debounced viewport to bounds for URL
-   * Uses viewportToBounds which matches the clustering calculation
+   * Get bounds from MapBox using native getBounds() method
+   *
+   * WHY getBounds()?
+   * - MapBox calculates REAL bounds considering navbar/padding
+   * - Previous approach used viewportToBounds() which was symmetric
+   * - Symmetric bounds don't account for fixed navbar at top
+   * - Result: properties in upper area weren't fetched correctly
+   *
+   * SOLUTION:
+   * - Use map.getBounds() which returns actual visible bounds
+   * - Accounts for navbar and any viewport padding
+   * - Guarantees bounds match exactly what user sees
+   *
+   * STABILITY:
+   * - Wrapped in useMemo to prevent creating new object every render
+   * - Only recalculates when debouncedViewport actually changes
+   * - Prevents infinite loop caused by object identity changes
    */
-  const debouncedBounds: MapBounds = viewportToBounds(debouncedViewport);
+  const debouncedBounds = useMemo(() => {
+    // If mapRef available, use actual MapBox bounds
+    if (mapRef?.current) {
+      try {
+        const bounds = mapRef.current.getBounds();
+        if (bounds) {
+          const ne = bounds.getNorthEast();
+          const sw = bounds.getSouthWest();
+          return {
+            ne_lat: ne.lat,
+            ne_lng: ne.lng,
+            sw_lat: sw.lat,
+            sw_lng: sw.lng,
+          };
+        }
+      } catch (error) {
+        console.warn("Failed to get bounds from map, using fallback", error);
+      }
+    }
+
+    // Fallback: Calculate bounds mathematically (for initial render)
+    // This won't account for navbar but works when map isn't ready
+    const latitudeDelta = (180 / Math.pow(2, debouncedViewport.zoom)) * 1.2;
+    const longitudeDelta = (360 / Math.pow(2, debouncedViewport.zoom)) * 1.2;
+
+    return {
+      ne_lat: debouncedViewport.latitude + latitudeDelta,
+      ne_lng: debouncedViewport.longitude + longitudeDelta,
+      sw_lat: debouncedViewport.latitude - latitudeDelta,
+      sw_lng: debouncedViewport.longitude - longitudeDelta,
+    };
+  }, [debouncedViewport, mapRef]);
 
   /**
    * Track last URL to prevent infinite loop
@@ -119,6 +165,11 @@ export function useMapViewport({
    * Sync bounds to URL (Zillow/Airbnb pattern)
    * Updates URL when user stops moving the map (debounced)
    * IMPORTANT: Only updates if URL values actually changed to prevent infinite loops
+   *
+   * NOTE: mapRef intentionally NOT in dependencies
+   * - mapRef is mutable reference (doesn't change)
+   * - We only use it inside the bounds calculation above
+   * - Adding it would unnecessarily trigger effect runs
    */
   useEffect(() => {
     // Skip on initial mount (already at correct URL from server)
@@ -133,7 +184,7 @@ export function useMapViewport({
       lastUrlRef.current = newUrl;
       router.replace(newUrl, { scroll: false });
     }
-  }, [debouncedBounds, router, mounted]); // ← NO searchParams (breaks the loop!)
+  }, [debouncedBounds, router, mounted]); // ← mapRef NOT included (mutable ref)
 
   /**
    * Handle map movement

@@ -28,7 +28,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Map, { type ViewStateChangeEvent } from "react-map-gl/mapbox";
+import Map, { type ViewStateChangeEvent, type MapRef } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG, CLUSTER_CONFIG } from "@/lib/types/map";
 import { PropertyMarker } from "../property-marker";
 import { PropertyListDrawer } from "../property-list-drawer";
@@ -54,6 +54,8 @@ interface ViewState {
 }
 
 interface MapContainerProps {
+  /** Reference to MapBox map instance */
+  mapRef?: React.RefObject<MapRef | null>;
   /** Current viewport state */
   viewState: ViewState;
   /** Handler for map movement */
@@ -67,6 +69,7 @@ interface MapContainerProps {
 }
 
 export function MapContainer({
+  mapRef,
   viewState,
   onMove,
   mapStyle,
@@ -136,6 +139,7 @@ export function MapContainer({
       {/*<MapFilters />*/}
 
       <Map
+        ref={mapRef}
         {...viewState}
         onMove={onMove}
         mapStyle={mapStyle}
