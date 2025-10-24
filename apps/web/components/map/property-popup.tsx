@@ -5,25 +5,36 @@
  * Shown when a property marker is clicked on the map
  *
  * FEATURES:
- * - Shows property image (first image if available)
- * - Displays property title and price
- * - Shows bedrooms and bathrooms count
- * - "View Details" button for navigation
+ * - Uses enhanced PropertyCardHorizontal for full details
+ * - Shows property image with dark overlay
+ * - Displays transaction type, category, price
+ * - Social actions (like, share, bookmark)
+ * - Property features (beds, baths, area)
+ * - "View Details" CTA button
  * - Close button (X) to dismiss popup
+ *
+ * VARIANTS:
+ * - "full" (default): Complete horizontal card with all features
+ * - "compact": Minimal compact version for mobile
  *
  * USAGE:
  * <PropertyPopup
  *   property={selectedProperty}
  *   onClose={handleClose}
  *   onViewDetails={handleViewDetails}
+ *   variant="full"
  * />
  */
 
 "use client";
 
 import { Popup } from "react-map-gl/mapbox";
-import { X, Bed, Bath } from "lucide-react";
+import { X } from "lucide-react";
 import type { MapProperty } from "./map-view";
+import { PropertyCardHorizontal } from "./property-card-horizontal";
+import { PropertyPopupCompact } from "./property-popup-compact";
+
+type PopupVariant = "full" | "compact";
 
 interface PropertyPopupProps {
   /** Property data to display */
@@ -32,119 +43,85 @@ interface PropertyPopupProps {
   onClose: () => void;
   /** Callback when "View Details" button is clicked */
   onViewDetails: () => void;
+  /** Popup variant: "full" for horizontal card, "compact" for minimal */
+  variant?: PopupVariant;
+  /** Favorite state (optional) */
+  isFavorite?: boolean;
+  /** Favorite toggle handler (optional) */
+  onFavoriteToggle?: (propertyId: string) => void;
 }
 
 export function PropertyPopup({
   property,
   onClose,
   onViewDetails,
+  variant = "full",
+  isFavorite = false,
+  onFavoriteToggle,
 }: PropertyPopupProps) {
-  // Get first image or use placeholder
-  const imageUrl =
-    property.images && property.images.length > 0
-      ? property.images[0]?.url ?? "/images/property-placeholder.jpg"
-      : "/images/property-placeholder.jpg";
-
-  // Format price
-  const formattedPrice = property.price.toLocaleString("es-EC", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  });
-
   // Guard against missing coordinates
   if (!property.latitude || !property.longitude) {
     return null;
   }
 
+  // Render compact version for mobile/small screens
+  if (variant === "compact") {
+    return (
+      <Popup
+        longitude={property.longitude}
+        latitude={property.latitude}
+        closeButton={false}
+        className="property-popup-compact"
+        offset={[0, -10]}
+      >
+        <div className="relative">
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 bg-white dark:bg-oslo-gray-800 rounded-full p-1 shadow-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-700 transition-colors z-10"
+            aria-label="Close popup"
+          >
+            <X className="w-4 h-4 text-oslo-gray-900 dark:text-oslo-gray-50" />
+          </button>
+          <PropertyPopupCompact
+            property={property}
+            onViewDetails={onViewDetails}
+            isFavorite={isFavorite}
+            onFavoriteToggle={onFavoriteToggle}
+          />
+        </div>
+      </Popup>
+    );
+  }
+
+  // Render full horizontal card version
   return (
     <Popup
       longitude={property.longitude}
       latitude={property.latitude}
       closeButton={false}
-      className="property-popup"
-      offset={[0, -10]}
+      className="property-popup-full"
+      offset={[0, -150]}
+      closeOnClick={false}
     >
-      <div className="w-64 bg-white dark:bg-oslo-gray-900 rounded-lg overflow-hidden shadow-lg">
-        {/* Image */}
-        <div className="relative h-32 bg-oslo-gray-200 dark:bg-oslo-gray-800">
-          <img
-            src={imageUrl}
-            alt={property.title}
-            className="w-full h-full object-cover"
-          />
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute top-2 right-2 bg-white dark:bg-oslo-gray-800 rounded-full p-1 shadow-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-700 transition-colors"
-            aria-label="Close popup"
-          >
-            <X className="w-4 h-4 text-oslo-gray-900 dark:text-oslo-gray-50" />
-          </button>
+      <div className="relative">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute -top-10 right-0 bg-white/20 dark:bg-oslo-gray-800/40 rounded-full p-2 shadow-md hover:bg-white/30 dark:hover:bg-oslo-gray-800/60 transition-colors z-10 backdrop-blur-sm border border-white/30"
+          aria-label="Close popup"
+        >
+          <X className="w-5 h-5 text-white" />
+        </button>
 
-          {/* Transaction Type Badge */}
-          <div className="absolute bottom-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">
-            {property.transactionType === "SALE" ? "Venta" : "Arriendo"}
-          </div>
-
-          {/* Price Badge */}
-          <div className="absolute top-2 left-2 bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
-            {formattedPrice}
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-3 space-y-2">
-          {/* Title */}
-          <h3 className="font-semibold text-sm text-oslo-gray-900 dark:text-oslo-gray-50 line-clamp-2">
-            {property.title}
-          </h3>
-
-          {/* Location */}
-          {(property.city || property.state) && (
-            <p className="text-xs text-oslo-gray-600 dark:text-oslo-gray-400">
-              {property.city && property.state
-                ? `${property.city}, ${property.state}`
-                : property.city || property.state}
-            </p>
-          )}
-
-          {/* Features Grid */}
-          <div className="flex gap-3 py-2 border-y border-oslo-gray-200 dark:border-oslo-gray-700">
-            {property.bedrooms !== null && property.bedrooms !== undefined && (
-              <div className="flex items-center gap-1">
-                <Bed className="w-4 h-4 text-oslo-gray-500 dark:text-oslo-gray-400" />
-                <span className="text-xs font-medium text-oslo-gray-700 dark:text-oslo-gray-300">
-                  {property.bedrooms}
-                </span>
-              </div>
-            )}
-
-            {property.bathrooms !== null &&
-              property.bathrooms !== undefined && (
-                <div className="flex items-center gap-1">
-                  <Bath className="w-4 h-4 text-oslo-gray-500 dark:text-oslo-gray-400" />
-                  <span className="text-xs font-medium text-oslo-gray-700 dark:text-oslo-gray-300">
-                    {Math.floor(property.bathrooms)}
-                  </span>
-                </div>
-              )}
-
-            {property.area && (
-              <div className="text-xs text-oslo-gray-700 dark:text-oslo-gray-300 font-medium">
-                {Math.round(property.area)} m²
-              </div>
-            )}
-          </div>
-
-          {/* View Details Button */}
-          <button
-            onClick={onViewDetails}
-            className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold text-sm transition-colors"
-          >
-            Ver Detalles
-          </button>
-        </div>
+        {/* PropertyCardHorizontal */}
+        <PropertyCardHorizontal
+          property={property}
+          onViewDetails={onViewDetails}
+          isFavorite={isFavorite}
+          onFavoriteToggle={onFavoriteToggle}
+          viewCount={property.viewCount ?? 0}
+        />
       </div>
     </Popup>
   );
