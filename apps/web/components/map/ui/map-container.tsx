@@ -28,7 +28,10 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Map, { type ViewStateChangeEvent, type MapRef } from "react-map-gl/mapbox";
+import Map, {
+  type ViewStateChangeEvent,
+  type MapRef,
+} from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG, CLUSTER_CONFIG } from "@/lib/types/map";
 import { PropertyMarker } from "../property-marker";
 import { PropertyListDrawer } from "../property-list-drawer";
@@ -145,6 +148,7 @@ export function MapContainer({
         mapStyle={mapStyle}
         mapboxAccessToken={mapboxToken}
         style={{ width: "100%", height: "100%" }}
+        padding={{ top: 80, bottom: 0, left: 0, right: 0 }}
         minZoom={DEFAULT_MAP_CONFIG.MIN_ZOOM}
         maxZoom={DEFAULT_MAP_CONFIG.MAX_ZOOM}
         attributionControl={false}
@@ -222,11 +226,11 @@ export function MapContainer({
       </Map>
 
       {/* Property List Drawer */}
-      <PropertyListDrawer
-        properties={properties}
-        onPropertyHover={setHighlightedPropertyId}
-        onPropertyClick={handleDrawerPropertyClick}
-      />
+      {/*<PropertyListDrawer*/}
+      {/*  properties={properties}*/}
+      {/*  onPropertyHover={setHighlightedPropertyId}*/}
+      {/*  onPropertyClick={handleDrawerPropertyClick}*/}
+      {/*/>*/}
 
       {/* Properties Count Badge */}
       {/*<div className="absolute top-20 left-4 z-10 bg-white/95 dark:bg-oslo-gray-900/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border border-oslo-gray-200 dark:border-oslo-gray-800">*/}

@@ -97,7 +97,7 @@ export default function PublicLayout({
         - Share confirmations
         - Copy link feedback
       */}
-      <Toaster position="bottom-right" richColors />
+      {/*<Toaster position="bottom-right" richColors />*/}
     </div>
   );
 }
