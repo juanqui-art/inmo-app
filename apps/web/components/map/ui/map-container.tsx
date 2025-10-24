@@ -128,7 +128,15 @@ export function MapContainer({
   );
 
   return (
-    <div className="relative w-full h-screen">
+    <div className="relative w-full h-screen pt-20">
+      {/*
+        VIEWPORT ADJUSTMENT:
+        - pt-20 (80px) padding-top accounts for fixed navbar
+        - Navbar: h-16 (64px) + mt-3 (12px) = ~76px
+        - Extra 4px for comfortable spacing
+        - Prevents markers from being hidden under navbar
+      */}
+
       {/* Search Bar - Floating Top Left */}
       {/*<MapSearchBar onLocationSelect={flyToLocation} />*/}
 
