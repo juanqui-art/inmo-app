@@ -21,7 +21,6 @@ import { useRef } from "react";
 import { AuthButtons } from "./navbar/auth-buttons";
 import { getNavLinks } from "./navbar/constants/nav-links";
 import { DesktopNav } from "./navbar/desktop-nav";
-import { useMagneticEffect } from "./navbar/hooks/use-navbar-animations";
 import { useMobileMenu } from "./navbar/hooks/use-mobile-menu";
 import { MobileMenu } from "./navbar/mobile-menu";
 import { UserDropdown } from "./navbar/user-dropdown";
@@ -42,9 +41,6 @@ export function PublicHeaderClient({
   const ctaButtonRef = useRef<HTMLDivElement>(null);
   const navLinks = getNavLinks(isAuthenticated);
 
-  // Apply magnetic effect to CTA button (only on non-homepage and non-map)
-  useMagneticEffect(ctaButtonRef, !isHomepage && !isMapPage, 0.2);
-
   return (
     <header
       data-navbar={isHomepage ? "homepage" : isMapPage ? "map" : "pages"}
@@ -52,14 +48,14 @@ export function PublicHeaderClient({
         isHomepage
           ? "fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
           : isMapPage
-            ? "fixed top-0 left-0 right-0 z-50 max-w-6xl mx-auto mt-3 bg-black/30 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full"
+            ? "fixed top-0 left-0 right-0 z-50 max-w-6xl mx-auto  bg-black/30 backdrop-blur-3xl shadow-2xl rounded-bl-2xl rounded-br-2xl border-b border-white/15 "
             : "sticky top-0 z-50 bg-oslo-gray-900/80 backdrop-blur-md border-b border-oslo-gray-700/50 shadow-lg"
       }
     >
       <nav className=" mx-auto px-4 sm:px-6 lg:px-8">
         <div
           data-navbar-container="true"
-          className={`flex items-center h-16 ${
+          className={`flex items-center h-14 ${
             isMapPage ? "justify-between relative" : "justify-between"
           }`}
         >

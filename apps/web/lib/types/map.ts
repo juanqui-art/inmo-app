@@ -19,6 +19,12 @@ export interface MapViewport {
 }
 
 /**
+ * Property marker variant
+ * Visual style for property markers
+ */
+export type PropertyMarkerVariant = "dark" | "light" | "minimal";
+
+/**
  * Property marker data
  * Minimal data needed to render a marker on the map
  */
@@ -31,6 +37,8 @@ export interface PropertyMarkerData {
   category: PropertyCategory;
   title: string;
   imageUrl?: string;
+  /** Marker visual variant (default: "dark") */
+  markerVariant?: PropertyMarkerVariant;
 }
 
 /**

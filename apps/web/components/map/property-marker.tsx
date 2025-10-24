@@ -1,99 +1,81 @@
 /**
- * PropertyMarker - Map Marker for Properties
+ * PropertyMarker - Map Marker for Properties (Wrapper)
  *
- * PATTERN: Custom Marker with Glassmorphism
+ * PATTERN: Intelligent wrapper using variant strategy
  *
  * FEATURES:
- * - Shows property price
+ * - Backward compatible with original implementation
+ * - Supports multiple marker variants
+ * - Automatically formats price
  * - Color coded by transaction type (SALE: blue, RENT: green)
- * - Hover effect
- * - Click handler for future popup
+ * - Hover effects and animations
+ * - Click handler for popups
+ *
+ * VARIANTS:
+ * - "dark" (default): Modern glassmorphism with pin and icon
+ * - "light": Subtle light theme with colored borders
+ * - "minimal": Compact badge-only marker
+ *
+ * MIGRATION GUIDE:
+ * Old usage still works:
+ * ```tsx
+ * <PropertyMarker price={250000} ... />
+ * ```
+ *
+ * New usage with variants:
+ * ```tsx
+ * <PropertyMarker price="$250K" variant="light" ... />
+ * ```
  */
 
 "use client";
 
-import { Marker } from "react-map-gl/mapbox";
+import { PropertyMarker as PropertyMarkerComponent } from "./markers";
 import type { TransactionType } from "@repo/database";
+
+export type PropertyMarkerVariant = "dark" | "light" | "minimal";
 
 interface PropertyMarkerProps {
   latitude: number;
   longitude: number;
-  price: number;
+  price: number | string;
   transactionType: TransactionType;
   onClick?: () => void;
   isHighlighted?: boolean;
+  /** Marker variant/style (default: "dark") */
+  variant?: PropertyMarkerVariant;
 }
 
+/**
+ * PropertyMarker - Main component with automatic price formatting
+ *
+ * Handles both numeric and string prices for backward compatibility.
+ * Forwards all props to the variant-specific component.
+ */
 export function PropertyMarker({
-  latitude,
-  longitude,
   price,
-  transactionType,
-  onClick,
-  isHighlighted = false,
+  variant = "dark",
+  ...props
 }: PropertyMarkerProps) {
   /**
    * Format price for display
+   * Supports both number and string inputs for backward compatibility
    */
-  const formattedPrice = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    notation: "compact",
-    maximumFractionDigits: 0,
-  }).format(price);
-
-  /**
-   * Color based on transaction type
-   */
-  const markerColor = transactionType === "SALE" ? "#3b82f6" : "#10b981"; // blue-500 : green-500
+  const formattedPrice =
+    typeof price === "string"
+      ? price
+      : new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          notation: "compact",
+          maximumFractionDigits: 0,
+        }).format(price);
 
   return (
-    <Marker
-      latitude={latitude}
-      longitude={longitude}
-      anchor="bottom"
-      onClick={(e) => {
-        // Prevent map from also handling click
-        e.originalEvent.stopPropagation();
-        onClick?.();
-      }}
-    >
-      <div
-        className="property-marker group cursor-pointer"
-        style={{
-          // @ts-ignore - CSS custom property
-          "--marker-color": markerColor,
-        }}
-      >
-        {/* Price Badge */}
-        <div
-          className={`px-3 py-1.5 bg-white/95 dark:bg-oslo-gray-900/95 backdrop-blur-sm rounded-full border-2 transition-all duration-200 shadow-lg ${
-            isHighlighted
-              ? "scale-125 shadow-2xl ring-2 ring-offset-2 ring-offset-white/50 dark:ring-offset-oslo-gray-800/50"
-              : "hover:shadow-xl hover:scale-110"
-          }`}
-          style={{
-            borderColor: markerColor,
-            ...(isHighlighted && {
-              ringColor: markerColor,
-            }),
-          }}
-        >
-          <span className="text-sm font-bold text-oslo-gray-900 dark:text-oslo-gray-50">
-            {formattedPrice}
-          </span>
-        </div>
-
-        {/* Pointer Triangle */}
-        <div
-          className="w-0 h-0 mx-auto mt-[-1px]"
-          style={{
-            borderLeft: "6px solid transparent",
-            borderRight: "6px solid transparent",
-            borderTop: `8px solid ${markerColor}`,
-          }}
-        />
-      </div>
-    </Marker>
+    <PropertyMarkerComponent
+      price={formattedPrice}
+      variant={variant}
+      {...props}
+    />
   );
 }

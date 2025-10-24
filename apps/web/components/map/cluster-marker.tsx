@@ -91,8 +91,11 @@ export function ClusterMarker({
       }}
     >
       <div
-        className="cluster-marker group cursor-pointer"
+        className="cluster-marker group relative cursor-pointer"
         style={{ width: style.size, height: style.size }}
+        role="button"
+        tabIndex={0}
+        aria-label={`${pointCount} properties in cluster`}
       >
         {/* Glassmorphism Cluster Circle */}
         <div
@@ -105,6 +108,7 @@ export function ClusterMarker({
             flex items-center justify-center
             transition-all duration-300
             hover:backdrop-brightness-110 hover:shadow-2xl
+            group-hover:scale-110
             ring-1 ${style.ringColor}
           `}
         >
@@ -122,6 +126,19 @@ export function ClusterMarker({
           </span>
         </div>
 
+        {/* Animated pulse ring on hover */}
+        <div
+          className={`
+            absolute inset-0
+            rounded-full
+            opacity-0 group-hover:opacity-100
+            transition-all duration-300
+            pointer-events-none
+            ring-2 ${style.ringColor}
+            group-hover:ring-4 group-hover:ring-offset-2 group-hover:ring-offset-white/50 dark:group-hover:ring-offset-slate-800/50
+          `}
+        />
+
         {/* Subtle glow on hover */}
         <div
           className={`
@@ -132,6 +149,17 @@ export function ClusterMarker({
             pointer-events-none
             bg-gradient-to-br ${style.color}
             blur-xl
+          `}
+        />
+
+        {/* Ground shadow */}
+        <div
+          className={`
+            absolute -bottom-2 left-1/2 -translate-x-1/2
+            h-1 w-full rounded-full
+            bg-black/15 blur-md
+            transition-all duration-300
+            group-hover:h-1.5 group-hover:bg-black/25
           `}
         />
       </div>
