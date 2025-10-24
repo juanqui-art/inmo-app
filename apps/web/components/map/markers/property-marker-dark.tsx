@@ -25,7 +25,6 @@
 "use client";
 
 import { Marker } from "react-map-gl/mapbox";
-import { Home } from "lucide-react";
 import type { TransactionType } from "@repo/database";
 
 interface PropertyMarkerDarkProps {

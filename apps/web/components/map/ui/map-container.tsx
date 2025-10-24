@@ -34,7 +34,6 @@ import Map, {
 } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG, CLUSTER_CONFIG } from "@/lib/types/map";
 import { PropertyMarker } from "../property-marker";
-import { PropertyListDrawer } from "../property-list-drawer";
 import { PropertyPopup } from "../property-popup";
 import { ClusterMarker } from "../cluster-marker";
 import {
@@ -80,11 +79,6 @@ export function MapContainer({
   properties,
 }: MapContainerProps) {
   const router = useRouter();
-
-  // State for highlighted property (on hover)
-  const [highlightedPropertyId, setHighlightedPropertyId] = useState<
-    string | null
-  >(null);
 
   // State for selected property popup
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
@@ -205,7 +199,6 @@ export function MapContainer({
               longitude={longitude}
               price={property.price}
               transactionType={property.transactionType}
-              isHighlighted={highlightedPropertyId === property.id}
               onClick={() => handleMarkerClick(property)}
             />
           );

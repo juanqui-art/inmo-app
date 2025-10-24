@@ -61,7 +61,6 @@
  */
 
 import { PublicHeader } from "@/components/layout/public-header";
-import { Toaster } from "sonner";
 
 export default function PublicLayout({
   children,

@@ -122,7 +122,6 @@ export function PropertyPopup({
           onViewDetails={onViewDetails}
           isFavorite={isFavorite}
           onFavoriteToggle={onFavoriteToggle}
-          viewCount={property.viewCount ?? 0}
         />
       </div>
     </Popup>

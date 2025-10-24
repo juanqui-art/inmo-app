@@ -26,12 +26,10 @@ import {
   Heart,
   Share2,
   Bookmark,
-  MapPin,
   Bed,
   Bath,
   Maximize,
   ChevronRight,
-  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,13 +37,13 @@ import { useState } from "react";
 import Image from "next/image";
 import type { PropertyWithRelations } from "@repo/database";
 import type { SerializedProperty } from "@/lib/utils/serialize-property";
+import type { MapProperty } from "./map-view";
 
 interface PropertyCardHorizontalProps {
-  property: PropertyWithRelations | SerializedProperty;
+  property: PropertyWithRelations | SerializedProperty | MapProperty;
   onViewDetails?: () => void;
   onFavoriteToggle?: (propertyId: string) => void;
   isFavorite?: boolean;
-  viewCount?: number;
 }
 
 /**
@@ -59,7 +57,6 @@ export function PropertyCardHorizontal({
   onViewDetails,
   onFavoriteToggle,
   isFavorite = false,
-  viewCount = 0,
 }: PropertyCardHorizontalProps) {
   const [liked, setLiked] = useState(isFavorite);
   const [saved, setSaved] = useState(false);
@@ -144,12 +141,14 @@ export function PropertyCardHorizontal({
             </Badge>
 
             {/* Category Badge */}
-            <Badge
-              variant="secondary"
-              className="bg-white/20 text-white backdrop-blur-md border border-white/30 font-semibold px-3 py-1 rounded-full"
-            >
-              {categoryLabels[property.category] || property.category}
-            </Badge>
+            {property.category && (
+              <Badge
+                variant="secondary"
+                className="bg-white/20 text-white backdrop-blur-md border border-white/30 font-semibold px-3 py-1 rounded-full"
+              >
+                {categoryLabels[property.category] || property.category}
+              </Badge>
+            )}
           </div>
 
           {/* Right: Social Actions */}

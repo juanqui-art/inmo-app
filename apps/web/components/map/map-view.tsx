@@ -49,6 +49,7 @@ export interface MapProperty {
   title: string;
   price: number;
   transactionType: TransactionType;
+  category?: string;
   latitude: number | null;
   longitude: number | null;
   city?: string;
