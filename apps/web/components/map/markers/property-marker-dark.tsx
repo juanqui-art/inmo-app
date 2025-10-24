@@ -98,7 +98,7 @@ export function PropertyMarkerDark({
         >
           {/* Price Badge */}
           <div
-            className={`mb-2 rounded-xl bg-slate-800 px-4 py-2 shadow-xl ring-1 ring-slate-700/50 transition-all duration-300 ${
+            className={`mb-1 rounded-xl bg-slate-800 px-3 py-2 shadow-xl ring-1 ring-slate-700/50 transition-all duration-300 ${
               isHighlighted
                 ? "scale-125 shadow-2xl ring-2"
                 : "group-hover:bg-slate-700 group-hover:shadow-2xl group-hover:ring-slate-600/50"
@@ -110,11 +110,11 @@ export function PropertyMarkerDark({
           </div>
 
           {/* Pin Circle */}
-          <div
-            className={`relative flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br ${colors.pinFrom} ${colors.pinTo} shadow-xl ring-4 ring-slate-800 transition-all duration-300 ${colors.pinHoverFrom} ${colors.pinHoverTo} group-hover:shadow-2xl group-hover:ring-slate-700`}
-          >
-            <Home className="h-6 w-6 text-white drop-shadow-md" />
-          </div>
+          {/*<div*/}
+          {/*  className={`relative flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br ${colors.pinFrom} ${colors.pinTo} shadow-xl ring-4 ring-slate-800 transition-all duration-300 ${colors.pinHoverFrom} ${colors.pinHoverTo} group-hover:shadow-2xl group-hover:ring-slate-700`}*/}
+          {/*>*/}
+          {/*  <Home className="h-6 w-6 text-white drop-shadow-md" />*/}
+          {/*</div>*/}
 
           {/* Pointer Triangle (Pin Tip) */}
           <div
