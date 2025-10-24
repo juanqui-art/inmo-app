@@ -113,7 +113,7 @@ export function PropertyCardHorizontal({
   };
 
   return (
-    <div className="relative w-full max-w-[900px] h-[280px] rounded-2xl overflow-hidden shadow-2xl group bg-oslo-gray-900 dark:bg-oslo-gray-1000">
+    <div className="relative w-full min-w-[320px] max-w-[390px] h-[280px] rounded-2xl overflow-hidden shadow-2xl group bg-oslo-gray-900 dark:bg-oslo-gray-1000">
       {/* Background Image with Overlay */}
       {imageUrl ? (
         <div className="absolute inset-0">
@@ -121,16 +121,17 @@ export function PropertyCardHorizontal({
             src={imageUrl}
             alt={property.title}
             fill
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-full object-cover brightness-110 transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30" />
+          {/* Gradient overlays for contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
         </div>
       ) : (
         <div className="absolute inset-0 bg-gradient-to-br from-oslo-gray-800 to-oslo-gray-900" />
       )}
 
       {/* Content Grid */}
-      <div className="relative h-full p-6 flex flex-col justify-between">
+      <div className="relative h-full p-3 flex flex-col justify-between">
         {/* Top Row - Badges and Social Actions */}
         <div className="flex items-start justify-between">
           {/* Left: Status Badges */}
@@ -154,21 +155,21 @@ export function PropertyCardHorizontal({
           {/* Right: Social Actions */}
           <div className="flex items-center gap-2">
             {/* View Counter */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30">
-              <Eye className="w-4 h-4 text-white" />
-              <span className="text-white text-sm font-semibold">
-                {viewCount.toLocaleString()}
-              </span>
-            </div>
+            {/*<div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30">*/}
+            {/*  <Eye className="w-4 h-4 text-white" />*/}
+            {/*  <span className="text-white text-sm font-semibold">*/}
+            {/*    {viewCount.toLocaleString()}*/}
+            {/*  </span>*/}
+            {/*</div>*/}
 
             {/* Like Button */}
             <button
               onClick={handleFavoriteClick}
-              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+              className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
               aria-label={liked ? "Remove from favorites" : "Add to favorites"}
             >
               <Heart
-                className={`w-5 h-5 transition-colors ${
+                className={`w-4 h-4 transition-colors ${
                   liked ? "fill-red-500 text-red-500" : "text-white"
                 }`}
               />
@@ -176,20 +177,20 @@ export function PropertyCardHorizontal({
 
             {/* Share Button */}
             <button
-              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+              className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
               aria-label="Share property"
             >
-              <Share2 className="w-5 h-5 text-white" />
+              <Share2 className="w-4 h-4 text-white" />
             </button>
 
             {/* Bookmark Button */}
             <button
               onClick={() => setSaved(!saved)}
-              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+              className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
               aria-label={saved ? "Remove bookmark" : "Bookmark property"}
             >
               <Bookmark
-                className={`w-5 h-5 transition-colors ${
+                className={`w-4 h-4 transition-colors ${
                   saved ? "fill-white text-white" : "text-white"
                 }`}
               />
@@ -197,79 +198,59 @@ export function PropertyCardHorizontal({
           </div>
         </div>
 
-        {/* Bottom Row - Two Column Layout */}
-        <div className="grid grid-cols-2 gap-6 items-end">
+        {/* Bottom Row - Flex Layout with Space Between */}
+        <div className="flex items-end justify-between gap-3">
           {/* Left Column - Property Info */}
-          <div className="space-y-3">
-            {/* Location */}
-            <div className="flex items-start gap-2">
-              <MapPin className="w-5 h-5 text-white mt-1 flex-shrink-0 drop-shadow-lg" />
-              <div>
-                <p className="text-white font-bold text-lg leading-tight drop-shadow-lg">
-                  {property.title}
-                </p>
-                <p className="text-white/90 text-sm drop-shadow-lg">
-                  {[property.city, property.state]
-                    .filter(Boolean)
-                    .join(", ") || "Location"}
-                </p>
-              </div>
+          <div className="space-y-2 flex-1">
+            <div>
+              <p className="text-white text-2xl font-bold drop-shadow-lg">
+                {formattedPrice}
+              </p>
             </div>
 
             {/* Features */}
-            <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-3 flex-wrap">
               {/* Bedrooms */}
               {property.bedrooms && (
-                <div className="flex items-center gap-1.5 text-white">
-                  <Bed className="w-4 h-4 drop-shadow-lg" />
-                  <span className="text-sm font-semibold drop-shadow-lg">
-                    {property.bedrooms} Beds
+                <div className="flex items-center gap-1 text-white text-xs">
+                  <Bed className="w-3.5 h-3.5 drop-shadow-lg" />
+                  <span className="font-semibold drop-shadow-lg">
+                    {property.bedrooms}
                   </span>
                 </div>
               )}
 
               {/* Bathrooms */}
               {property.bathrooms && (
-                <div className="flex items-center gap-1.5 text-white">
-                  <Bath className="w-4 h-4 drop-shadow-lg" />
-                  <span className="text-sm font-semibold drop-shadow-lg">
-                    {Number(property.bathrooms)} Baths
+                <div className="flex items-center gap-1 text-white text-xs">
+                  <Bath className="w-3.5 h-3.5 drop-shadow-lg" />
+                  <span className="font-semibold drop-shadow-lg">
+                    {Number(property.bathrooms)}
                   </span>
                 </div>
               )}
 
               {/* Area */}
               {property.area && (
-                <div className="flex items-center gap-1.5 text-white">
-                  <Maximize className="w-4 h-4 drop-shadow-lg" />
-                  <span className="text-sm font-semibold drop-shadow-lg">
-                    {Number(property.area)} m²
+                <div className="flex items-center gap-1 text-white text-xs">
+                  <Maximize className="w-3.5 h-3.5 drop-shadow-lg" />
+                  <span className="font-semibold drop-shadow-lg">
+                    {Number(property.area)}m²
                   </span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Right Column - Price and CTA */}
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-white/80 text-xs font-medium drop-shadow-lg mb-1">
-                Precio
-              </p>
-              <p className="text-white text-3xl font-bold drop-shadow-lg">
-                {formattedPrice}
-              </p>
-            </div>
-
-            {/* CTA Button */}
-            <Button
-              onClick={onViewDetails}
-              className="bg-white text-oslo-gray-900 hover:bg-white/90 dark:text-oslo-gray-50 font-semibold rounded-full px-6 py-2 shadow-lg transition-all hover:shadow-xl active:scale-95"
-            >
-              Ver Detalles
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          </div>
+          {/* Right Column - CTA Button */}
+          <Button
+            onClick={onViewDetails}
+            size="sm"
+            className="bg-white text-oslo-gray-900 hover:bg-white/90 dark:text-oslo-gray-900 font-semibold rounded-lg px-4 py-2 shadow-lg transition-all hover:shadow-xl active:scale-95 flex-shrink-0"
+          >
+            Ver Detalles
+            <ChevronRight className="w-3.5 h-3.5 ml-1" />
+          </Button>
         </div>
       </div>
     </div>
