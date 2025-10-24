@@ -137,3 +137,46 @@
     }
   }
 }
+
+/* ============================================================================
+   MapBox GL Popup Style Overrides
+   Override default MapBox popup styles to allow custom card styling
+   ========================================================================== */
+
+/* Reset MapBox popup container styles */
+.mapboxgl-popup {
+  z-index: 10;
+}
+
+.mapboxgl-popup-content {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  max-width: none !important;
+  color: inherit;
+  font-family: inherit;
+}
+
+/* Hide default popup pointer/tip */
+.mapboxgl-popup-tip {
+  display: none !important;
+}
+
+/* Close button styling (if using mapboxgl default) */
+.mapboxgl-popup-close-button {
+  display: none !important;
+}
+
+/* Responsive popup width adjustments */
+@media (max-width: 768px) {
+  .mapboxgl-popup-content {
+    max-width: 280px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .mapboxgl-popup-content {
+    max-width: 900px !important;
+  }
+}

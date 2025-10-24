@@ -73,6 +73,7 @@ export function PropertyPopup({
         closeButton={false}
         className="property-popup-compact"
         offset={[0, -10]}
+        maxWidth="none"
       >
         <div className="relative">
           {/* Close Button */}
@@ -103,6 +104,7 @@ export function PropertyPopup({
       className="property-popup-full"
       offset={[0, -150]}
       closeOnClick={false}
+      maxWidth="none"
     >
       <div className="relative">
         {/* Close Button */}
