@@ -4,55 +4,57 @@
  * Custom hook para gestionar favoritos del usuario
  * Proporciona state compartido y funciones para agregar/quitar favoritos
  *
+ * PATTERN: True Optimistic Updates
+ * - UI update INSTANTÁNEO (sync state change)
+ * - Server call BACKGROUND (async)
+ * - Rollback on error
+ *
  * FEATURES:
- * - Optimistic updates (UI instantánea) con useTransition
- * - Sync con servidor (Server Actions)
- * - Loading states per property
- * - Error handling con rollback
- * - Toast notifications
+ * - ✨ Optimistic updates (UI instantánea - sin latencia)
+ * - 🔄 Sync con servidor (Server Actions)
+ * - 🚫 Prevención de double-click
+ * - ⚠️ Error handling con rollback automático
+ * - 🔔 Toast notifications
  *
  * USAGE:
  * const { isFavorite, toggleFavorite, isLoading } = useFavorites();
  *
  * // En componente
  * const liked = isFavorite(propertyId);
- * await toggleFavorite(propertyId);
+ * await toggleFavorite(propertyId);  // UI updates instantly
  */
 
 "use client";
 
-import { useCallback, useRef, useState, useTransition } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toggleFavoriteAction } from "@/app/actions/favorites";
 import { toast } from "sonner";
 
 /**
- * Hook para gestionar favoritos con optimistic updates
+ * Hook para gestionar favoritos con true optimistic updates
  * @returns Objeto con estado y funciones para manejar favoritos
  */
 export function useFavorites() {
   // Estado: Set de IDs de propiedades favoritas
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
-  // Track loading state por propiedad
-  const [loadingProperties, setLoadingProperties] = useState<Set<string>>(
-    new Set(),
-  );
-
-  // useTransition para optimistic updates seguros
-  const [isPending, startTransition] = useTransition();
-
-  // Ref para tracking de propiedades que están siendo procesadas
+  // Ref para prevenir multiple simultaneous requests por propiedad
   const processingRef = useRef<Set<string>>(new Set());
 
   /**
-   * Toggle favorito de una propiedad
-   * - Optimistic update: actualizar UI inmediatamente
-   * - Luego sincronizar con servidor
-   * - Revertir si falla
+   * Toggle favorito de una propiedad (True Optimistic Update)
+   *
+   * Flow:
+   * 1. ✅ setFavorites() - Update instantáneo (SYNC)
+   * 2. 🔄 toggleFavoriteAction() - Server sync (async background)
+   * 3. ✔️ Success toast
+   * 4. ❌ On error: revert state + error toast
+   *
+   * @param propertyId ID de la propiedad a favoritar
    */
   const toggleFavorite = useCallback(
     async (propertyId: string) => {
-      // Evitar múltiples clicks simultáneos
+      // Prevenir múltiples clicks simultáneos en la misma propiedad
       if (processingRef.current.has(propertyId)) {
         return;
       }
@@ -61,54 +63,44 @@ export function useFavorites() {
       const previousFavorites = new Set(favorites);
 
       try {
-        // Actualizar loading state
-        setLoadingProperties((prev) => new Set(prev).add(propertyId));
-
-        // Optimistic update - cambiar estado inmediatamente
-        startTransition(() => {
-          setFavorites((prev) => {
-            const newFavorites = new Set(prev);
-            if (newFavorites.has(propertyId)) {
-              newFavorites.delete(propertyId);
-            } else {
-              newFavorites.add(propertyId);
-            }
-            return newFavorites;
-          });
+        // PASO 1: ✨ UPDATE INSTANTÁNEO - Actualizar UI inmediatamente (SYNC)
+        // Esto crea la ilusión de que es instant, sin esperar al server
+        setFavorites((prev) => {
+          const newFavorites = new Set(prev);
+          if (newFavorites.has(propertyId)) {
+            newFavorites.delete(propertyId);
+          } else {
+            newFavorites.add(propertyId);
+          }
+          return newFavorites;
         });
 
-        // Servidor action - sincronizar con backend
+        // PASO 2: 🔄 SERVER SYNC - Sincronizar con backend (async, background)
+        // El usuario ya vio la UI actualizada, así que esto es "background"
         const result = await toggleFavoriteAction(propertyId);
 
+        // PASO 3: Validar resultado del servidor
         if (!result.success) {
-          // Revertir si falla
+          // ❌ Error: revertir el update optimistic
           setFavorites(previousFavorites);
-          toast.error(result.error || "Failed to update favorite");
+          toast.error(result.error || "Error al actualizar favorito");
           return;
         }
 
-        // Success - mostrar feedback
+        // ✔️ Success: mostrar feedback
         if (result.isFavorite) {
-          toast.success("Agregado a favoritos", {
-            duration: 2000,
-          });
+          toast.success("Agregado a favoritos", { duration: 2000 });
         } else {
-          toast.success("Removido de favoritos", {
-            duration: 2000,
-          });
+          toast.success("Removido de favoritos", { duration: 2000 });
         }
       } catch (error) {
-        console.error("[toggleFavorite]", error);
-        // Revertir optimistic update
+        console.error("[toggleFavorite] Error:", error);
+        // ❌ Exception: revertir estado y mostrar error
         setFavorites(previousFavorites);
-        toast.error("Error al actualizar favoritos");
+        toast.error("Error al actualizar favorito");
       } finally {
+        // Limpiar flag de procesamiento
         processingRef.current.delete(propertyId);
-        setLoadingProperties((prev) => {
-          const next = new Set(prev);
-          next.delete(propertyId);
-          return next;
-        });
       }
     },
     [favorites],
@@ -128,21 +120,21 @@ export function useFavorites() {
 
   /**
    * Verificar si una propiedad está siendo procesada
+   * Útil para mostrar loading state mientras se sincroniza
+   *
    * @param propertyId ID de la propiedad
-   * @returns boolean - true si está cargando
+   * @returns boolean - true si está siendo procesada
    */
   const isLoading = useCallback(
     (propertyId: string): boolean => {
-      return loadingProperties.has(propertyId);
+      return processingRef.current.has(propertyId);
     },
-    [loadingProperties],
+    [],
   );
 
   return {
     // Estado
     favorites,
-    loadingProperties,
-    isPending,
 
     // Métodos
     toggleFavorite,
