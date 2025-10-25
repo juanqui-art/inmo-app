@@ -17,6 +17,10 @@
 
 import { Bed, Bath, Maximize2, MapPin, Heart } from "lucide-react";
 import type { MapProperty } from "./map-view";
+import {
+  TRANSACTION_BADGE_STYLES,
+  CTA_BUTTON_STYLES,
+} from "@/lib/styles/property-card-styles";
 
 interface PropertyPopupCompactProps {
   property: MapProperty;
@@ -44,10 +48,10 @@ export function PropertyPopupCompact({
     maximumFractionDigits: 0,
   });
 
-  const badgeColor =
+  const badgeStyle =
     property.transactionType === "SALE"
-      ? "bg-blue-500 text-white"
-      : "bg-emerald-500 text-white";
+      ? TRANSACTION_BADGE_STYLES.SALE
+      : TRANSACTION_BADGE_STYLES.RENT;
 
   const badgeLabel =
     property.transactionType === "SALE" ? "En Venta" : "En Alquiler";
@@ -63,7 +67,7 @@ export function PropertyPopupCompact({
         />
 
         {/* Transaction Type Badge */}
-        <div className={`absolute bottom-2 left-2 ${badgeColor} px-2 py-1 rounded text-xs font-semibold`}>
+        <div className={`absolute bottom-2 left-2 ${badgeStyle}`}>
           {badgeLabel}
         </div>
 
@@ -139,10 +143,7 @@ export function PropertyPopupCompact({
         </div>
 
         {/* View Details Button */}
-        <button
-          onClick={onViewDetails}
-          className="w-full mt-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white py-2 rounded font-semibold text-sm transition-colors"
-        >
+        <button onClick={onViewDetails} className={CTA_BUTTON_STYLES.compact}>
           Ver Detalles
         </button>
       </div>

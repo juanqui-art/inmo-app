@@ -32,6 +32,11 @@ import type { SerializedProperty } from "@/lib/utils/serialize-property";
 import type { MapProperty } from "./map-view";
 import { PropertyImageFallback } from "./property-image-fallback";
 import { useFavorites } from "@/hooks/use-favorites";
+import {
+  TRANSACTION_BADGE_STYLES,
+  CATEGORY_BADGE_STYLE,
+  CTA_BUTTON_STYLES,
+} from "@/lib/styles/property-card-styles";
 
 interface PropertyCardHorizontalProps {
   property: PropertyWithRelations | SerializedProperty | MapProperty;
@@ -84,11 +89,11 @@ export function PropertyCardHorizontal({
     FARM: "Finca",
   };
 
-  // Get color based on transaction type
-  const transactionColor =
+  // Get badge style based on transaction type
+  const transactionBadgeStyle =
     property.transactionType === "SALE"
-      ? "bg-blue-500 hover:bg-blue-600"
-      : "bg-emerald-500 hover:bg-emerald-600";
+      ? TRANSACTION_BADGE_STYLES.SALE
+      : TRANSACTION_BADGE_STYLES.RENT;
 
   // Get first image
   const imageUrl =
@@ -130,9 +135,7 @@ export function PropertyCardHorizontal({
           {/* Left: Status Badges */}
           <div className="flex gap-1 flex-wrap">
             {/* Transaction Type Badge */}
-            <Badge
-              className={`${transactionColor} text-white border-0 font-semibold px-3 py-1 rounded-full backdrop-blur-sm`}
-            >
+            <Badge className={transactionBadgeStyle}>
               {transactionTypeLabels[property.transactionType]}
             </Badge>
 
@@ -140,7 +143,7 @@ export function PropertyCardHorizontal({
             {property.category && (
               <Badge
                 variant="secondary"
-                className="bg-white/20 text-white backdrop-blur-md border border-white/30 font-semibold px-3 py-1 rounded-full"
+                className={CATEGORY_BADGE_STYLE}
               >
                 {categoryLabels[property.category] || property.category}
               </Badge>
@@ -165,7 +168,7 @@ export function PropertyCardHorizontal({
               aria-label={liked ? "Remove from favorites" : "Add to favorites"}
             >
               <Heart
-                className={`w-4 h-4 transition-colors ${
+                className={`w-5 h-5 transition-colors ${
                   liked ? "fill-red-500 text-red-500" : "text-white"
                 }`}
               />
@@ -176,7 +179,7 @@ export function PropertyCardHorizontal({
               className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
               aria-label="Share property"
             >
-              <Share2 className="w-4 h-4 text-white" />
+              <Share2 className="w-5 h-5 text-white" />
             </button>
           </div>
         </div>
@@ -229,7 +232,7 @@ export function PropertyCardHorizontal({
           <Button
             onClick={onViewDetails}
             size="sm"
-            className="bg-blue-500/90 backdrop-blur-md  text-oslo-gray-50 hover:bg-blue-700/60 dark:text-white/90 font-semibold rounded-lg px-4 py-2 shadow-lg transition-all hover:shadow-xl active:scale-95 flex-shrink-0"
+            className={CTA_BUTTON_STYLES.full}
           >
             Ver Detalles
             <ChevronRight className="w-3.5 h-3.5 ml-1" />
