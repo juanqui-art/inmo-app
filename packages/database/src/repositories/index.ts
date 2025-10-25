@@ -7,3 +7,4 @@
 export * from './users'
 export * from './properties'
 export * from './property-images'
+export * from './favorites'

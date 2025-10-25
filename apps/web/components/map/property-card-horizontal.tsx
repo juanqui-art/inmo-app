@@ -6,12 +6,13 @@
  * FEATURES:
  * - Background image with gradient overlay
  * - Status badges (For Sale/Rent, Type, Featured)
- * - Social actions (Like, Share, Bookmark)
+ * - Social actions (Like, Share)
  * - View counter
  * - Property details (location, beds, baths, sqft)
  * - Price display with CTA button
  * - Dark mode support
  * - Responsive design
+ * - Persistent favorites via useFavorites hook
  *
  * DESIGN:
  * - Oslo Gray palette
@@ -22,26 +23,19 @@
 
 "use client";
 
-import {
-  Heart,
-  Share2,
-  Bookmark,
-  ChevronRight,
-} from "lucide-react";
+import { Heart, Share2, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
 import Image from "next/image";
 import type { PropertyWithRelations } from "@repo/database";
 import type { SerializedProperty } from "@/lib/utils/serialize-property";
 import type { MapProperty } from "./map-view";
 import { PropertyImageFallback } from "./property-image-fallback";
+import { useFavorites } from "@/hooks/use-favorites";
 
 interface PropertyCardHorizontalProps {
   property: PropertyWithRelations | SerializedProperty | MapProperty;
   onViewDetails?: () => void;
-  onFavoriteToggle?: (propertyId: string) => void;
-  isFavorite?: boolean;
 }
 
 /**
@@ -49,15 +43,17 @@ interface PropertyCardHorizontalProps {
  *
  * Displays comprehensive property information in a horizontal card layout.
  * Perfect for map popups and quick property previews.
+ *
+ * FAVORITES:
+ * - Uses useFavorites hook for persistent favorites
+ * - Syncs with server via toggleFavoriteAction
+ * - Shows toast notifications on add/remove
  */
 export function PropertyCardHorizontal({
   property,
   onViewDetails,
-  onFavoriteToggle,
-  isFavorite = false,
 }: PropertyCardHorizontalProps) {
-  const [liked, setLiked] = useState(isFavorite);
-  const [saved, setSaved] = useState(false);
+  const { isFavorite, toggleFavorite, isLoadingProperty } = useFavorites();
 
   // Format price
   const formattedPrice = new Intl.NumberFormat("es-EC", {
@@ -101,10 +97,12 @@ export function PropertyCardHorizontal({
       : null;
 
   // Handle favorite toggle
-  const handleFavoriteClick = (e: React.MouseEvent) => {
+  const liked = isFavorite(property.id);
+  const isLoading = isLoadingProperty(property.id);
+
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    setLiked(!liked);
-    onFavoriteToggle?.(property.id);
+    await toggleFavorite(property.id);
   };
 
   return (
@@ -119,7 +117,7 @@ export function PropertyCardHorizontal({
             className="w-full h-full object-cover brightness-110 transition-transform duration-700 group-hover:scale-105"
           />
           {/* Gradient overlays for contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/65" />
         </div>
       ) : (
         <PropertyImageFallback title={property.title} />
@@ -159,10 +157,11 @@ export function PropertyCardHorizontal({
             {/*  </span>*/}
             {/*</div>*/}
 
-            {/* Like Button */}
+            {/* Like Button - Favorites */}
             <button
               onClick={handleFavoriteClick}
-              className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+              disabled={isLoading}
+              className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label={liked ? "Remove from favorites" : "Add to favorites"}
             >
               <Heart
@@ -178,19 +177,6 @@ export function PropertyCardHorizontal({
               aria-label="Share property"
             >
               <Share2 className="w-4 h-4 text-white" />
-            </button>
-
-            {/* Bookmark Button */}
-            <button
-              onClick={() => setSaved(!saved)}
-              className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-              aria-label={saved ? "Remove bookmark" : "Bookmark property"}
-            >
-              <Bookmark
-                className={`w-4 h-4 transition-colors ${
-                  saved ? "fill-white text-white" : "text-white"
-                }`}
-              />
             </button>
           </div>
         </div>
@@ -243,7 +229,7 @@ export function PropertyCardHorizontal({
           <Button
             onClick={onViewDetails}
             size="sm"
-            className="bg-blue-600 text-oslo-gray-900 hover:bg-blue-600/60 dark:text-oslo-gray-900 font-semibold rounded-lg px-4 py-2 shadow-lg transition-all hover:shadow-xl active:scale-95 flex-shrink-0"
+            className="bg-blue-500/90 backdrop-blur-md  text-oslo-gray-50 hover:bg-blue-700/60 dark:text-white/90 font-semibold rounded-lg px-4 py-2 shadow-lg transition-all hover:shadow-xl active:scale-95 flex-shrink-0"
           >
             Ver Detalles
             <ChevronRight className="w-3.5 h-3.5 ml-1" />

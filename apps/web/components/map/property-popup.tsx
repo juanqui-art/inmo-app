@@ -8,10 +8,11 @@
  * - Uses enhanced PropertyCardHorizontal for full details
  * - Shows property image with dark overlay
  * - Displays transaction type, category, price
- * - Social actions (like, share, bookmark)
+ * - Social actions (like, share)
  * - Property features (beds, baths, area)
  * - "View Details" CTA button
  * - Close button (X) to dismiss popup
+ * - Persistent favorites via useFavorites hook
  *
  * VARIANTS:
  * - "full" (default): Complete horizontal card with all features
@@ -45,10 +46,6 @@ interface PropertyPopupProps {
   onViewDetails: () => void;
   /** Popup variant: "full" for horizontal card, "compact" for minimal */
   variant?: PopupVariant;
-  /** Favorite state (optional) */
-  isFavorite?: boolean;
-  /** Favorite toggle handler (optional) */
-  onFavoriteToggle?: (propertyId: string) => void;
 }
 
 export function PropertyPopup({
@@ -56,8 +53,6 @@ export function PropertyPopup({
   onClose,
   onViewDetails,
   variant = "full",
-  isFavorite = false,
-  onFavoriteToggle,
 }: PropertyPopupProps) {
   // Guard against missing coordinates
   if (!property.latitude || !property.longitude) {
@@ -87,8 +82,6 @@ export function PropertyPopup({
           <PropertyPopupCompact
             property={property}
             onViewDetails={onViewDetails}
-            isFavorite={isFavorite}
-            onFavoriteToggle={onFavoriteToggle}
           />
         </div>
       </Popup>
@@ -120,8 +113,6 @@ export function PropertyPopup({
         <PropertyCardHorizontal
           property={property}
           onViewDetails={onViewDetails}
-          isFavorite={isFavorite}
-          onFavoriteToggle={onFavoriteToggle}
         />
       </div>
     </Popup>
