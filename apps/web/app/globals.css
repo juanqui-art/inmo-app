@@ -74,19 +74,19 @@
 }
 
 @theme inline {
-  /* Oslo Gray - Utility classes */
-  --color-oslo-gray-50: hsl(var(--oslo-gray-50) / <alpha-value>);
-  --color-oslo-gray-100: hsl(var(--oslo-gray-100) / <alpha-value>);
-  --color-oslo-gray-200: hsl(var(--oslo-gray-200) / <alpha-value>);
-  --color-oslo-gray-300: hsl(var(--oslo-gray-300) / <alpha-value>);
-  --color-oslo-gray-400: hsl(var(--oslo-gray-400) / <alpha-value>);
-  --color-oslo-gray-500: hsl(var(--oslo-gray-500) / <alpha-value>);
-  --color-oslo-gray-600: hsl(var(--oslo-gray-600) / <alpha-value>);
-  --color-oslo-gray-700: hsl(var(--oslo-gray-700) / <alpha-value>);
-  --color-oslo-gray-800: hsl(var(--oslo-gray-800) / <alpha-value>);
-  --color-oslo-gray-900: hsl(var(--oslo-gray-900) / <alpha-value>);
-  --color-oslo-gray-1000: hsl(var(--oslo-gray-1000) / <alpha-value>);
-  --color-oslo-gray-1100: hsl(var(--oslo-gray-1100) / <alpha-value>);
+  /* Oslo Gray - Utility classes (Tailwind v4 syntax) */
+  --color-oslo-gray-50: hsl(var(--oslo-gray-50));
+  --color-oslo-gray-100: hsl(var(--oslo-gray-100));
+  --color-oslo-gray-200: hsl(var(--oslo-gray-200));
+  --color-oslo-gray-300: hsl(var(--oslo-gray-300));
+  --color-oslo-gray-400: hsl(var(--oslo-gray-400));
+  --color-oslo-gray-500: hsl(var(--oslo-gray-500));
+  --color-oslo-gray-600: hsl(var(--oslo-gray-600));
+  --color-oslo-gray-700: hsl(var(--oslo-gray-700));
+  --color-oslo-gray-800: hsl(var(--oslo-gray-800));
+  --color-oslo-gray-900: hsl(var(--oslo-gray-900));
+  --color-oslo-gray-1000: hsl(var(--oslo-gray-1000));
+  --color-oslo-gray-1100: hsl(var(--oslo-gray-1100));
 
   /* Semantic colors */
   --color-background: hsl(var(--background));
