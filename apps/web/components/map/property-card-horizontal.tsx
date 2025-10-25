@@ -26,9 +26,6 @@ import {
   Heart,
   Share2,
   Bookmark,
-  Bed,
-  Bath,
-  Maximize,
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -38,6 +35,7 @@ import Image from "next/image";
 import type { PropertyWithRelations } from "@repo/database";
 import type { SerializedProperty } from "@/lib/utils/serialize-property";
 import type { MapProperty } from "./map-view";
+import { PropertyImageFallback } from "./property-image-fallback";
 
 interface PropertyCardHorizontalProps {
   property: PropertyWithRelations | SerializedProperty | MapProperty;
@@ -110,7 +108,7 @@ export function PropertyCardHorizontal({
   };
 
   return (
-    <div className="relative w-full min-w-[320px] max-w-[390px] h-[280px] rounded-2xl overflow-hidden shadow-2xl group bg-oslo-gray-900 dark:bg-oslo-gray-1000">
+    <div className="relative w-full min-w-[333px] max-w-[399px] h-[270px] rounded-2xl overflow-hidden shadow-2xl group bg-oslo-gray-900 dark:bg-oslo-gray-1000">
       {/* Background Image with Overlay */}
       {imageUrl ? (
         <div className="absolute inset-0">
@@ -124,15 +122,15 @@ export function PropertyCardHorizontal({
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
         </div>
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-oslo-gray-800 to-oslo-gray-900" />
+        <PropertyImageFallback title={property.title} />
       )}
 
       {/* Content Grid */}
-      <div className="relative h-full p-3 flex flex-col justify-between">
+      <div className="relative h-full px-1.5 py-2 flex flex-col justify-between">
         {/* Top Row - Badges and Social Actions */}
         <div className="flex items-start justify-between">
           {/* Left: Status Badges */}
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-1 flex-wrap">
             {/* Transaction Type Badge */}
             <Badge
               className={`${transactionColor} text-white border-0 font-semibold px-3 py-1 rounded-full backdrop-blur-sm`}
@@ -152,7 +150,7 @@ export function PropertyCardHorizontal({
           </div>
 
           {/* Right: Social Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {/* View Counter */}
             {/*<div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30">*/}
             {/*  <Eye className="w-4 h-4 text-white" />*/}
@@ -208,44 +206,44 @@ export function PropertyCardHorizontal({
             </div>
 
             {/* Features */}
-            <div className="flex items-center gap-3 flex-wrap">
-              {/* Bedrooms */}
-              {property.bedrooms && (
-                <div className="flex items-center gap-1 text-white text-xs">
-                  <Bed className="w-3.5 h-3.5 drop-shadow-lg" />
-                  <span className="font-semibold drop-shadow-lg">
-                    {property.bedrooms}
-                  </span>
-                </div>
-              )}
+            {/*  <div className="flex items-center gap-3 flex-wrap">*/}
+            {/*    /!* Bedrooms *!/*/}
+            {/*    {property.bedrooms && (*/}
+            {/*      <div className="flex items-center gap-1 text-white text-xs">*/}
+            {/*        <Bed className="w-3.5 h-3.5 drop-shadow-lg" />*/}
+            {/*        <span className="font-semibold drop-shadow-lg">*/}
+            {/*          {property.bedrooms}*/}
+            {/*        </span>*/}
+            {/*      </div>*/}
+            {/*    )}*/}
 
-              {/* Bathrooms */}
-              {property.bathrooms && (
-                <div className="flex items-center gap-1 text-white text-xs">
-                  <Bath className="w-3.5 h-3.5 drop-shadow-lg" />
-                  <span className="font-semibold drop-shadow-lg">
-                    {Number(property.bathrooms)}
-                  </span>
-                </div>
-              )}
+            {/*    /!* Bathrooms *!/*/}
+            {/*    {property.bathrooms && (*/}
+            {/*      <div className="flex items-center gap-1 text-white text-xs">*/}
+            {/*        <Bath className="w-3.5 h-3.5 drop-shadow-lg" />*/}
+            {/*        <span className="font-semibold drop-shadow-lg">*/}
+            {/*          {Number(property.bathrooms)}*/}
+            {/*        </span>*/}
+            {/*      </div>*/}
+            {/*    )}*/}
 
-              {/* Area */}
-              {property.area && (
-                <div className="flex items-center gap-1 text-white text-xs">
-                  <Maximize className="w-3.5 h-3.5 drop-shadow-lg" />
-                  <span className="font-semibold drop-shadow-lg">
-                    {Number(property.area)}m²
-                  </span>
-                </div>
-              )}
-            </div>
+            {/*    /!* Area *!/*/}
+            {/*    {property.area && (*/}
+            {/*      <div className="flex items-center gap-1 text-white text-xs">*/}
+            {/*        <Maximize className="w-3.5 h-3.5 drop-shadow-lg" />*/}
+            {/*        <span className="font-semibold drop-shadow-lg">*/}
+            {/*          {Number(property.area)}m²*/}
+            {/*        </span>*/}
+            {/*      </div>*/}
+            {/*    )}*/}
+            {/*  </div>*/}
           </div>
 
           {/* Right Column - CTA Button */}
           <Button
             onClick={onViewDetails}
             size="sm"
-            className="bg-white text-oslo-gray-900 hover:bg-white/90 dark:text-oslo-gray-900 font-semibold rounded-lg px-4 py-2 shadow-lg transition-all hover:shadow-xl active:scale-95 flex-shrink-0"
+            className="bg-blue-600 text-oslo-gray-900 hover:bg-blue-600/60 dark:text-oslo-gray-900 font-semibold rounded-lg px-4 py-2 shadow-lg transition-all hover:shadow-xl active:scale-95 flex-shrink-0"
           >
             Ver Detalles
             <ChevronRight className="w-3.5 h-3.5 ml-1" />
