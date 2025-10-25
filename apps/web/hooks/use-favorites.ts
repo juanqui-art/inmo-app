@@ -5,11 +5,11 @@
  * Proporciona state compartido y funciones para agregar/quitar favoritos
  *
  * FEATURES:
- * - Optimistic updates (UI instantánea)
- * - Sync con servidor
- * - Loading states
- * - Error handling
- * - Session persistence
+ * - Optimistic updates (UI instantánea) con useTransition
+ * - Sync con servidor (Server Actions)
+ * - Loading states per property
+ * - Error handling con rollback
+ * - Toast notifications
  *
  * USAGE:
  * const { isFavorite, toggleFavorite, isLoading } = useFavorites();
@@ -21,17 +21,9 @@
 
 "use client";
 
-import { useCallback, useEffect, useRef, useOptimistic } from "react";
-import {
-  toggleFavoriteAction,
-  checkIfFavoriteAction,
-} from "@/app/actions/favorites";
+import { useCallback, useRef, useState, useTransition } from "react";
+import { toggleFavoriteAction } from "@/app/actions/favorites";
 import { toast } from "sonner";
-
-interface UseFavoritesState {
-  favorites: Set<string>; // IDs de propiedades favoritas
-  isLoading: Set<string>; // IDs que están siendo procesadas
-}
 
 /**
  * Hook para gestionar favoritos con optimistic updates
@@ -39,40 +31,22 @@ interface UseFavoritesState {
  */
 export function useFavorites() {
   // Estado: Set de IDs de propiedades favoritas
-  const [state, addOptimisticFavorite] = useOptimistic<
-    UseFavoritesState,
-    string
-  >(
-    { favorites: new Set(), isLoading: new Set() },
-    (
-      state,
-      propertyId,
-    ) => {
-      // Optimistic update: actualizar UI inmediatamente
-      const newFavorites = new Set(state.favorites);
-      const newLoading = new Set(state.isLoading);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
-      if (newFavorites.has(propertyId)) {
-        newFavorites.delete(propertyId);
-      } else {
-        newFavorites.add(propertyId);
-      }
-
-      newLoading.add(propertyId);
-
-      return {
-        favorites: newFavorites,
-        isLoading: newLoading,
-      };
-    },
+  // Track loading state por propiedad
+  const [loadingProperties, setLoadingProperties] = useState<Set<string>>(
+    new Set(),
   );
+
+  // useTransition para optimistic updates seguros
+  const [isPending, startTransition] = useTransition();
 
   // Ref para tracking de propiedades que están siendo procesadas
   const processingRef = useRef<Set<string>>(new Set());
 
   /**
    * Toggle favorito de una propiedad
-   * - Optimistic update: actualizar UI
+   * - Optimistic update: actualizar UI inmediatamente
    * - Luego sincronizar con servidor
    * - Revertir si falla
    */
@@ -84,22 +58,36 @@ export function useFavorites() {
       }
 
       processingRef.current.add(propertyId);
+      const previousFavorites = new Set(favorites);
 
       try {
-        // Optimistic update
-        addOptimisticFavorite(propertyId);
+        // Actualizar loading state
+        setLoadingProperties((prev) => new Set(prev).add(propertyId));
 
-        // Servidor action
+        // Optimistic update - cambiar estado inmediatamente
+        startTransition(() => {
+          setFavorites((prev) => {
+            const newFavorites = new Set(prev);
+            if (newFavorites.has(propertyId)) {
+              newFavorites.delete(propertyId);
+            } else {
+              newFavorites.add(propertyId);
+            }
+            return newFavorites;
+          });
+        });
+
+        // Servidor action - sincronizar con backend
         const result = await toggleFavoriteAction(propertyId);
 
         if (!result.success) {
           // Revertir si falla
-          addOptimisticFavorite(propertyId);
+          setFavorites(previousFavorites);
           toast.error(result.error || "Failed to update favorite");
           return;
         }
 
-        // Success - mostrar feedback opcional
+        // Success - mostrar feedback
         if (result.isFavorite) {
           toast.success("Agregado a favoritos", {
             duration: 2000,
@@ -112,13 +100,18 @@ export function useFavorites() {
       } catch (error) {
         console.error("[toggleFavorite]", error);
         // Revertir optimistic update
-        addOptimisticFavorite(propertyId);
+        setFavorites(previousFavorites);
         toast.error("Error al actualizar favoritos");
       } finally {
         processingRef.current.delete(propertyId);
+        setLoadingProperties((prev) => {
+          const next = new Set(prev);
+          next.delete(propertyId);
+          return next;
+        });
       }
     },
-    [state.favorites, addOptimisticFavorite],
+    [favorites],
   );
 
   /**
@@ -128,9 +121,9 @@ export function useFavorites() {
    */
   const isFavorite = useCallback(
     (propertyId: string): boolean => {
-      return state.favorites.has(propertyId);
+      return favorites.has(propertyId);
     },
-    [state.favorites],
+    [favorites],
   );
 
   /**
@@ -140,37 +133,16 @@ export function useFavorites() {
    */
   const isLoading = useCallback(
     (propertyId: string): boolean => {
-      return state.isLoading.has(propertyId);
+      return loadingProperties.has(propertyId);
     },
-    [state.isLoading],
+    [loadingProperties],
   );
-
-  /**
-   * Agregar múltiples favoritos al cargar la página
-   * Se ejecuta una sola vez al montar el componente
-   */
-  useEffect(() => {
-    const loadFavorites = async () => {
-      try {
-        // Obtener lista de propiedades desde sessionStorage si existe
-        // Para mejorar UX: cargar favoritos conocidos sin server call
-        const cachedFavorites = sessionStorage.getItem("favorites");
-        if (cachedFavorites) {
-          // TODO: restaurar favoritos cacheados si es necesario
-          JSON.parse(cachedFavorites);
-        }
-      } catch (error) {
-        console.error("[loadFavorites]", error);
-      }
-    };
-
-    loadFavorites();
-  }, []);
 
   return {
     // Estado
-    favorites: state.favorites,
-    isLoading: state.isLoading,
+    favorites,
+    loadingProperties,
+    isPending,
 
     // Métodos
     toggleFavorite,
@@ -202,18 +174,7 @@ export function useFavoritesAsync() {
     }
   }, []);
 
-  const checkFavorite = useCallback(async (propertyId: string) => {
-    try {
-      const result = await checkIfFavoriteAction(propertyId);
-      return result.isFavorite || false;
-    } catch (error) {
-      console.error("[checkFavorite]", error);
-      return false;
-    }
-  }, []);
-
   return {
     toggleFavorite,
-    checkFavorite,
   };
 }
