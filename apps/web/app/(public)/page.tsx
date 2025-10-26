@@ -67,6 +67,7 @@ import { RecentListingsSection } from "@/components/home/recent-listings-section
 import { StatsSection } from "@/components/home/stats-section";
 import { TrendingPropertiesSection } from "@/components/home/trending-properties-section";
 import { serializeProperties } from "@/lib/utils/serialize-property";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function HomePage() {
   /**
@@ -74,6 +75,12 @@ export default async function HomePage() {
    * WHY class-based? Encapsulates query logic
    */
   const propertyRepo = new PropertyRepository();
+
+  /**
+   * Check if user is authenticated
+   * (for showing/hiding auth modals in client components)
+   */
+  const currentUser = await getCurrentUser();
 
   /**
    * Fetch all homepage data in parallel
@@ -158,7 +165,10 @@ export default async function HomePage() {
 
       {/* Featured Properties Carousel */}
       {serializedFeatured.length > 0 && (
-        <FeaturedPropertiesCarousel properties={serializedFeatured} />
+        <FeaturedPropertiesCarousel
+          properties={serializedFeatured}
+          isAuthenticated={!!currentUser}
+        />
       )}
 
       {/* Trending Properties (Social Commerce) */}

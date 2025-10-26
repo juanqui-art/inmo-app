@@ -5,23 +5,31 @@
  *
  * ¿Cómo funciona?
  * 1. Usuario hace click
- * 2. Redirige a Google para autorizar
- * 3. Google redirige de vuelta a /auth/callback
- * 4. Callback crea la sesión
- * 5. Usuario autenticado
+ * 2. Ejecuta onBeforeRedirect (guardar intent, etc.)
+ * 3. Redirige a Google para autorizar
+ * 4. Google redirige de vuelta a /auth/callback
+ * 5. Callback ejecuta el intent guardado
+ * 6. Usuario autenticado
  */
 
 import { Button } from "@repo/ui";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-export function GoogleButton() {
+interface GoogleButtonProps {
+  onBeforeRedirect?: () => void;
+}
+
+export function GoogleButton({ onBeforeRedirect }: GoogleButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
 
     try {
+      // Ejecutar callback antes del redirect (guardar intent, etc.)
+      onBeforeRedirect?.();
+
       const supabase = createClient();
 
       const { error } = await supabase.auth.signInWithOAuth({

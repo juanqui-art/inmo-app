@@ -1,17 +1,24 @@
 /**
  * PERFIL - Página principal del cliente
  * Solo accesible para usuarios autenticados (todos los roles)
+ *
+ * Ejecuta acciones pendientes (intents) guardadas durante login
+ * (ej: guardar favorito sin estar autenticado)
  */
 
 import { Building2, Calendar, Heart } from "lucide-react";
 import Link from "next/link";
 import { requireAuth } from "@/lib/auth";
+import { AuthIntentExecutor } from "@/components/auth/auth-intent-executor";
 
 export default async function PerfilPage() {
   const user = await requireAuth();
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Auth Intent Executor (Client Component) */}
+      <AuthIntentExecutor />
+
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">

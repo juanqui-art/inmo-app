@@ -76,14 +76,36 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { PropertyCard } from "@/components/properties/property-card";
 import type { SerializedProperty } from "@/lib/utils/serialize-property";
+import { useFavorites } from "@/hooks/use-favorites";
+import { AuthModal } from "@/components/auth/auth-modal";
 
 interface FeaturedPropertiesCarouselProps {
   properties: SerializedProperty[];
+  isAuthenticated?: boolean;
 }
 
 export function FeaturedPropertiesCarousel({
   properties,
+  isAuthenticated = false,
 }: FeaturedPropertiesCarouselProps) {
+  // Favorites state
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingPropertyId, setPendingPropertyId] = useState<string | null>(null);
+
+  const handleFavoriteClick = (propertyId: string) => {
+    if (!isAuthenticated) {
+      // Show auth modal if not authenticated
+      setPendingPropertyId(propertyId);
+      setShowAuthModal(true);
+      return;
+    }
+
+    // If authenticated, toggle favorite
+    toggleFavorite(propertyId);
+  };
+
+
   /**
    * Embla Carousel Hook
    *
@@ -255,7 +277,11 @@ export function FeaturedPropertiesCarousel({
                     min-w-0: Allows flex items to shrink below content size
                     pl-4: Padding left (compensates for container -ml-4)
                   */}
-                  <PropertyCard property={property} />
+                  <PropertyCard
+                    property={property}
+                    onFavoriteToggle={handleFavoriteClick}
+                    isFavorite={isFavorite(property.id)}
+                  />
                 </div>
               ))}
             </div>
@@ -279,6 +305,13 @@ export function FeaturedPropertiesCarousel({
           </Link>
         </div>
       </div>
+
+      {/* Auth Modal for Favorites */}
+      <AuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        propertyId={pendingPropertyId || undefined}
+      />
     </section>
   );
 }

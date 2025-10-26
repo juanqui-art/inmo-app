@@ -5,7 +5,8 @@
  * 1. Google redirige aquí con un "code"
  * 2. Intercambiamos el code por una sesión
  * 3. Supabase guarda las cookies
- * 4. Redirigimos al dashboard
+ * 4. Redirigimos a /perfil (funciona para todos los roles)
+ * 5. /perfil ejecuta el intent guardado (ej: guardar favorito)
  */
 
 import { createClient } from "@/lib/supabase/server";
@@ -36,7 +37,8 @@ export async function GET(request: Request) {
 
     // Éxito! Usuario autenticado
     // El trigger de DB ya creó el usuario en la tabla 'users'
-    return NextResponse.redirect(`${origin}/dashboard`);
+    // Redirigir a /perfil que ejecutará el intent guardado (ej: favoritos)
+    return NextResponse.redirect(`${origin}/perfil`);
   }
 
   // Si no hay code ni error, redirigir a login
