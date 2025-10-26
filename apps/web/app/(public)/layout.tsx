@@ -61,6 +61,7 @@
  */
 
 import { PublicHeader } from "@/components/layout/public-header";
+import { Toaster } from "sonner";
 
 export default function PublicLayout({
   children,
@@ -96,7 +97,7 @@ export default function PublicLayout({
         - Share confirmations
         - Copy link feedback
       */}
-      {/*<Toaster position="bottom-right" richColors />*/}
+      <Toaster position="bottom-right" richColors />
     </div>
   );
 }

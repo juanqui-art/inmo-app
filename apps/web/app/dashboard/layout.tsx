@@ -10,6 +10,7 @@
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { UserMenu } from "@/components/dashboard/user-menu";
 import { requireRole } from "@/lib/auth";
+import { Toaster } from "sonner";
 
 export default async function DashboardLayout({
   children,
@@ -43,6 +44,9 @@ export default async function DashboardLayout({
           <div className="mx-auto max-w-7xl">{children}</div>
         </main>
       </div>
+
+      {/* Toast Notifications */}
+      <Toaster position="bottom-right" richColors />
     </div>
   );
 }

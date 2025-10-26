@@ -84,15 +84,19 @@ export async function toggleFavoriteAction(propertyId: string) {
 
 /**
  * GET USER FAVORITES ACTION
- * Obtener lista de favoritos del usuario actual
+ * Obtener lista de IDs de favoritos del usuario actual
  *
- * @returns Array de propiedades favoritas
+ * ⚠️ IMPORTANT: Returns only propertyIds (as strings)
+ * WHY? Avoid serialization errors with Prisma Decimal objects
+ * The hook only needs propertyIds to maintain the favorites Set
+ *
+ * @returns Array de propertyIds (strings)
  *
  * @throws Error si usuario no está autenticado
  *
  * @example
- * const favorites = await getUserFavoritesAction();
- * favorites.forEach(fav => console.log(fav.property.title));
+ * const { data } = await getUserFavoritesAction();
+ * // data = ["prop-id-1", "prop-id-2", "prop-id-3"]
  */
 export async function getUserFavoritesAction() {
   try {
@@ -102,16 +106,20 @@ export async function getUserFavoritesAction() {
       throw new Error("Authentication required");
     }
 
-    // Obtener favoritos del usuario
+    // Obtener favoritos del usuario - solo los IDs sin relaciones
     const favoriteRepository = new FavoriteRepository();
     const favorites = await favoriteRepository.getUserFavorites(user.id, {
       skip: 0,
       take: 100, // Paginación en futuro
     });
 
+    // Extraer solo los propertyIds para evitar problemas de serialización
+    // No incluimos la propiedad completa ya que contiene Decimal que no es serializable
+    const propertyIds = favorites.map((fav) => fav.propertyId);
+
     return {
       success: true,
-      data: favorites,
+      data: propertyIds,
     };
   } catch (error) {
     if (error instanceof Error) {

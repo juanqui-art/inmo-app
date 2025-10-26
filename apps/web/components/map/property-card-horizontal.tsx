@@ -23,6 +23,7 @@
 
 "use client";
 
+import React from "react";
 import { Heart, Share2, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -58,7 +59,18 @@ export function PropertyCardHorizontal({
   property,
   onViewDetails,
 }: PropertyCardHorizontalProps) {
-  const { isFavorite, toggleFavorite, isLoadingProperty } = useFavorites();
+  const { isFavorite, toggleFavorite, isPending } = useFavorites();
+
+  // Current state
+  const liked = isFavorite(property.id);
+  const isLoading = isPending(property.id);
+
+  // Track previous state for animation logic
+  const prevLikedRef = React.useRef(liked);
+
+  React.useEffect(() => {
+    prevLikedRef.current = liked;
+  }, [liked]);
 
   // Format price
   const formattedPrice = new Intl.NumberFormat("es-EC", {
@@ -101,13 +113,25 @@ export function PropertyCardHorizontal({
       ? property.images[0]!.url
       : null;
 
-  // Handle favorite toggle
-  const liked = isFavorite(property.id);
-  const isLoading = isLoadingProperty(property.id);
+  /**
+   * Determine if we should show the pulse animation
+   *
+   * LOGIC:
+   * - Show pulse ONLY when adding to favorites (not removing)
+   * - isLoading: true while server request is in flight
+   * - !prevLikedRef.current: was NOT liked before
+   * - liked: IS liked now (optimistic state)
+   *
+   * SCENARIOS:
+   * - Adding: isLoading=true, prevLiked=false, liked=true → PULSE ✨
+   * - Removing: isLoading=true, prevLiked=true, liked=false → NO PULSE ⚡
+   * - Idle: isLoading=false → NO PULSE
+   */
+  const shouldPulse = isLoading && !prevLikedRef.current && liked;
 
-  const handleFavoriteClick = async (e: React.MouseEvent) => {
+  const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    await toggleFavorite(property.id);
+    toggleFavorite(property.id); // Non-blocking, instant UI update
   };
 
   return (
@@ -129,11 +153,11 @@ export function PropertyCardHorizontal({
       )}
 
       {/* Content Grid */}
-      <div className="relative h-full px-1.5 py-2 flex flex-col justify-between">
+      <div className="relative h-full px-2 py-3 flex flex-col justify-between">
         {/* Top Row - Badges and Social Actions */}
         <div className="flex items-start justify-between">
           {/* Left: Status Badges */}
-          <div className="flex gap-1 flex-wrap">
+          <div className="flex gap-2 flex-wrap">
             {/* Transaction Type Badge */}
             <Badge className={transactionBadgeStyle}>
               {transactionTypeLabels[property.transactionType]}
@@ -141,17 +165,14 @@ export function PropertyCardHorizontal({
 
             {/* Category Badge */}
             {property.category && (
-              <Badge
-                variant="secondary"
-                className={CATEGORY_BADGE_STYLE}
-              >
+              <Badge variant="secondary" className={CATEGORY_BADGE_STYLE}>
                 {categoryLabels[property.category] || property.category}
               </Badge>
             )}
           </div>
 
           {/* Right: Social Actions */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {/* View Counter */}
             {/*<div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30">*/}
             {/*  <Eye className="w-4 h-4 text-white" />*/}
@@ -163,13 +184,17 @@ export function PropertyCardHorizontal({
             {/* Like Button - Favorites */}
             <button
               onClick={handleFavoriteClick}
-              disabled={isLoading}
-              className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={false}
+              className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
               aria-label={liked ? "Remove from favorites" : "Add to favorites"}
             >
               <Heart
-                className={`w-5 h-5 transition-colors ${
-                  liked ? "fill-red-500 text-red-500" : "text-white"
+                className={`w-5 h-5 ${
+                  shouldPulse
+                    ? "animate-heart-pulse fill-red-500 text-red-500"
+                    : liked
+                      ? "fill-red-500 text-red-500 transition-colors"
+                      : "text-white transition-colors"
                 }`}
               />
             </button>
@@ -189,7 +214,7 @@ export function PropertyCardHorizontal({
           {/* Left Column - Property Info */}
           <div className="space-y-2 flex-1">
             <div>
-              <p className="text-white text-2xl font-bold drop-shadow-lg">
+              <p className="text-white text-4xl font-medium font-stretch-120% drop-shadow-lg ">
                 {formattedPrice}
               </p>
             </div>
