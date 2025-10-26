@@ -27,16 +27,15 @@ export function UserDropdown({ user, isHomepage = false }: UserDropdownProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
+        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
           isHomepage
-            ? "text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] font-semibold"
-            : "text-oslo-gray-300 hover:text-oslo-gray-100 hover:bg-oslo-gray-800 font-medium"
+            ? "bg-white/20 hover:bg-white/30 hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] border border-white/40"
+            : "bg-oslo-gray-800 hover:bg-oslo-gray-700 hover:scale-110 border border-oslo-gray-700"
         }`}
         aria-label="Menú de usuario"
         aria-expanded={isOpen}
       >
-        <User className="w-5 h-5" />
-        <span>{user?.email?.split("@")[0] || "Usuario"}</span>
+        <User className={`w-5 h-5 ${isHomepage ? "text-white" : "text-oslo-gray-300"}`} />
       </button>
 
       {/* Dropdown Menu */}

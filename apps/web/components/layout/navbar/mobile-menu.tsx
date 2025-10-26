@@ -74,11 +74,14 @@ export function MobileMenu({
 
           {/* User Info (if authenticated) */}
           {isAuthenticated && user && (
-            <div className="p-4 border-b border-oslo-gray-800">
-              <p className="text-sm text-oslo-gray-400">Conectado como</p>
-              <p className="text-sm font-medium text-oslo-gray-100 truncate">
-                {user.email}
-              </p>
+            <div className="p-4 border-b border-oslo-gray-800 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-oslo-gray-800 border border-oslo-gray-700 flex items-center justify-center flex-shrink-0">
+                <User className="w-6 h-6 text-oslo-gray-300" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-oslo-gray-100">Mi cuenta</p>
+                <p className="text-xs text-oslo-gray-400">Conectado</p>
+              </div>
             </div>
           )}
 
