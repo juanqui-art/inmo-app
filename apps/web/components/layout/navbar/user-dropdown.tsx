@@ -11,6 +11,7 @@
 
 import type { SafeUser } from "@/lib/auth";
 import { LogOut, Settings, User } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -27,7 +28,7 @@ export function UserDropdown({ user, isHomepage = false }: UserDropdownProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all overflow-hidden ${
           isHomepage
             ? "bg-white/20 hover:bg-white/30 hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] border border-white/40"
             : "bg-oslo-gray-800 hover:bg-oslo-gray-700 hover:scale-110 border border-oslo-gray-700"
@@ -35,7 +36,18 @@ export function UserDropdown({ user, isHomepage = false }: UserDropdownProps) {
         aria-label="Menú de usuario"
         aria-expanded={isOpen}
       >
-        <User className={`w-5 h-5 ${isHomepage ? "text-white" : "text-oslo-gray-300"}`} />
+        {user?.avatar ? (
+          <Image
+            src={user.avatar}
+            alt="Avatar"
+            width={40}
+            height={40}
+            className="w-10 h-10 object-cover"
+            unoptimized
+          />
+        ) : (
+          <User className={`w-5 h-5 ${isHomepage ? "text-white" : "text-oslo-gray-300"}`} />
+        )}
       </button>
 
       {/* Dropdown Menu */}
