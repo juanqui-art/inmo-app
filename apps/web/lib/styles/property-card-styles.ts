@@ -44,9 +44,9 @@ export const CATEGORY_BADGE_STYLE =
  *          - Responds with scale animation on press
  */
 export const CTA_BUTTON_STYLES = {
-  full: "bg-blue-500/90 backdrop-blur-md text-oslo-gray-50 dark:text-white/90 font-semibold rounded-lg px-4 py-2 shadow-lg transition-transform active:scale-95 flex-shrink-0 hover:bg-blue-600/90",
+  full: "bg-white-500/90 backdrop-blur-md text-oslo-gray-50 dark:text-white/90 font-semibold rounded-lg px-4 py-2 shadow-lg transition-transform active:scale-95 flex-shrink-0 hover:bg-white-600/90",
   compact:
-    "w-full bg-blue-600 dark:bg-blue-700 text-white py-2 rounded font-semibold text-sm transition-transform active:scale-95",
+    "w-full bg-white-600 dark:bg-white-700 text-white py-2 rounded font-semibold text-sm transition-transform active:scale-95",
 } as const;
 
 /**

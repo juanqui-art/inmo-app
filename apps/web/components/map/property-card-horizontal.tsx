@@ -24,7 +24,7 @@
 "use client";
 
 import React from "react";
-import { Heart, Share2, ChevronRight } from "lucide-react";
+import { Heart, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
@@ -38,7 +38,6 @@ import { generateSlug } from "@/lib/utils/slug-generator";
 import {
   TRANSACTION_BADGE_STYLES,
   CATEGORY_BADGE_STYLE,
-  CTA_BUTTON_STYLES,
 } from "@/lib/styles/property-card-styles";
 
 interface PropertyCardHorizontalProps {
@@ -200,14 +199,6 @@ export function PropertyCardHorizontal({
                 }`}
               />
             </button>
-
-            {/* Share Button */}
-            <button
-              className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-              aria-label="Share property"
-            >
-              <Share2 className="w-5 h-5 text-white" />
-            </button>
           </div>
         </div>
 
@@ -256,13 +247,15 @@ export function PropertyCardHorizontal({
           </div>
 
           {/* Right Column - CTA Button */}
-          <Link href={`/propiedades/${property.id}-${generateSlug(property.title)}`}>
+          <Link
+            href={`/propiedades/${property.id}-${generateSlug(property.title)}`}
+          >
             <Button
               size="sm"
-              className={CTA_BUTTON_STYLES.full}
+              className="bg-white text-black hover:bg-white/90 font-semibold rounded-full px-6 shadow-xl transition-all hover:scale-105 hover:shadow-2xl active:scale-95"
             >
-              Ver Detalles
-              <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              View Details
+              <ChevronRight className="w-3 h-3 ml-1 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
         </div>
