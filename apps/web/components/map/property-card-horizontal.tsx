@@ -28,11 +28,13 @@ import { Heart, Share2, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import Link from "next/link";
 import type { PropertyWithRelations } from "@repo/database";
 import type { SerializedProperty } from "@/lib/utils/serialize-property";
 import type { MapProperty } from "./map-view";
 import { PropertyImageFallback } from "./property-image-fallback";
 import { useFavorites } from "@/hooks/use-favorites";
+import { generateSlug } from "@/lib/utils/slug-generator";
 import {
   TRANSACTION_BADGE_STYLES,
   CATEGORY_BADGE_STYLE,
@@ -41,6 +43,7 @@ import {
 
 interface PropertyCardHorizontalProps {
   property: PropertyWithRelations | SerializedProperty | MapProperty;
+  // onViewDetails is deprecated - button now navigates directly via Link to /propiedades/[id-slug]
   onViewDetails?: () => void;
 }
 
@@ -57,7 +60,6 @@ interface PropertyCardHorizontalProps {
  */
 export function PropertyCardHorizontal({
   property,
-  onViewDetails,
 }: PropertyCardHorizontalProps) {
   const { isFavorite, toggleFavorite, isPending } = useFavorites();
 
@@ -254,14 +256,15 @@ export function PropertyCardHorizontal({
           </div>
 
           {/* Right Column - CTA Button */}
-          <Button
-            onClick={onViewDetails}
-            size="sm"
-            className={CTA_BUTTON_STYLES.full}
-          >
-            Ver Detalles
-            <ChevronRight className="w-3.5 h-3.5 ml-1" />
-          </Button>
+          <Link href={`/propiedades/${property.id}-${generateSlug(property.title)}`}>
+            <Button
+              size="sm"
+              className={CTA_BUTTON_STYLES.full}
+            >
+              Ver Detalles
+              <ChevronRight className="w-3.5 h-3.5 ml-1" />
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
