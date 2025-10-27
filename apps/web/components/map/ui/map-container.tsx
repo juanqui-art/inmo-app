@@ -145,7 +145,7 @@ export function MapContainer({
   );
 
   return (
-    <div className="relative w-full h-screen">
+    <div className="relative w-full h-screen isolate">
       {/* Search Bar - Floating Top Left */}
       {/*<MapSearchBar onLocationSelect={flyToLocation} />*/}
 
