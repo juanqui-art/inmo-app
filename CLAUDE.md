@@ -332,6 +332,81 @@ useEffect(() => {
 
 ---
 
+## Known Issue: Email Sending with Resend (TODO)
+
+**Status:** ⚠️ Partial - Emails not being delivered to real addresses
+
+**Current Implementation:**
+- Using `test@resend.dev` as sender (testing address only)
+- Works for module loading and Server Actions don't crash
+- But emails are NOT being delivered to real user addresses
+
+**Why It Happens:**
+- `test@resend.dev` is Resend's testing domain
+- Can only send to other `@resend.dev` addresses
+- Real user emails (gmail, outlook, etc.) don't receive anything
+- No error thrown - silently fails
+
+**Current Code Issues:**
+1. **No error handling** in Server Actions (`apps/web/app/actions/appointments.ts:125-134`)
+   - Calls `sendAppointmentCreatedEmail()` without checking result
+   - Returns `success: true` even if email fails
+
+2. **Silent failures** in email service (`apps/web/lib/email/appointment-emails.ts:97-117`)
+   - Catches errors and logs them but doesn't propagate
+   - Server Action doesn't know email failed
+
+**Solutions (To Implement):**
+
+### Option A: Verify Domain in Resend (RECOMMENDED)
+1. Go to https://resend.com/emails
+2. Click "Verify Domain"
+3. Add your domain (e.g., `inmoapp.com`)
+4. Add DNS records shown in Resend dashboard
+5. Update `from` field in `appointment-emails.ts`:
+   ```typescript
+   from: "noreply@inmoapp.com"  // Instead of "test@resend.dev"
+   ```
+6. Emails will be delivered to real addresses
+
+### Option B: Enhanced Error Handling (IMMEDIATE)
+1. Modify Server Action to check email result:
+   ```typescript
+   // apps/web/app/actions/appointments.ts:125-134
+   const emailResult = await sendAppointmentCreatedEmail({...});
+   if (!emailResult.success) {
+     console.warn("Email notification failed:", emailResult.error);
+     // Could log to error tracking (Sentry, etc.)
+     // For now, continue anyway - cita was created successfully
+   }
+   ```
+2. Better logging in email service to see actual Resend API errors
+
+### Option C: Test with Resend Console
+1. Go to https://resend.com/emails (Resend dashboard)
+2. Check "Activity" to see what Resend says about the emails
+3. Look for bounce/rejection messages
+
+**Files to Update:**
+- `apps/web/app/actions/appointments.ts` - Add error handling
+- `apps/web/lib/email/appointment-emails.ts` - Better logging
+- `CLAUDE.md` - Document final solution chosen
+- `apps/web/.env.example` - Add note about Resend domain
+
+**Testing:**
+```bash
+# Create appointment via web UI
+# Check Resend dashboard Activity tab for delivery status
+# Email should arrive in 30 seconds if domain is verified
+```
+
+**Impact:**
+- Users don't receive appointment confirmations
+- Need to add admin dashboard to see pending appointments
+- Or implement fallback SMS/in-app notifications
+
+---
+
 ## Current Focus
 
 Phase 1.5: Public-facing features
