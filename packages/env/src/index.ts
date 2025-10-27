@@ -130,6 +130,7 @@ const parseEnv = (): Env => {
       DATABASE_URL: process.env.DATABASE_URL || '',
       DIRECT_URL: process.env.DIRECT_URL,
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      RESEND_API_KEY: process.env.RESEND_API_KEY,
       NODE_ENV: (process.env.NODE_ENV || 'development') as 'development' | 'production' | 'test',
     }
   }
