@@ -48,6 +48,8 @@ interface PropertyPopupProps {
   variant?: PopupVariant;
   /** Whether user is authenticated (for auth modals) */
   isAuthenticated?: boolean;
+  /** Callback when unauthenticated user tries to favorite */
+  onUnauthenticatedFavoriteClick?: (propertyId: string) => void;
 }
 
 export function PropertyPopup({
@@ -56,6 +58,7 @@ export function PropertyPopup({
   onViewDetails,
   variant = "full",
   isAuthenticated = false,
+  onUnauthenticatedFavoriteClick,
 }: PropertyPopupProps) {
   // Guard against missing coordinates
   if (!property.latitude || !property.longitude) {
@@ -117,6 +120,7 @@ export function PropertyPopup({
           property={property}
           onViewDetails={onViewDetails}
           isAuthenticated={isAuthenticated}
+          onFavoriteClick={onUnauthenticatedFavoriteClick}
         />
       </div>
     </Popup>

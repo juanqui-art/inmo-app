@@ -36,6 +36,7 @@ import { DEFAULT_MAP_CONFIG, CLUSTER_CONFIG } from "@/lib/types/map";
 import { PropertyMarker } from "../property-marker";
 import { PropertyPopup } from "../property-popup";
 import { ClusterMarker } from "../cluster-marker";
+import { AuthModal } from "@/components/auth/auth-modal";
 import {
   useMapClustering,
   isCluster,
@@ -88,6 +89,12 @@ export function MapContainer({
     null,
   );
 
+  // State for auth modal (when unauthenticated user tries to favorite)
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingPropertyId, setPendingPropertyId] = useState<string | null>(
+    null,
+  );
+
   // Get clusters for current viewport
   const clusters = useMapClustering({
     properties,
@@ -103,6 +110,12 @@ export function MapContainer({
   // Handle marker click - show popup
   const handleMarkerClick = (property: MapProperty) => {
     setSelectedPropertyId(property.id);
+  };
+
+  // Handle unauthenticated favorite click - show auth modal
+  const handleUnauthenticatedFavoriteClick = (propertyId: string) => {
+    setPendingPropertyId(propertyId);
+    setShowAuthModal(true);
   };
 
   // Handle drawer property click - navigate to details
@@ -219,6 +232,9 @@ export function MapContainer({
                 handleDrawerPropertyClick(selectedProperty.id);
               }}
               isAuthenticated={isAuthenticated}
+              onUnauthenticatedFavoriteClick={
+                !isAuthenticated ? handleUnauthenticatedFavoriteClick : undefined
+              }
             />
           )}
       </Map>
@@ -241,6 +257,13 @@ export function MapContainer({
       {/*<div className="absolute bottom-0 right-0 z-10 bg-white/90 dark:bg-oslo-gray-900/90 px-2 py-1 text-[10px] text-oslo-gray-600 dark:text-oslo-gray-400">*/}
       {/*  © MapBox © OpenStreetMap*/}
       {/*</div>*/}
+
+      {/* Auth Modal (at top level, outside MapBox popup container) */}
+      <AuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        propertyId={pendingPropertyId || undefined}
+      />
     </div>
   );
 }
