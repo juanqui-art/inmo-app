@@ -46,6 +46,8 @@ interface PropertyPopupProps {
   onViewDetails: () => void;
   /** Popup variant: "full" for horizontal card, "compact" for minimal */
   variant?: PopupVariant;
+  /** Whether user is authenticated (for auth modals) */
+  isAuthenticated?: boolean;
 }
 
 export function PropertyPopup({
@@ -53,6 +55,7 @@ export function PropertyPopup({
   onClose,
   onViewDetails,
   variant = "full",
+  isAuthenticated = false,
 }: PropertyPopupProps) {
   // Guard against missing coordinates
   if (!property.latitude || !property.longitude) {
@@ -113,6 +116,7 @@ export function PropertyPopup({
         <PropertyCardHorizontal
           property={property}
           onViewDetails={onViewDetails}
+          isAuthenticated={isAuthenticated}
         />
       </div>
     </Popup>

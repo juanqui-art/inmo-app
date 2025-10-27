@@ -68,6 +68,8 @@ interface MapContainerProps {
   mapboxToken: string;
   /** Properties to display as markers */
   properties: MapProperty[];
+  /** Whether user is authenticated (for auth modals) */
+  isAuthenticated?: boolean;
 }
 
 export function MapContainer({
@@ -77,6 +79,7 @@ export function MapContainer({
   mapStyle,
   mapboxToken,
   properties,
+  isAuthenticated = false,
 }: MapContainerProps) {
   const router = useRouter();
 
@@ -215,6 +218,7 @@ export function MapContainer({
                 setSelectedPropertyId(null);
                 handleDrawerPropertyClick(selectedProperty.id);
               }}
+              isAuthenticated={isAuthenticated}
             />
           )}
       </Map>

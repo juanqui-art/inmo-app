@@ -23,7 +23,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Heart, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,7 @@ import type { MapProperty } from "./map-view";
 import { PropertyImageFallback } from "./property-image-fallback";
 import { useFavorites } from "@/hooks/use-favorites";
 import { generateSlug } from "@/lib/utils/slug-generator";
+import { AuthModal } from "@/components/auth/auth-modal";
 import {
   TRANSACTION_BADGE_STYLES,
   CATEGORY_BADGE_STYLE,
@@ -44,6 +45,7 @@ interface PropertyCardHorizontalProps {
   property: PropertyWithRelations | SerializedProperty | MapProperty;
   // onViewDetails is deprecated - button now navigates directly via Link to /propiedades/[id-slug]
   onViewDetails?: () => void;
+  isAuthenticated?: boolean;
 }
 
 /**
@@ -59,8 +61,10 @@ interface PropertyCardHorizontalProps {
  */
 export function PropertyCardHorizontal({
   property,
+  isAuthenticated = false,
 }: PropertyCardHorizontalProps) {
   const { isFavorite, toggleFavorite, isPending } = useFavorites();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Current state
   const liked = isFavorite(property.id);
@@ -132,6 +136,14 @@ export function PropertyCardHorizontal({
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+
+    if (!isAuthenticated) {
+      // Show auth modal if not authenticated
+      setShowAuthModal(true);
+      return;
+    }
+
+    // If authenticated, toggle favorite
     toggleFavorite(property.id); // Non-blocking, instant UI update
   };
 
@@ -260,6 +272,13 @@ export function PropertyCardHorizontal({
           </Link>
         </div>
       </div>
+
+      {/* Auth Modal for Favorites */}
+      <AuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        propertyId={property.id}
+      />
     </div>
   );
 }

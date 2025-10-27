@@ -68,6 +68,7 @@ interface MapViewProps {
   initialCenter?: [number, number];
   initialZoom?: number;
   initialViewport?: MapViewport;
+  isAuthenticated?: boolean;
 }
 
 export function MapView({
@@ -75,6 +76,7 @@ export function MapView({
   initialCenter,
   initialZoom,
   initialViewport,
+  isAuthenticated = false,
 }: MapViewProps) {
   // Create ref for MapBox map instance
   // Used to get precise bounds that account for navbar
@@ -110,6 +112,7 @@ export function MapView({
       mapStyle={mapStyle}
       mapboxToken={mapboxToken!} // Safe: checked by isError
       properties={properties}
+      isAuthenticated={isAuthenticated}
     />
   );
 }

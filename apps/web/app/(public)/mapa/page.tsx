@@ -53,6 +53,7 @@ import {
   getCachedPropertiesByBounds,
   validateBoundsParams,
 } from "@/lib/cache/properties-cache";
+import { getCurrentUser } from "@/lib/auth";
 import type { Metadata } from "next";
 
 /**
@@ -155,9 +156,21 @@ export default async function MapPage(props: MapPageProps) {
   });
 
   /**
+   * Get current user for auth state
+   * (used to show/hide auth modal in client components)
+   */
+  const currentUser = await getCurrentUser();
+
+  /**
    * Render map with real database properties and viewport from URL
    */
-  return <MapView properties={properties} initialViewport={viewport} />;
+  return (
+    <MapView
+      properties={properties}
+      initialViewport={viewport}
+      isAuthenticated={!!currentUser}
+    />
+  );
 }
 
 /**
