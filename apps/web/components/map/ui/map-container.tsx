@@ -108,21 +108,20 @@ export function MapContainer({
     : null;
 
   // Handle marker click - show popup
-  const handleMarkerClick = (property: MapProperty) => {
+  const handleMarkerClick = useCallback((property: MapProperty) => {
     setSelectedPropertyId(property.id);
-  };
+  }, []);
 
   // Handle unauthenticated favorite click - show auth modal
-  const handleUnauthenticatedFavoriteClick = (propertyId: string) => {
-    console.log("[MapContainer] Unauthenticated favorite click, propertyId:", propertyId);
+  const handleUnauthenticatedFavoriteClick = useCallback((propertyId: string) => {
     setPendingPropertyId(propertyId);
     setShowAuthModal(true);
-  };
+  }, []);
 
   // Handle drawer property click - navigate to details
-  const handleDrawerPropertyClick = (propertyId: string) => {
+  const handleDrawerPropertyClick = useCallback((propertyId: string) => {
     router.push(`/propiedades/${propertyId}`);
-  };
+  }, [router]);
 
   // Handle cluster click - zoom in to expand
   const handleClusterClick = useCallback(

@@ -35,9 +35,6 @@ export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Debug: Log when modal opens/closes
-  console.log("[AuthModal] open:", open, "propertyId:", propertyId);
-
   const handleContinueWithEmail = async (e: React.FormEvent) => {
     e.preventDefault();
 
