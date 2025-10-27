@@ -82,6 +82,11 @@ const serverSchema = z.object({
     .min(1, 'SUPABASE_SERVICE_ROLE_KEY is required')
     .optional(),
 
+  RESEND_API_KEY: z
+    .string()
+    .min(1, 'RESEND_API_KEY is required for email notifications')
+    .optional(),
+
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
@@ -138,6 +143,7 @@ const parseEnv = (): Env => {
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
     NODE_ENV: process.env.NODE_ENV,
   })
 
