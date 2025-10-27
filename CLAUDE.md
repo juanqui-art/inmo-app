@@ -105,6 +105,24 @@ turbo run dev
 
 ## Environment Variables
 
+### ⚠️ CRITICAL: Monorepo Structure
+
+This is a **Turborepo monorepo**. Environment variables must be in **BOTH**:
+1. **Root**: `.env.local` (for build tools, Turborepo tasks)
+2. **Apps**: `apps/web/.env.local` (for Next.js to find them)
+
+Next.js **ONLY reads** from `apps/web/.env.local`, NOT the root `.env.local`!
+
+**Correct Structure:**
+```
+inmo-app/
+├── .env.local                         # ← Root env vars
+├── .env.example
+└── apps/web/
+    ├── .env.local                     # ← MUST have same vars!
+    └── .env.example
+```
+
 **Files Structure:**
 ```
 root/
@@ -114,11 +132,13 @@ root/
 └── .env.production.example   # Production template
 ```
 
-**Adding New Variables:**
+**Adding New Variables (Step-by-Step):**
 1. Edit schema in `packages/env/src/index.ts`
-2. Add to `.env.example` with description
-3. Add value to `.env.local` (never commit)
-4. Restart: `bun run dev`
+2. Add to `.env.example` (root) with description
+3. Add value to `.env.local` (root)
+4. **CRITICAL:** Also add to `apps/web/.env.local` (same value)
+5. Add to `apps/web/.env.example` with description
+6. Restart: `bun run dev`
 
 **Variables Reference:**
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
@@ -127,7 +147,50 @@ root/
 - `DATABASE_URL` - Pooler connection (Transaction Mode, port 6543)
 - `DIRECT_URL` - Direct DB connection (migrations, port 5432)
 - `NEXT_PUBLIC_MAPBOX_TOKEN` - Mapbox API key (optional)
+- `RESEND_API_KEY` - Email service API key (server only, no NEXT_PUBLIC)
 - `NODE_ENV` - Automatically set by Next.js (don't change manually)
+
+### Lesson Learned: RESEND_API_KEY Error (Oct 27, 2025)
+
+**What Happened:**
+```
+Error: RESEND_API_KEY environment variable is not set.
+Please add RESEND_API_KEY to your .env.local file.
+```
+
+**Root Cause:**
+- Added `RESEND_API_KEY` only to root `.env.local`
+- Forgot to add it to `apps/web/.env.local`
+- Next.js was running in `apps/web/` and couldn't find the variable
+- The centralized env validation in `@repo/env` caught the missing variable
+
+**Why It Happened:**
+- Monorepo structure is not obvious from error messages
+- Next.js documentation assumes single `.env.local` in project root
+- Our setup has separate `.env.local` for each package
+
+**The Fix:**
+```bash
+# ❌ NOT ENOUGH:
+# Only added to root .env.local
+
+# ✅ CORRECT:
+# Must add RESEND_API_KEY to BOTH:
+# 1. /root/.env.local
+# 2. /apps/web/.env.local
+```
+
+**How to Avoid:**
+1. **Always remember:** Next.js reads from `apps/web/.env.local`, not root
+2. **When adding env vars:** Update BOTH `.env.local` files
+3. **Checklist:** After adding new var:
+   - [ ] Added to `packages/env/src/index.ts` schema
+   - [ ] Added to `root/.env.example`
+   - [ ] Added to `root/.env.local`
+   - [ ] Added to `apps/web/.env.example`
+   - [ ] Added to `apps/web/.env.local` ← EASY TO FORGET!
+   - [ ] Restarted dev server
+   - [ ] Ran `bun run type-check`
 
 ---
 
