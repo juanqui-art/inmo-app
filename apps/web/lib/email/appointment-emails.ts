@@ -35,7 +35,7 @@ export async function sendAppointmentCreatedEmail(
 
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
-    from: "Inmo App <noreply@inmoapp.com>",
+    from: "Inmo App <onboarding@resend.dev>",
     to: data.clientEmail,
     subject,
     html: generateClientAppointmentCreatedHTML(
@@ -50,7 +50,7 @@ export async function sendAppointmentCreatedEmail(
 
   // Email para el agente
   const agentEmailPromise = resend.emails.send({
-    from: "Inmo App <noreply@inmoapp.com>",
+    from: "Inmo App <onboarding@resend.dev>",
     to: data.agentEmail,
     subject: `Nueva cita agendada - ${data.propertyTitle}`,
     html: generateAgentAppointmentCreatedHTML(
@@ -97,7 +97,7 @@ export async function sendAppointmentConfirmedEmail(
 
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
-    from: "Inmo App <noreply@inmoapp.com>",
+    from: "Inmo App <onboarding@resend.dev>",
     to: data.clientEmail,
     subject,
     html: generateClientAppointmentConfirmedHTML(
@@ -111,7 +111,7 @@ export async function sendAppointmentConfirmedEmail(
 
   // Email para el agente (confirmación de que se envió al cliente)
   const agentEmailPromise = resend.emails.send({
-    from: "Inmo App <noreply@inmoapp.com>",
+    from: "Inmo App <onboarding@resend.dev>",
     to: data.agentEmail,
     subject: `Cita confirmada - ${data.propertyTitle}`,
     html: generateAgentAppointmentConfirmedHTML(
@@ -157,7 +157,7 @@ export async function sendAppointmentCancelledEmail(
 
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
-    from: "Inmo App <noreply@inmoapp.com>",
+    from: "Inmo App <onboarding@resend.dev>",
     to: data.clientEmail,
     subject,
     html: generateClientAppointmentCancelledHTML(
@@ -171,7 +171,7 @@ export async function sendAppointmentCancelledEmail(
 
   // Email para el agente
   const agentEmailPromise = resend.emails.send({
-    from: "Inmo App <noreply@inmoapp.com>",
+    from: "Inmo App <onboarding@resend.dev>",
     to: data.agentEmail,
     subject: `Cita cancelada - ${data.propertyTitle}`,
     html: generateAgentAppointmentCancelledHTML(
