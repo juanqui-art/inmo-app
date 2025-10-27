@@ -114,6 +114,7 @@ export function MapContainer({
 
   // Handle unauthenticated favorite click - show auth modal
   const handleUnauthenticatedFavoriteClick = (propertyId: string) => {
+    console.log("[MapContainer] Unauthenticated favorite click, propertyId:", propertyId);
     setPendingPropertyId(propertyId);
     setShowAuthModal(true);
   };

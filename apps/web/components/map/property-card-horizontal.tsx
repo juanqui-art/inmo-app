@@ -136,14 +136,17 @@ export function PropertyCardHorizontal({
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    console.log("[PropertyCardHorizontal] Favorite clicked, isAuthenticated:", isAuthenticated, "hasCallback:", !!onFavoriteClick);
 
     if (!isAuthenticated && onFavoriteClick) {
       // Call parent handler (will show auth modal)
+      console.log("[PropertyCardHorizontal] Calling onFavoriteClick");
       onFavoriteClick(property.id);
       return;
     }
 
     // If authenticated or no callback provided, toggle favorite
+    console.log("[PropertyCardHorizontal] Toggling favorite");
     toggleFavorite(property.id); // Non-blocking, instant UI update
   };
 
