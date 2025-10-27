@@ -75,28 +75,28 @@ export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
         {/* Header */}
         <div className="space-y-3">
           <DialogTitle className="text-xl font-bold">
-            Log in or create an account to save your favorite homes
+            Inicia sesión o crea una cuenta para guardar tus favoritos
           </DialogTitle>
           <DialogDescription className="text-base">
-            Save your favorite home and enjoy it from anywhere, on any of your devices.
+            Guarda tus propiedades favoritas y accede desde cualquier lugar, en todos tus dispositivos.
           </DialogDescription>
         </div>
 
         {/* Social proof */}
         <div className="flex items-center gap-2 text-sm text-oslo-gray-500">
           <Users className="h-4 w-4" />
-          <span>+10,000 users already saving favorite properties</span>
+          <span>+10.000 usuarios ya guardan sus propiedades favoritas</span>
         </div>
 
         {/* Email Form */}
         <form onSubmit={handleContinueWithEmail} className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm text-oslo-gray-300">
-              Email address <span className="text-red-500">required</span>
+              Correo electrónico <span className="text-red-500">requerido</span>
             </label>
             <Input
               type="email"
-              placeholder="Enter your email"
+              placeholder="Ingresa tu correo electrónico"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -109,7 +109,7 @@ export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
             disabled={isLoading || !email}
           >
-            {isLoading ? "Loading..." : "Continue"}
+            {isLoading ? "Cargando..." : "Continuar"}
           </Button>
         </form>
 
@@ -119,7 +119,7 @@ export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
             <span className="w-full border-t border-oslo-gray-700" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-oslo-gray-900 px-3 text-oslo-gray-500">or</span>
+            <span className="bg-oslo-gray-900 px-3 text-oslo-gray-500">o</span>
           </div>
         </div>
 
@@ -130,14 +130,15 @@ export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
 
         {/* Terms Footer */}
         <p className="text-xs text-oslo-gray-500 text-center">
-          By creating an account you agree to InmoApp's{" "}
+          Al crear una cuenta, aceptas los{" "}
           <a href="/terms" className="underline hover:text-oslo-gray-400">
-            Terms of Use
+            Términos de Uso
           </a>
-          {" "}and{" "}
+          {" "} y la{" "}
           <a href="/privacy" className="underline hover:text-oslo-gray-400">
-            Privacy Policy
+            Política de Privacidad
           </a>
+          {" "} de InmoApp
         </p>
       </DialogContent>
     </Dialog>
