@@ -7,10 +7,42 @@
 
 import { Resend } from "resend";
 import { env } from "@repo/env";
-import { formatAppointmentDate, getAppointmentEmailSubject } from "@/lib/utils/appointment-helpers";
+import {
+  formatAppointmentDate,
+  getAppointmentEmailSubject,
+} from "@/lib/utils/appointment-helpers";
 
-// Inicializar cliente de Resend
-const resend = new Resend(env.RESEND_API_KEY);
+/**
+ * LAZY INITIALIZATION
+ *
+ * The Resend client is created on-demand when functions execute,
+ * not at module load time. This ensures:
+ *
+ * 1. The RESEND_API_KEY is only accessed when actually needed (in functions)
+ * 2. Prevents errors during Next.js module evaluation in browser context
+ * 3. Explicit runtime check ensures server-only usage
+ * 4. Better error messages if API key is missing
+ */
+function getResendClient() {
+  // Runtime check: Ensure we're on the server
+  if (typeof window !== "undefined") {
+    throw new Error(
+      "Resend client can only be used on the server. " +
+        "This function must be called from a Server Action or Server Component.",
+    );
+  }
+
+  // Ensure API key exists
+  if (!env.RESEND_API_KEY) {
+    throw new Error(
+      "RESEND_API_KEY environment variable is not set. " +
+        "Please add RESEND_API_KEY to your .env.local file. " +
+        "Get your API key from: https://resend.com/api-keys",
+    );
+  }
+
+  return new Resend(env.RESEND_API_KEY);
+}
 
 interface AppointmentEmailData {
   clientName: string;
@@ -27,15 +59,14 @@ interface AppointmentEmailData {
  * Enviar email cuando se crea una nueva cita
  * Se envía al cliente y al agente
  */
-export async function sendAppointmentCreatedEmail(
-  data: AppointmentEmailData
-) {
+export async function sendAppointmentCreatedEmail(data: AppointmentEmailData) {
+  const resend = getResendClient();
   const appointmentDateFormatted = formatAppointmentDate(data.appointmentDate);
   const subject = getAppointmentEmailSubject("created", data.propertyTitle);
 
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
-    from: "Inmo App <onboarding@resend.dev>",
+    from: "test@resend.dev",
     to: data.clientEmail,
     subject,
     html: generateClientAppointmentCreatedHTML(
@@ -44,13 +75,13 @@ export async function sendAppointmentCreatedEmail(
       data.propertyAddress,
       appointmentDateFormatted,
       data.agentName,
-      data.notes
+      data.notes,
     ),
   });
 
   // Email para el agente
   const agentEmailPromise = resend.emails.send({
-    from: "Inmo App <onboarding@resend.dev>",
+    from: "test@resend.dev",
     to: data.agentEmail,
     subject: `Nueva cita agendada - ${data.propertyTitle}`,
     html: generateAgentAppointmentCreatedHTML(
@@ -59,7 +90,7 @@ export async function sendAppointmentCreatedEmail(
       data.propertyTitle,
       data.propertyAddress,
       appointmentDateFormatted,
-      data.notes
+      data.notes,
     ),
   });
 
@@ -90,14 +121,15 @@ export async function sendAppointmentCreatedEmail(
  * Enviar email cuando agente confirma una cita
  */
 export async function sendAppointmentConfirmedEmail(
-  data: AppointmentEmailData
+  data: AppointmentEmailData,
 ) {
+  const resend = getResendClient();
   const appointmentDateFormatted = formatAppointmentDate(data.appointmentDate);
   const subject = getAppointmentEmailSubject("confirmed", data.propertyTitle);
 
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
-    from: "Inmo App <onboarding@resend.dev>",
+    from: "test@resend.dev",
     to: data.clientEmail,
     subject,
     html: generateClientAppointmentConfirmedHTML(
@@ -105,20 +137,19 @@ export async function sendAppointmentConfirmedEmail(
       data.propertyTitle,
       data.propertyAddress,
       appointmentDateFormatted,
-      data.agentName
+      data.agentName,
     ),
   });
 
   // Email para el agente (confirmación de que se envió al cliente)
   const agentEmailPromise = resend.emails.send({
-    from: "Inmo App <onboarding@resend.dev>",
+    from: "test@resend.dev",
     to: data.agentEmail,
     subject: `Cita confirmada - ${data.propertyTitle}`,
     html: generateAgentAppointmentConfirmedHTML(
-      data.agentName,
       data.clientName,
       data.propertyTitle,
-      appointmentDateFormatted
+      appointmentDateFormatted,
     ),
   });
 
@@ -150,36 +181,35 @@ export async function sendAppointmentConfirmedEmail(
  */
 export async function sendAppointmentCancelledEmail(
   data: AppointmentEmailData,
-  cancelledBy: "client" | "agent"
+  cancelledBy: "client" | "agent",
 ) {
+  const resend = getResendClient();
   const appointmentDateFormatted = formatAppointmentDate(data.appointmentDate);
   const subject = getAppointmentEmailSubject("cancelled", data.propertyTitle);
 
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
-    from: "Inmo App <onboarding@resend.dev>",
+    from: "test@resend.dev",
     to: data.clientEmail,
     subject,
     html: generateClientAppointmentCancelledHTML(
-      data.clientName,
       data.propertyTitle,
       data.propertyAddress,
       appointmentDateFormatted,
-      cancelledBy === "agent"
+      cancelledBy === "agent",
     ),
   });
 
   // Email para el agente
   const agentEmailPromise = resend.emails.send({
-    from: "Inmo App <onboarding@resend.dev>",
+    from: "test@resend.dev",
     to: data.agentEmail,
     subject: `Cita cancelada - ${data.propertyTitle}`,
     html: generateAgentAppointmentCancelledHTML(
-      data.agentName,
       data.clientName,
       data.propertyTitle,
       appointmentDateFormatted,
-      cancelledBy === "client"
+      cancelledBy === "client",
     ),
   });
 
@@ -263,7 +293,7 @@ function generateAgentAppointmentCreatedHTML(
   propertyTitle: string,
   propertyAddress: string,
   appointmentDate: string,
-  notes?: string
+  notes?: string,
 ): string {
   return `
 <!DOCTYPE html>
@@ -313,7 +343,7 @@ function generateClientAppointmentConfirmedHTML(
   propertyTitle: string,
   propertyAddress: string,
   appointmentDate: string,
-  agentName: string
+  agentName: string,
 ): string {
   return `
 <!DOCTYPE html>
@@ -356,10 +386,9 @@ function generateClientAppointmentConfirmedHTML(
 }
 
 function generateAgentAppointmentConfirmedHTML(
-  agentName: string,
   clientName: string,
   propertyTitle: string,
-  appointmentDate: string
+  appointmentDate: string,
 ): string {
   return `
 <!DOCTYPE html>
@@ -400,11 +429,10 @@ function generateAgentAppointmentConfirmedHTML(
 }
 
 function generateClientAppointmentCancelledHTML(
-  clientName: string,
   propertyTitle: string,
   propertyAddress: string,
   appointmentDate: string,
-  cancelledByAgent: boolean
+  cancelledByAgent: boolean,
 ): string {
   return `
 <!DOCTYPE html>
@@ -447,11 +475,10 @@ function generateClientAppointmentCancelledHTML(
 }
 
 function generateAgentAppointmentCancelledHTML(
-  agentName: string,
   clientName: string,
   propertyTitle: string,
   appointmentDate: string,
-  cancelledByClient: boolean
+  cancelledByClient: boolean,
 ): string {
   return `
 <!DOCTYPE html>
