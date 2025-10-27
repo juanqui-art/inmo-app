@@ -8,7 +8,6 @@
 import { Resend } from "resend";
 import { env } from "@repo/env";
 import { formatAppointmentDate, getAppointmentEmailSubject } from "@/lib/utils/appointment-helpers";
-import type { AppointmentDetail } from "@repo/database";
 
 // Inicializar cliente de Resend
 const resend = new Resend(env.RESEND_API_KEY);
@@ -70,11 +69,13 @@ export async function sendAppointmentCreatedEmail(
       agentEmailPromise,
     ]);
 
+    const clientSuccess = clientResult.error === null;
+    const agentSuccess = agentResult.error === null;
+
     return {
-      success:
-        clientResult.id && agentResult.id,
-      clientEmailId: clientResult.id,
-      agentEmailId: agentResult.id,
+      success: clientSuccess && agentSuccess,
+      clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
+      agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
     };
   } catch (error) {
     console.error("[sendAppointmentCreatedEmail] Error:", error);
@@ -127,10 +128,13 @@ export async function sendAppointmentConfirmedEmail(
       agentEmailPromise,
     ]);
 
+    const clientSuccess = clientResult.error === null;
+    const agentSuccess = agentResult.error === null;
+
     return {
-      success: clientResult.id && agentResult.id,
-      clientEmailId: clientResult.id,
-      agentEmailId: agentResult.id,
+      success: clientSuccess && agentSuccess,
+      clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
+      agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
     };
   } catch (error) {
     console.error("[sendAppointmentConfirmedEmail] Error:", error);
@@ -185,10 +189,13 @@ export async function sendAppointmentCancelledEmail(
       agentEmailPromise,
     ]);
 
+    const clientSuccess = clientResult.error === null;
+    const agentSuccess = agentResult.error === null;
+
     return {
-      success: clientResult.id && agentResult.id,
-      clientEmailId: clientResult.id,
-      agentEmailId: agentResult.id,
+      success: clientSuccess && agentSuccess,
+      clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
+      agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
     };
   } catch (error) {
     console.error("[sendAppointmentCancelledEmail] Error:", error);
@@ -207,7 +214,7 @@ function generateClientAppointmentCreatedHTML(
   propertyAddress: string,
   appointmentDate: string,
   agentName: string,
-  notes?: string
+  notes?: string,
 ): string {
   return `
 <!DOCTYPE html>

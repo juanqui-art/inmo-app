@@ -4,7 +4,7 @@
  * Utilidades para manejo de citas
  */
 
-import { formatDate, formatTime } from "date-fns";
+import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import type { AppointmentStatus } from "@prisma/client";
 
@@ -15,9 +15,7 @@ import type { AppointmentStatus } from "@prisma/client";
  * // Returns: "15 de enero de 2024 a las 14:30"
  */
 export function formatAppointmentDate(date: Date): string {
-  const dateStr = formatDate(date, "d 'de' MMMM 'de' yyyy", { locale: es });
-  const timeStr = formatTime(date, "HH:mm", { locale: es });
-  return `${dateStr} a las ${timeStr}`;
+  return format(date, "d 'de' MMMM 'de' yyyy 'a las' HH:mm", { locale: es });
 }
 
 /**
@@ -27,7 +25,7 @@ export function formatAppointmentDate(date: Date): string {
  * // Returns: "15 de enero de 2024"
  */
 export function formatAppointmentDateOnly(date: Date): string {
-  return formatDate(date, "d 'de' MMMM 'de' yyyy", { locale: es });
+  return format(date, "d 'de' MMMM 'de' yyyy", { locale: es });
 }
 
 /**
@@ -37,7 +35,7 @@ export function formatAppointmentDateOnly(date: Date): string {
  * // Returns: "14:30"
  */
 export function formatAppointmentTime(date: Date): string {
-  return formatTime(date, "HH:mm");
+  return format(date, "HH:mm");
 }
 
 /**

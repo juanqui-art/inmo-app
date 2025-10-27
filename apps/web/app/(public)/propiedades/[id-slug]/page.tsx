@@ -16,6 +16,8 @@ import { notFound, redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { PropertyRepository } from '@repo/database';
 import { parseIdSlugParam, generateSlug } from '@/lib/utils/slug-generator';
+import { AppointmentButton } from '@/components/appointments/appointment-button';
+import { getCurrentUser } from '@/lib/auth';
 
 interface PropertyDetailPageProps {
   params: Promise<{
@@ -84,6 +86,9 @@ export default async function PropertyDetailPage(
     // Redirect to canonical URL with correct slug
     redirect(`/propiedades/${id}-${correctSlug}`);
   }
+
+  // Get current user for appointment button
+  const user = await getCurrentUser();
 
   // Format price
   const formattedPrice = new Intl.NumberFormat('es-EC', {
@@ -231,9 +236,10 @@ export default async function PropertyDetailPage(
                   <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
                     Contactar Agente
                   </button>
-                  <button className="w-full bg-oslo-gray-200 dark:bg-oslo-gray-800 hover:bg-oslo-gray-300 dark:hover:bg-oslo-gray-700 text-oslo-gray-950 dark:text-white font-semibold py-3 rounded-lg transition">
-                    Agendar Visita
-                  </button>
+                  <AppointmentButton
+                    propertyId={id}
+                    isAuthenticated={!!user && user.role === 'CLIENT'}
+                  />
                 </div>
               </div>
             )}

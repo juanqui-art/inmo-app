@@ -9,9 +9,7 @@
  * - Se cierra al completar o cancelar
  */
 
-import { useState } from "react";
 import { AppointmentForm } from "./appointment-form";
-import { Button } from "@repo/ui";
 import { X } from "lucide-react";
 
 interface AppointmentDialogProps {
@@ -25,12 +23,9 @@ export function AppointmentDialog({
   isOpen,
   onClose,
 }: AppointmentDialogProps) {
-  const [isLoading, setIsLoading] = useState(false);
-
   if (!isOpen) return null;
 
   const handleFormSuccess = () => {
-    setIsLoading(false);
     // Esperar un poco para que el usuario vea el mensaje de éxito
     setTimeout(() => {
       onClose();

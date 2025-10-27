@@ -8,14 +8,12 @@
  * - Dropdown de horarios disponibles
  * - Textarea opcional para notas
  * - Validación en tiempo real
- * - useActionState para manejo de servidor
  */
 
-import { useActionState, useEffect, useState } from "react";
+import { useTransition, useEffect, useState } from "react";
 import { createAppointmentAction, getAvailableSlotsAction } from "@/app/actions/appointments";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@repo/ui";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -43,10 +41,9 @@ export function AppointmentForm({
   propertyId,
   onSuccess,
 }: AppointmentFormProps) {
-  const [state, formAction, isPending] = useActionState(
-    createAppointmentAction,
-    undefined
-  );
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   // Form state
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
@@ -94,8 +91,11 @@ export function AppointmentForm({
   }, [selectedDate, propertyId]);
 
   // Manejo de submit
-  const handleSubmit = (formData: FormData) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (!selectedDate || !selectedHour) {
+      setError("Please select a date and time");
       return;
     }
 
@@ -106,38 +106,42 @@ export function AppointmentForm({
     // Validar fecha/hora una vez más
     const validation = validateAppointmentDateTime(appointmentDate);
     if (!validation.valid) {
+      setError(validation.error || "Invalid date or time");
       return;
     }
 
-    // Crear FormData con valores correctos
-    const newFormData = new FormData();
-    newFormData.append("propertyId", propertyId);
-    newFormData.append("scheduledAt", appointmentDate.toISOString());
-    newFormData.append("notes", notes);
+    setError(null);
+    startTransition(async () => {
+      const result = await createAppointmentAction({
+        propertyId,
+        scheduledAt: appointmentDate.toISOString(),
+        notes,
+      });
 
-    formAction(newFormData);
+      if (result.success) {
+        setSuccess(true);
+        if (onSuccess) {
+          setTimeout(onSuccess, 1500);
+        }
+      } else {
+        setError(result.error || "Failed to create appointment");
+      }
+    });
   };
 
-  // Si fue exitoso, llamar callback
-  useEffect(() => {
-    if (state?.success && onSuccess) {
-      onSuccess();
-    }
-  }, [state?.success, onSuccess]);
-
   return (
-    <form action={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {/* Mensaje de éxito */}
-      {state?.success && (
+      {success && (
         <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
           Cita agendada exitosamente. El agente te confirmará en breve.
         </div>
       )}
 
       {/* Mensaje de error general */}
-      {state?.error && !state?.success && (
+      {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          {state.error}
+          {error}
         </div>
       )}
 

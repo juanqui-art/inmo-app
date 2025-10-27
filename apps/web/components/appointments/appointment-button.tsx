@@ -14,7 +14,6 @@ import { useRouter } from "next/navigation";
 import { Calendar } from "lucide-react";
 import { Button } from "@repo/ui";
 import { AppointmentDialog } from "./appointment-dialog";
-import { getCurrentUser } from "@/lib/auth";
 
 interface AppointmentButtonProps {
   propertyId: string;

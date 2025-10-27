@@ -70,7 +70,6 @@ export function validateAppointmentDateTime(date: Date): {
   valid: boolean;
   error?: string;
 } {
-  const now = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);

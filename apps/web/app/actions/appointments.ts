@@ -144,10 +144,11 @@ export async function createAppointmentAction(formData: {
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const fieldError = error.errors[0];
+      const fieldErrors = error.flatten().fieldErrors;
+      const firstError = (Object.values(fieldErrors)[0] as any)?.[0];
       return {
         success: false,
-        error: fieldError.message,
+        error: firstError || "Invalid input",
       };
     }
 
@@ -219,7 +220,7 @@ export async function updateAppointmentStatusAction(data: {
     }
 
     // 6. Actualizar estado
-    const updatedAppointment = await appointmentRepository.updateAppointmentStatus(
+    await appointmentRepository.updateAppointmentStatus(
       validatedData.id,
       validatedData.status
     );
