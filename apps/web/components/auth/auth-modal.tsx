@@ -12,7 +12,7 @@
  */
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -32,8 +32,25 @@ interface AuthModalProps {
 
 export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const saveAuthIntent = () => {
+    // Guardar intent en localStorage para post-auth
+    localStorage.setItem(
+      "authIntent",
+      JSON.stringify({
+        action: "favorite",
+        propertyId,
+        // URL anterior para redirigir después de auth exitoso
+        redirectTo: pathname,
+      })
+    );
+
+    // Guardar que venimos de auth modal para mostrar success modal
+    localStorage.setItem("showAuthSuccess", "true");
+  };
 
   const handleContinueWithEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,14 +59,7 @@ export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
 
     setIsLoading(true);
 
-    // Guardar intent en localStorage para signup
-    localStorage.setItem(
-      "authIntent",
-      JSON.stringify({
-        action: "favorite",
-        propertyId,
-      })
-    );
+    saveAuthIntent();
 
     // Redirigir a signup con email prefillado
     router.push(`/signup?email=${encodeURIComponent(email)}`);
@@ -58,15 +68,7 @@ export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
   };
 
   const handleGoogleBeforeRedirect = () => {
-    // Guardar intent en localStorage antes de redirigir a Google
-    // (sessionStorage se pierde durante OAuth redirect)
-    localStorage.setItem(
-      "authIntent",
-      JSON.stringify({
-        action: "favorite",
-        propertyId,
-      })
-    );
+    saveAuthIntent();
   };
 
   return (

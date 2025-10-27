@@ -38,7 +38,8 @@ export async function GET(request: Request) {
     // Éxito! Usuario autenticado
     // El trigger de DB ya creó el usuario en la tabla 'users'
     // Redirigir a /perfil que ejecutará el intent guardado (ej: favoritos)
-    return NextResponse.redirect(`${origin}/perfil`);
+    // Con parámetro de éxito para mostrar success modal
+    return NextResponse.redirect(`${origin}/perfil?authSuccess=true`);
   }
 
   // Si no hay code ni error, redirigir a login

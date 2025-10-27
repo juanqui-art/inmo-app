@@ -9,15 +9,15 @@
 import { Building2, Calendar, Heart } from "lucide-react";
 import Link from "next/link";
 import { requireAuth } from "@/lib/auth";
-import { AuthIntentExecutor } from "@/components/auth/auth-intent-executor";
+import { AuthSuccessHandler } from "@/components/auth/auth-success-handler";
 
 export default async function PerfilPage() {
   const user = await requireAuth();
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Auth Intent Executor (Client Component) */}
-      <AuthIntentExecutor />
+      {/* Auth Success Handler (Client Component) - muestra modal de éxito y redirige */}
+      <AuthSuccessHandler />
 
       {/* Header */}
       <header className="border-b border-border bg-card">
