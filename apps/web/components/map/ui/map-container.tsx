@@ -37,6 +37,9 @@ import { PropertyMarker } from "../property-marker";
 import { PropertyPopup } from "../property-popup";
 import { ClusterMarker } from "../cluster-marker";
 import { AuthModal } from "@/components/auth/auth-modal";
+import { AISearchButton } from "@/components/ai-search/ai-search-button";
+import { AISearchModal } from "@/components/ai-search/ai-search-modal";
+import { useAISearch } from "@/components/ai-search/use-ai-search";
 import {
   useMapClustering,
   isCluster,
@@ -83,6 +86,15 @@ export function MapContainer({
   isAuthenticated = false,
 }: MapContainerProps) {
   const router = useRouter();
+
+  // AI Search state
+  const {
+    isOpen: isAISearchOpen,
+    openModal: openAISearchModal,
+    closeModal: closeAISearchModal,
+    isLoading: isAISearchLoading,
+    handleSearch: handleAISearch,
+  } = useAISearch();
 
   // State for selected property popup
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
@@ -146,6 +158,21 @@ export function MapContainer({
 
   return (
     <div className="relative w-full h-screen isolate">
+      {/* AI Search Button - Floating */}
+      <AISearchButton
+        variant="floating"
+        showBadge={true}
+        onClick={openAISearchModal}
+      />
+
+      {/* AI Search Modal */}
+      <AISearchModal
+        isOpen={isAISearchOpen}
+        onClose={closeAISearchModal}
+        onSearch={handleAISearch}
+        isLoading={isAISearchLoading}
+      />
+
       {/* Search Bar - Floating Top Left */}
       {/*<MapSearchBar onLocationSelect={flyToLocation} />*/}
 
