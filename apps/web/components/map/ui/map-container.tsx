@@ -37,9 +37,6 @@ import { PropertyMarker } from "../property-marker";
 import { PropertyPopup } from "../property-popup";
 import { ClusterMarker } from "../cluster-marker";
 import { AuthModal } from "@/components/auth/auth-modal";
-import { AISearchButton } from "@/components/ai-search/ai-search-button";
-import { AISearchModal } from "@/components/ai-search/ai-search-modal";
-import { useAISearch } from "@/components/ai-search/use-ai-search";
 import {
   useMapClustering,
   isCluster,
@@ -74,6 +71,13 @@ interface MapContainerProps {
   properties: MapProperty[];
   /** Whether user is authenticated (for auth modals) */
   isAuthenticated?: boolean;
+  /** AI Search results - for display info */
+  searchResults?: Array<{
+    id: string;
+    city?: string | null;
+    address?: string | null;
+    price: number;
+  }>;
 }
 
 export function MapContainer({
@@ -84,17 +88,9 @@ export function MapContainer({
   mapboxToken,
   properties,
   isAuthenticated = false,
+  searchResults,
 }: MapContainerProps) {
   const router = useRouter();
-
-  // AI Search state
-  const {
-    isOpen: isAISearchOpen,
-    openModal: openAISearchModal,
-    closeModal: closeAISearchModal,
-    isLoading: isAISearchLoading,
-    handleSearch: handleAISearch,
-  } = useAISearch();
 
   // State for selected property popup
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
@@ -125,15 +121,21 @@ export function MapContainer({
   }, []);
 
   // Handle unauthenticated favorite click - show auth modal
-  const handleUnauthenticatedFavoriteClick = useCallback((propertyId: string) => {
-    setPendingPropertyId(propertyId);
-    setShowAuthModal(true);
-  }, []);
+  const handleUnauthenticatedFavoriteClick = useCallback(
+    (propertyId: string) => {
+      setPendingPropertyId(propertyId);
+      setShowAuthModal(true);
+    },
+    [],
+  );
 
   // Handle drawer property click - navigate to details
-  const handleDrawerPropertyClick = useCallback((propertyId: string) => {
-    router.push(`/propiedades/${propertyId}`);
-  }, [router]);
+  const handleDrawerPropertyClick = useCallback(
+    (propertyId: string) => {
+      router.push(`/propiedades/${propertyId}`);
+    },
+    [router],
+  );
 
   // Handle cluster click - zoom in to expand
   const handleClusterClick = useCallback(
@@ -158,27 +160,6 @@ export function MapContainer({
 
   return (
     <div className="relative w-full h-screen isolate">
-      {/* AI Search Button - Floating */}
-      <AISearchButton
-        variant="floating"
-        showBadge={true}
-        onClick={openAISearchModal}
-      />
-
-      {/* AI Search Modal */}
-      <AISearchModal
-        isOpen={isAISearchOpen}
-        onClose={closeAISearchModal}
-        onSearch={handleAISearch}
-        isLoading={isAISearchLoading}
-      />
-
-      {/* Search Bar - Floating Top Left */}
-      {/*<MapSearchBar onLocationSelect={flyToLocation} />*/}
-
-      {/* Filters - Floating Top Right */}
-      {/*<MapFilters />*/}
-
       <Map
         ref={mapRef}
         {...viewState}
@@ -260,7 +241,9 @@ export function MapContainer({
               }}
               isAuthenticated={isAuthenticated}
               onUnauthenticatedFavoriteClick={
-                !isAuthenticated ? handleUnauthenticatedFavoriteClick : undefined
+                !isAuthenticated
+                  ? handleUnauthenticatedFavoriteClick
+                  : undefined
               }
             />
           )}
@@ -273,12 +256,25 @@ export function MapContainer({
       {/*  onPropertyClick={handleDrawerPropertyClick}*/}
       {/*/>*/}
 
-      {/* Properties Count Badge */}
-      {/*<div className="absolute top-20 left-4 z-10 bg-white/95 dark:bg-oslo-gray-900/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border border-oslo-gray-200 dark:border-oslo-gray-800">*/}
-      {/*  <p className="text-sm font-semibold text-oslo-gray-900 dark:text-oslo-gray-50">*/}
-      {/*    {properties.length} propiedades disponibles*/}
-      {/*  </p>*/}
-      {/*</div>*/}
+      {/* Search Results Badge */}
+      {searchResults && searchResults.length > 0 && (
+        <div className="absolute top-20 left-4 z-10 bg-white/95 dark:bg-oslo-gray-900/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border border-green-200 dark:border-green-900">
+          <p className="text-sm font-semibold text-oslo-gray-900 dark:text-oslo-gray-50">
+            🔍 {searchResults.length}{" "}
+            {searchResults.length === 1 ? "propiedad" : "propiedades"}{" "}
+            encontradas
+          </p>
+        </div>
+      )}
+
+      {/* Properties Count Badge (when no search) */}
+      {!searchResults && (
+        <div className="absolute top-20 left-4 z-10 bg-white/95 dark:bg-oslo-gray-900/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border border-oslo-gray-200 dark:border-oslo-gray-800">
+          <p className="text-sm font-semibold text-oslo-gray-900 dark:text-oslo-gray-50">
+            {properties.length} propiedades disponibles
+          </p>
+        </div>
+      )}
 
       {/* Attribution (moved to bottom-right) */}
       {/*<div className="absolute bottom-0 right-0 z-10 bg-white/90 dark:bg-oslo-gray-900/90 px-2 py-1 text-[10px] text-oslo-gray-600 dark:text-oslo-gray-400">*/}

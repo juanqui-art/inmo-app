@@ -1,0 +1,77 @@
+"use client";
+
+/**
+ * AI SEARCH INLINE
+ *
+ * Main component that orchestrates inline search bar
+ * - Uses useInlineSearch hook for state
+ * - Renders search bar + suggestions
+ * - Handles focus/blur/click outside
+ * - Mobile responsive layout
+ */
+
+import React, { useEffect } from "react";
+import { useInlineSearch } from "./use-inline-search";
+import { AISearchInlineBar } from "./ai-search-inline-bar";
+import { AISearchInlineSuggestions } from "./ai-search-inline-suggestions";
+
+interface AISearchInlineProps {
+  onSearch?: (query: string) => void;
+  onSearchResults?: (result: any) => void; // Callback when search completes
+}
+
+export function AISearchInline({
+  onSearch,
+  onSearchResults,
+}: AISearchInlineProps) {
+  const {
+    isFocused,
+    query,
+    showSuggestions,
+    isLoading,
+    searchResult,
+    containerRef,
+    setQuery,
+    handleFocus,
+    handleBlur,
+    handleClear,
+    handleSearch,
+  } = useInlineSearch();
+
+  // Notify parent when search results arrive
+  useEffect(() => {
+    if (searchResult && searchResult.success && onSearchResults) {
+      onSearchResults(searchResult);
+    }
+  }, [searchResult, onSearchResults]);
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setQuery(suggestion);
+    handleSearch(suggestion);
+    onSearch?.(suggestion);
+  };
+
+  return (
+    <div ref={containerRef} className="relative w-full max-w-2xl ">
+      <AISearchInlineBar
+        isFocused={isFocused}
+        query={query}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onClear={handleClear}
+        onChange={setQuery}
+        onSearch={(q) => {
+          handleSearch(q);
+          onSearch?.(q);
+        }}
+        isLoading={isLoading}
+      />
+
+      {/* Suggestions Dropdown */}
+      <AISearchInlineSuggestions
+        isOpen={showSuggestions}
+        onSuggestionClick={handleSuggestionClick}
+      />
+    </div>
+  );
+}

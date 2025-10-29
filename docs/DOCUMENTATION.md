@@ -59,7 +59,7 @@ Plataforma inmobiliaria moderna con:
 
 ---
 
-### **5. [docs/QUICK_REFERENCE.md](./docs/QUICK_REFERENCE.md)** - Cheatsheet
+### **5. [QUICK_REFERENCE.md](./getting-started/QUICK_REFERENCE.md)** - Cheatsheet
 ✅ Referencia rápida visual
 ✅ Comandos útiles
 ✅ Tech stack
@@ -72,25 +72,25 @@ Plataforma inmobiliaria moderna con:
 ## 🎯 Según tu Rol
 
 ### **Desarrollador Junior** (1.5 horas)
-1. [docs/README.md](./docs/README.md) (5 min)
-2. [docs/project-structure.md](./docs/project-structure.md) (40 min)
-3. [docs/node-modules-explained.md](./docs/node-modules-explained.md) (35 min)
-4. [docs/development-tasks-guide.md](./docs/development-tasks-guide.md) (40 min)
+1. [README.md](./README.md) (5 min)
+2. [project-structure.md](./getting-started/project-structure.md) (40 min)
+3. [node-modules-explained.md](./architecture/node-modules-explained.md) (35 min)
+4. [development-tasks-guide.md](./reference/development-tasks-guide.md) (40 min)
 
 ### **Desarrollador Senior** (1 hora)
-1. [docs/project-structure.md#análisis](./docs/project-structure.md#análisis-de-calidad) (20 min)
-2. [docs/project-structure.md#mejoras](./docs/project-structure.md#áreas-de-mejora) (20 min)
-3. [docs/QUICK_REFERENCE.md](./docs/QUICK_REFERENCE.md) (10 min)
+1. [project-structure.md#análisis](./getting-started/project-structure.md#análisis-de-calidad) (20 min)
+2. [project-structure.md#mejoras](./getting-started/project-structure.md#áreas-de-mejora) (20 min)
+3. [QUICK_REFERENCE.md](./getting-started/QUICK_REFERENCE.md) (10 min)
 
 ### **Arquitecto / Tech Lead** (1.5 horas)
-1. [docs/README.md](./docs/README.md) (5 min)
-2. [docs/project-structure.md](./docs/project-structure.md) (40 min)
-3. [docs/development-tasks-guide.md](./docs/development-tasks-guide.md) (30 min)
+1. [README.md](./README.md) (5 min)
+2. [project-structure.md](./getting-started/project-structure.md) (40 min)
+3. [development-tasks-guide.md](./reference/development-tasks-guide.md) (30 min)
 
 ### **DevOps / SRE** (1 hora)
-1. [docs/project-structure.md#stack](./docs/project-structure.md#stack-tecnológico) (20 min)
-2. [docs/node-modules-explained.md#comandos](./docs/node-modules-explained.md#comandos-útiles) (20 min)
-3. [docs/QUICK_REFERENCE.md](./docs/QUICK_REFERENCE.md) (10 min)
+1. [project-structure.md#stack](./getting-started/project-structure.md#stack-tecnológico) (20 min)
+2. [node-modules-explained.md#comandos](./architecture/node-modules-explained.md#comandos-útiles) (20 min)
+3. [QUICK_REFERENCE.md](./getting-started/QUICK_REFERENCE.md) (10 min)
 
 ---
 
@@ -171,15 +171,15 @@ Plataforma inmobiliaria moderna con:
 
 | Archivo | Líneas | Palabras | Lectura |
 |---------|--------|----------|---------|
-| docs/README.md | 372 | 2,500 | 5 min |
-| docs/INDEX.md | 314 | 2,000 | 5 min |
-| docs/project-structure.md | 864 | 8,000 | 30-40 min |
-| docs/node-modules-explained.md | 863 | 8,000 | 25-35 min |
-| docs/QUICK_REFERENCE.md | 400 | 3,000 | 5 min |
+| README.md | 372 | 2,500 | 5 min |
+| INDEX.md | 314 | 2,000 | 5 min |
+| getting-started/project-structure.md | 864 | 8,000 | 30-40 min |
+| architecture/node-modules-explained.md | 863 | 8,000 | 25-35 min |
+| getting-started/QUICK_REFERENCE.md | 400 | 3,000 | 5 min |
 | **TOTAL** | **2,813** | **23,500** | **70-90 min** |
 
 ---
 
-**Última actualización:** 2025-10-21
+**Última actualización:** 2025-10-29 (Phase 3 - Reorganización completa)
 
-👉 **[Comienza en docs/README.md](./docs/README.md)**
+👉 **[Comienza en INDEX.md](./INDEX.md)**

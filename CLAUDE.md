@@ -37,7 +37,7 @@ apps/web/
 ├── app/actions/        # Server Actions (mutations)
 ├── components/         # React components
 ├── lib/               # Utils, validations, auth
-└── middleware.ts      # Auth + routing
+└── proxy.ts          # Auth + routing (Next.js 16 convention)
 
 packages/
 ├── env/               # Environment variables validation (@repo/env)
@@ -105,92 +105,18 @@ turbo run dev
 
 ## Environment Variables
 
-### ⚠️ CRITICAL: Monorepo Structure
+**⚠️ CRITICAL:** Turborepo monorepo has TWO `.env.local` files:
+- `root/.env.local` (build tools, Turborepo)
+- `apps/web/.env.local` (Next.js, which ONLY reads this one)
 
-This is a **Turborepo monorepo**. Environment variables must be in **BOTH**:
-1. **Root**: `.env.local` (for build tools, Turborepo tasks)
-2. **Apps**: `apps/web/.env.local` (for Next.js to find them)
+**Adding new vars:** Update both files + `packages/env/src/index.ts` schema, then restart `bun run dev`
 
-Next.js **ONLY reads** from `apps/web/.env.local`, NOT the root `.env.local`!
+**Key variables:**
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase
+- `DATABASE_URL` (pooler, port 6543), `DIRECT_URL` (migrations, port 5432)
+- `NEXT_PUBLIC_MAPBOX_TOKEN`, `OPENAI_API_KEY`, `RESEND_API_KEY`
 
-**Correct Structure:**
-```
-inmo-app/
-├── .env.local                         # ← Root env vars
-├── .env.example
-└── apps/web/
-    ├── .env.local                     # ← MUST have same vars!
-    └── .env.example
-```
-
-**Files Structure:**
-```
-root/
-├── .env.example              # Template (public, tracked in Git)
-├── .env.local                # Your secrets (private, in .gitignore)
-├── .env.development.example  # Development template
-└── .env.production.example   # Production template
-```
-
-**Adding New Variables (Step-by-Step):**
-1. Edit schema in `packages/env/src/index.ts`
-2. Add to `.env.example` (root) with description
-3. Add value to `.env.local` (root)
-4. **CRITICAL:** Also add to `apps/web/.env.local` (same value)
-5. Add to `apps/web/.env.example` with description
-6. Restart: `bun run dev`
-
-**Variables Reference:**
-- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Public key (safe for browser)
-- `SUPABASE_SERVICE_ROLE_KEY` - Secret key (server only)
-- `DATABASE_URL` - Pooler connection (Transaction Mode, port 6543)
-- `DIRECT_URL` - Direct DB connection (migrations, port 5432)
-- `NEXT_PUBLIC_MAPBOX_TOKEN` - Mapbox API key (optional)
-- `RESEND_API_KEY` - Email service API key (server only, no NEXT_PUBLIC)
-- `NODE_ENV` - Automatically set by Next.js (don't change manually)
-
-### Lesson Learned: RESEND_API_KEY Error (Oct 27, 2025)
-
-**What Happened:**
-```
-Error: RESEND_API_KEY environment variable is not set.
-Please add RESEND_API_KEY to your .env.local file.
-```
-
-**Root Cause:**
-- Added `RESEND_API_KEY` only to root `.env.local`
-- Forgot to add it to `apps/web/.env.local`
-- Next.js was running in `apps/web/` and couldn't find the variable
-- The centralized env validation in `@repo/env` caught the missing variable
-
-**Why It Happened:**
-- Monorepo structure is not obvious from error messages
-- Next.js documentation assumes single `.env.local` in project root
-- Our setup has separate `.env.local` for each package
-
-**The Fix:**
-```bash
-# ❌ NOT ENOUGH:
-# Only added to root .env.local
-
-# ✅ CORRECT:
-# Must add RESEND_API_KEY to BOTH:
-# 1. /root/.env.local
-# 2. /apps/web/.env.local
-```
-
-**How to Avoid:**
-1. **Always remember:** Next.js reads from `apps/web/.env.local`, not root
-2. **When adding env vars:** Update BOTH `.env.local` files
-3. **Checklist:** After adding new var:
-   - [ ] Added to `packages/env/src/index.ts` schema
-   - [ ] Added to `root/.env.example`
-   - [ ] Added to `root/.env.local`
-   - [ ] Added to `apps/web/.env.example`
-   - [ ] Added to `apps/web/.env.local` ← EASY TO FORGET!
-   - [ ] Restarted dev server
-   - [ ] Ran `bun run type-check`
+**See:** `docs/getting-started/ENV_QUICK_START.md` or `docs/architecture/ENVIRONMENT_VARIABLES.md` for full details
 
 ---
 
@@ -229,204 +155,105 @@ bun run dev:web  # Goes directly to apps/web
 
 ## Documentation
 
-**Auto-loaded:** `@.claude/01-06` files (~27k tokens)
+**For AI Assistants:**
+- **Auto-loaded:** `.claude/01-06` files (~27k tokens, auto-included)
+- **On-demand:** `.claude/08-11` files in `.claudeignore` (multi-tenant, debt, teaching, appointments)
+- **Guide:** `docs/AI_ASSISTANTS.md` (how Claude/Gemini interact with project)
 
-**On-demand** (in .claudeignore):
-- `@.claude/08-multi-tenant-strategy.md` - Multi-tenant architecture
-- `@.claude/09-technical-debt.md` - Known issues
-- `@.claude/10-teaching-style.md` - Teaching approach
-- `@.claude/11-appointments.md` - Appointments system
-
-**Human-readable:**
-- `QUICK_START.md` - Ultra-compressed reference
-- `docs/AI_ASSISTANTS.md` - Complete AI guide (Claude + Gemini)
-- `docs/TOKEN_OPTIMIZATION.md` - Reduce context usage
-- `docs/setup/` - Setup guides
-- `docs/mcp/` - Model Context Protocol integration
+**For Humans:**
+- `QUICK_START.md`, `docs/INDEX.md` (navigation hub), `docs/setup/` (installation)
 
 ---
 
-## Optimization: Caching for /mapa
+## Recent Changes in Next.js 16
 
-**Status:** ✅ Complete (Oct 23, 2024) - Using React.cache()
+### 📝 Middleware → Proxy (Breaking Change)
 
-Implemented intelligent caching on the `/mapa` route to eliminate renderization loops and optimize property queries:
+**Status:** ⚠️ Important for migration
 
-- Created `lib/cache/properties-cache.ts` with `React.cache()` for deduplication
-- Updated `mapa/page.tsx` to use cached queries
-- Added `revalidatePath('/mapa')` in server actions for invalidation
-- Keeps implementation stable (no experimental features)
+In **Next.js 16.0.0**, the `middleware` file convention was officially renamed to `proxy`:
 
-**Implementation Approach:**
-- Originally tried experimental `Cache Components` (cacheTag/updateTag)
-- Disabled due to Next.js 16.0.0 limitation with uncached data access (cookies)
-- Switched to stable `React.cache()` approach instead
-- Same performance benefits, better compatibility
+**Why?** The term "middleware" caused confusion with Express patterns. "Proxy" better describes the feature—acts as a network boundary that can redirect, rewrite, or modify requests before reaching routes.
 
-**Results:**
-- Request deduplication (eliminates duplicate queries for same bounds)
-- Faster responses on cache hits (15ms vs 340ms)
-- Fewer DB queries in normal usage
-- Zero renderization loops
-- Data stays fresh with automatic invalidation
-
-**Documentation:**
-- `CACHE_IMPLEMENTATION_REVISED.md` - Why we use React.cache() (current approach)
-- `CACHE_IMPLEMENTATION_SUMMARY.md` - Executive overview
-- `CACHE_COMPONENTS_GUIDE.md` - Concepts and future upgrade path
-- `docs/CACHE_STRATEGY.md` - Visual strategy diagrams
-
----
-
-## Bug Fix: Infinite Loop in useMapViewport (RESOLVED)
-
-**What Happened:** The `/mapa` route was making infinite database queries due to a circular dependency in the `useMapViewport` hook's `useEffect`.
-
-**Root Cause Analysis:** The `searchParams` hook was included in the effect's dependency array:
-```typescript
-// ❌ BEFORE (infinite loop)
-useEffect(() => {
-  const newUrl = buildBoundsUrl(debouncedBounds);
-  router.replace(newUrl); // ← Changes URL
-}, [debouncedBounds, router, mounted, searchParams]);
-//                                     ↑ This causes the loop
-```
-
-**The Circular Dependency:**
-1. `router.replace()` executes → changes the URL
-2. URL change → `useSearchParams()` returns a new object
-3. `searchParams` in dependencies → effect runs again
-4. Back to step 1 (infinite cycle)
-
-**Solution Implemented:**
-```typescript
-// ✅ AFTER (fixed)
-const lastUrlRef = useRef<string>("");
-
-useEffect(() => {
-  if (!mounted) return;
-
-  const newUrl = buildBoundsUrl(debouncedBounds);
-
-  // Guard: Only update if URL actually changed
-  if (lastUrlRef.current !== newUrl) {
-    lastUrlRef.current = newUrl;
-    router.replace(newUrl, { scroll: false });
-  }
-}, [debouncedBounds, router, mounted]); // ← NO searchParams
-```
-
-**Fix Details:**
-- Added `useRef<string>("")` to track last built URL
-- Removed `searchParams` from dependency array
-- Added string comparison to prevent unnecessary `router.replace()` calls
-- File: `apps/web/components/map/hooks/use-map-viewport.ts` (commit `f28948e`)
-
-**Learning Resources Created:**
-1. **`docs/INFINITE_LOOP_DEEP_DIVE.md`** - Complete technical analysis with diagrams
-2. **`docs/REACT_HOOKS_ANTIPATTERNS.md`** - 11 common anti-patterns with solutions
-3. **`docs/DEBUGGING_HOOKS_GUIDE.md`** - Practical debugging techniques
-4. **`docs/INFINITE_LOOP_QUICK_REFERENCE.md`** - Quick reference card
-
-**Key Takeaway:** The dependency array should express "when should this run," NOT "what variables do I use." If an effect changes something in its dependencies, you've created a circular dependency.
-
----
-
-## Known Issue: Email Sending with Resend (TODO)
-
-**Status:** ⚠️ Partial - Emails not being delivered to real addresses
-
-**Current Implementation:**
-- Using `test@resend.dev` as sender (testing address only)
-- Works for module loading and Server Actions don't crash
-- But emails are NOT being delivered to real user addresses
-
-**Why It Happens:**
-- `test@resend.dev` is Resend's testing domain
-- Can only send to other `@resend.dev` addresses
-- Real user emails (gmail, outlook, etc.) don't receive anything
-- No error thrown - silently fails
-
-**Current Code Issues:**
-1. **No error handling** in Server Actions (`apps/web/app/actions/appointments.ts:125-134`)
-   - Calls `sendAppointmentCreatedEmail()` without checking result
-   - Returns `success: true` even if email fails
-
-2. **Silent failures** in email service (`apps/web/lib/email/appointment-emails.ts:97-117`)
-   - Catches errors and logs them but doesn't propagate
-   - Server Action doesn't know email failed
-
-**Solutions (To Implement):**
-
-### Option A: Verify Domain in Resend (RECOMMENDED)
-1. Go to https://resend.com/emails
-2. Click "Verify Domain"
-3. Add your domain (e.g., `inmoapp.com`)
-4. Add DNS records shown in Resend dashboard
-5. Update `from` field in `appointment-emails.ts`:
-   ```typescript
-   from: "noreply@inmoapp.com"  // Instead of "test@resend.dev"
-   ```
-6. Emails will be delivered to real addresses
-
-### Option B: Enhanced Error Handling (IMMEDIATE)
-1. Modify Server Action to check email result:
-   ```typescript
-   // apps/web/app/actions/appointments.ts:125-134
-   const emailResult = await sendAppointmentCreatedEmail({...});
-   if (!emailResult.success) {
-     console.warn("Email notification failed:", emailResult.error);
-     // Could log to error tracking (Sentry, etc.)
-     // For now, continue anyway - cita was created successfully
-   }
-   ```
-2. Better logging in email service to see actual Resend API errors
-
-### Option C: Test with Resend Console
-1. Go to https://resend.com/emails (Resend dashboard)
-2. Check "Activity" to see what Resend says about the emails
-3. Look for bounce/rejection messages
-
-**Files to Update:**
-- `apps/web/app/actions/appointments.ts` - Add error handling
-- `apps/web/lib/email/appointment-emails.ts` - Better logging
-- `CLAUDE.md` - Document final solution chosen
-- `apps/web/.env.example` - Add note about Resend domain
-
-**Testing:**
+**Migration:**
 ```bash
-# Create appointment via web UI
-# Check Resend dashboard Activity tab for delivery status
-# Email should arrive in 30 seconds if domain is verified
+# Auto-migrate using codemod
+npx @next/codemod@canary middleware-to-proxy .
 ```
 
-**Impact:**
-- Users don't receive appointment confirmations
-- Need to add admin dashboard to see pending appointments
-- Or implement fallback SMS/in-app notifications
+**Manual changes:**
+```typescript
+// Before (middleware.ts)
+export function middleware() { }
+
+// After (proxy.ts)
+export function proxy() { }
+```
+
+**In this project:** ✅ Already implemented! Using `apps/web/proxy.ts` with `export async function proxy()`. Full Next.js 16 compliance.
 
 ---
 
-## Current Focus
+## Recent Features
 
-Phase 1.5: Public-facing features
-**Next:** Property listings + search functionality
+### 🤖 AI Search Integration (Oct 28-29, 2025)
+
+**Status:** ✅ Functional & Production-Ready (95% complete, one optimization identified)
+
+**What's working:**
+- Natural language search bar in navbar (`ai-search-inline-bar.tsx`)
+- OpenAI GPT-4 parsing of user queries in Spanish
+- Structured filters extraction (city, address, price, bedrooms, features)
+- Map integration with viewport fitting
+- Confidence scoring for uncertain parses
+
+**To explore:**
+- Documented duplicate API call issue for optimization (Session 3)
+- See: `archive/sessions/AI-SEARCH-CONSOLIDATED.md` for detailed status
+
+### 💾 Map Caching (/mapa)
+
+**Status:** ✅ Complete - Using `React.cache()` for request deduplication
+- Eliminates duplicate queries for same viewport bounds
+- Cache hits: 15ms vs 340ms uncached
+- Zero renderization loops with smart URL handling
+- See: `docs/CACHE_STRATEGY.md` for strategy details
+
+---
+
+### 🐛 Infinite Loop in useMapViewport (RESOLVED)
+
+**The Issue:** `useMapViewport` was using `searchParams` in the dependency array, causing `router.replace()` to create a circular effect loop.
+
+**The Fix:** Removed `searchParams` from dependencies and used `useRef` to guard against unnecessary URL updates.
+
+**Key Learning:** Dependency arrays express "when should this run," not "what I use." If an effect changes its own dependencies, you have a circular dependency.
+
+**Resources:** `docs/INFINITE_LOOP_DEEP_DIVE.md`, `docs/REACT_HOOKS_ANTIPATTERNS.md`, `docs/DEBUGGING_HOOKS_GUIDE.md`
+
+---
+
+## Known Issues
+
+**Email Sending (Resend):** Using testing domain (`test@resend.dev`), emails not delivered to real addresses. Need to verify domain + update sender. See `CLAUDE.md` line notes or contact for setup guidance.
+
+---
+
+## Current Phase
+
+**Phase 1.5:** Public-facing features (map, AI search, authentication) - 95% complete
+
+**Next:**
+- Phase 2: Documentation reorganization (in progress)
+- Phase 3: AI Search optimization (duplicate API call fix)
+- Phase 4: Advanced features (image upload, appointments refinement)
 
 ---
 
 ## Git Workflow
 
-**Conventional commits:** `feat(scope):`, `fix(scope):`, `refactor(scope):`
+**Commits:** Conventional format (`feat(scope):`, `fix(scope):`, `refactor(scope):`)
 
-**Branch:** `main` (deploy to Vercel)
+**Branch:** `main` (auto-deploys to Vercel)
 
-**Parallel Work:** Use `git worktrees` for simultaneous feature/bugfix branches
-```bash
-# Quick setup (see docs/git-worktrees-guide.md for full guide)
-git branch feature/name && git branch bugfix/name
-git worktree add ../inmo-app-feature feature/name
-git worktree add ../inmo-app-bugfix bugfix/name
-# Then: cd ../inmo-app-feature && claude (terminal 1)
-#       cd ../inmo-app-bugfix && claude (terminal 2)
-# Finally: git merge feature/name && git merge bugfix/name
-```
+**Parallel work:** See `docs/git-worktrees-guide.md` for multi-branch setup with `git worktree`

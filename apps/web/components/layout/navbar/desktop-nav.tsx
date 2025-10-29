@@ -11,7 +11,7 @@
 "use client";
 
 import type { SafeUser } from "@/lib/auth";
-import { Heart, Search } from "lucide-react";
+import { Heart } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
 import { AuthButtons } from "./auth-buttons";
@@ -19,6 +19,7 @@ import { getNavLinks } from "./constants/nav-links";
 import { useMagneticEffect } from "./hooks/use-navbar-animations";
 import { SocialLinks } from "./social-links";
 import { UserDropdown } from "./user-dropdown";
+import { AISearchInline } from "@/components/ai-search/ai-search-inline";
 
 interface DesktopNavProps {
   isAuthenticated: boolean;
@@ -67,20 +68,13 @@ export function DesktopNav({
       {/* Social Media Icons - Desktop (hidden on map page) */}
       {!isMapPage && <SocialLinks variant="desktop" isHomepage={isHomepage} />}
 
-      {/* GROUP 2: Search */}
-      <div className="flex items-center">
-        <Link
-          href="/propiedades"
-          className={`p-2 rounded-full transition-all ${
-            isHomepage || isMapPage
-              ? "text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-              : "text-oslo-gray-300 hover:text-oslo-gray-100 hover:bg-oslo-gray-800"
-          }`}
-          aria-label="Buscar propiedades"
-        >
-          <Search className="w-5 h-5" />
-        </Link>
-      </div>
+      {/* GROUP 2: AI Search Inline */}
+      {isMapPage && (
+        <AISearchInline onSearch={(query) => {
+          // TODO: Sesión 2 - Redirect to /mapa with query
+          console.log("Search:", query);
+        }} />
+      )}
 
       {/* Vertical Divider */}
       <div

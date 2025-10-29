@@ -41,7 +41,7 @@
  * - Industry standard (Airbnb, Zillow pattern)
  */
 
-import { MapView } from "@/components/map/map-view";
+import { MapSearchIntegration } from "@/components/map/map-search-integration";
 import {
   parseBoundsParams,
   boundsToViewport,
@@ -165,7 +165,7 @@ export default async function MapPage(props: MapPageProps) {
    * Render map with real database properties and viewport from URL
    */
   return (
-    <MapView
+    <MapSearchIntegration
       properties={properties}
       initialViewport={viewport}
       isAuthenticated={!!currentUser}

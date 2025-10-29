@@ -8,8 +8,8 @@ Modern real estate platform built with Next.js 15, Supabase, and Turborepo.
 
 - **[Quick Start Guide](./QUICK_START.md)** - Get up and running in 5 minutes
 - **[Claude Context](./CLAUDE.md)** - Auto-loaded context for Claude Code
-- **[AI Assistants Guide](./docs/AI_ASSISTANTS.md)** - Complete guide for Claude & Gemini
-- **[Token Optimization](./docs/TOKEN_OPTIMIZATION.md)** - Reduce AI context usage
+- **[AI Assistants Guide](./docs/ai/AI_ASSISTANTS.md)** - Complete guide for Claude & Gemini
+- **[Token Optimization](./docs/ai/TOKEN_OPTIMIZATION.md)** - Reduce AI context usage
 - **[Setup Guides](./docs/setup/)** - Configuration & troubleshooting
 - **[MCP Integration](./docs/mcp/)** - Model Context Protocol
 
@@ -53,8 +53,20 @@ inmo-app/
 │   ├── CLAUDE.md            # Auto-loaded Claude context
 │   ├── GEMINI.md            # Auto-loaded Gemini context
 │   ├── QUICK_START.md       # 5-minute onboarding
-│   ├── WARP.md              # Symlink to CLAUDE.md
-│   └── WORKTREES_CHEATSHEET.md
+│   └── WARP.md              # Symlink to CLAUDE.md
+│
+├── archive/                 # 📦 Archived Session Notes & Research
+│   ├── sessions/            # Previous development sessions
+│   │   ├── AI-SEARCH-CONSOLIDATED.md
+│   │   ├── AI-SEARCH-STATUS.md
+│   │   ├── SESION-1-RESUMEN.md
+│   │   ├── SESION-2-COMPLETED.md
+│   │   ├── SESION-2-PROGRESS.md
+│   │   └── DESIGN-BRIEF-AI-SEARCH.md
+│   └── research/            # Research & exploration materials
+│       ├── plan-de-negocios.md
+│       ├── research-map-page.md
+│       └── research-prompt-uiux-ai.md
 │
 ├── apps/
 │   └── web/                 # Next.js application
@@ -70,88 +82,31 @@ inmo-app/
 │   └── typescript-config/   # Shared TypeScript configs
 │
 └── docs/                    # 📚 COMPREHENSIVE DOCUMENTATION
-    ├── INDEX.md             # Documentation hub & navigation
+    ├── INDEX.md             # Navigation hub (START HERE)
     ├── README.md            # Docs overview
     ├── DOCUMENTATION.md     # How to write docs
-    ├── QUICK_REFERENCE.md   # Quick command reference
     │
-    ├── 🚀 GETTING STARTED
-    │   ├── DEVELOPMENT_SETUP.md
-    │   ├── ENV_QUICK_START.md
-    │   ├── project-structure.md
-    │   └── ENVIRONMENT_VARIABLES.md
-    │
-    ├── 🛠️ BUILD TOOLS
-    │   ├── TURBOREPO_GUIDE.md
-    │   ├── TURBOREPO_CHEATSHEET.md
-    │   ├── BIOME_EXPLAINED.md
-    │   ├── BIOME_IMPROVEMENTS.md
-    │   ├── WEBSTORM_BIOME_SETUP.md
-    │   └── WEBSTORM_FORMAT_ISSUE.md
-    │
-    ├── 💾 CACHING & OPTIMIZATION
-    │   ├── caching/
-    │   │   ├── CACHE_COMPONENTS_GUIDE.md
-    │   │   ├── CACHE_IMPLEMENTATION_REVISED.md
-    │   │   ├── CACHE_IMPLEMENTATION_SUMMARY.md
-    │   │   └── CACHE_QUICK_START.md
-    │   ├── CACHE_STRATEGY.md
-    │   └── NEXTJS_CACHING_EXPLAINED.md
-    │
-    ├── 🗺️ MAP & CLUSTERING
-    │   ├── CLUSTERING_GUIDE.md
-    │   ├── CLUSTERING_AND_BOUNDS_QUICK_REFERENCE.md
-    │   ├── CLUSTERING_EXERCISES.md
-    │   ├── GLASSMORPHISM_CLUSTERING_GUIDE.md
-    │   ├── MAP_BOUNDS_URL_GUIDE.md
-    │   └── troubleshooting/MAP_ISSUES.md
-    │
-    ├── 🐛 DEBUGGING
-    │   ├── DEBUGGING_HOOKS_GUIDE.md
-    │   ├── REACT_HOOKS_ANTIPATTERNS.md
-    │   ├── INFINITE_LOOP_DEEP_DIVE.md
-    │   ├── INFINITE_LOOP_VISUAL_GUIDE.md
-    │   ├── INFINITE_LOOP_QUICK_REFERENCE.md
-    │   └── INFINITE_LOOP_DOCS_INDEX.md
-    │
-    ├── 🎨 DESIGN & FEATURES
-    │   ├── design/
-    │   │   ├── COLOR_PALETTE.md
-    │   │   ├── DARK_MODE.md
-    │   │   └── GLASSMORPHISM_IMPLEMENTATION_SUMMARY.md
-    │   ├── features/MAP.md
-    │   └── map-features-roadmap.md
-    │
-    ├── 📊 PROGRESS & DECISIONS
-    │   ├── progress/ROADMAP.md
-    │   └── decisions/
-    │       ├── CLUSTERING_SOLUTION.md
-    │       └── MAP_BOUNDS_CALCULATION.md
-    │
-    ├── 🤖 AI & DEVELOPMENT
-    │   ├── AI_ASSISTANTS.md
-    │   ├── TOKEN_OPTIMIZATION.md
-    │   ├── ai-search-implementation.md
-    │   └── development-tasks-guide.md
-    │
-    ├── 🔧 GIT & WORKFLOW
-    │   ├── git/WORKTREES_CHEATSHEET.md
-    │   ├── git-worktrees-guide.md
-    │   └── node-modules-explained.md
-    │
-    ├── 📚 REFERENCE
-    │   ├── references/
-    │   ├── technical/
-    │   └── NEXTJS_2025_UPDATES.md
-    │
-    ├── 📖 GUIDES
-    │   ├── guides-web/
-    │   │   ├── ADDING_FEATURES.md
-    │   │   └── TESTING.md
-    │   └── setup/               # Setup & configuration
-    │
-    └── 🔌 MCP
-        └── mcp/                 # Model Context Protocol
+    ├── getting-started/     # Onboarding (DEVELOPMENT_SETUP, QUICK_REFERENCE, etc.)
+    ├── architecture/        # System design (ENV, RLS_POLICIES, etc.)
+    ├── tools/               # Development tools
+    │   ├── turborepo/
+    │   ├── biome/
+    │   └── webstorm/
+    ├── design/              # UI/UX & themes
+    ├── features/            # Feature documentation (Map, AI Search, etc.)
+    ├── caching/             # Caching & performance
+    ├── learning/            # Learning materials
+    │   ├── debugging/
+    │   └── hooks/
+    ├── reference/           # General reference
+    ├── ai/                  # AI context & optimization
+    ├── git/                 # Version control
+    ├── decisions/           # Technical decisions
+    ├── progress/            # Roadmap & status
+    ├── mcp/                 # Model Context Protocol
+    ├── guides-web/          # Web app specific guides
+    ├── setup/               # Setup & installation
+    └── troubleshooting/     # Problem solving
 ```
 
 ---
@@ -159,8 +114,8 @@ inmo-app/
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **Next.js 15** (React 19, App Router)
-- **Tailwind CSS** (Styling)
+- **Next.js 16** (React 19, App Router)
+- **Tailwind CSS v4** (Styling)
 - **Radix UI** (Accessible components)
 
 ### Backend
@@ -206,8 +161,8 @@ cd packages/database && bunx prisma generate # Generate client
 - **[Setup: Restart Server](./docs/setup/RESTART_SERVER.md)** - Dev server issues
 
 ### For AI Assistants
-- **[AI Assistants Guide](./docs/AI_ASSISTANTS.md)** - Claude & Gemini context
-- **[Token Optimization](./docs/TOKEN_OPTIMIZATION.md)** - Reduce context size
+- **[AI Assistants Guide](./docs/ai/AI_ASSISTANTS.md)** - Claude & Gemini context
+- **[Token Optimization](./docs/ai/TOKEN_OPTIMIZATION.md)** - Reduce context size
 
 ### For MCP Integration
 - **[MCP README](./docs/mcp/README.md)** - Overview

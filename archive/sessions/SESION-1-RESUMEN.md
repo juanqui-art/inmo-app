@@ -1,8 +1,14 @@
 # 🎯 SESIÓN 1: AI Search UI - COMPLETADA
 
+⚠️ **DEPRECATED (Oct 29, 2025)** - Please refer to `AI-SEARCH-CONSOLIDATED.md` for current status
+
+This document refers to the floating modal design (Session 1), which has been replaced by the inline navbar search in Session 2. The components described below have been removed from the codebase.
+
+---
+
 **Fecha:** 28 de Octubre, 2025
 **Duración:** ~2-3 horas
-**Status:** ✅ **COMPLETADA Y FUNCIONAL**
+**Status:** ✅ **COMPLETADA Y FUNCIONAL** (but superseded by Session 2)
 
 ---
 

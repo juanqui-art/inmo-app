@@ -13,6 +13,10 @@
  * - Responsive viewport
  * - URL State: Shareable map positions (viewport syncs to URL)
  * - Debounced URL updates (500ms) for performance
+ * - Smart viewport fitting for AI search results
+ *   - 1 result → close-up street-level view (zoom 16)
+ *   - Multiple results → fitted view showing all (zoom auto)
+ *   - 0 results → default Cuenca view (zoom 11)
  * - Property markers with interactive controls
  *
  * REFACTORED:
@@ -28,10 +32,11 @@
 
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import type { MapViewport } from "@/lib/utils/url-helpers";
 import type { TransactionType } from "@repo/database";
 import type { MapRef } from "react-map-gl/mapbox";
+import { boundsToMapBoxFormat, calculateBounds } from "@/lib/utils/map-bounds";
 import { useMapInitialization } from "./hooks/use-map-initialization";
 import { useMapTheme } from "./hooks/use-map-theme";
 import { useMapViewport } from "./hooks/use-map-viewport";
@@ -69,6 +74,13 @@ interface MapViewProps {
   initialZoom?: number;
   initialViewport?: MapViewport;
   isAuthenticated?: boolean;
+  /** AI Search results - optional filter */
+  searchResults?: Array<{
+    id: string;
+    city?: string | null;
+    address?: string | null;
+    price: number;
+  }>;
 }
 
 export function MapView({
@@ -77,6 +89,7 @@ export function MapView({
   initialZoom,
   initialViewport,
   isAuthenticated = false,
+  searchResults,
 }: MapViewProps) {
   // Create ref for MapBox map instance
   // Used to get precise bounds that account for navbar
@@ -92,6 +105,43 @@ export function MapView({
     mounted,
     mapRef, // Pass ref to hook
   });
+
+  // Filter properties based on AI search results
+  const displayedProperties = searchResults
+    ? properties.filter((prop) =>
+        searchResults.some((result) => result.id === prop.id)
+      )
+    : properties;
+
+  // Apply fitBounds animation when search results change
+  // Only trigger when searchResults changes, not on every render
+  useEffect(() => {
+    if (mapRef.current && searchResults && searchResults.length > 0) {
+      // Calculate bounding box from search results
+      const bounds = calculateBounds(searchResults);
+
+      if (bounds) {
+        const mapBoxBounds = boundsToMapBoxFormat(bounds);
+
+        // Apply fitBounds with animation
+        mapRef.current.fitBounds(mapBoxBounds, {
+          padding: {
+            top: 100, // Account for navbar
+            bottom: 50,
+            left: 50,
+            right: 50,
+          },
+          duration: 600, // Smooth 600ms transition
+          maxZoom: 17, // Don't zoom in closer than street level
+        });
+
+        console.log("🎬 fitBounds animation applied:", {
+          resultCount: searchResults.length,
+          bounds,
+        });
+      }
+    }
+  }, [searchResults]);
 
   // Error state: Missing MapBox token
   if (isError) {
@@ -111,8 +161,9 @@ export function MapView({
       onMove={handleMove}
       mapStyle={mapStyle}
       mapboxToken={mapboxToken!} // Safe: checked by isError
-      properties={properties}
+      properties={displayedProperties}
       isAuthenticated={isAuthenticated}
+      searchResults={searchResults}
     />
   );
 }
