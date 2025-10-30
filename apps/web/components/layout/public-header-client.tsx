@@ -14,17 +14,12 @@
 "use client";
 
 import type { SafeUser } from "@/lib/auth";
-import { Heart, Home as HomeIcon, Menu } from "lucide-react";
+import { Home as HomeIcon, Menu } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useRef } from "react";
-import { AuthButtons } from "./navbar/auth-buttons";
-import { getNavLinks } from "./navbar/constants/nav-links";
+import { usePathname } from "next/navigation";
 import { DesktopNav } from "./navbar/desktop-nav";
 import { useMobileMenu } from "./navbar/hooks/use-mobile-menu";
 import { MobileMenu } from "./navbar/mobile-menu";
-import { UserDropdown } from "./navbar/user-dropdown";
-import { AISearchInline } from "@/components/ai-search/ai-search-inline";
 
 interface PublicHeaderClientProps {
   isAuthenticated: boolean;
@@ -35,138 +30,59 @@ export function PublicHeaderClient({
   isAuthenticated,
   user,
 }: PublicHeaderClientProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const isHomepage = pathname === "/";
-  const isMapPage = pathname === "/mapa";
   const mobileMenu = useMobileMenu();
-  const ctaButtonRef = useRef<HTMLDivElement>(null);
-  const navLinks = getNavLinks(isAuthenticated);
 
   return (
     <header
-      data-navbar={isHomepage ? "homepage" : isMapPage ? "map" : "pages"}
+      data-navbar={isHomepage ? "homepage" : "pages"}
       className={
         isHomepage
           ? "fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
-          : isMapPage
-            ? "fixed top-0 left-0 right-0 z-50 max-w-6xl mx-auto  bg-black/30 backdrop-blur-3xl shadow-2xl rounded-bl-2xl rounded-br-2xl border-b border-white/15 "
-            : "sticky top-0 z-50 bg-oslo-gray-900/80 backdrop-blur-md border-b border-oslo-gray-700/50 shadow-lg"
+          : "sticky top-0 z-50 bg-oslo-gray-900/80 backdrop-blur-md border-b border-oslo-gray-700/50 shadow-lg"
       }
     >
       <nav className=" mx-auto px-4 sm:px-6 lg:px-8">
         <div
           data-navbar-container="true"
-          className={`flex items-center h-14 ${
-            isMapPage ? "justify-between gap-4 relative" : "justify-between"
-          }`}
+          className="flex items-center justify-between h-14"
         >
-          {/* Map Page Layout: Logo + Nav (Left) | Search (Center) | Auth (Right) */}
-          {isMapPage ? (
-            <>
-              {/* Left: Logo + Navigation Links (Desktop only) */}
-              <div className="hidden md:flex items-center gap-6 flex-shrink-0">
-                <Link
-                  href="/"
-                  data-navbar-logo-text="true"
-                  className="flex items-center gap-2 font-bold text-xl text-white/60 hover:text-white/90 transition-colors z-10"
-                >
-                  <HomeIcon data-navbar-logo-icon="true" className="w-6 h-6" />
-                  <span className="hidden sm:inline">InmoApp</span>
-                </Link>
-                <nav className="flex items-center gap-4">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="flex items-center gap-1 px-3 py-2 rounded-lg font-semibold transition-all text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-                    >
-                      {link.icon === "heart" && <Heart className="w-4 h-4" />}
-                      <span>{link.label}</span>
-                    </Link>
-                  ))}
-                </nav>
-              </div>
+          {/* Logo */}
+          <Link
+            href="/"
+            data-navbar-logo-text="true"
+            className={`flex items-center gap-2 font-bold text-xl ${
+              isHomepage
+                ? "text-white/80 hover:text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+                : "text-oslo-gray-100 hover:text-blue-400"
+            }`}
+          >
+            <HomeIcon data-navbar-logo-icon="true" className="w-6 h-6" />
+            <span>InmoApp</span>
+          </Link>
 
-              {/* Center: AI Search Inline (Flexible) */}
-              <div className="hidden md:flex items-center gap-3 flex-1 min-w-0 ">
-                {/* AI Search Inline */}
-                <AISearchInline
-                  onSearch={(query) => {
-                    // Redirect to map with AI search query
-                    // The query will be processed by the map page
-                    router.push(`/mapa?ai_search=${encodeURIComponent(query)}`);
-                  }}
-                />
-              </div>
+          {/* Desktop Navigation */}
+          <DesktopNav
+            isAuthenticated={isAuthenticated}
+            user={user}
+            isHomepage={isHomepage}
+          />
 
-              {/* Right: Divider + Auth Section (Desktop only) */}
-              <div className="hidden md:flex items-center gap-3 flex-shrink-0">
-                {/* Divider */}
-                <div className="h-6 w-px bg-white/30" />
-
-                {/* Auth Section */}
-                {isAuthenticated ? (
-                  <UserDropdown user={user} isHomepage={true} />
-                ) : (
-                  <AuthButtons
-                    ref={ctaButtonRef}
-                    variant="desktop"
-                    isHomepage={true}
-                  />
-                )}
-              </div>
-
-              {/* Mobile Menu Button */}
-              <button
-                type="button"
-                onClick={mobileMenu.toggle}
-                className="md:hidden p-2 rounded-lg transition-all hover:bg-white/10 text-white"
-                aria-label="Abrir menú"
-                aria-expanded={mobileMenu.isOpen}
-              >
-                <Menu className="w-6 h-6" />
-              </button>
-            </>
-          ) : (
-            <>
-              {/* Default Layout: Logo Left | Nav Right */}
-              <Link
-                href="/"
-                data-navbar-logo-text="true"
-                className={`flex items-center gap-2 font-bold text-xl ${
-                  isHomepage
-                    ? "text-white/80 hover:text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-                    : "text-oslo-gray-100 hover:text-blue-400"
-                }`}
-              >
-                <HomeIcon data-navbar-logo-icon="true" className="w-6 h-6" />
-                <span>InmoApp</span>
-              </Link>
-
-              {/* Desktop Navigation */}
-              <DesktopNav
-                isAuthenticated={isAuthenticated}
-                user={user}
-                isHomepage={isHomepage}
-              />
-
-              {/* Mobile Menu Button */}
-              <button
-                type="button"
-                onClick={mobileMenu.toggle}
-                className={`md:hidden p-2 rounded-lg transition-all ${
-                  isHomepage
-                    ? "hover:bg-white/10 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-                    : "hover:bg-oslo-gray-800 text-oslo-gray-300"
-                }`}
-                aria-label="Abrir menú"
-                aria-expanded={mobileMenu.isOpen}
-              >
-                <Menu className="w-6 h-6" />
-              </button>
-            </>
-          )}
+          {/* Mobile Menu Button */}
+          <button
+            type="button"
+            onClick={mobileMenu.toggle}
+            className={`md:hidden p-2 rounded-lg transition-all ${
+              isHomepage
+                ? "hover:bg-white/10 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+                : "hover:bg-oslo-gray-800 text-oslo-gray-300"
+            }`}
+            aria-label="Abrir menú"
+            aria-expanded={mobileMenu.isOpen}
+          >
+            <Menu className="w-6 h-6" />
+          </button>
         </div>
       </nav>
 

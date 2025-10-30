@@ -19,34 +19,26 @@ import { getNavLinks } from "./constants/nav-links";
 import { useMagneticEffect } from "./hooks/use-navbar-animations";
 import { SocialLinks } from "./social-links";
 import { UserDropdown } from "./user-dropdown";
-import { AISearchInline } from "@/components/ai-search/ai-search-inline";
 
 interface DesktopNavProps {
   isAuthenticated: boolean;
   user: SafeUser;
   isHomepage: boolean;
-  isMapPage?: boolean;
-  isDarkMode?: boolean;
 }
 
 export function DesktopNav({
   isAuthenticated,
   user,
   isHomepage,
-  isMapPage = false,
 }: DesktopNavProps) {
   const ctaButtonRef = useRef<HTMLDivElement>(null);
   const navLinks = getNavLinks(isAuthenticated);
 
-  // Apply magnetic effect to CTA button (only on non-homepage and non-map)
-  useMagneticEffect(ctaButtonRef, !isHomepage && !isMapPage, 0.2);
+  // Apply magnetic effect to CTA button (only on non-homepage)
+  useMagneticEffect(ctaButtonRef, !isHomepage, 0.2);
 
-  // Special layout for map page: content should be distributed (left and right)
-  // This component will be split by the parent container
   return (
-    <div
-      className={`hidden md:flex items-center ${isMapPage ? "gap-4" : "gap-6"}`}
-    >
+    <div className="hidden md:flex items-center gap-6">
       {/* GROUP 1: Navigation Links */}
       <nav className="flex items-center gap-6">
         {navLinks.map((link) => (
@@ -54,7 +46,7 @@ export function DesktopNav({
             key={link.href}
             href={link.href}
             className={`flex items-center gap-1 px-3 py-2 rounded-lg font-semibold transition-all ${
-              isHomepage || isMapPage
+              isHomepage
                 ? "text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
                 : "text-oslo-gray-300 hover:text-oslo-gray-100 hover:bg-oslo-gray-800"
             }`}
@@ -65,32 +57,24 @@ export function DesktopNav({
         ))}
       </nav>
 
-      {/* Social Media Icons - Desktop (hidden on map page) */}
-      {!isMapPage && <SocialLinks variant="desktop" isHomepage={isHomepage} />}
-
-      {/* GROUP 2: AI Search Inline */}
-      {isMapPage && (
-        <AISearchInline onSearch={(query) => {
-          // TODO: Sesión 2 - Redirect to /mapa with query
-          console.log("Search:", query);
-        }} />
-      )}
+      {/* Social Media Icons - Desktop */}
+      <SocialLinks variant="desktop" isHomepage={isHomepage} />
 
       {/* Vertical Divider */}
       <div
         className={`h-6 w-px ${
-          isHomepage || isMapPage ? "bg-white/30" : "bg-oslo-gray-700"
+          isHomepage ? "bg-white/30" : "bg-oslo-gray-700"
         }`}
       />
 
-      {/* GROUP 3: Auth Section */}
+      {/* Auth Section */}
       {isAuthenticated ? (
-        <UserDropdown user={user} isHomepage={isHomepage || isMapPage} />
+        <UserDropdown user={user} isHomepage={isHomepage} />
       ) : (
         <AuthButtons
           ref={ctaButtonRef}
           variant="desktop"
-          isHomepage={isHomepage || isMapPage}
+          isHomepage={isHomepage}
         />
       )}
     </div>
