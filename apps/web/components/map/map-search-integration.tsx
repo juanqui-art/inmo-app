@@ -44,13 +44,15 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { AISearchResult } from "@/app/actions/ai-search";
 import { aiSearchAction } from "@/app/actions/ai-search";
 import { getSmartViewport } from "@/lib/utils/map-bounds";
 import type { MapViewport } from "@/lib/utils/url-helpers";
 import { MapView, type MapProperty } from "./map-view";
+import { MapSearchLoader } from "./ui/map-search-loader";
+import { MapSearchEmptyState } from "./ui/map-search-empty-state";
 
 interface MapSearchIntegrationProps {
   properties: MapProperty[];
@@ -76,18 +78,67 @@ export function MapSearchIntegration({
   const [smartViewport, setSmartViewport] = useState<MapViewport | undefined>(
     initialViewport
   );
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchStage, setSearchStage] = useState<
+    "searching" | "moving" | "loading-markers" | "complete"
+  >("searching");
+
+  // Empty state management
+  const [emptyStateType, setEmptyStateType] = useState<
+    "no-results" | "low-confidence" | "invalid-location" | "medium-confidence-warning" | null
+  >(null);
+
+  // Track last processed query to avoid re-fetching on bounds updates
+  const lastProcessedQuery = React.useRef<string | null>(null);
 
   // Process AI search query from URL
   useEffect(() => {
-    if (aiSearchQuery) {
+    if (aiSearchQuery && aiSearchQuery !== lastProcessedQuery.current) {
+      // New query detected
+      lastProcessedQuery.current = aiSearchQuery;
+
+      // Stage 1: Searching
+      setIsSearching(true);
+      setSearchStage("searching");
+
       aiSearchAction(aiSearchQuery)
         .then((result) => {
           console.log("🗺️ AI Search results received:", {
             count: result.properties?.length,
             query: result.query,
             filters: result.filterSummary,
+            confidence: result.confidence,
+            locationValidation: result.locationValidation,
           });
           setSearchResults(result);
+
+          // Determine empty state type based on result
+          if (!result.success) {
+            // Failed search - check if it's due to invalid location or low confidence
+            if (result.locationValidation && !result.locationValidation.isValid) {
+              setEmptyStateType("invalid-location");
+            } else if (result.confidence !== undefined && result.confidence < 30) {
+              setEmptyStateType("low-confidence");
+            } else {
+              // Generic error - show low confidence
+              setEmptyStateType("low-confidence");
+            }
+            setIsSearching(false); // Stop loading immediately for errors
+          } else if (result.properties && result.properties.length === 0) {
+            // No results found
+            setEmptyStateType("no-results");
+            setIsSearching(false); // Stop loading immediately for no results
+          } else if (result.confidence !== undefined && result.confidence < 50) {
+            // Medium confidence warning (30-50%)
+            setEmptyStateType("medium-confidence-warning");
+            // Continue with map movement - warning will show over results
+            setSearchStage("moving");
+          } else {
+            // Success with good confidence
+            setEmptyStateType(null);
+            // Stage 2: Moving map (will be handled in next useEffect)
+            setSearchStage("moving");
+          }
         })
         .catch((error) => {
           console.error("❌ Error processing AI search:", error);
@@ -96,8 +147,12 @@ export function MapSearchIntegration({
             query: aiSearchQuery,
             error: "Error procesando la búsqueda",
           });
+          setEmptyStateType("low-confidence"); // Show generic error state
+          setIsSearching(false);
         });
     }
+    // NOTE: Don't reset searchResults when ai_search is removed
+    // This allows bounds updates to preserve the search filter
   }, [aiSearchQuery]);
 
   // Calculate smart viewport when search results change
@@ -115,17 +170,64 @@ export function MapSearchIntegration({
         zoom: viewport.zoom,
         center: [viewport.latitude, viewport.longitude],
       });
+
+      // Stage 3: Loading markers
+      // Give fitBounds animation time to start (600ms from map-view.tsx)
+      setTimeout(() => {
+        setSearchStage("loading-markers");
+
+        // Stage 4: Complete
+        // Wait for markers to render (additional 800ms)
+        setTimeout(() => {
+          setSearchStage("complete");
+          // Hide loader after showing "complete" briefly
+          setTimeout(() => {
+            setIsSearching(false);
+          }, 500);
+        }, 800);
+      }, 600);
     }
   }, [searchResults]);
 
   return (
-    <MapView
-      properties={properties}
-      initialCenter={initialCenter}
-      initialZoom={initialZoom}
-      initialViewport={smartViewport || initialViewport}
-      isAuthenticated={isAuthenticated}
-      searchResults={searchResults?.properties}
-    />
+    <div className="relative w-full h-screen">
+      <MapView
+        properties={properties}
+        initialCenter={initialCenter}
+        initialZoom={initialZoom}
+        initialViewport={smartViewport || initialViewport}
+        isAuthenticated={isAuthenticated}
+        searchResults={searchResults?.properties}
+      />
+
+      {/* Search Loading Overlay */}
+      <MapSearchLoader
+        isLoading={isSearching}
+        stage={searchStage}
+        resultCount={
+          searchResults?.success ? searchResults.properties?.length : undefined
+        }
+      />
+
+      {/* Empty State / Error Overlay */}
+      {emptyStateType && searchResults && (
+        <MapSearchEmptyState
+          type={emptyStateType}
+          query={searchResults.query}
+          confidence={searchResults.confidence}
+          suggestions={searchResults.suggestions}
+          availableCities={
+            emptyStateType === "invalid-location"
+              ? searchResults.locationValidation?.suggestedCities ||
+                ["Cuenca", "Gualaceo", "Azogues", "Paute"]
+              : undefined
+          }
+          filterSummary={
+            emptyStateType === "no-results" ? searchResults.filterSummary : undefined
+          }
+          onDismiss={() => setEmptyStateType(null)}
+        />
+      )}
+    </div>
   );
 }

@@ -117,8 +117,11 @@ export function MapView({
   // Only trigger when searchResults changes, not on every render
   useEffect(() => {
     if (mapRef.current && searchResults && searchResults.length > 0) {
-      // Calculate bounding box from search results
-      const bounds = calculateBounds(searchResults);
+      // searchResults already contains the properties with coordinates
+      // from AI search - use them directly to calculate bounds
+      const bounds = calculateBounds(
+        searchResults as Array<{ latitude?: number | null; longitude?: number | null }>
+      );
 
       if (bounds) {
         const mapBoxBounds = boundsToMapBoxFormat(bounds);

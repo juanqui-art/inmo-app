@@ -125,7 +125,7 @@ export function getSmartViewport(
   // Scenario 2: Single result - close-up street-level view
   if (properties.length === 1) {
     const prop = properties[0];
-    if (prop.latitude != null && prop.longitude != null) {
+    if (prop && prop.latitude != null && prop.longitude != null) {
       return {
         latitude: prop.latitude,
         longitude: prop.longitude,

@@ -58,7 +58,7 @@ export function useMapViewport({
   mapRef,
 }: UseMapViewportProps): UseMapViewportReturn {
   const router = useRouter();
-  useSearchParams(); // Keep for reactive updates, but don't use in effect
+  const searchParams = useSearchParams(); // Keep for reactive updates AND to preserve params
 
   /**
    * Viewport state
@@ -175,8 +175,8 @@ export function useMapViewport({
     // Skip on initial mount (already at correct URL from server)
     if (!mounted) return;
 
-    // Build new URL
-    const newUrl = buildBoundsUrl(debouncedBounds);
+    // Build new URL, preserving existing query params (e.g., ai_search)
+    const newUrl = buildBoundsUrl(debouncedBounds, searchParams);
 
     // Only update URL if it actually changed
     // This prevents infinite re-render loops AND duplicate router.replace() calls
@@ -184,7 +184,10 @@ export function useMapViewport({
       lastUrlRef.current = newUrl;
       router.replace(newUrl, { scroll: false });
     }
-  }, [debouncedBounds, router, mounted]); // ← mapRef NOT included (mutable ref)
+    // NOTE: searchParams intentionally NOT in dependencies to avoid infinite loop
+    // We use it inline but don't react to its changes (would cause loop via router.replace)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedBounds, router, mounted]); // ← mapRef, searchParams NOT included
 
   /**
    * Handle map movement

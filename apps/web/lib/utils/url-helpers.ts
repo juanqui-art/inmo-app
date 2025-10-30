@@ -242,8 +242,10 @@ export function boundsToViewport(bounds: MapBounds): MapViewport {
 
 /**
  * Build map URL with bounds query parameters (Zillow/Airbnb pattern)
+ * PRESERVES existing query parameters (e.g., ai_search, filters)
  *
  * @param bounds - Geographic bounding box
+ * @param currentParams - Optional current URLSearchParams to preserve
  * @returns URL string with bounds params (e.g., "/mapa?ne_lat=-2.85&ne_lng=-78.95&sw_lat=-2.95&sw_lng=-79.05")
  *
  * @example
@@ -252,10 +254,22 @@ export function boundsToViewport(bounds: MapBounds): MapViewport {
  *   sw_lat: -2.95, sw_lng: -79.05
  * })
  * // Returns: "/mapa?ne_lat=-2.85&ne_lng=-78.95&sw_lat=-2.95&sw_lng=-79.05"
+ *
+ * @example With existing params
+ * const currentParams = new URLSearchParams("ai_search=casa+en+gualaceo")
+ * buildBoundsUrl(bounds, currentParams)
+ * // Returns: "/mapa?ai_search=casa+en+gualaceo&ne_lat=-2.85&..."
  */
-export function buildBoundsUrl(bounds: MapBounds): string {
-  const params = new URLSearchParams();
+export function buildBoundsUrl(
+  bounds: MapBounds,
+  currentParams?: URLSearchParams,
+): string {
+  // Start with existing params if provided, otherwise create new
+  const params = currentParams
+    ? new URLSearchParams(currentParams)
+    : new URLSearchParams();
 
+  // Update/set bounds params (overwrites existing bounds if any)
   // Round to reduce URL clutter (4 decimals = ~11m precision)
   params.set("ne_lat", bounds.ne_lat.toFixed(CONSTRAINTS.DECIMAL_PLACES));
   params.set("ne_lng", bounds.ne_lng.toFixed(CONSTRAINTS.DECIMAL_PLACES));

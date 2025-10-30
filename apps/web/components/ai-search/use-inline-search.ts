@@ -115,17 +115,28 @@ export function useInlineSearch(): UseInlineSearchReturn {
       console.log("🔍 Starting AI search:", trimmedQuery);
       const result = await aiSearchAction(trimmedQuery);
 
+      // Store result regardless of success/failure
+      // The map will handle displaying appropriate empty states
+      setSearchResult(result);
+
       if (result.success) {
-        console.log("✅ Search successful:", result);
-        setSearchResult(result);
-        // Close suggestions after successful search
-        setTimeout(() => {
-          setShowSuggestions(false);
-        }, 300);
+        console.log("✅ Search successful:", {
+          count: result.properties?.length,
+          confidence: result.confidence,
+        });
       } else {
-        console.error("❌ Search failed:", result.error);
-        setError(result.error || "Error en la búsqueda");
+        // Log info but don't treat as error - map will show empty state
+        console.log("ℹ️ Search returned with low confidence or no results:", {
+          confidence: result.confidence,
+          error: result.error,
+          suggestions: result.suggestions,
+        });
       }
+
+      // Close suggestions after search completes
+      setTimeout(() => {
+        setShowSuggestions(false);
+      }, 300);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Error desconocido";

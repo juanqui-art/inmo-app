@@ -16,19 +16,27 @@ import { motion } from "motion/react";
 import { Zap, Clock, Lightbulb } from "lucide-react";
 
 // Example searches contextualized for Ecuador/Cuenca
+// Based on real inventory: Cuenca (32), Gualaceo (8), Azogues (6), Paute (4)
 const EXAMPLE_SEARCHES = [
-  "Casa moderna en Cuenca con 3 habitaciones",
-  "Apartamento cerca de la universidad bajo $120k",
-  "Propiedad con jardín y garaje en el norte",
+  // Cuenca - most common (68% of inventory)
+  "Casa 3 habitaciones en Cuenca bajo $150k",
+  "Apartamento moderno en El Ejido con garaje",
   "Suite amueblada para arriendo en el centro",
-  "Casa colonial con patio en Gualaceo",
-  "Penthouse con vista panorámica a la ciudad",
+
+  // Other cities in inventory
+  "Casa con jardín en Gualaceo",
+  "Terreno en Azogues para construcción",
+  "Propiedad familiar en Paute",
+
+  // Price ranges & features
+  "Departamento económico bajo $80k",
+  "Casa con piscina y vista a las montañas",
 ];
 
 const RECENT_SEARCHES = [
-  "Casa 3 habitaciones Quito Norte",
-  "Departamento moderno Cuenca",
-  "Villa con piscina bajo $200k",
+  "Apartamento 2 habitaciones Cuenca",
+  "Casa en Gualaceo con jardín",
+  "Local comercial en Azogues",
 ];
 
 interface AISearchInlineSuggestionsProps {
@@ -109,9 +117,18 @@ export function AISearchInlineSuggestions({
             💡 Tips para mejores resultados
           </p>
           <ul className="space-y-1 text-xs text-oslo-gray-400">
-            <li>• Menciona ubicación (Ej: "en El Ejido")</li>
-            <li>• Incluye características (garaje, jardín)</li>
-            <li>• Especifica presupuesto si lo tienes</li>
+            <li>
+              • <span className="text-oslo-gray-300">Ubicaciones:</span> Cuenca,
+              Gualaceo, Azogues, Paute
+            </li>
+            <li>
+              • <span className="text-oslo-gray-300">Características:</span>{" "}
+              garaje, jardín, amueblado, piscina
+            </li>
+            <li>
+              • <span className="text-oslo-gray-300">Presupuesto:</span> bajo
+              $80k, $100k-$200k, sobre $200k
+            </li>
           </ul>
         </div>
       </div>

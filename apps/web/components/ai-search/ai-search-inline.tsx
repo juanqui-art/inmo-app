@@ -38,9 +38,10 @@ export function AISearchInline({
     handleSearch,
   } = useInlineSearch();
 
-  // Notify parent when search results arrive
+  // Notify parent when search results arrive (success or failure)
+  // The map will handle empty states for failed searches
   useEffect(() => {
-    if (searchResult && searchResult.success && onSearchResults) {
+    if (searchResult && onSearchResults) {
       onSearchResults(searchResult);
     }
   }, [searchResult, onSearchResults]);
