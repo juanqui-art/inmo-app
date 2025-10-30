@@ -31,7 +31,7 @@ export function PublicHeaderClient({
   user,
 }: PublicHeaderClientProps) {
   const pathname = usePathname();
-  const isHomepage = pathname === "/";
+  const isHomepage = pathname === "/" || pathname === "/mapa";
   const mobileMenu = useMobileMenu();
 
   return (
