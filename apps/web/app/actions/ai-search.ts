@@ -13,6 +13,15 @@
 import { parseSearchQuery, isConfidentParse, filtersToWhereClause } from "@/lib/ai/search-parser";
 import { db } from "@repo/database";
 
+export interface LocationValidation {
+  isValid: boolean;
+  requestedLocation: string;
+  matchedCity?: string;
+  suggestedCities?: string[];
+  confidence: number;
+  message?: string;
+}
+
 export interface AISearchResult {
   success: boolean;
   properties?: Array<{
@@ -40,6 +49,8 @@ export interface AISearchResult {
   totalResults?: number;
   confidence?: number;
   error?: string;
+  locationValidation?: LocationValidation; // NEW: Expose location validation
+  suggestions?: string[]; // NEW: Suggestions for improving search
 }
 
 /**
@@ -95,11 +106,36 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
       console.error(
         `❌ Query confidence ${parseResult.confidence}% is below minimum threshold (${MIN_CONFIDENCE_THRESHOLD}%)`
       );
+
+      // Generate helpful suggestions based on what's missing
+      const suggestions: string[] = [];
+
+      // Check if low confidence is due to invalid location
+      if (parseResult.locationValidation && !parseResult.locationValidation.isValid) {
+        suggestions.push("Especifica una ciudad válida: Cuenca, Gualaceo, Azogues o Paute");
+        if (parseResult.locationValidation.suggestedCities?.length) {
+          suggestions.push(`¿Quisiste decir: ${parseResult.locationValidation.suggestedCities.join(", ")}?`);
+        }
+      } else {
+        // Generic ambiguity suggestions
+        if (!parseResult.filters.city) {
+          suggestions.push("Especifica una ciudad (ej: Cuenca, Gualaceo)");
+        }
+        if (!parseResult.filters.category) {
+          suggestions.push("Indica el tipo de propiedad (casa, apartamento, terreno)");
+        }
+        if (!parseResult.filters.maxPrice && !parseResult.filters.minPrice) {
+          suggestions.push("Define un rango de precio (ej: bajo $150k)");
+        }
+      }
+
       return {
         success: false,
         query,
         confidence: parseResult.confidence,
-        error: `Your search is too vague (confidence: ${parseResult.confidence}%). Please be more specific (e.g., "3 bedroom apartment under $200k in Cuenca")`,
+        error: `Tu búsqueda es muy ambigua (confianza: ${parseResult.confidence}%). Por favor sé más específico (ej: "apartamento 3 habitaciones bajo $200k en Cuenca")`,
+        locationValidation: parseResult.locationValidation,
+        suggestions,
       };
     }
 
@@ -161,6 +197,19 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
     if (parseResult.filters.bedrooms) filterSummary.bedrooms = parseResult.filters.bedrooms;
     if (parseResult.filters.features) filterSummary.features = parseResult.filters.features;
 
+    // Generate suggestions for no-results or low-confidence cases
+    const suggestions: string[] = [];
+    if (formattedProperties.length === 0) {
+      suggestions.push("Intenta ampliar tu búsqueda (ej: aumenta el presupuesto)");
+      suggestions.push("Explora otras ciudades: Cuenca, Gualaceo, Azogues, Paute");
+      if (parseResult.filters.bedrooms) {
+        suggestions.push("Considera propiedades con diferente número de habitaciones");
+      }
+    } else if (parseResult.confidence < WARN_CONFIDENCE_THRESHOLD) {
+      suggestions.push("Tu búsqueda tiene baja confianza, intenta ser más específico");
+      suggestions.push("Agrega más detalles (precio, ubicación, tipo de propiedad)");
+    }
+
     return {
       success: true,
       properties: formattedProperties,
@@ -168,6 +217,8 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
       filterSummary,
       totalResults: formattedProperties.length,
       confidence: parseResult.confidence,
+      locationValidation: parseResult.locationValidation,
+      suggestions: suggestions.length > 0 ? suggestions : undefined,
     };
   } catch (error) {
     console.error("❌ AI Search Error:", error);

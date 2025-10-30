@@ -9,6 +9,10 @@
  */
 
 import OpenAI from "openai";
+import {
+  validateLocation,
+  getAvailableCitiesForPrompt,
+} from "./location-validator";
 
 interface SearchFilters {
   city?: string; // City (Cuenca, Gualaceo, Paute, etc.)
@@ -24,36 +28,58 @@ interface SearchFilters {
   reasoning?: string; // Chain-of-thought explanation for debugging
 }
 
+interface LocationValidation {
+  isValid: boolean;
+  requestedLocation: string;
+  matchedCity?: string;
+  suggestedCities?: string[];
+  confidence: number;
+  message?: string;
+}
+
 interface ParseResult {
   success: boolean;
   filters: SearchFilters;
   rawQuery: string;
   confidence: number; // 0-100
   error?: string;
+  locationValidation?: LocationValidation; // NEW: Validation result
 }
 
 /**
- * System prompt for OpenAI - IMPROVED with Chain-of-Thought
- * Defines the behavior and output format for the parser
+ * Generate dynamic system prompt with available cities
+ * IMPROVEMENTS (v2 - based on industry best practices):
+ * - Dynamic city list injection (prevents hallucination)
+ * - Strict location validation rules (inspired by Zillow)
+ * - LLM-as-a-Judge framework (AWS QnA)
+ * - Improved disambiguation techniques
+ * - Out-of-scope location handling
  *
- * IMPROVEMENTS (vs v1):
- * - Added Chain-of-Thought reasoning for better accuracy (+15-30% according to studies)
- * - Added explicit field definitions to reduce ambiguity
- * - Added validation rules for price ranges
- * - Added semantic interpretation guidelines
- * - Added fuzzy matching hints for cities/neighborhoods
- * - Clear separation between features (physical) vs amenities (furnished state)
- * - Includes reasoning field for debugging
+ * @param availableCities - Comma-separated list of cities in inventory
  */
-const SYSTEM_PROMPT = `You are an expert real estate search assistant for the Ecuador market, specifically Cuenca and surrounding areas. Your expertise includes understanding local market context, price ranges, and property terminology.
+function generateSystemPrompt(availableCities: string): string {
+  return `You are an expert real estate search assistant for the Ecuador market, specifically Cuenca and surrounding areas. Your expertise includes understanding local market context, price ranges, and property terminology.
+
+**CRITICAL: LOCATION SCOPE VALIDATION**
+You have access to properties ONLY in these cities:
+${availableCities}
+
+If a user requests a location NOT in this list (e.g., "Quito", "Guayaquil", "Loja"), you MUST:
+1. Set confidence to 0-20 (very low)
+2. Include a "locationError" field in reasoning explaining the mismatch
+3. Do NOT hallucinate properties in unavailable locations
+4. Suggest the closest available city if possible
 
 YOUR TASK: Extract structured search parameters from natural language queries in Spanish.
 
 THINK STEP BY STEP (Chain-of-Thought):
-1. IDENTIFY LOCATION: Look for city names, neighborhoods, or regional clues
-   - Explicit: "en Cuenca", "El Ejido", "Gualaceo"
-   - Implicit: "centro" → Zona Centro, "norte" → northern areas
-   - Default: If no location specified → "Cuenca"
+1. IDENTIFY LOCATION: **STRICTLY VALIDATE** against available cities list
+   - FIRST: Check if mentioned city is in available cities list: ${availableCities}
+   - If city is NOT in list: Set confidence to 0-20 and flag as "locationError"
+   - Explicit matches: "en Cuenca", "Gualaceo", "Paute", "Azogues"
+   - Neighborhood/address clues: "El Ejido", "centro", "Totoracocha" (these belong to Cuenca)
+   - Default: If NO location specified AND no error → default to "Cuenca"
+   - NEVER default to Cuenca if user explicitly requested an unavailable city
 
 2. IDENTIFY PROPERTY TYPE: Determine the category
    - "casa" = Single-family house, standalone building
@@ -159,7 +185,11 @@ IMPORTANT:
 2. Do NOT include null fields - use empty arrays for features/amenities if none found
 3. Always include reasoning for debugging
 4. If confidence is very low (<30), still return the JSON but with mostly null fields
-5. Never hallucinate prices, bedrooms, or locations not mentioned in the query`;
+5. **CRITICAL**: Never hallucinate prices, bedrooms, or locations not mentioned in the query
+6. **CRITICAL**: ONLY return cities from the available cities list: ${availableCities}
+7. **CRITICAL**: If user requests unavailable city, set confidence to 0-20 and explain in reasoning`;
+}
+
 
 /**
  * Parse a natural language search query using OpenAI
@@ -180,6 +210,10 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
       };
     }
 
+    // Get available cities for prompt injection
+    const availableCities = await getAvailableCitiesForPrompt();
+    const systemPrompt = generateSystemPrompt(availableCities);
+
     // Initialize OpenAI client
     const openai = new OpenAI({
       apiKey,
@@ -191,7 +225,7 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
       messages: [
         {
           role: "system",
-          content: SYSTEM_PROMPT,
+          content: systemPrompt,
         },
         {
           role: "user",
@@ -281,18 +315,51 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
       filters.bathrooms = undefined;
     }
 
+    // VALIDATION: Validate location against available cities (NEW in v2)
+    let locationValidation: LocationValidation | undefined;
+    let finalConfidence = confidence;
+
+    if (filters.city) {
+      locationValidation = await validateLocation(filters.city);
+
+      // Adjust confidence based on location validation
+      if (!locationValidation.isValid) {
+        // Location doesn't exist - severely penalize confidence
+        finalConfidence = Math.min(confidence, 20);
+        console.warn(
+          `⚠️  Location validation failed: "${filters.city}" not in inventory. ${locationValidation.message}`,
+        );
+      } else if (
+        locationValidation.matchedCity &&
+        locationValidation.matchedCity !== filters.city
+      ) {
+        // Location was fuzzy-matched - slightly reduce confidence
+        finalConfidence = Math.min(
+          confidence,
+          locationValidation.confidence || 85,
+        );
+        // Update city to matched city
+        filters.city = locationValidation.matchedCity;
+        console.log(
+          `✓ Location fuzzy-matched: "${filters.city}" → "${locationValidation.matchedCity}"`,
+        );
+      }
+    }
+
     console.log("🧠 AI Parse Result:", {
       query,
-      confidence,
+      confidence: finalConfidence,
       reasoning,
       filters,
+      locationValidation,
     });
 
     return {
       success: true,
       filters,
       rawQuery: query,
-      confidence,
+      confidence: finalConfidence,
+      locationValidation,
     };
   } catch (error) {
     console.error("Error in parseSearchQuery:", error);
