@@ -31,16 +31,19 @@ export function PublicHeaderClient({
   user,
 }: PublicHeaderClientProps) {
   const pathname = usePathname();
-  const isHomepage = pathname === "/" || pathname === "/mapa";
+  const isHomepage = pathname === "/";
+  const isMapPage = pathname === "/mapa";
   const mobileMenu = useMobileMenu();
 
   return (
     <header
-      data-navbar={isHomepage ? "homepage" : "pages"}
+      data-navbar={isMapPage ? "map" : isHomepage ? "homepage" : "pages"}
       className={
-        isHomepage
+        isMapPage
           ? "fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
-          : "sticky top-0 z-50 bg-oslo-gray-900/80 backdrop-blur-md border-b border-oslo-gray-700/50 shadow-lg"
+          : isHomepage
+            ? "sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
+            : "sticky top-0 z-50 bg-oslo-gray-900/80 backdrop-blur-md border-b border-oslo-gray-700/50 shadow-lg"
       }
     >
       <nav className=" mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,7 +56,7 @@ export function PublicHeaderClient({
             href="/"
             data-navbar-logo-text="true"
             className={`flex items-center gap-2 font-bold text-xl ${
-              isHomepage
+              isHomepage || isMapPage
                 ? "text-white/80 hover:text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
                 : "text-oslo-gray-100 hover:text-blue-400"
             }`}
@@ -66,7 +69,7 @@ export function PublicHeaderClient({
           <DesktopNav
             isAuthenticated={isAuthenticated}
             user={user}
-            isHomepage={isHomepage}
+            isHomepage={isHomepage || isMapPage}
           />
 
           {/* Mobile Menu Button */}
@@ -74,7 +77,7 @@ export function PublicHeaderClient({
             type="button"
             onClick={mobileMenu.toggle}
             className={`md:hidden p-2 rounded-lg transition-all ${
-              isHomepage
+              isHomepage || isMapPage
                 ? "hover:bg-white/10 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
                 : "hover:bg-oslo-gray-800 text-oslo-gray-300"
             }`}
