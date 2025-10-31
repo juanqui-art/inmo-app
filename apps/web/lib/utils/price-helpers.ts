@@ -49,6 +49,39 @@ export function findNearestBucket(
 }
 
 /**
+ * Encuentra el índice del bucket más cercano a un precio dado
+ * Usado para sincronizar Radix Slider con histograma (usando índices, no precios)
+ *
+ * @example
+ * const buckets = [
+ *   { bucket: 0, count: 31 },
+ *   { bucket: 10000, count: 15 },
+ *   { bucket: 20000, count: 8 },
+ * ]
+ * findBucketIndex(12345, buckets) // 1 (índice del bucket $10000)
+ * findBucketIndex(25000, buckets) // 2 (índice del bucket $20000)
+ */
+export function findBucketIndex(
+  price: number,
+  distribution: { bucket: number; count: number }[]
+): number {
+  if (!distribution || distribution.length === 0) return 0
+
+  let nearestIndex = 0
+  let minDistance = Math.abs(distribution[0]!.bucket - price)
+
+  for (let i = 1; i < distribution.length; i++) {
+    const distance = Math.abs(distribution[i]!.bucket - price)
+    if (distance < minDistance) {
+      minDistance = distance
+      nearestIndex = i
+    }
+  }
+
+  return nearestIndex
+}
+
+/**
  * Calcula el número de propiedades dentro de un rango de precios
  * basado en la distribución del histograma
  *
