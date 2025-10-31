@@ -92,7 +92,8 @@ export function PriceHistogramSlider({
           {/* Barras del histograma */}
           {distribution!.map((bucket, index) => {
             const x = index * barWidth
-            const height = (bucket.count / maxCount) * BAR_HEIGHT
+            // Limitar altura máxima a BAR_HEIGHT para evitar que sobresalga
+            const height = Math.min((bucket.count / maxCount) * BAR_HEIGHT, BAR_HEIGHT)
             const isInRange = isBucketInRange(bucket, localMin, localMax)
 
             return (
@@ -124,7 +125,7 @@ export function PriceHistogramSlider({
 
         {/* Radix Range Slider superpuesto */}
         {distribution! && distribution!.length > 0 && (
-          <div className="absolute inset-0 flex items-center px-0">
+          <div className="absolute inset-0 flex items-end px-0 pb-3">
             <Slider.Root
               className="relative flex w-full touch-none select-none items-center"
               value={[minIndex, maxIndex]}
