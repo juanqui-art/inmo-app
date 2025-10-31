@@ -27,13 +27,16 @@ import {
 } from '@/lib/utils/price-helpers'
 
 /**
- * Formatea un número con separadores de miles
+ * Formatea un número con separadores de miles (Ecuador: punto)
+ * En Ecuador usamos punto (.) para separar miles, no coma
+ *
  * @example
- * formatNumberWithCommas(1000000)  // "1,000,000"
- * formatNumberWithCommas(50000)    // "50,000"
+ * formatNumberEcuador(1000000)  // "1.000.000"
+ * formatNumberEcuador(50000)    // "50.000"
+ * formatNumberEcuador(100)      // "100"
  */
-const formatNumberWithCommas = (num: number): string => {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+const formatNumberEcuador = (num: number): string => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
 
 interface PriceFilterDropdownProps {
@@ -167,7 +170,7 @@ export function PriceFilterDropdown({
             <span className="px-2 py-2 text-oslo-gray-400 font-medium text-sm flex-shrink-0">$</span>
             <input
               type="text"
-              value={formatNumberWithCommas(localMin)}
+              value={formatNumberEcuador(localMin)}
               onChange={handleInputMinChange}
               className="flex-1 min-w-0 px-0 py-2 pr-2 bg-oslo-gray-800 text-oslo-gray-100 text-sm font-medium placeholder-oslo-gray-500 focus:outline-none"
               placeholder="0"
@@ -181,7 +184,7 @@ export function PriceFilterDropdown({
             <span className="px-2 py-2 text-oslo-gray-400 font-medium text-sm flex-shrink-0">$</span>
             <input
               type="text"
-              value={formatNumberWithCommas(localMax)}
+              value={formatNumberEcuador(localMax)}
               onChange={handleInputMaxChange}
               className="flex-1 min-w-0 px-0 py-2 pr-2 bg-oslo-gray-800 text-oslo-gray-100 text-sm font-medium placeholder-oslo-gray-500 focus:outline-none"
               placeholder="0"
