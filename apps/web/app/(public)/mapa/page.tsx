@@ -54,6 +54,7 @@ import {
   validateBoundsParams,
 } from "@/lib/cache/properties-cache";
 import { getCurrentUser } from "@/lib/auth";
+import { propertyRepository } from "@repo/database";
 import type { Metadata } from "next";
 
 /**
@@ -162,6 +163,15 @@ export default async function MapPage(props: MapPageProps) {
   const currentUser = await getCurrentUser();
 
   /**
+   * Fetch dynamic price range from database
+   * Used to initialize price filter slider bounds
+   * Considers current filters to provide contextual price ranges
+   */
+  const { minPrice, maxPrice } = await propertyRepository.getPriceRange(
+    repositoryFilters
+  );
+
+  /**
    * Render map with real database properties and viewport from URL
    */
   return (
@@ -169,6 +179,8 @@ export default async function MapPage(props: MapPageProps) {
       properties={properties}
       initialViewport={viewport}
       isAuthenticated={!!currentUser}
+      priceRangeMin={minPrice}
+      priceRangeMax={maxPrice}
     />
   );
 }

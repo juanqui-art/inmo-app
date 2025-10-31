@@ -53,6 +53,7 @@ import type { MapViewport } from "@/lib/utils/url-helpers";
 import { MapView, type MapProperty } from "./map-view";
 import { MapSearchLoader } from "./ui/map-search-loader";
 import { MapSearchEmptyState } from "./ui/map-search-empty-state";
+import { FilterBar } from "./filters/filter-bar";
 
 interface MapSearchIntegrationProps {
   properties: MapProperty[];
@@ -60,6 +61,8 @@ interface MapSearchIntegrationProps {
   initialZoom?: number;
   initialViewport?: MapViewport;
   isAuthenticated?: boolean;
+  priceRangeMin?: number;
+  priceRangeMax?: number;
 }
 
 export function MapSearchIntegration({
@@ -68,15 +71,17 @@ export function MapSearchIntegration({
   initialZoom,
   initialViewport,
   isAuthenticated = false,
+  priceRangeMin,
+  priceRangeMax,
 }: MapSearchIntegrationProps) {
   const searchParams = useSearchParams();
   const aiSearchQuery = searchParams.get("ai_search");
 
   const [searchResults, setSearchResults] = useState<AISearchResult | null>(
-    null
+    null,
   );
   const [smartViewport, setSmartViewport] = useState<MapViewport | undefined>(
-    initialViewport
+    initialViewport,
   );
   const [isSearching, setIsSearching] = useState(false);
   const [searchStage, setSearchStage] = useState<
@@ -85,7 +90,11 @@ export function MapSearchIntegration({
 
   // Empty state management
   const [emptyStateType, setEmptyStateType] = useState<
-    "no-results" | "low-confidence" | "invalid-location" | "medium-confidence-warning" | null
+    | "no-results"
+    | "low-confidence"
+    | "invalid-location"
+    | "medium-confidence-warning"
+    | null
   >(null);
 
   // Track last processed query to avoid re-fetching on bounds updates
@@ -115,9 +124,15 @@ export function MapSearchIntegration({
           // Determine empty state type based on result
           if (!result.success) {
             // Failed search - check if it's due to invalid location or low confidence
-            if (result.locationValidation && !result.locationValidation.isValid) {
+            if (
+              result.locationValidation &&
+              !result.locationValidation.isValid
+            ) {
               setEmptyStateType("invalid-location");
-            } else if (result.confidence !== undefined && result.confidence < 30) {
+            } else if (
+              result.confidence !== undefined &&
+              result.confidence < 30
+            ) {
               setEmptyStateType("low-confidence");
             } else {
               // Generic error - show low confidence
@@ -128,7 +143,10 @@ export function MapSearchIntegration({
             // No results found
             setEmptyStateType("no-results");
             setIsSearching(false); // Stop loading immediately for no results
-          } else if (result.confidence !== undefined && result.confidence < 50) {
+          } else if (
+            result.confidence !== undefined &&
+            result.confidence < 50
+          ) {
             // Medium confidence warning (30-50%)
             setEmptyStateType("medium-confidence-warning");
             // Continue with map movement - warning will show over results
@@ -190,44 +208,57 @@ export function MapSearchIntegration({
   }, [searchResults]);
 
   return (
-    <div className="relative w-full h-screen">
-      <MapView
-        properties={properties}
-        initialCenter={initialCenter}
-        initialZoom={initialZoom}
-        initialViewport={smartViewport || initialViewport}
-        isAuthenticated={isAuthenticated}
-        searchResults={searchResults?.properties}
-      />
+    <>
+      <FilterBar priceRangeMin={priceRangeMin} priceRangeMax={priceRangeMax} />
+      <div className="relative w-full h-screen">
+        {/* Filter Bar */}
 
-      {/* Search Loading Overlay */}
-      <MapSearchLoader
-        isLoading={isSearching}
-        stage={searchStage}
-        resultCount={
-          searchResults?.success ? searchResults.properties?.length : undefined
-        }
-      />
+        <MapView
+          properties={properties}
+          initialCenter={initialCenter}
+          initialZoom={initialZoom}
+          initialViewport={smartViewport || initialViewport}
+          isAuthenticated={isAuthenticated}
+          searchResults={searchResults?.properties}
+        />
 
-      {/* Empty State / Error Overlay */}
-      {emptyStateType && searchResults && (
-        <MapSearchEmptyState
-          type={emptyStateType}
-          query={searchResults.query}
-          confidence={searchResults.confidence}
-          suggestions={searchResults.suggestions}
-          availableCities={
-            emptyStateType === "invalid-location"
-              ? searchResults.locationValidation?.suggestedCities ||
-                ["Cuenca", "Gualaceo", "Azogues", "Paute"]
+        {/* Search Loading Overlay */}
+        <MapSearchLoader
+          isLoading={isSearching}
+          stage={searchStage}
+          resultCount={
+            searchResults?.success
+              ? searchResults.properties?.length
               : undefined
           }
-          filterSummary={
-            emptyStateType === "no-results" ? searchResults.filterSummary : undefined
-          }
-          onDismiss={() => setEmptyStateType(null)}
         />
-      )}
-    </div>
+
+        {/* Empty State / Error Overlay */}
+        {emptyStateType && searchResults && (
+          <MapSearchEmptyState
+            type={emptyStateType}
+            query={searchResults.query}
+            confidence={searchResults.confidence}
+            suggestions={searchResults.suggestions}
+            availableCities={
+              emptyStateType === "invalid-location"
+                ? searchResults.locationValidation?.suggestedCities || [
+                    "Cuenca",
+                    "Gualaceo",
+                    "Azogues",
+                    "Paute",
+                  ]
+                : undefined
+            }
+            filterSummary={
+              emptyStateType === "no-results"
+                ? searchResults.filterSummary
+                : undefined
+            }
+            onDismiss={() => setEmptyStateType(null)}
+          />
+        )}
+      </div>
+    </>
   );
 }

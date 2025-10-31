@@ -32,11 +32,13 @@
 
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import type { MapViewport } from "@/lib/utils/url-helpers";
 import type { TransactionType } from "@repo/database";
 import type { MapRef } from "react-map-gl/mapbox";
 import { boundsToMapBoxFormat, calculateBounds } from "@/lib/utils/map-bounds";
+import { parseFilterParams } from "@/lib/utils/url-helpers";
 import { useMapInitialization } from "./hooks/use-map-initialization";
 import { useMapTheme } from "./hooks/use-map-theme";
 import { useMapViewport } from "./hooks/use-map-viewport";
@@ -95,6 +97,10 @@ export function MapView({
   // Used to get precise bounds that account for navbar
   const mapRef = useRef<MapRef>(null);
 
+  // Get current filters from URL
+  const searchParams = useSearchParams();
+  const urlFilters = parseFilterParams(searchParams);
+
   // Hooks for business logic
   const { mounted, mapboxToken, isError } = useMapInitialization();
   const { mapStyle } = useMapTheme();
@@ -106,12 +112,66 @@ export function MapView({
     mapRef, // Pass ref to hook
   });
 
-  // Filter properties based on AI search results
-  const displayedProperties = searchResults
-    ? properties.filter((prop) =>
+  /**
+   * CLIENT-SIDE FILTERING
+   *
+   * Filters properties based on:
+   * 1. AI search results (if available)
+   * 2. URL filter parameters (minPrice, maxPrice, category, bedrooms, etc.)
+   *
+   * This enables real-time filtering without server re-renders when filters change
+   */
+  const displayedProperties = useMemo(() => {
+    let filtered = properties;
+
+    // First filter by AI search results if available
+    if (searchResults) {
+      filtered = filtered.filter((prop) =>
         searchResults.some((result) => result.id === prop.id)
-      )
-    : properties;
+      );
+    }
+
+    // Then apply URL-based filters
+    if (urlFilters.minPrice !== undefined) {
+      filtered = filtered.filter((prop) => prop.price >= urlFilters.minPrice!);
+    }
+
+    if (urlFilters.maxPrice !== undefined) {
+      filtered = filtered.filter((prop) => prop.price <= urlFilters.maxPrice!);
+    }
+
+    if (urlFilters.category) {
+      const categories = Array.isArray(urlFilters.category)
+        ? urlFilters.category
+        : [urlFilters.category];
+      filtered = filtered.filter((prop) =>
+        categories.includes(prop.category || "")
+      );
+    }
+
+    if (urlFilters.transactionType) {
+      const types = Array.isArray(urlFilters.transactionType)
+        ? urlFilters.transactionType
+        : [urlFilters.transactionType];
+      filtered = filtered.filter((prop) =>
+        types.includes(prop.transactionType)
+      );
+    }
+
+    if (urlFilters.bedrooms !== undefined) {
+      filtered = filtered.filter(
+        (prop) => (prop.bedrooms ?? 0) >= urlFilters.bedrooms!
+      );
+    }
+
+    if (urlFilters.bathrooms !== undefined) {
+      filtered = filtered.filter(
+        (prop) => (prop.bathrooms ?? 0) >= urlFilters.bathrooms!
+      );
+    }
+
+    return filtered;
+  }, [properties, searchResults, urlFilters]);
 
   // Apply fitBounds animation when search results change
   // Only trigger when searchResults changes, not on every render
@@ -127,9 +187,10 @@ export function MapView({
         const mapBoxBounds = boundsToMapBoxFormat(bounds);
 
         // Apply fitBounds with animation
+        // Account for navbar (56px) + filter bar (56px) = 112px top padding
         mapRef.current.fitBounds(mapBoxBounds, {
           padding: {
-            top: 100, // Account for navbar
+            top: 130, // Account for navbar + filter bar
             bottom: 50,
             left: 50,
             right: 50,
