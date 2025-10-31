@@ -37,7 +37,7 @@ export function PriceHistogramSlider({
 
   // Dimensiones del SVG (más compacto, solo visualización)
   const SVG_WIDTH = 300
-  const SVG_HEIGHT = 100
+  const SVG_HEIGHT = 150
   const BAR_HEIGHT = SVG_HEIGHT - 30 // Espacio para margen
 
   // Altura máxima del histograma basada en distribución visible
@@ -49,7 +49,7 @@ export function PriceHistogramSlider({
   // 🎨 AJUSTES DE DISEÑO - Personaliza aquí
   const BAR_WIDTH_RATIO = 0.45  // Qué tan delgadas (0.3 = muy delgadas, 1.0 = llenan todo)
   const BAR_RADIUS = 3          // Curvatura de esquinas superiores (0 = cuadrado, 5+ = muy redondeado)
-  const PADDING_X = 15          // Espacio lateral del histograma (airespace a los lados)
+  const PADDING_X = 12          // Espacio lateral del histograma (airespace a los lados)
 
   // Calcular índices actuales basados en localMin/localMax
   const minIndex = useMemo(() => {
@@ -117,24 +117,16 @@ export function PriceHistogramSlider({
               </g>
             )
           })}
-
-          {/* Línea base */}
-          <line
-            x1={-PADDING_X}
-            y1={SVG_HEIGHT - 10}
-            x2={SVG_WIDTH + PADDING_X}
-            y2={SVG_HEIGHT - 10}
-            stroke="#4b5563"
-            strokeWidth={3}
-          />
         </svg>
+
+
       </div>
 
       {/* 2. SLIDER INTERACTIVO SEPARADO - Línea horizontal clara */}
       {distribution! && distribution!.length > 0 && (
-        <div className="w-full pt-2 pb-1 px-[15px]">
+        <div className="w-full ">
           <Slider.Root
-            className="relative flex w-full touch-none select-none items-center"
+            className="relative  flex w-full touch-none select-none items-center bottom-5"
             value={[minIndex, maxIndex]}
             onValueChange={handleSliderChange}
             min={0}
@@ -148,25 +140,20 @@ export function PriceHistogramSlider({
 
             {/* Handle mínimo */}
             <Slider.Thumb
-              className="block h-5 w-5 rounded-full border-2 border-oslo-gray-100 bg-white shadow-md transition-all hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
+              className="block h-3 w-3 rounded-full border-1 border-oslo-gray-100 bg-white shadow-md transition-all hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
               aria-label="Min price"
             />
 
             {/* Handle máximo */}
             <Slider.Thumb
-              className="block h-5 w-5 rounded-full border-2 border-oslo-gray-100 bg-white shadow-md transition-all hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
+              className="block h-3 w-3 rounded-full border-1 border-oslo-gray-100 bg-white shadow-md transition-all hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
               aria-label="Max price"
             />
           </Slider.Root>
         </div>
       )}
 
-      {/* Info debajo */}
-      <div className="text-xs text-oslo-gray-500 text-center">
-        {visibleDistribution && visibleDistribution.length > 0
-          ? `${visibleDistribution.length + 1} rangos de precio`
-          : 'No hay datos de distribución'}
-      </div>
+
     </div>
   )
 }

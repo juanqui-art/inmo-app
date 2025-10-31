@@ -147,14 +147,14 @@ export function PriceFilterDropdown({
       value={displayValue}
       onOpenChange={handleOpenChange}
     >
-      <div className="w-72 m-0 p-0 space-y-4">
+      <div className="w-80 m-0 p-0 space-y-4">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 pt-4">
+        <div className="flex items-center justify-between px-3 ">
           <h3 className="text-lg font-bold text-oslo-gray-100">Precio</h3>
         </div>
 
         {/* Histograma Interactivo */}
-        <div className="px-4">
+        <div className="px-3">
           <PriceHistogramSlider
             distribution={distribution}
             localMin={localMin}
@@ -193,15 +193,15 @@ export function PriceFilterDropdown({
         </div>
 
         {/* Contador de Propiedades */}
-        <div className="text-xs text-oslo-gray-400 text-center py-2 px-4 mx-4 bg-oslo-gray-800/30 rounded-lg">
-          {distribution.length > 0 ? (
-            <span>
-              <strong>{propertyCount}</strong> propiedades disponibles
-            </span>
-          ) : (
-            <span>Cargando distribución...</span>
-          )}
-        </div>
+        {/*<div className="text-xs text-oslo-gray-400 text-center py-2 px-4 mx-4 bg-oslo-gray-800/30 rounded-lg">*/}
+        {/*  {distribution.length > 0 ? (*/}
+        {/*    <span>*/}
+        {/*      <strong>{propertyCount}</strong> propiedades disponibles*/}
+        {/*    </span>*/}
+        {/*  ) : (*/}
+        {/*    <span>Cargando distribución...</span>*/}
+        {/*  )}*/}
+        {/*</div>*/}
 
         {/* Botón "Listo" */}
         <div className="px-4">
