@@ -158,9 +158,9 @@ export function PriceHistogramSlider({
       {/* SVG del Histograma */}
       <svg
         ref={svgRef}
-        width={SVG_WIDTH}
-        height={SVG_HEIGHT}
-        className="w-full border border-oslo-gray-800 rounded-lg bg-oslo-gray-950/50"
+        viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
+        preserveAspectRatio="none"
+        className="w-full h-24 border border-oslo-gray-800 rounded-lg bg-oslo-gray-950/50"
         style={{ userSelect: 'none' }}
       >
         {/* Barras del histograma */}

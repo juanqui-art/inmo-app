@@ -134,15 +134,16 @@ export function PriceFilterDropdown({
       value={displayValue}
       onOpenChange={handleOpenChange}
     >
-      <div className="w-72 m-0 p-4 space-y-4 bg-oslo-gray-900/90 rounded-lg">
+      <div className="w-72 m-0 p-0 space-y-4">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between px-4 pt-4">
           <h3 className="text-lg font-bold text-oslo-gray-100">Precio</h3>
           <span className="text-sm text-oslo-gray-400">Precio de venta</span>
         </div>
 
         {/* Histograma Interactivo */}
-        <PriceHistogramSlider
+        <div className="px-4">
+          <PriceHistogramSlider
           distribution={distribution}
           minPrice={rangeMinBound}
           maxPrice={rangeMaxBound}
@@ -150,28 +151,29 @@ export function PriceFilterDropdown({
           localMax={localMax}
           onRangeChange={handleHistogramChange}
         />
+        </div>
 
         {/* Inputs Numéricos */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0 px-4">
           <input
             type="text"
             value={localMin}
             onChange={handleInputMinChange}
-            className="flex-1 px-3 py-2 rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 text-oslo-gray-100 text-sm font-medium placeholder-oslo-gray-500 focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
+            className="flex-1 min-w-0 px-2 py-2 rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 text-oslo-gray-100 text-sm font-medium placeholder-oslo-gray-500 focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
             placeholder="Min"
           />
-          <span className="text-oslo-gray-400">-</span>
+          <span className="text-oslo-gray-400 flex-shrink-0">-</span>
           <input
             type="text"
             value={localMax}
             onChange={handleInputMaxChange}
-            className="flex-1 px-3 py-2 rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 text-oslo-gray-100 text-sm font-medium placeholder-oslo-gray-500 focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
+            className="flex-1 min-w-0 px-2 py-2 rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 text-oslo-gray-100 text-sm font-medium placeholder-oslo-gray-500 focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
             placeholder="Max"
           />
         </div>
 
         {/* Contador de Propiedades */}
-        <div className="text-xs text-oslo-gray-400 text-center py-2 px-3 bg-oslo-gray-800/30 rounded-lg">
+        <div className="text-xs text-oslo-gray-400 text-center py-2 px-4 mx-4 bg-oslo-gray-800/30 rounded-lg">
           {distribution.length > 0 ? (
             <span>
               <strong>{propertyCount}</strong> propiedades disponibles
@@ -182,15 +184,17 @@ export function PriceFilterDropdown({
         </div>
 
         {/* Botón "Listo" */}
-        <button
-          onClick={handleDone}
-          className="w-full px-4 py-2 rounded-lg bg-oslo-gray-700 text-oslo-gray-100 font-medium text-sm hover:bg-oslo-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
-        >
-          Listo
-        </button>
+        <div className="px-4">
+          <button
+            onClick={handleDone}
+            className="w-full px-4 py-2 rounded-lg bg-oslo-gray-700 text-oslo-gray-100 font-medium text-sm hover:bg-oslo-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
+          >
+            Listo
+          </button>
+        </div>
 
         {/* Info text */}
-        <div className="text-xs text-oslo-gray-500 text-center">
+        <div className="text-xs text-oslo-gray-500 text-center px-4 pb-4">
           {localMin > rangeMinBound || localMax < rangeMaxBound
             ? `${formatPrice(localMin)} - ${formatPrice(localMax)}`
             : 'Cualquier precio'}
