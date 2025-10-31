@@ -36,8 +36,14 @@ export function PriceHistogramSlider({
   const SVG_HEIGHT = 160
   const BAR_HEIGHT = SVG_HEIGHT - 25 // Espacio para handles + margen inferior
 
-  // Altura máxima del histograma
-  const maxCount = Math.max(...distribution.map((d) => d.count), 1)
+  // Altura máxima del histograma (excluir primer bucket si es outlier)
+  // Esto permite que el resto de barras tengan mejor visibilidad
+  const maxCount = Math.max(
+    ...(distribution!.length > 1
+      ? distribution!.slice(1).map((d) => d.count)
+      : distribution!.map((d) => d.count)),
+    1
+  )
 
   // Ancho de cada barra
   const barWidth = SVG_WIDTH / Math.max(distribution.length, 1)
