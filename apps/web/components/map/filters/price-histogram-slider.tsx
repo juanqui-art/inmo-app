@@ -1,15 +1,18 @@
 'use client'
 
 /**
- * Price Histogram Slider (Interactive SVG + Radix Range)
+ * Price Histogram Slider (Realtor.com Style)
  *
- * Histograma interactivo con Radix Range Slider superpuesto
- * - Barras del histograma con datos reales de distribución
- * - Radix Range Slider usar ÍNDICES de buckets para sincronización perfecta
- * - Handles alineados 1:1 con barras del histograma
- * - Snap automático a buckets (step=1 en índices)
- * - Highlight dinámico de barras en rango
- * - Touch & mouse compatible (mejor UX con Radix)
+ * Patrón profesional separado en dos capas:
+ * 1. Histograma visual (solo barras, sin interacción)
+ * 2. Slider interactivo (en línea separada debajo)
+ *
+ * Características:
+ * - Histograma puro: visualización de distribución de precios
+ * - Radix Range Slider: control preciso en línea horizontal clara
+ * - Índices de buckets: sincronización perfecta entre visual y control
+ * - Sin overlays: claridad visual máxima
+ * - Patrón profesional: igual a Realtor.com, Zillow, etc.
  */
 
 import { useCallback, useMemo } from 'react'
@@ -18,8 +21,6 @@ import { findBucketIndex, isBucketInRange } from '@/lib/utils/price-helpers'
 
 interface PriceHistogramSliderProps {
   distribution: { bucket: number; count: number }[]
-  minPrice: number
-  maxPrice: number
   localMin: number
   localMax: number
   onRangeChange: (min: number, max: number) => void
@@ -31,13 +32,13 @@ export function PriceHistogramSlider({
   localMax,
   onRangeChange,
 }: PriceHistogramSliderProps) {
-  // Dimensiones del SVG
-  const SVG_WIDTH = 300
-  const SVG_HEIGHT = 160
-  const BAR_HEIGHT = SVG_HEIGHT - 25 // Espacio para handles + margen inferior
-
   // Distribución visible (excluir primer bucket $0 que es outlier)
   const visibleDistribution = distribution!.length > 1 ? distribution!.slice(1) : distribution!
+
+  // Dimensiones del SVG (más compacto, solo visualización)
+  const SVG_WIDTH = 300
+  const SVG_HEIGHT = 100
+  const BAR_HEIGHT = SVG_HEIGHT - 20 // Espacio para margen
 
   // Altura máxima del histograma basada en distribución visible
   const maxCount = Math.max(...visibleDistribution.map((d) => d.count), 1)
@@ -76,15 +77,13 @@ export function PriceHistogramSlider({
 
   return (
     <div className="w-full space-y-3">
-      {/* Contenedor con SVG e slider superpuesto */}
-      <div className="relative w-full">
-        {/* SVG del Histograma */}
+      {/* 1. HISTOGRAMA VISUAL PURO - Sin interacción */}
+      <div className="w-full">
         <svg
           viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
           preserveAspectRatio="none"
-          className="w-full h-40 border border-oslo-gray-800 rounded-lg bg-oslo-gray-950/50"
+          className="w-full h-24 border border-oslo-gray-700 rounded-lg bg-oslo-gray-950/50"
           style={{ userSelect: 'none' }}
-          pointerEvents="none"
         >
           {/* Barras del histograma (sin primer bucket outlier) */}
           {visibleDistribution.map((bucket, index) => {
@@ -97,12 +96,12 @@ export function PriceHistogramSlider({
                 {/* Barra */}
                 <rect
                   x={x}
-                  y={SVG_HEIGHT - height - 15}
+                  y={SVG_HEIGHT - height - 10}
                   width={Math.max(barWidth - 0.5, 0)}
                   height={height}
                   fill={isInRange ? '#6366f1' : '#4b5563'}
                   opacity={isInRange ? 1 : 0.3}
-                  className="transition-opacity"
+                  className="transition-colors duration-150"
                 />
               </g>
             )
@@ -111,50 +110,50 @@ export function PriceHistogramSlider({
           {/* Línea base */}
           <line
             x1={0}
-            y1={SVG_HEIGHT - 15}
+            y1={SVG_HEIGHT - 10}
             x2={SVG_WIDTH}
-            y2={SVG_HEIGHT - 15}
+            y2={SVG_HEIGHT - 10}
             stroke="#4b5563"
-            strokeWidth={2}
+            strokeWidth={1}
           />
         </svg>
-
-        {/* Radix Range Slider superpuesto */}
-        {distribution! && distribution!.length > 0 && (
-          <div className="absolute inset-0 flex items-end px-0 pb-3">
-            <Slider.Root
-              className="relative flex w-full touch-none select-none items-center"
-              value={[minIndex, maxIndex]}
-              onValueChange={handleSliderChange}
-              min={0}
-              max={distribution!.length - 1}
-              step={1}
-              minStepsBetweenThumbs={0}
-            >
-              <Slider.Track className="relative h-2 w-full grow rounded-full bg-transparent">
-                <Slider.Range className="absolute h-full rounded-full bg-transparent" />
-              </Slider.Track>
-
-              {/* Handle mínimo */}
-              <Slider.Thumb
-                className="block h-5 w-5 rounded-full border-2 border-oslo-gray-100 bg-white shadow-lg transition-colors hover:border-oslo-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
-                aria-label="Min price"
-              />
-
-              {/* Handle máximo */}
-              <Slider.Thumb
-                className="block h-5 w-5 rounded-full border-2 border-oslo-gray-100 bg-white shadow-lg transition-colors hover:border-oslo-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
-                aria-label="Max price"
-              />
-            </Slider.Root>
-          </div>
-        )}
       </div>
 
-      {/* Info debajo del histograma */}
+      {/* 2. SLIDER INTERACTIVO SEPARADO - Línea horizontal clara */}
+      {distribution! && distribution!.length > 0 && (
+        <div className="w-full pt-2 pb-1">
+          <Slider.Root
+            className="relative flex w-full touch-none select-none items-center"
+            value={[minIndex, maxIndex]}
+            onValueChange={handleSliderChange}
+            min={0}
+            max={distribution!.length - 1}
+            step={1}
+            minStepsBetweenThumbs={0}
+          >
+            <Slider.Track className="relative h-1 w-full grow rounded-full bg-oslo-gray-700">
+              <Slider.Range className="absolute h-full rounded-full bg-indigo-500" />
+            </Slider.Track>
+
+            {/* Handle mínimo */}
+            <Slider.Thumb
+              className="block h-5 w-5 rounded-full border-2 border-oslo-gray-100 bg-white shadow-md transition-all hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
+              aria-label="Min price"
+            />
+
+            {/* Handle máximo */}
+            <Slider.Thumb
+              className="block h-5 w-5 rounded-full border-2 border-oslo-gray-100 bg-white shadow-md transition-all hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
+              aria-label="Max price"
+            />
+          </Slider.Root>
+        </div>
+      )}
+
+      {/* Info debajo */}
       <div className="text-xs text-oslo-gray-500 text-center">
         {visibleDistribution && visibleDistribution.length > 0
-          ? `${visibleDistribution.length} buckets • Usa el slider para ajustar`
+          ? `${visibleDistribution.length + 1} rangos de precio`
           : 'No hay datos de distribución'}
       </div>
     </div>

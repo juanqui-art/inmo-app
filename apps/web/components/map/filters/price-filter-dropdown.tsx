@@ -144,13 +144,11 @@ export function PriceFilterDropdown({
         {/* Histograma Interactivo */}
         <div className="px-4">
           <PriceHistogramSlider
-          distribution={distribution}
-          minPrice={rangeMinBound}
-          maxPrice={rangeMaxBound}
-          localMin={localMin}
-          localMax={localMax}
-          onRangeChange={handleHistogramChange}
-        />
+            distribution={distribution}
+            localMin={localMin}
+            localMax={localMax}
+            onRangeChange={handleHistogramChange}
+          />
         </div>
 
         {/* Inputs Numéricos */}
