@@ -33,8 +33,8 @@ export function PriceHistogramSlider({
 }: PriceHistogramSliderProps) {
   // Dimensiones del SVG
   const SVG_WIDTH = 300
-  const SVG_HEIGHT = 120
-  const BAR_HEIGHT = SVG_HEIGHT - 30 // Espacio para handles
+  const SVG_HEIGHT = 160
+  const BAR_HEIGHT = SVG_HEIGHT - 25 // Espacio para handles + margen inferior
 
   // Altura máxima del histograma
   const maxCount = Math.max(...distribution.map((d) => d.count), 1)
@@ -79,7 +79,7 @@ export function PriceHistogramSlider({
         <svg
           viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
           preserveAspectRatio="none"
-          className="w-full h-24 border border-oslo-gray-800 rounded-lg bg-oslo-gray-950/50"
+          className="w-full h-40 border border-oslo-gray-800 rounded-lg bg-oslo-gray-950/50"
           style={{ userSelect: 'none' }}
           pointerEvents="none"
         >
@@ -94,8 +94,8 @@ export function PriceHistogramSlider({
                 {/* Barra */}
                 <rect
                   x={x}
-                  y={SVG_HEIGHT - height - 10}
-                  width={Math.max(barWidth - 1, 0)}
+                  y={SVG_HEIGHT - height - 15}
+                  width={Math.max(barWidth - 0.5, 0)}
                   height={height}
                   fill={isInRange ? '#6366f1' : '#4b5563'}
                   opacity={isInRange ? 1 : 0.3}
@@ -108,9 +108,9 @@ export function PriceHistogramSlider({
           {/* Línea base */}
           <line
             x1={0}
-            y1={SVG_HEIGHT - 10}
+            y1={SVG_HEIGHT - 15}
             x2={SVG_WIDTH}
-            y2={SVG_HEIGHT - 10}
+            y2={SVG_HEIGHT - 15}
             stroke="#4b5563"
             strokeWidth={2}
           />
