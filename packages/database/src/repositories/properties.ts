@@ -449,31 +449,42 @@ export class PropertyRepository {
   } = {}): Promise<{ bucket: number; count: number }[]> {
     const { bucketSize = 10000, filters = {} } = params
 
-    // NOTE: Usando raw SQL query para GROUP BY personalizado
-    // No usamos where object de Prisma, construimos SQL directamente
-    // Usar raw query para GROUP BY personalizado
-    const result = await db.$queryRaw<{ bucket: string; count: number }[]>`
-      SELECT
-        FLOOR(CAST("price" AS FLOAT) / ${bucketSize}) * ${bucketSize}::FLOAT as bucket,
-        COUNT(*)::INT as count
-      FROM "properties"
-      WHERE "status" = 'AVAILABLE'
-      ${
-        filters?.transactionType
-          ? `AND "transaction_type" = ${filters.transactionType}`
-          : ''
-      }
-      ${filters?.city ? `AND "city" ILIKE ${`%${filters.city}%`}` : ''}
-      ${filters?.category ? `AND "category" = ${filters.category}` : ''}
-      GROUP BY bucket
-      ORDER BY bucket ASC
-    `
+    // Construir where clause para Prisma
+    const where: Prisma.PropertyWhereInput = {
+      status: 'AVAILABLE',
+      ...(filters?.transactionType && { transactionType: filters.transactionType }),
+      ...(filters?.category && { category: filters.category }),
+      ...(filters?.agentId && { agentId: filters.agentId }),
+      ...(filters?.city && { city: { contains: filters.city, mode: 'insensitive' } }),
+      ...(filters?.state && { state: { contains: filters.state, mode: 'insensitive' } }),
+      ...(filters?.bedrooms && { bedrooms: { gte: filters.bedrooms } }),
+      ...(filters?.bathrooms && { bathrooms: { gte: filters.bathrooms } }),
+      ...(filters?.minArea && { area: { gte: filters.minArea } }),
+      ...(filters?.maxArea && { area: { lte: filters.maxArea } }),
+    }
 
-    // Convertir string a number y hacer tipado seguro
-    return result.map((row) => ({
-      bucket: Number(row.bucket),
-      count: row.count,
-    }))
+    // Usar groupBy de Prisma en vez de raw SQL
+    // Esto evita problemas de inyección SQL y es más type-safe
+    const properties = await db.property.findMany({
+      where,
+      select: { price: true },
+    })
+
+    // Agrupar en buckets manualmente
+    const buckets = new Map<number, number>()
+
+    for (const property of properties) {
+      const price = Number(property.price)
+      const bucketStart = Math.floor(price / bucketSize) * bucketSize
+      buckets.set(bucketStart, (buckets.get(bucketStart) || 0) + 1)
+    }
+
+    // Convertir a array ordenado
+    const result = Array.from(buckets.entries())
+      .map(([bucket, count]) => ({ bucket, count }))
+      .sort((a, b) => a.bucket - b.bucket)
+
+    return result
   }
 }
 
