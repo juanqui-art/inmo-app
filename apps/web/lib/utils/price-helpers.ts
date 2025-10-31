@@ -39,11 +39,13 @@ export function findNearestBucket(
 ): number {
   if (distribution.length === 0) return price
 
-  return distribution.reduce((prev, curr) => {
+  const nearest = distribution.reduce((prev, curr) => {
     return Math.abs(curr.bucket - price) < Math.abs(prev.bucket - price)
       ? curr
       : prev
-  }).bucket
+  })
+
+  return nearest.bucket
 }
 
 /**
