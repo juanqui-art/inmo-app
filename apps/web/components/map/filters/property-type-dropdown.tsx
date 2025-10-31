@@ -11,7 +11,7 @@
  * - Spanish labels optimized for Ecuador
  */
 
-import { useState, useCallback, useRef, useEffect, useTransition } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Home,

@@ -63,6 +63,7 @@ interface MapSearchIntegrationProps {
   isAuthenticated?: boolean;
   priceRangeMin?: number;
   priceRangeMax?: number;
+  priceDistribution?: { bucket: number; count: number }[];
 }
 
 export function MapSearchIntegration({
@@ -73,6 +74,7 @@ export function MapSearchIntegration({
   isAuthenticated = false,
   priceRangeMin,
   priceRangeMax,
+  priceDistribution,
 }: MapSearchIntegrationProps) {
   const searchParams = useSearchParams();
   const aiSearchQuery = searchParams.get("ai_search");
@@ -209,7 +211,11 @@ export function MapSearchIntegration({
 
   return (
     <>
-      <FilterBar priceRangeMin={priceRangeMin} priceRangeMax={priceRangeMax} />
+      <FilterBar
+        priceRangeMin={priceRangeMin}
+        priceRangeMax={priceRangeMax}
+        priceDistribution={priceDistribution}
+      />
       <div className="relative w-full h-screen">
         {/* Filter Bar */}
 

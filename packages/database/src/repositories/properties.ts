@@ -422,6 +422,59 @@ export class PropertyRepository {
 
     return { minPrice, maxPrice }
   }
+
+  /**
+   * Obtiene distribución de precios para histograma de filtros
+   * Agrupa propiedades en buckets de precio para visualización
+   *
+   * @param params.bucketSize - Tamaño del bucket en USD (ej: 10000 = $10k buckets)
+   * @param params.filters - Filtros opcionales
+   * @returns Array con buckets y conteos de propiedades
+   *
+   * @example
+   * ```typescript
+   * const distribution = await propertyRepository.getPriceDistribution({
+   *   bucketSize: 10000 // $10k buckets
+   * })
+   * // Resultado: [
+   * //   { bucket: 0, count: 31 },      // $0-$10k
+   * //   { bucket: 10000, count: 15 },  // $10k-$20k
+   * //   ...
+   * // ]
+   * ```
+   */
+  async getPriceDistribution(params: {
+    bucketSize?: number
+    filters?: PropertyFilters
+  } = {}): Promise<{ bucket: number; count: number }[]> {
+    const { bucketSize = 10000, filters = {} } = params
+
+    // NOTE: Usando raw SQL query para GROUP BY personalizado
+    // No usamos where object de Prisma, construimos SQL directamente
+    // Usar raw query para GROUP BY personalizado
+    const result = await db.$queryRaw<{ bucket: string; count: number }[]>`
+      SELECT
+        FLOOR(CAST("price" AS FLOAT) / ${bucketSize}) * ${bucketSize}::FLOAT as bucket,
+        COUNT(*)::INT as count
+      FROM "properties"
+      WHERE "status" = 'AVAILABLE'
+      ${
+        filters?.transactionType
+          ? `AND "transaction_type" = ${filters.transactionType}`
+          : ''
+      }
+      ${filters?.city ? `AND "city" ILIKE ${`%${filters.city}%`}` : ''}
+      ${filters?.category ? `AND "category" = ${filters.category}` : ''}
+      GROUP BY bucket
+      ORDER BY bucket ASC
+    `
+
+    // Convertir string a number y hacer tipado seguro
+    return result.map((row) => ({
+      bucket: Number(row.bucket),
+      count: row.count,
+    }))
+  }
 }
 
 /**

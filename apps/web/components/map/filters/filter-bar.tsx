@@ -19,9 +19,14 @@ import { useMapFilters } from "./use-map-filters";
 interface FilterBarProps {
   priceRangeMin?: number;
   priceRangeMax?: number;
+  priceDistribution?: { bucket: number; count: number }[];
 }
 
-export function FilterBar({ priceRangeMin, priceRangeMax }: FilterBarProps) {
+export function FilterBar({
+  priceRangeMin,
+  priceRangeMax,
+  priceDistribution,
+}: FilterBarProps) {
   const { filters, setPriceRange, setCategories, updateFilters } =
     useMapFilters();
 
@@ -45,6 +50,7 @@ export function FilterBar({ priceRangeMin, priceRangeMax }: FilterBarProps) {
             onPriceChange={setPriceRange}
             dbMinPrice={priceRangeMin}
             dbMaxPrice={priceRangeMax}
+            distribution={priceDistribution}
           />
         </div>
 

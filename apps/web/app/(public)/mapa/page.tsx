@@ -53,6 +53,7 @@ import {
   getCachedPropertiesByBounds,
   validateBoundsParams,
 } from "@/lib/cache/properties-cache";
+import { getCachedPriceDistribution } from "@/lib/cache/price-distribution-cache";
 import { getCurrentUser } from "@/lib/auth";
 import { propertyRepository } from "@repo/database";
 import type { Metadata } from "next";
@@ -172,6 +173,14 @@ export default async function MapPage(props: MapPageProps) {
   );
 
   /**
+   * Fetch price distribution for histogram
+   * Ultra-lightweight query: ~30 rows vs 10,000 properties
+   * Cache duration: 24h (distribution changes slowly)
+   * Used to visualize property concentration in price ranges
+   */
+  const priceStats = await getCachedPriceDistribution();
+
+  /**
    * Render map with real database properties and viewport from URL
    */
   return (
@@ -181,6 +190,7 @@ export default async function MapPage(props: MapPageProps) {
       isAuthenticated={!!currentUser}
       priceRangeMin={minPrice}
       priceRangeMax={maxPrice}
+      priceDistribution={priceStats.distribution}
     />
   );
 }

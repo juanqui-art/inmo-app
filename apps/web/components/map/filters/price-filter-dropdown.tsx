@@ -1,30 +1,40 @@
-"use client";
+'use client'
 
 /**
- * Price Filter Dropdown (Realtor.com Style)
+ * Price Filter Dropdown (Realtor.com Style - v2)
  *
- * Advanced price range selector with:
- * - Interactive range slider (Radix UI)
- * - Dropdown selects for exact values
- * - Real-time sync with URL
+ * Improved price range selector with:
+ * - Interactive histogram slider (SVG custom)
+ * - Local state (no URL sync until "Done")
+ * - Explicit confirmation pattern
+ * - Snap to buckets (discrete, round values)
+ * - Real-time property counter
  * - Realtor.com inspired design
+ *
+ * STATE PATTERN:
+ * - localMin/localMax: Internal state (interactive, ephemeral)
+ * - minPrice/maxPrice (props): External state from URL (persistent)
+ * - Sync happens ONLY when user clicks "Done"
  */
 
-import { useState, useCallback, useEffect } from "react";
-import { FilterDropdown } from "./filter-dropdown";
-import { PriceRangeSlider } from "./price-range-slider";
-import { PriceDropdownSelect } from "./price-dropdown-select";
+import { useState, useCallback, useEffect, useMemo } from 'react'
+import { FilterDropdown } from './filter-dropdown'
+import { PriceHistogramSlider } from './price-histogram-slider'
+import {
+  formatPrice,
+  calculatePropertyCount,
+  formatPriceRange,
+} from '@/lib/utils/price-helpers'
 
 interface PriceFilterDropdownProps {
-  minPrice?: number;
-  maxPrice?: number;
-  onPriceChange: (minPrice?: number, maxPrice?: number) => void;
-  dbMinPrice?: number;
-  dbMaxPrice?: number;
+  minPrice?: number
+  maxPrice?: number
+  onPriceChange: (minPrice?: number, maxPrice?: number) => void
+  dbMinPrice?: number
+  dbMaxPrice?: number
+  distribution?: { bucket: number; count: number }[]
+  onOpenChange?: (open: boolean) => void
 }
-
-const MIN_PRICE = 0;
-const MAX_PRICE = 2000000;
 
 export function PriceFilterDropdown({
   minPrice,
@@ -32,132 +42,160 @@ export function PriceFilterDropdown({
   onPriceChange,
   dbMinPrice,
   dbMaxPrice,
+  distribution = [],
+  onOpenChange,
 }: PriceFilterDropdownProps) {
-  // Use dynamic database ranges if available, otherwise use hardcoded defaults
-  const sliderMinBound = dbMinPrice ?? MIN_PRICE;
-  const sliderMaxBound = dbMaxPrice ?? MAX_PRICE;
+  // Determinar los límites del rango basado en BD o defaults
+  const rangeMinBound = dbMinPrice ?? 0
+  const rangeMaxBound = dbMaxPrice ?? 2000000
 
-  const [sliderMin, setSliderMin] = useState<number>(
-    minPrice ?? sliderMinBound,
-  );
-  const [sliderMax, setSliderMax] = useState<number>(
-    maxPrice ?? sliderMaxBound,
-  );
-  const [dropdownMin, setDropdownMin] = useState<number | undefined>(minPrice);
-  const [dropdownMax, setDropdownMax] = useState<number | undefined>(maxPrice);
+  // ✅ ESTADO LOCAL (no sincronizado con URL hasta "Done")
+  const [localMin, setLocalMin] = useState<number>(minPrice ?? rangeMinBound)
+  const [localMax, setLocalMax] = useState<number>(maxPrice ?? rangeMaxBound)
 
-  // Sync state when props change
+  // Sincronizar estado local cuando props cambian (ej: opening dropdown)
   useEffect(() => {
-    setSliderMin(minPrice ?? sliderMinBound);
-    setDropdownMin(minPrice);
-  }, [minPrice, sliderMinBound]);
+    setLocalMin(minPrice ?? rangeMinBound)
+    setLocalMax(maxPrice ?? rangeMaxBound)
+  }, [minPrice, maxPrice, rangeMinBound, rangeMaxBound])
 
-  useEffect(() => {
-    setSliderMax(maxPrice ?? sliderMaxBound);
-    setDropdownMax(maxPrice);
-  }, [maxPrice, sliderMaxBound]);
+  // Calcular cantidad de propiedades en el rango seleccionado
+  const propertyCount = useMemo(() => {
+    return calculatePropertyCount(distribution, localMin, localMax)
+  }, [distribution, localMin, localMax])
 
-  const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat("es-EC", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
+  // Display value para el botón del dropdown
+  const displayValue = minPrice || maxPrice ? formatPriceRange(minPrice, maxPrice) : 'Precio'
 
-  const displayValue =
-    minPrice || maxPrice
-      ? `${minPrice ? formatPrice(minPrice) : "$0"} - ${
-          maxPrice ? formatPrice(maxPrice) : "$2.000.000"
-        }`
-      : "Precio";
+  // Handler para cambios en el histograma slider
+  const handleHistogramChange = useCallback((newMin: number, newMax: number) => {
+    setLocalMin(newMin)
+    setLocalMax(newMax)
+  }, [])
 
-  const handleSliderChange = useCallback(
-    ([min, max]: [number, number]) => {
-      setSliderMin(min);
-      setSliderMax(max);
-      setDropdownMin(min > sliderMinBound ? min : undefined);
-      setDropdownMax(max < sliderMaxBound ? max : undefined);
-      onPriceChange(
-        min > sliderMinBound ? min : undefined,
-        max < sliderMaxBound ? max : undefined,
-      );
-    },
-    [onPriceChange, sliderMinBound, sliderMaxBound],
-  );
-
-  const handleDropdownMinChange = useCallback(
-    (value: number | undefined) => {
-      setDropdownMin(value);
-      const newMin = value ?? sliderMinBound;
-      setSliderMin(newMin);
-
-      // Ensure min doesn't exceed max
-      const finalMax = dropdownMax ?? sliderMaxBound;
-      if (newMin <= finalMax) {
-        onPriceChange(value, dropdownMax);
+  // Handler para cambios en input mínimo
+  const handleInputMinChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value.replace(/[^0-9]/g, '')
+      if (value === '') {
+        setLocalMin(rangeMinBound)
+      } else {
+        const numValue = Number(value)
+        if (numValue <= localMax) {
+          setLocalMin(numValue)
+        }
       }
     },
-    [dropdownMax, onPriceChange, sliderMinBound, sliderMaxBound],
-  );
+    [localMax, rangeMinBound]
+  )
 
-  const handleDropdownMaxChange = useCallback(
-    (value: number | undefined) => {
-      setDropdownMax(value);
-      const newMax = value ?? sliderMaxBound;
-      setSliderMax(newMax);
-
-      // Ensure max doesn't go below min
-      const finalMin = dropdownMin ?? sliderMinBound;
-      if (newMax >= finalMin) {
-        onPriceChange(dropdownMin, value);
+  // Handler para cambios en input máximo
+  const handleInputMaxChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value.replace(/[^0-9]/g, '')
+      if (value === '') {
+        setLocalMax(rangeMaxBound)
+      } else {
+        const numValue = Number(value)
+        if (numValue >= localMin) {
+          setLocalMax(numValue)
+        }
       }
     },
-    [dropdownMin, onPriceChange, sliderMinBound, sliderMaxBound],
-  );
+    [localMin, rangeMaxBound]
+  )
+
+  // ✅ ÚNICO punto donde se actualiza URL (Realtor.com pattern)
+  const handleDone = useCallback(() => {
+    // Solo enviar valores si son diferentes de los bounds
+    const finalMin = localMin > rangeMinBound ? localMin : undefined
+    const finalMax = localMax < rangeMaxBound ? localMax : undefined
+
+    onPriceChange(finalMin, finalMax)
+    onOpenChange?.(false) // Cerrar dropdown
+  }, [localMin, localMax, rangeMinBound, rangeMaxBound, onPriceChange, onOpenChange])
+
+  // Handler para resetear al cerrar sin "Done"
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        // Reset a valores de URL al cerrar
+        setLocalMin(minPrice ?? rangeMinBound)
+        setLocalMax(maxPrice ?? rangeMaxBound)
+      }
+      onOpenChange?.(open)
+    },
+    [minPrice, maxPrice, rangeMinBound, rangeMaxBound, onOpenChange]
+  )
 
   return (
-    <FilterDropdown label="Precio" value={displayValue}>
-      <div className="w-72 m-0 p-4 space-y-4 bg-oslo-gray-900/90 rounded-lg ">
+    <FilterDropdown
+      label="Precio"
+      value={displayValue}
+      onOpenChange={handleOpenChange}
+    >
+      <div className="w-72 m-0 p-4 space-y-4 bg-oslo-gray-900/90 rounded-lg">
         {/* Header */}
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-oslo-gray-100">Precio</h3>
           <span className="text-sm text-oslo-gray-400">Precio de venta</span>
         </div>
 
-        {/* Range Slider */}
-        <PriceRangeSlider
-          min={sliderMinBound}
-          max={sliderMaxBound}
-          step={10000}
-          minValue={sliderMin}
-          maxValue={sliderMax}
-          onValueChange={handleSliderChange}
+        {/* Histograma Interactivo */}
+        <PriceHistogramSlider
+          distribution={distribution}
+          minPrice={rangeMinBound}
+          maxPrice={rangeMaxBound}
+          localMin={localMin}
+          localMax={localMax}
+          onRangeChange={handleHistogramChange}
         />
 
-        {/* Dropdown Selects */}
-        <div className="flex items-center gap-3">
-          <PriceDropdownSelect
-            value={dropdownMin}
-            onChange={handleDropdownMinChange}
-            isMin={true}
+        {/* Inputs Numéricos */}
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={localMin}
+            onChange={handleInputMinChange}
+            className="flex-1 px-3 py-2 rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 text-oslo-gray-100 text-sm font-medium placeholder-oslo-gray-500 focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
+            placeholder="Min"
           />
           <span className="text-oslo-gray-400">-</span>
-          <PriceDropdownSelect
-            value={dropdownMax}
-            onChange={handleDropdownMaxChange}
-            isMin={false}
+          <input
+            type="text"
+            value={localMax}
+            onChange={handleInputMaxChange}
+            className="flex-1 px-3 py-2 rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 text-oslo-gray-100 text-sm font-medium placeholder-oslo-gray-500 focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
+            placeholder="Max"
           />
         </div>
 
+        {/* Contador de Propiedades */}
+        <div className="text-xs text-oslo-gray-400 text-center py-2 px-3 bg-oslo-gray-800/30 rounded-lg">
+          {distribution.length > 0 ? (
+            <span>
+              <strong>{propertyCount}</strong> propiedades disponibles
+            </span>
+          ) : (
+            <span>Cargando distribución...</span>
+          )}
+        </div>
+
+        {/* Botón "Listo" */}
+        <button
+          onClick={handleDone}
+          className="w-full px-4 py-2 rounded-lg bg-oslo-gray-700 text-oslo-gray-100 font-medium text-sm hover:bg-oslo-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
+        >
+          Listo
+        </button>
+
         {/* Info text */}
-        <div className="text-xs text-oslo-gray-500">
-          {sliderMin > sliderMinBound || sliderMax < sliderMaxBound
-            ? `${sliderMin > sliderMinBound ? formatPrice(sliderMin) : "No mín."} - ${sliderMax < sliderMaxBound ? formatPrice(sliderMax) : "Sin límite"}`
-            : "Cualquier precio"}
+        <div className="text-xs text-oslo-gray-500 text-center">
+          {localMin > rangeMinBound || localMax < rangeMaxBound
+            ? `${formatPrice(localMin)} - ${formatPrice(localMax)}`
+            : 'Cualquier precio'}
         </div>
       </div>
     </FilterDropdown>
-  );
+  )
 }
