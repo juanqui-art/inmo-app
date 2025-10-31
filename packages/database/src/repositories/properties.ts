@@ -378,6 +378,50 @@ export class PropertyRepository {
 
     return { properties, total }
   }
+
+  /**
+   * Obtiene el rango mínimo y máximo de precios de todas las propiedades
+   * Útil para inicializar el rango del filtro de precios en la UI
+   *
+   * @param filters - Filtros opcionales para limitar el rango (ej: solo cierta ciudad)
+   * @returns Objeto con minPrice y maxPrice en USD
+   *
+   * @example
+   * // Obtener rango de precios global
+   * const { minPrice, maxPrice } = await propertyRepository.getPriceRange()
+   *
+   * // Obtener rango de precios para una ciudad específica
+   * const { minPrice, maxPrice } = await propertyRepository.getPriceRange({
+   *   city: 'Cuenca'
+   * })
+   */
+  async getPriceRange(filters?: PropertyFilters): Promise<{ minPrice: number; maxPrice: number }> {
+    const where: Prisma.PropertyWhereInput = {
+      // Aplicar los mismos filtros que en list() si se proporcionan
+      ...(filters?.transactionType && { transactionType: filters.transactionType }),
+      ...(filters?.category && { category: filters.category }),
+      ...(filters?.status && { status: filters.status }),
+      ...(filters?.agentId && { agentId: filters.agentId }),
+      ...(filters?.city && { city: { contains: filters.city, mode: 'insensitive' } }),
+      ...(filters?.state && { state: { contains: filters.state, mode: 'insensitive' } }),
+      ...(filters?.bedrooms && { bedrooms: { gte: filters.bedrooms } }),
+      ...(filters?.bathrooms && { bathrooms: { gte: filters.bathrooms } }),
+      ...(filters?.minArea && { area: { gte: filters.minArea } }),
+      ...(filters?.maxArea && { area: { lte: filters.maxArea } }),
+    }
+
+    const priceAggregation = await db.property.aggregate({
+      where,
+      _min: { price: true },
+      _max: { price: true },
+    })
+
+    // Convertir Decimal a number y proporcionar defaults si no hay propiedades
+    const minPrice = priceAggregation._min.price ? Number(priceAggregation._min.price) : 0
+    const maxPrice = priceAggregation._max.price ? Number(priceAggregation._max.price) : 2000000
+
+    return { minPrice, maxPrice }
+  }
 }
 
 /**

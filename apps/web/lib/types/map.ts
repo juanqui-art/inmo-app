@@ -80,7 +80,7 @@ export const DEFAULT_MAP_CONFIG = {
     latitude: -0.1807,
     longitude: -78.4678,
   },
-  DEFAULT_ZOOM: 12,
+  DEFAULT_ZOOM: 13,
   MIN_ZOOM: 3,
   MAX_ZOOM: 20,
   DEFAULT_PITCH: 0,
