@@ -176,7 +176,7 @@ export function PropertyTypeDropdown({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 mt-2 z-50 w-[420px] bg-oslo-gray-950 border border-oslo-gray-800 rounded-lg shadow-xl shadow-black/60 overflow-hidden"
+            className="absolute top-full left-0 mt-2 z-50 w-[420px] bg-oslo-gray-900 border border-oslo-gray-700 rounded-lg shadow-xl shadow-black/60 overflow-hidden"
           >
             <div className="flex flex-col max-h-[500px]">
               {/* Header with Done Button */}
