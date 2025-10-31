@@ -150,10 +150,10 @@ export function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden"
+      className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden -mt-17"
     >
-      {/* Background Layer - Full Screen (with parallax) */}
-      <div className="hero-background">
+      {/* Background Layer - Full Screen (with parallax) - Extends behind navbar */}
+      <div className="hero-background absolute inset-0 z-0 -top-14">
         <HeroBackground />
       </div>
 
@@ -161,7 +161,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/15 to-transparent pointer-events-none z-[5]" />
 
       {/* Content Layer - Centered with padding for header */}
-      <div className="relative z-10 w-full max-w-4xl px-4 text-center">
+      <div className="relative z-10 w-full max-w-4xl px-4 text-center pt-14">
         {/* Heading - Specific and Contextual - Initially hidden */}
         <h1 className="hero-heading opacity-0 text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-10 drop-shadow-2xl tracking-tight">
           Encuentra tu Hogar Ideal

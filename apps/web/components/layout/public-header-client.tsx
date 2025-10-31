@@ -40,7 +40,7 @@ export function PublicHeaderClient({
       data-navbar={isMapPage ? "map" : isHomepage ? "homepage" : "pages"}
       className={
         isMapPage
-          ? "fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
+          ? " bg-oslo-gray-1000 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
           : isHomepage
             ? "sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
             : "sticky top-0 z-50 bg-oslo-gray-900/80 backdrop-blur-md border-b border-oslo-gray-700/50 shadow-lg"
