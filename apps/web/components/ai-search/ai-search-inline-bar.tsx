@@ -43,72 +43,59 @@ export function AISearchInlineBar({
   };
 
   return (
-    <motion.div
-      animate={{
-        width: isFocused ? "100%" : "249px",
-      }}
-      transition={{
-        duration: 0.3,
-        ease: [0.4, 0, 0.2, 1], // Material ease-out
-      }}
-      className="relative"
-    >
+    <div className="relative w-2xl max-w-md">
+      <input
+        type="text"
+        placeholder="Buscar con IA..."
+        value={query}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        onKeyDown={handleKeyDown}
+        disabled={isLoading}
+        className={`w-full pl-9 py-2.5 pr-10 h-12 rounded-full border-1 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/10 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${
+          isFocused
+            ? "border-white/40 bg-white/5"
+            : "border-white/30 bg-white/0 hover:bg-white/[0.02]"
+        }`}
+      />
+
+      {/* Sparkle Icon (left) */}
       <motion.div
         animate={{
-          borderRadius: isFocused ? "16px" : "9999px",
+          scale: [1, 1.15, 1],
+          rotate: [0, 5, -5, 0],
         }}
-        transition={{ duration: 0.3 }}
-        className="relative w-full "
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          repeatDelay: 3,
+          ease: "easeInOut",
+        }}
+        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/60"
       >
-        <input
-          type="text"
-          placeholder="Buscar con IA..."
-          value={query}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          onKeyDown={handleKeyDown}
-          disabled={isLoading}
-          className="w-full pl-9 py-2.5  pr-10 h-10  rounded-full border-1 border-white/30  text-white placeholder:text-white/60 focus:outline-none focus:border-white/40 focus:ring-2 focus:ring-white/10 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-        />
-
-        {/* Sparkle Icon (left) */}
-        <motion.div
-          animate={{
-            scale: [1, 1.15, 1],
-            rotate: [0, 5, -5, 0],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            repeatDelay: 3,
-            ease: "easeInOut",
-          }}
-          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/60"
-        >
-          <Sparkles className="w-4 h-4" />
-        </motion.div>
-
-        {/* Loading Spinner or Clear Button (right) */}
-        {isLoading ? (
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60"
-          >
-            <Loader className="w-4 h-4" />
-          </motion.div>
-        ) : query ? (
-          <button
-            onClick={onClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
-            type="button"
-            aria-label="Clear search"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        ) : null}
+        <Sparkles className="w-4 h-4" />
       </motion.div>
-    </motion.div>
+
+      {/* Loading Spinner or Clear Button (right) */}
+      {isLoading ? (
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60"
+        >
+          <Loader className="w-4 h-4" />
+        </motion.div>
+      ) : query ? (
+        <button
+          onClick={onClear}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+          type="button"
+          aria-label="Clear search"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      ) : null}
+    </div>
   );
 }
