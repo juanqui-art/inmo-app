@@ -36,17 +36,14 @@ export function PriceHistogramSlider({
   const SVG_HEIGHT = 160
   const BAR_HEIGHT = SVG_HEIGHT - 25 // Espacio para handles + margen inferior
 
-  // Altura máxima del histograma (excluir primer bucket si es outlier)
-  // Esto permite que el resto de barras tengan mejor visibilidad
-  const maxCount = Math.max(
-    ...(distribution!.length > 1
-      ? distribution!.slice(1).map((d) => d.count)
-      : distribution!.map((d) => d.count)),
-    1
-  )
+  // Distribución visible (excluir primer bucket $0 que es outlier)
+  const visibleDistribution = distribution!.length > 1 ? distribution!.slice(1) : distribution!
 
-  // Ancho de cada barra
-  const barWidth = SVG_WIDTH / Math.max(distribution.length, 1)
+  // Altura máxima del histograma basada en distribución visible
+  const maxCount = Math.max(...visibleDistribution.map((d) => d.count), 1)
+
+  // Ancho de cada barra basado en distribución visible
+  const barWidth = SVG_WIDTH / Math.max(visibleDistribution.length, 1)
 
   // Calcular índices actuales basados en localMin/localMax
   const minIndex = useMemo(() => {
@@ -89,11 +86,10 @@ export function PriceHistogramSlider({
           style={{ userSelect: 'none' }}
           pointerEvents="none"
         >
-          {/* Barras del histograma */}
-          {distribution!.map((bucket, index) => {
+          {/* Barras del histograma (sin primer bucket outlier) */}
+          {visibleDistribution.map((bucket, index) => {
             const x = index * barWidth
-            // Limitar altura máxima a BAR_HEIGHT para evitar que sobresalga
-            const height = Math.min((bucket.count / maxCount) * BAR_HEIGHT, BAR_HEIGHT)
+            const height = (bucket.count / maxCount) * BAR_HEIGHT
             const isInRange = isBucketInRange(bucket, localMin, localMax)
 
             return (
@@ -133,7 +129,7 @@ export function PriceHistogramSlider({
               min={0}
               max={distribution!.length - 1}
               step={1}
-              minStepsBetweenThumbs={1}
+              minStepsBetweenThumbs={0}
             >
               <Slider.Track className="relative h-2 w-full grow rounded-full bg-transparent">
                 <Slider.Range className="absolute h-full rounded-full bg-transparent" />
@@ -157,8 +153,8 @@ export function PriceHistogramSlider({
 
       {/* Info debajo del histograma */}
       <div className="text-xs text-oslo-gray-500 text-center">
-        {distribution! && distribution!.length > 0
-          ? `${distribution!.length} buckets • Usa el slider para ajustar`
+        {visibleDistribution && visibleDistribution.length > 0
+          ? `${visibleDistribution.length} buckets • Usa el slider para ajustar`
           : 'No hay datos de distribución'}
       </div>
     </div>
