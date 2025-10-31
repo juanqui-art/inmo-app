@@ -38,13 +38,18 @@ export function PriceHistogramSlider({
   // Dimensiones del SVG (más compacto, solo visualización)
   const SVG_WIDTH = 300
   const SVG_HEIGHT = 100
-  const BAR_HEIGHT = SVG_HEIGHT - 20 // Espacio para margen
+  const BAR_HEIGHT = SVG_HEIGHT - 30 // Espacio para margen
 
   // Altura máxima del histograma basada en distribución visible
   const maxCount = Math.max(...visibleDistribution.map((d) => d.count), 1)
 
   // Ancho de cada barra basado en distribución visible
   const barWidth = SVG_WIDTH / Math.max(visibleDistribution.length, 1)
+
+  // 🎨 AJUSTES DE DISEÑO - Personaliza aquí
+  const BAR_WIDTH_RATIO = 0.45  // Qué tan delgadas (0.3 = muy delgadas, 1.0 = llenan todo)
+  const BAR_RADIUS = 3          // Curvatura de esquinas superiores (0 = cuadrado, 5+ = muy redondeado)
+  const PADDING_X = 15          // Espacio lateral del histograma (airespace a los lados)
 
   // Calcular índices actuales basados en localMin/localMax
   const minIndex = useMemo(() => {
@@ -76,13 +81,13 @@ export function PriceHistogramSlider({
   )
 
   return (
-    <div className="w-full space-y-3">
+    <div className="w-full space-y-2">
       {/* 1. HISTOGRAMA VISUAL PURO - Sin interacción */}
       <div className="w-full">
         <svg
-          viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
+          viewBox={`-${PADDING_X} 0 ${SVG_WIDTH + PADDING_X * 2} ${SVG_HEIGHT}`}
           preserveAspectRatio="none"
-          className="w-full h-24 border border-oslo-gray-700 rounded-lg bg-oslo-gray-950/50"
+          // className="w-full h-24 border border-oslo-gray-700 rounded-lg bg-oslo-gray-950/50"
           style={{ userSelect: 'none' }}
         >
           {/* Barras del histograma (sin primer bucket outlier) */}
@@ -91,14 +96,20 @@ export function PriceHistogramSlider({
             const height = (bucket.count / maxCount) * BAR_HEIGHT
             const isInRange = isBucketInRange(bucket, localMin, localMax)
 
+            // 🎨 Calcula el ancho y posición para centrar la barra delgada
+            const barActualWidth = barWidth * BAR_WIDTH_RATIO
+            const barX = x + (barWidth - barActualWidth) / 2
+
             return (
               <g key={`bar-${index}`}>
-                {/* Barra */}
+                {/* Barra con esquinas redondeadas */}
                 <rect
-                  x={x}
+                  x={barX}
                   y={SVG_HEIGHT - height - 10}
-                  width={Math.max(barWidth - 0.5, 0)}
+                  width={Math.max(barActualWidth, 0)}
                   height={height}
+                  rx={BAR_RADIUS}
+                  ry={BAR_RADIUS}
                   fill={isInRange ? '#6366f1' : '#4b5563'}
                   opacity={isInRange ? 1 : 0.3}
                   className="transition-colors duration-150"
@@ -109,19 +120,19 @@ export function PriceHistogramSlider({
 
           {/* Línea base */}
           <line
-            x1={0}
+            x1={-PADDING_X}
             y1={SVG_HEIGHT - 10}
-            x2={SVG_WIDTH}
+            x2={SVG_WIDTH + PADDING_X}
             y2={SVG_HEIGHT - 10}
             stroke="#4b5563"
-            strokeWidth={1}
+            strokeWidth={3}
           />
         </svg>
       </div>
 
       {/* 2. SLIDER INTERACTIVO SEPARADO - Línea horizontal clara */}
       {distribution! && distribution!.length > 0 && (
-        <div className="w-full pt-2 pb-1">
+        <div className="w-full pt-2 pb-1 px-[15px]">
           <Slider.Root
             className="relative flex w-full touch-none select-none items-center"
             value={[minIndex, maxIndex]}
