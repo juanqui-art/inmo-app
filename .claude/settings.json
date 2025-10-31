@@ -1,0 +1,9 @@
+{
+  "plugins": {
+    "inmo-app-modes": {
+      "enabled": true,
+      "location": ".claude/plugins/inmo-app-modes"
+    }
+  },
+  "description": "Project-level Claude Code settings for inmo-app"
+}
