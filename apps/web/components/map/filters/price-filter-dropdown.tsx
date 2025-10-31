@@ -17,12 +17,11 @@
  * - Sync happens ONLY when user clicks "Done"
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { FilterDropdown } from './filter-dropdown'
 import { PriceHistogramSlider } from './price-histogram-slider'
 import {
   formatPrice,
-  calculatePropertyCount,
   formatPriceRange,
 } from '@/lib/utils/price-helpers'
 
@@ -73,9 +72,10 @@ export function PriceFilterDropdown({
   }, [minPrice, maxPrice, rangeMinBound, rangeMaxBound])
 
   // Calcular cantidad de propiedades en el rango seleccionado
-  const propertyCount = useMemo(() => {
-    return calculatePropertyCount(distribution, localMin, localMax)
-  }, [distribution, localMin, localMax])
+  // TODO: Uncomment when property counter is re-enabled
+  // const propertyCount = useMemo(() => {
+  //   return calculatePropertyCount(distribution, localMin, localMax)
+  // }, [distribution, localMin, localMax])
 
   // Display value para el botón del dropdown
   const displayValue = minPrice || maxPrice ? formatPriceRange(minPrice, maxPrice) : 'Precio'
