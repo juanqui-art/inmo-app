@@ -21,6 +21,7 @@ interface FilterDropdownProps {
   icon?: React.ReactNode;
   children: React.ReactNode;
   onOpenChange?: (open: boolean) => void;
+  isOpen?: boolean;
 }
 
 export function FilterDropdown({
@@ -29,8 +30,13 @@ export function FilterDropdown({
   icon,
   children,
   onOpenChange,
+  isOpen: controlledIsOpen,
 }: FilterDropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isControlled = controlledIsOpen !== undefined;
+  const isOpen = isControlled ? controlledIsOpen : internalIsOpen;
+  const setIsOpen = isControlled ? (v: boolean) => onOpenChange?.(v) : setInternalIsOpen;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 

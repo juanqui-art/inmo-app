@@ -22,7 +22,6 @@ import { FilterDropdown } from './filter-dropdown'
 import { PriceHistogramSlider } from './price-histogram-slider'
 import {
   formatPrice,
-  formatPriceRange,
 } from '@/lib/utils/price-helpers'
 
 /**
@@ -36,6 +35,25 @@ import {
  */
 const formatNumberEcuador = (num: number): string => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+
+/**
+ * Formatea un número con K (miles) y M (millones)
+ * Usado para el display del rango en el botón
+ *
+ * @example
+ * formatPriceCompact(1000000)  // "1M"
+ * formatPriceCompact(50000)    // "50K"
+ * formatPriceCompact(100)      // "100"
+ */
+const formatPriceCompact = (num: number): string => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(0) + 'M'
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(0) + 'K'
+  }
+  return num.toString()
 }
 
 interface PriceFilterDropdownProps {
@@ -61,6 +79,9 @@ export function PriceFilterDropdown({
   const rangeMinBound = dbMinPrice ?? 0
   const rangeMaxBound = dbMaxPrice ?? 2000000
 
+  // ✅ ESTADO DEL DROPDOWN
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
+
   // ✅ ESTADO LOCAL (no sincronizado con URL hasta "Done")
   const [localMin, setLocalMin] = useState<number>(minPrice ?? rangeMinBound)
   const [localMax, setLocalMax] = useState<number>(maxPrice ?? rangeMaxBound)
@@ -77,8 +98,10 @@ export function PriceFilterDropdown({
   //   return calculatePropertyCount(distribution, localMin, localMax)
   // }, [distribution, localMin, localMax])
 
-  // Display value para el botón del dropdown
-  const displayValue = minPrice || maxPrice ? formatPriceRange(minPrice, maxPrice) : 'Precio'
+  // Display value para el botón del dropdown con formato compacto (K, M)
+  const displayValue = minPrice || maxPrice
+    ? `$${formatPriceCompact(minPrice ?? rangeMinBound)} - $${formatPriceCompact(maxPrice ?? rangeMaxBound)}`
+    : 'Precio'
 
   // Handler para cambios en el histograma slider
   const handleHistogramChange = useCallback((newMin: number, newMax: number) => {
@@ -125,12 +148,13 @@ export function PriceFilterDropdown({
     const finalMax = localMax < rangeMaxBound ? localMax : undefined
 
     onPriceChange(finalMin, finalMax)
-    onOpenChange?.(false) // Cerrar dropdown
-  }, [localMin, localMax, rangeMinBound, rangeMaxBound, onPriceChange, onOpenChange])
+    setIsDropdownOpen(false) // Cerrar dropdown
+  }, [localMin, localMax, rangeMinBound, rangeMaxBound, onPriceChange])
 
   // Handler para resetear al cerrar sin "Done"
   const handleOpenChange = useCallback(
     (open: boolean) => {
+      setIsDropdownOpen(open)
       if (!open) {
         // Reset a valores de URL al cerrar
         setLocalMin(minPrice ?? rangeMinBound)
@@ -146,6 +170,7 @@ export function PriceFilterDropdown({
       label="Precio"
       value={displayValue}
       onOpenChange={handleOpenChange}
+      isOpen={isDropdownOpen}
     >
       <div className="w-80 m-0 p-0 space-y-4">
         {/* Header */}
