@@ -94,7 +94,7 @@ export function PriceRangeFilter({
             onKeyDown={(e) => {
               if (e.key === "Enter") handleApply();
             }}
-            className="w-full pl-8 pr-3 py-2 rounded-lg border border-oslo-gray-200 dark:border-oslo-gray-800 bg-white/50 dark:bg-oslo-gray-900/50 text-sm font-medium text-oslo-gray-900 dark:text-oslo-gray-50 placeholder-oslo-gray-400 dark:placeholder-oslo-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-8 pr-3 py-2 rounded-lg border border-oslo-gray-200 dark:border-oslo-gray-800 bg-white/50 dark:bg-oslo-gray-900/50 text-base font-medium text-oslo-gray-900 dark:text-oslo-gray-50 placeholder-oslo-gray-400 dark:placeholder-oslo-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
         <div className="flex-1 relative">
@@ -108,7 +108,7 @@ export function PriceRangeFilter({
             onKeyDown={(e) => {
               if (e.key === "Enter") handleApply();
             }}
-            className="w-full pl-8 pr-3 py-2 rounded-lg border border-oslo-gray-200 dark:border-oslo-gray-800 bg-white/50 dark:bg-oslo-gray-900/50 text-sm font-medium text-oslo-gray-900 dark:text-oslo-gray-50 placeholder-oslo-gray-400 dark:placeholder-oslo-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-8 pr-3 py-2 rounded-lg border border-oslo-gray-200 dark:border-oslo-gray-800 bg-white/50 dark:bg-oslo-gray-900/50 text-base font-medium text-oslo-gray-900 dark:text-oslo-gray-50 placeholder-oslo-gray-400 dark:placeholder-oslo-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
       </div>

@@ -85,7 +85,7 @@ export function MapFilterPanel() {
         <div className="border-t border-oslo-gray-200 dark:border-oslo-gray-800 pt-4">
           <button
             onClick={clearFilters}
-            className="w-full px-4 py-2.5 rounded-lg bg-oslo-gray-100 dark:bg-oslo-gray-900 text-oslo-gray-700 dark:text-oslo-gray-300 font-medium text-sm hover:bg-oslo-gray-200 dark:hover:bg-oslo-gray-800 transition-colors"
+            className="w-full px-4 py-2.5 rounded-lg bg-oslo-gray-100 dark:bg-oslo-gray-900 text-oslo-gray-700 dark:text-oslo-gray-300 font-medium text-base hover:bg-oslo-gray-200 dark:hover:bg-oslo-gray-800 transition-colors"
           >
             Limpiar filtros
           </button>

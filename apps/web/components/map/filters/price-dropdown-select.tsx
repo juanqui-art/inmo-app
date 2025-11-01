@@ -51,7 +51,7 @@ export function PriceDropdownSelect({
           const val = e.target.value;
           onChange(val === "" ? undefined : parseInt(val));
         }}
-        className="w-full px-3 py-2 rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 text-oslo-gray-200 text-sm font-medium appearance-none cursor-pointer hover:bg-oslo-gray-700 focus:outline-none focus:ring-2 focus:ring-oslo-gray-600 transition-colors"
+        className="w-full px-3 py-2 rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 text-oslo-gray-200 text-base font-medium appearance-none cursor-pointer hover:bg-oslo-gray-700 focus:outline-none focus:ring-2 focus:ring-oslo-gray-600 transition-colors"
       >
         {options.map((option) => (
           <option key={option.value ?? "none"} value={option.value ?? ""}>

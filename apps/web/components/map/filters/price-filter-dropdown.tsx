@@ -208,12 +208,12 @@ export function PriceFilterDropdown({
         <div className="flex items-center gap-2 min-w-0 px-4">
           {/* Input Mínimo con Símbolo de Dólar */}
           <div className="flex-1 min-w-0 flex items-center rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 focus-within:ring-2 focus-within:ring-oslo-gray-600">
-            <span className="px-2 py-2 text-oslo-gray-400 font-medium text-sm flex-shrink-0">$</span>
+            <span className="px-2 py-2 text-oslo-gray-400 font-medium text-base flex-shrink-0">$</span>
             <input
               type="text"
               value={formatNumberEcuador(localMin)}
               onChange={handleInputMinChange}
-              className="flex-1 min-w-0 px-0 py-2 pr-2 bg-oslo-gray-800 text-oslo-gray-100 text-sm font-medium placeholder-oslo-gray-500 focus:outline-none"
+              className="flex-1 min-w-0 px-0 py-2 pr-2 bg-oslo-gray-800 text-oslo-gray-100 text-base font-medium placeholder-oslo-gray-500 focus:outline-none"
               placeholder="0"
             />
           </div>
@@ -222,12 +222,12 @@ export function PriceFilterDropdown({
 
           {/* Input Máximo con Símbolo de Dólar */}
           <div className="flex-1 min-w-0 flex items-center rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 focus-within:ring-2 focus-within:ring-oslo-gray-600">
-            <span className="px-2 py-2 text-oslo-gray-400 font-medium text-sm flex-shrink-0">$</span>
+            <span className="px-2 py-2 text-oslo-gray-400 font-medium text-base flex-shrink-0">$</span>
             <input
               type="text"
               value={formatNumberEcuador(localMax)}
               onChange={handleInputMaxChange}
-              className="flex-1 min-w-0 px-0 py-2 pr-2 bg-oslo-gray-800 text-oslo-gray-100 text-sm font-medium placeholder-oslo-gray-500 focus:outline-none"
+              className="flex-1 min-w-0 px-0 py-2 pr-2 bg-oslo-gray-800 text-oslo-gray-100 text-base font-medium placeholder-oslo-gray-500 focus:outline-none"
               placeholder="0"
             />
           </div>
@@ -248,7 +248,7 @@ export function PriceFilterDropdown({
         <div className="px-4">
           <button
             onClick={handleDone}
-            className="w-full px-4 py-2 rounded-lg bg-oslo-gray-700 text-oslo-gray-100 font-medium text-sm hover:bg-oslo-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
+            className="w-full px-4 py-2 rounded-lg bg-oslo-gray-700 text-oslo-gray-100 font-medium text-base hover:bg-oslo-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
           >
             Listo
           </button>

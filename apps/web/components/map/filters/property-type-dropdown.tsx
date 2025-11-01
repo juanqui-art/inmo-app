@@ -152,7 +152,7 @@ export function PropertyTypeDropdown({
       <button
         ref={buttonRef}
         onClick={handleToggle}
-        className={`flex h-12 items-center gap-2 px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 whitespace-nowrap ${
+        className={`flex h-12 items-center gap-2 px-4 py-2 rounded-full font-medium text-base transition-all duration-200 whitespace-nowrap ${
           isOpen
             ? "bg-oslo-gray-700 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
             : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800"
@@ -197,7 +197,7 @@ export function PropertyTypeDropdown({
                 {/* "Todos" Button */}
                 <button
                   onClick={handleSelectAll}
-                  className={`w-full mb-4 px-3 py-2 rounded-lg text-sm font-medium text-center transition-colors ${
+                  className={`w-full mb-4 px-3 py-2 rounded-lg text-base font-medium text-center transition-colors ${
                     tempSelected.length === 0
                       ? "bg-oslo-gray-700 text-oslo-gray-50"
                       : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800"

@@ -48,7 +48,7 @@ export function CategoryFilter({
             <button
               key={category.value}
               onClick={() => onSelect(category.value)}
-              className={`flex items-center gap-2 px-3 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${
+              className={`flex items-center gap-2 px-3 py-2.5 rounded-lg font-medium text-base transition-all duration-200 ${
                 isSelected
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
                   : "bg-white/50 dark:bg-oslo-gray-900/50 text-oslo-gray-700 dark:text-oslo-gray-300 border border-oslo-gray-200 dark:border-oslo-gray-800 hover:bg-white/70 dark:hover:bg-oslo-gray-900/70"

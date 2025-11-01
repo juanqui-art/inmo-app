@@ -36,7 +36,7 @@ export function TransactionTypeFilter({
           <button
             key={type.value}
             onClick={() => onToggle(type.value)}
-            className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+            className={`flex-1 px-4 py-2 rounded-lg font-medium text-base transition-all duration-200 ${
               selected.includes(type.value)
                 ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
                 : "bg-white/50 dark:bg-oslo-gray-900/50 text-oslo-gray-700 dark:text-oslo-gray-300 border border-oslo-gray-200 dark:border-oslo-gray-800 hover:bg-white/70 dark:hover:bg-oslo-gray-900/70"
