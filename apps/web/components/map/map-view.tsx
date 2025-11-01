@@ -87,7 +87,7 @@ export function MapView({
   initialCenter,
   initialZoom,
   initialViewport,
-  // isAuthenticated = false, // TODO: Used when MapPopupManager is added back
+  isAuthenticated = false,
   // searchResults, // TODO: Used when SearchResultsBadge is added back
 }: MapViewProps) {
   // Create ref for MapBox map instance
@@ -253,7 +253,7 @@ export function MapView({
       mapStyle={mapStyle}
       mapboxToken={mapboxToken!}
       properties={properties}
-      // isAuthenticated={isAuthenticated} // TODO: Add back when MapPopupManager is used
+      isAuthenticated={isAuthenticated}
       // searchResults={searchResults} // TODO: Add back when SearchResultsBadge is used
     />
   );

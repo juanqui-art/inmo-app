@@ -20,21 +20,27 @@
 
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useEffect } from "react";
 import { Source, Layer } from "react-map-gl/mapbox";
 import type { MapProperty } from "../map-view";
+import type { MapRef } from "react-map-gl/mapbox";
 
 interface MapLayersProps {
   properties: MapProperty[];
+  onPropertyClick?: (propertyId: string) => void;
+  mapRef?: React.RefObject<MapRef | null>;
 }
 
 /**
  * MEMOIZED: Only re-renders when properties[] changes
  * Not re-renders when parent viewState/theme changes
  */
-export const MapLayers = memo(function MapLayers({
-  properties,
-}: MapLayersProps) {
+export const MapLayers = memo(
+  function MapLayers({
+    properties,
+    onPropertyClick,
+    mapRef,
+  }: MapLayersProps) {
   /**
    * Convert properties to GeoJSON format
    * Expensive operation - memoized
@@ -61,6 +67,33 @@ export const MapLayers = memo(function MapLayers({
     }),
     [properties],
   );
+
+  /**
+   * Attach click event listeners to property markers
+   * Uses MapBox native event system for better performance
+   */
+  useEffect(() => {
+    if (!mapRef?.current || !onPropertyClick) return;
+
+    const map = mapRef.current.getMap();
+    if (!map) return;
+
+    const handleLayerClick = (e: any) => {
+      if (e.features && e.features.length > 0) {
+        const propertyId = e.features[0].id as string | undefined;
+        if (propertyId) {
+          onPropertyClick(propertyId);
+        }
+      }
+    };
+
+    // Attach click listener to unclustered points
+    map.on("click", "unclustered-point", handleLayerClick);
+
+    return () => {
+      map.off("click", "unclustered-point", handleLayerClick);
+    };
+  }, [onPropertyClick, mapRef]);
 
   return (
     <Source

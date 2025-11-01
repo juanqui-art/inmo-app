@@ -31,6 +31,8 @@ import type { MapProperty } from "../map-view";
 interface MapPopupManagerProps {
   properties: MapProperty[];
   isAuthenticated?: boolean;
+  selectedPropertyId: string | null;
+  onSelectedPropertyIdChange: (propertyId: string | null) => void;
 }
 
 /**
@@ -41,11 +43,12 @@ interface MapPopupManagerProps {
 export function MapPopupManager({
   properties,
   isAuthenticated = false,
+  selectedPropertyId,
+  onSelectedPropertyIdChange,
 }: MapPopupManagerProps) {
   const router = useRouter();
 
-  // ✅ LOCAL STATE: Only used in this component
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+  // ✅ LOCAL STATE: Only auth modal state
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingPropertyId, setPendingPropertyId] = useState<string | null>(null);
 
@@ -61,18 +64,18 @@ export function MapPopupManager({
    * Handle closing popup
    */
   const handleClosePopup = useCallback(() => {
-    setSelectedPropertyId(null);
-  }, []);
+    onSelectedPropertyIdChange(null);
+  }, [onSelectedPropertyIdChange]);
 
   /**
    * Handle "View Details" button click
    */
   const handleViewDetails = useCallback(() => {
     if (selectedProperty) {
-      setSelectedPropertyId(null);
+      onSelectedPropertyIdChange(null);
       router.push(`/propiedades/${selectedProperty.id}`);
     }
-  }, [selectedProperty, router]);
+  }, [selectedProperty, router, onSelectedPropertyIdChange]);
 
   /**
    * Handle unauthenticated user trying to favorite

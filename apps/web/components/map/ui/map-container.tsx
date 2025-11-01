@@ -33,10 +33,11 @@
 
 "use client";
 
-import { memo } from "react";
+import { memo, useState } from "react";
 import Map, { type ViewStateChangeEvent, type MapRef } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import { MapLayers } from "./map-layers";
+import { MapPopupManager } from "./map-popup-manager";
 import type { MapProperty } from "../map-view";
 
 // Import MapBox GL CSS
@@ -90,9 +91,12 @@ export const MapContainer = memo(function MapContainer({
   mapStyle,
   mapboxToken,
   properties,
-  // isAuthenticated = false, // TODO: Used when MapPopupManager is added back
+  isAuthenticated = false,
   // searchResults, // TODO: Used when SearchResultsBadge is added back
 }: MapContainerProps) {
+  // Local state for selected property popup
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+
   return (
     <div className="relative w-full h-screen isolate">
       <Map
@@ -107,9 +111,25 @@ export const MapContainer = memo(function MapContainer({
         maxZoom={DEFAULT_MAP_CONFIG.MAX_ZOOM}
         attributionControl={false}
       >
-        {/* STEP 2: MapLayers now renders markers + clusters */}
-        {properties && <MapLayers properties={properties} />}
+        {/* MapLayers renders markers + clusters */}
+        {properties && (
+          <MapLayers
+            properties={properties}
+            onPropertyClick={setSelectedPropertyId}
+            mapRef={mapRef}
+          />
+        )}
       </Map>
+
+      {/* MapPopupManager handles popup display and auth modal */}
+      {properties && (
+        <MapPopupManager
+          properties={properties}
+          isAuthenticated={isAuthenticated}
+          selectedPropertyId={selectedPropertyId}
+          onSelectedPropertyIdChange={setSelectedPropertyId}
+        />
+      )}
     </div>
   );
 });
