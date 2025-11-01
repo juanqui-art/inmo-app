@@ -83,7 +83,7 @@ interface MapViewProps {
 }
 
 export function MapView({
-  // properties, // TODO: Used when MapLayers is added back
+  properties,
   initialCenter,
   initialZoom,
   initialViewport,
@@ -244,7 +244,7 @@ export function MapView({
     return <MapLoadingState />;
   }
 
-  // Render map with real handleMove
+  // Render map with MapLayers (markers + clusters)
   return (
     <MapContainer
       mapRef={mapRef}
@@ -252,7 +252,7 @@ export function MapView({
       onMove={handleMove}
       mapStyle={mapStyle}
       mapboxToken={mapboxToken!}
-      // properties={properties} // TODO: Add back when MapLayers is used
+      properties={properties}
       // isAuthenticated={isAuthenticated} // TODO: Add back when MapPopupManager is used
       // searchResults={searchResults} // TODO: Add back when SearchResultsBadge is used
     />

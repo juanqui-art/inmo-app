@@ -36,6 +36,7 @@
 import { memo } from "react";
 import Map, { type ViewStateChangeEvent, type MapRef } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
+import { MapLayers } from "./map-layers";
 import type { MapProperty } from "../map-view";
 
 // Import MapBox GL CSS
@@ -75,15 +76,12 @@ interface MapContainerProps {
 }
 
 /**
- * FIXED: MapContainer - Map with properly memoized viewport
+ * STEP 2: Add MapLayers back
  *
- * ISSUE: useMapViewport was passing new object reference to useDebounce every render
- * SOLUTION: Memoize viewport object to prevent reference changes
- *
- * Now that viewport is properly memoized:
- * - Map only re-renders when viewport values actually change
- * - No infinite re-render loops
- * - MapLayers, popups, and badges can be added back
+ * Now that viewport memoization is fixed:
+ * - Map can safely render MapLayers without infinite re-renders
+ * - MapLayers is memoized and only re-renders when properties change
+ * - User can now see markers and clusters
  */
 export const MapContainer = memo(function MapContainer({
   mapRef,
@@ -91,7 +89,7 @@ export const MapContainer = memo(function MapContainer({
   onMove,
   mapStyle,
   mapboxToken,
-  // properties, // TODO: Used when MapLayers is added back
+  properties,
   // isAuthenticated = false, // TODO: Used when MapPopupManager is added back
   // searchResults, // TODO: Used when SearchResultsBadge is added back
 }: MapContainerProps) {
@@ -109,7 +107,8 @@ export const MapContainer = memo(function MapContainer({
         maxZoom={DEFAULT_MAP_CONFIG.MAX_ZOOM}
         attributionControl={false}
       >
-        {/* MapLayers can be added back now */}
+        {/* STEP 2: MapLayers now renders markers + clusters */}
+        {properties && <MapLayers properties={properties} />}
       </Map>
     </div>
   );
