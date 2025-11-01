@@ -143,7 +143,7 @@ export function FilterDropdown({
               }
             }}
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4  rounded-full p-1 hover:bg-oslo-gray-300 text-black" />
           </span>
         ) : (
           <ChevronDown
