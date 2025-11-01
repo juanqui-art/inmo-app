@@ -52,24 +52,26 @@ export function PriceHistogramSlider({
   const PADDING_X = 12          // Espacio lateral del histograma (airespace a los lados)
 
   // Calcular índices actuales basados en localMin/localMax
+  // ✅ NOTA: Usar visibleDistribution (sin primer bucket $0) para consistencia con SVG
   const minIndex = useMemo(() => {
-    return findBucketIndex(localMin, distribution!)
-  }, [localMin, distribution])
+    return findBucketIndex(localMin, visibleDistribution)
+  }, [localMin, visibleDistribution])
 
   const maxIndex = useMemo(() => {
-    return findBucketIndex(localMax, distribution!)
-  }, [localMax, distribution])
+    return findBucketIndex(localMax, visibleDistribution)
+  }, [localMax, visibleDistribution])
 
   // Handler para Radix Slider onChange (recibe ÍNDICES, no precios)
+  // ✅ NOTA: Usar visibleDistribution para consistencia con SVG
   const handleSliderChange = useCallback(
     (indices: number[]) => {
-      if (indices.length === 2 && distribution! && distribution!.length > 0) {
+      if (indices.length === 2 && visibleDistribution && visibleDistribution.length > 0) {
         const minIdx = Math.max(0, indices[0]!)
-        const maxIdx = Math.min(distribution!.length - 1, indices[1]!)
+        const maxIdx = Math.min(visibleDistribution.length - 1, indices[1]!)
 
         // Convertir índices a precios usando buckets
-        const newMin = distribution![minIdx]!.bucket
-        const newMax = distribution![maxIdx]!.bucket
+        const newMin = visibleDistribution[minIdx]!.bucket
+        const newMax = visibleDistribution[maxIdx]!.bucket
 
         // Validar que min <= max
         if (newMin <= newMax) {
@@ -77,7 +79,7 @@ export function PriceHistogramSlider({
         }
       }
     },
-    [distribution, onRangeChange]
+    [visibleDistribution, onRangeChange]
   )
 
   return (
@@ -123,14 +125,15 @@ export function PriceHistogramSlider({
       </div>
 
       {/* 2. SLIDER INTERACTIVO SEPARADO - Línea horizontal clara */}
-      {distribution! && distribution!.length > 0 && (
+      {/* ✅ NOTA: Usar visibleDistribution para consistencia con SVG */}
+      {visibleDistribution && visibleDistribution.length > 0 && (
         <div className="w-full ">
           <Slider.Root
             className="relative  flex w-full touch-none select-none items-center bottom-5"
             value={[minIndex, maxIndex]}
             onValueChange={handleSliderChange}
             min={0}
-            max={distribution!.length - 1}
+            max={visibleDistribution.length - 1}
             step={1}
             minStepsBetweenThumbs={0}
           >

@@ -132,7 +132,7 @@ export function FilterDropdown({
         {isActive && onClear ? (
           <span
             data-clear-icon
-            className="h-4 w-4 flex-shrink-0 text-oslo-gray-200 hover:text-white transition-colors cursor-pointer"
+            className="h-4 w-4 flex-shrink-0 text-oslo-gray-200 hover:text-white transition-colors cursor-pointer bg-black rounded-full "
             role="button"
             tabIndex={0}
             aria-label="Limpiar filtro"
@@ -143,7 +143,7 @@ export function FilterDropdown({
               }
             }}
           >
-            <X className="h-4 w-4  rounded-full p-1 hover:bg-oslo-gray-300 text-black" />
+            <X className="h-4 w-4  rounded-full p-1 hover:bg-oslo-gray-300 black/50" />
           </span>
         ) : (
           <ChevronDown
