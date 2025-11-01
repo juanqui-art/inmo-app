@@ -30,6 +30,7 @@
 
 "use client";
 
+import { memo } from "react";
 import { PropertyMarker as PropertyMarkerComponent } from "./markers";
 import type { TransactionType } from "@repo/database";
 
@@ -51,8 +52,13 @@ interface PropertyMarkerProps {
  *
  * Handles both numeric and string prices for backward compatibility.
  * Forwards all props to the variant-specific component.
+ *
+ * PERFORMANCE FIX: Memoized component
+ * - Prevents re-renders when parent re-renders with same props
+ * - Reduces unnecessary marker JSX creation
+ * - Combined with debounced clusters for maximum efficiency
  */
-export function PropertyMarker({
+export const PropertyMarker = memo(function PropertyMarker({
   price,
   variant = "dark",
   ...props
@@ -78,4 +84,4 @@ export function PropertyMarker({
       {...props}
     />
   );
-}
+});

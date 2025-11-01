@@ -26,6 +26,7 @@
 
 "use client";
 
+import { memo } from "react";
 import { Marker } from "react-map-gl/mapbox";
 import { CLUSTER_SIZE_THRESHOLDS } from "@/lib/types/map";
 
@@ -72,7 +73,19 @@ function getClusterStyle(pointCount: number) {
   };
 }
 
-export function ClusterMarker({
+/**
+ * ClusterMarker - Memoized cluster display component
+ *
+ * PERFORMANCE FIX: Memoized component
+ * - Prevents re-renders when parent re-renders with same props
+ * - Cluster markers only re-render if latitude, longitude, pointCount, or onClick changes
+ * - Reduces unnecessary DOM updates during map panning
+ *
+ * IMPACT:
+ * - Batch marker updates (memoization + debounced clusters)
+ * - Only re-render when cluster composition actually changes
+ */
+export const ClusterMarker = memo(function ClusterMarker({
   latitude,
   longitude,
   pointCount,
@@ -165,4 +178,4 @@ export function ClusterMarker({
       </div>
     </Marker>
   );
-}
+});

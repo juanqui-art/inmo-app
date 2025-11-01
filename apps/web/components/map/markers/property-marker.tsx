@@ -37,6 +37,7 @@
 
 "use client";
 
+import { memo } from "react";
 import { PropertyMarkerDark } from "./property-marker-dark";
 import { PropertyMarkerLight } from "./property-marker-light";
 import { PropertyMarkerMinimal } from "./property-marker-minimal";
@@ -60,8 +61,13 @@ export interface PropertyMarkerProps {
  *
  * Renders the appropriate variant based on configuration.
  * Default variant is "dark" for modern aesthetic.
+ *
+ * PERFORMANCE FIX: Memoized component
+ * - Prevents re-renders when parent re-renders with same props
+ * - Markers only re-render if latitude, longitude, price, or transactionType change
+ * - Reduces unnecessary DOM updates during map panning
  */
-export function PropertyMarker({
+export const PropertyMarker = memo(function PropertyMarker({
   variant = "dark",
   ...props
 }: PropertyMarkerProps) {
@@ -74,4 +80,4 @@ export function PropertyMarker({
     default:
       return <PropertyMarkerDark {...props} />;
   }
-}
+});
