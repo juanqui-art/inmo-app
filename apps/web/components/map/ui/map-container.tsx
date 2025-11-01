@@ -33,7 +33,7 @@
 
 "use client";
 
-import { memo, useState, useCallback, useEffect } from "react";
+import { memo, useState, useCallback } from "react";
 import Map, { type ViewStateChangeEvent, type MapRef } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import { MapLayers } from "./map-layers";
@@ -103,25 +103,29 @@ export const MapContainer = memo(function MapContainer({
 
   /**
    * Attach click listeners to the marker layer when the map is ready
-   * This happens AFTER the Source and Layers are rendered
+   * Uses Map's onLoad event to guarantee the Source and Layers are rendered
    */
-  useEffect(() => {
+  const handleMapLoad = useCallback(() => {
     if (!mapRef?.current) return;
 
     const map = mapRef.current.getMap();
     if (!map) return;
 
-    const checkAndAttachListener = () => {
+    // Wait a tick to ensure layers are fully loaded
+    setTimeout(() => {
       const layer = map.getLayer("unclustered-point");
       if (!layer) {
-        setTimeout(checkAndAttachListener, 100);
         return;
       }
 
       const onClick = (e: any) => {
         if (e.features && e.features.length > 0) {
-          const propertyId = e.features[0].id;
-          handlePropertyClick(propertyId);
+          // Use properties.id as primary source (guaranteed to be in GeoJSON)
+          // Fallback to top-level id if needed
+          const propertyId = e.features[0].properties?.id || e.features[0].id;
+          if (propertyId) {
+            handlePropertyClick(propertyId);
+          }
         }
       };
 
@@ -136,17 +140,7 @@ export const MapContainer = memo(function MapContainer({
       map.on("click", "unclustered-point", onClick);
       map.on("mouseenter", "unclustered-point", onMouseEnter);
       map.on("mouseleave", "unclustered-point", onMouseLeave);
-
-      // Return cleanup function
-      return () => {
-        map.off("click", "unclustered-point", onClick);
-        map.off("mouseenter", "unclustered-point", onMouseEnter);
-        map.off("mouseleave", "unclustered-point", onMouseLeave);
-      };
-    };
-
-    const cleanup = checkAndAttachListener();
-    return cleanup;
+    }, 0);
   }, [mapRef, handlePropertyClick]);
 
   return (
@@ -155,6 +149,7 @@ export const MapContainer = memo(function MapContainer({
         ref={mapRef}
         {...viewState}
         onMove={onMove}
+        onLoad={handleMapLoad}
         mapStyle={mapStyle}
         mapboxAccessToken={mapboxToken}
         style={{ width: "100%", height: "100%" }}
@@ -165,17 +160,17 @@ export const MapContainer = memo(function MapContainer({
       >
         {/* MapLayers renders markers + clusters */}
         {properties && <MapLayers properties={properties} />}
-      </Map>
 
-      {/* MapPopupManager handles popup display and auth modal */}
-      {properties && (
-        <MapPopupManager
-          properties={properties}
-          isAuthenticated={isAuthenticated}
-          selectedPropertyId={selectedPropertyId}
-          onSelectedPropertyIdChange={setSelectedPropertyId}
-        />
-      )}
+        {/* MapPopupManager handles popup display - MUST be inside Map for <Popup> to work */}
+        {properties && (
+          <MapPopupManager
+            properties={properties}
+            isAuthenticated={isAuthenticated}
+            selectedPropertyId={selectedPropertyId}
+            onSelectedPropertyIdChange={setSelectedPropertyId}
+          />
+        )}
+      </Map>
     </div>
   );
 });

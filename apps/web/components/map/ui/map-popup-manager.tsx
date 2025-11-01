@@ -60,6 +60,12 @@ export function MapPopupManager({
     ? properties.find((p) => p.id === selectedPropertyId)
     : null;
 
+  console.log("🔍 MapPopupManager render:", {
+    selectedPropertyId,
+    selectedPropertyFound: !!selectedProperty,
+    shouldShowPopup: !!selectedProperty && selectedProperty.latitude !== null && selectedProperty.longitude !== null,
+  });
+
   /**
    * Handle closing popup
    */

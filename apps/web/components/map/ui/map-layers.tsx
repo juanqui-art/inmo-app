@@ -35,6 +35,11 @@ interface MapLayersProps {
 export const MapLayers = memo(function MapLayers({
   properties,
 }: MapLayersProps) {
+  console.log("🗺️ MapLayers render:", {
+    propertyCount: properties.length,
+    firstProperty: properties[0],
+  });
+
   /**
    * Convert properties to GeoJSON format
    * Expensive operation - memoized
@@ -43,7 +48,7 @@ export const MapLayers = memo(function MapLayers({
     const geojson = {
       type: "FeatureCollection" as const,
       features: properties
-        .filter((p) => p.latitude !== null && p.longitude !== null)
+        .filter((p) => p.latitude !== null && p.longitude !== null && p.id)
         .map((property) => ({
           type: "Feature" as const,
           id: property.id,
