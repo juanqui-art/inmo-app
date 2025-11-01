@@ -83,15 +83,21 @@ export function useMapViewport({
   /**
    * Debounced viewport for URL updates
    * Prevents updating URL on every pixel movement (500ms delay)
+   *
+   * FIX: Memoize the viewport object to prevent new references every render
+   * Without memoization: new object reference → useDebounce sees change → triggers useEffect constantly
+   * With memoization: same reference unless values actually change → debounce works correctly
    */
-  const debouncedViewport = useDebounce<MapViewport>(
-    {
+  const viewportToSync = useMemo(
+    () => ({
       latitude: viewState.latitude,
       longitude: viewState.longitude,
       zoom: viewState.zoom,
-    },
-    500,
+    }),
+    [viewState.latitude, viewState.longitude, viewState.zoom],
   );
+
+  const debouncedViewport = useDebounce<MapViewport>(viewportToSync, 500);
 
   /**
    * Get bounds from MapBox using native getBounds() method

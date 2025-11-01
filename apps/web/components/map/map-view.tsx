@@ -32,12 +32,10 @@
 
 "use client";
 
-import { useRef, useEffect, useMemo } from "react";
+import { useRef } from "react";
 import type { MapViewport } from "@/lib/utils/url-helpers";
 import type { TransactionType } from "@repo/database";
 import type { MapRef } from "react-map-gl/mapbox";
-import { boundsToMapBoxFormat, calculateBounds } from "@/lib/utils/map-bounds";
-import { useMemoizedFilterParams } from "@/lib/hooks/use-memoized-filter-params";
 import { useMapInitialization } from "./hooks/use-map-initialization";
 import { useMapTheme } from "./hooks/use-map-theme";
 import { useMapViewport } from "./hooks/use-map-viewport";
@@ -85,25 +83,20 @@ interface MapViewProps {
 }
 
 export function MapView({
-  properties,
+  // properties, // TODO: Used when MapLayers is added back
   initialCenter,
   initialZoom,
   initialViewport,
-  isAuthenticated = false,
-  searchResults,
+  // isAuthenticated = false, // TODO: Used when MapPopupManager is added back
+  // searchResults, // TODO: Used when SearchResultsBadge is added back
 }: MapViewProps) {
   // Create ref for MapBox map instance
   // Used to get precise bounds that account for navbar
   const mapRef = useRef<MapRef>(null);
 
-  // Get memoized filter parameters from URL
-  // Stable reference that only changes when filters actually change
-  // Prevents unnecessary re-filtering of properties
-  const urlFilters = useMemoizedFilterParams();
-
   // Hooks for business logic
   const { mounted, mapboxToken, isError } = useMapInitialization();
-  const { mapStyle } = useMapTheme();  // Already memoized in the hook
+  const { mapStyle } = useMapTheme(); // Already memoized in the hook
   const { viewState: rawViewState, handleMove } = useMapViewport({
     initialViewport,
     initialCenter,
@@ -130,17 +123,17 @@ export function MapView({
    * ✅ Eliminates constant re-renders from reference changes
    * ✅ Reduces "other time" by 50%+
    */
-  const viewState = useMemo(
-    () => rawViewState,
-    [
-      rawViewState.longitude,
-      rawViewState.latitude,
-      rawViewState.zoom,
-      rawViewState.pitch,
-      rawViewState.bearing,
-      rawViewState.transitionDuration,
-    ]
-  );
+  // const viewState = useMemo(
+  //   () => rawViewState,
+  //   [
+  //     rawViewState.longitude,
+  //     rawViewState.latitude,
+  //     rawViewState.zoom,
+  //     rawViewState.pitch,
+  //     rawViewState.bearing,
+  //     rawViewState.transitionDuration,
+  //   ],
+  // );
 
   /**
    * CLIENT-SIDE FILTERING
@@ -151,91 +144,95 @@ export function MapView({
    *
    * This enables real-time filtering without server re-renders when filters change
    */
-  const displayedProperties = useMemo(() => {
-    let filtered = properties;
+  // const displayedProperties = useMemo(() => {
+  //   let filtered = properties;
+  //
+  //   // First filter by AI search results if available
+  //   if (searchResults) {
+  //     filtered = filtered.filter((prop) =>
+  //       searchResults.some((result) => result.id === prop.id)
+  //     );
+  //   }
+  //
+  //   // Then apply URL-based filters
+  //   if (urlFilters.minPrice !== undefined) {
+  //     filtered = filtered.filter((prop) => prop.price >= urlFilters.minPrice!);
+  //   }
+  //
+  //   if (urlFilters.maxPrice !== undefined) {
+  //     filtered = filtered.filter((prop) => prop.price <= urlFilters.maxPrice!);
+  //   }
+  //
+  //   if (urlFilters.category) {
+  //     const categories = Array.isArray(urlFilters.category)
+  //       ? urlFilters.category
+  //       : [urlFilters.category];
+  //     filtered = filtered.filter((prop) =>
+  //       categories.includes(prop.category || "")
+  //     );
+  //   }
+  //
+  //   if (urlFilters.transactionType) {
+  //     const types = Array.isArray(urlFilters.transactionType)
+  //       ? urlFilters.transactionType
+  //       : [urlFilters.transactionType];
+  //     filtered = filtered.filter((prop) =>
+  //       types.includes(prop.transactionType)
+  //     );
+  //   }
+  //
+  //   if (urlFilters.bedrooms !== undefined) {
+  //     filtered = filtered.filter(
+  //       (prop) => (prop.bedrooms ?? 0) >= urlFilters.bedrooms!
+  //     );
+  //   }
+  //
+  //   if (urlFilters.bathrooms !== undefined) {
+  //     filtered = filtered.filter(
+  //       (prop) => (prop.bathrooms ?? 0) >= urlFilters.bathrooms!
+  //     );
+  //   }
+  //
+  //   return filtered;
+  // }, [properties, searchResults, urlFilters]);
 
-    // First filter by AI search results if available
-    if (searchResults) {
-      filtered = filtered.filter((prop) =>
-        searchResults.some((result) => result.id === prop.id)
-      );
-    }
+  // TODO(debug): Commenting out searchResults effect for minimal testing
+  // // Apply fitBounds animation when search results change
+  // // Only trigger when searchResults changes, not on every render
+  // useEffect(() => {
+  //   if (mapRef.current && searchResults && searchResults.length > 0) {
+  //     // searchResults already contains the properties with coordinates
+  //     // from AI search - use them directly to calculate bounds
+  //     const bounds = calculateBounds(
+  //       searchResults as Array<{
+  //         latitude?: number | null;
+  //         longitude?: number | null;
+  //       }>,
+  //     );
 
-    // Then apply URL-based filters
-    if (urlFilters.minPrice !== undefined) {
-      filtered = filtered.filter((prop) => prop.price >= urlFilters.minPrice!);
-    }
+  //     if (bounds) {
+  //       const mapBoxBounds = boundsToMapBoxFormat(bounds);
 
-    if (urlFilters.maxPrice !== undefined) {
-      filtered = filtered.filter((prop) => prop.price <= urlFilters.maxPrice!);
-    }
+  //       // Apply fitBounds with animation
+  //       // Account for navbar (56px) + filter bar (56px) = 112px top padding
+  //       mapRef.current.fitBounds(mapBoxBounds, {
+  //         padding: {
+  //           top: 130, // Account for navbar + filter bar
+  //           bottom: 50,
+  //           left: 50,
+  //           right: 50,
+  //         },
+  //         duration: 600, // Smooth 600ms transition
+  //         maxZoom: 17, // Don't zoom in closer than street level
+  //       });
 
-    if (urlFilters.category) {
-      const categories = Array.isArray(urlFilters.category)
-        ? urlFilters.category
-        : [urlFilters.category];
-      filtered = filtered.filter((prop) =>
-        categories.includes(prop.category || "")
-      );
-    }
-
-    if (urlFilters.transactionType) {
-      const types = Array.isArray(urlFilters.transactionType)
-        ? urlFilters.transactionType
-        : [urlFilters.transactionType];
-      filtered = filtered.filter((prop) =>
-        types.includes(prop.transactionType)
-      );
-    }
-
-    if (urlFilters.bedrooms !== undefined) {
-      filtered = filtered.filter(
-        (prop) => (prop.bedrooms ?? 0) >= urlFilters.bedrooms!
-      );
-    }
-
-    if (urlFilters.bathrooms !== undefined) {
-      filtered = filtered.filter(
-        (prop) => (prop.bathrooms ?? 0) >= urlFilters.bathrooms!
-      );
-    }
-
-    return filtered;
-  }, [properties, searchResults, urlFilters]);
-
-  // Apply fitBounds animation when search results change
-  // Only trigger when searchResults changes, not on every render
-  useEffect(() => {
-    if (mapRef.current && searchResults && searchResults.length > 0) {
-      // searchResults already contains the properties with coordinates
-      // from AI search - use them directly to calculate bounds
-      const bounds = calculateBounds(
-        searchResults as Array<{ latitude?: number | null; longitude?: number | null }>
-      );
-
-      if (bounds) {
-        const mapBoxBounds = boundsToMapBoxFormat(bounds);
-
-        // Apply fitBounds with animation
-        // Account for navbar (56px) + filter bar (56px) = 112px top padding
-        mapRef.current.fitBounds(mapBoxBounds, {
-          padding: {
-            top: 130, // Account for navbar + filter bar
-            bottom: 50,
-            left: 50,
-            right: 50,
-          },
-          duration: 600, // Smooth 600ms transition
-          maxZoom: 17, // Don't zoom in closer than street level
-        });
-
-        console.log("🎬 fitBounds animation applied:", {
-          resultCount: searchResults.length,
-          bounds,
-        });
-      }
-    }
-  }, [searchResults]);
+  //       console.log("🎬 fitBounds animation applied:", {
+  //         resultCount: searchResults.length,
+  //         bounds,
+  //       });
+  //     }
+  //   }
+  // }, [searchResults]);
 
   // Error state: Missing MapBox token
   if (isError) {
@@ -247,17 +244,17 @@ export function MapView({
     return <MapLoadingState />;
   }
 
-  // Render map
+  // Render map with real handleMove
   return (
     <MapContainer
       mapRef={mapRef}
-      viewState={viewState}
+      viewState={rawViewState}
       onMove={handleMove}
       mapStyle={mapStyle}
-      mapboxToken={mapboxToken!} // Safe: checked by isError
-      properties={displayedProperties}
-      isAuthenticated={isAuthenticated}
-      searchResults={searchResults}
+      mapboxToken={mapboxToken!}
+      // properties={properties} // TODO: Add back when MapLayers is used
+      // isAuthenticated={isAuthenticated} // TODO: Add back when MapPopupManager is used
+      // searchResults={searchResults} // TODO: Add back when SearchResultsBadge is used
     />
   );
 }
