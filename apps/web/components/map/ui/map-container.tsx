@@ -42,6 +42,7 @@ import {
   isCluster,
   type PropertyPoint,
 } from "../hooks/use-map-clustering";
+import { useDebounceViewport } from "../hooks/use-debounce-viewport";
 import type { MapProperty } from "../map-view";
 
 // Import MapBox GL CSS
@@ -117,10 +118,14 @@ export const MapContainer = memo(function MapContainer({
     null,
   );
 
-  // Get clusters for current viewport
+  // Debounce viewport state to reduce expensive cluster recalculations
+  // Map updates smoothly with live viewState, but clusters only recalculate every 200ms
+  const debouncedViewState = useDebounceViewport(viewState, 200);
+
+  // Get clusters for current viewport (uses debounced state)
   const clusters = useMapClustering({
     properties,
-    viewState,
+    viewState: debouncedViewState,
     mapRef,
   });
 
