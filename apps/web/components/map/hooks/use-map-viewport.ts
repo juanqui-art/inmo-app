@@ -1,24 +1,30 @@
 /**
- * useMapViewport Hook
+ * useMapViewport Hook - OPTIMIZED WITH MAPBOX 'idle' EVENT
  *
  * Handles viewport state management and URL synchronization:
  * - Viewport state (lat, lng, zoom, pitch, bearing)
  * - Initial viewport from URL or props
- * - Debounced URL updates
+ * - URL updates when MapBox enters 'idle' state (INSTEAD of debounce)
  * - onMove handler
+ *
+ * OPTIMIZATION:
+ * - Removed useDebounce: Uses MapBox 'idle' event instead
+ * - Removed memoization: viewState is simple useState
+ * - URL updates when MapBox detects user stopped interacting
+ * - No artificial 500ms delay
  *
  * USAGE:
  * const { viewState, handleMove } = useMapViewport(initialViewport, mounted);
  *
  * RESPONSIBILITY:
  * - Viewport state management
- * - URL sync (read from searchParams, write with debounce)
+ * - URL sync via MapBox 'idle' event (not debounce timer)
  * - Prevents infinite re-render loops
  */
 
 "use client";
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ViewStateChangeEvent, MapRef } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
@@ -26,7 +32,6 @@ import {
   buildBoundsUrl,
   type MapViewport,
 } from "@/lib/utils/url-helpers";
-import { useDebounce } from "@/lib/hooks/use-debounce";
 
 interface ViewState {
   longitude: number;
@@ -81,126 +86,72 @@ export function useMapViewport({
   });
 
   /**
-   * Debounced viewport for URL updates
-   * Prevents updating URL on every pixel movement (500ms delay)
-   *
-   * FIX: Memoize the viewport object to prevent new references every render
-   * Without memoization: new object reference → useDebounce sees change → triggers useEffect constantly
-   * With memoization: same reference unless values actually change → debounce works correctly
-   */
-  const viewportToSync = useMemo(
-    () => ({
-      latitude: viewState.latitude,
-      longitude: viewState.longitude,
-      zoom: viewState.zoom,
-    }),
-    [viewState.latitude, viewState.longitude, viewState.zoom],
-  );
-
-  const debouncedViewport = useDebounce<MapViewport>(viewportToSync, 500);
-
-  /**
-   * Get bounds from MapBox using native getBounds() method
-   *
-   * WHY getBounds()?
-   * - MapBox calculates REAL bounds considering navbar/padding
-   * - Previous approach used viewportToBounds() which was symmetric
-   * - Symmetric bounds don't account for fixed navbar at top
-   * - Result: properties in upper area weren't fetched correctly
-   *
-   * SOLUTION:
-   * - Use map.getBounds() which returns actual visible bounds
-   * - Accounts for navbar and any viewport padding
-   * - Guarantees bounds match exactly what user sees
-   *
-   * STABILITY:
-   * - Wrapped in useMemo to prevent creating new object every render
-   * - Only recalculates when debouncedViewport actually changes
-   * - Prevents infinite loop caused by object identity changes
-   *
-   * PERFORMANCE FIX:
-   * - mapRef removed from dependencies (line 146)
-   * - mapRef is a mutable reference, doesn't cause recalculations
-   * - We only use it inside the memoized function
-   * - This reduces unnecessary memoization recalculations
-   * - React Scan: Was causing constant bounds recalculation (494ms "other time")
-   */
-  const debouncedBounds = useMemo(() => {
-    // If mapRef available, use actual MapBox bounds
-    if (mapRef?.current) {
-      try {
-        const bounds = mapRef.current.getBounds();
-        if (bounds) {
-          const ne = bounds.getNorthEast();
-          const sw = bounds.getSouthWest();
-          return {
-            ne_lat: ne.lat,
-            ne_lng: ne.lng,
-            sw_lat: sw.lat,
-            sw_lng: sw.lng,
-          };
-        }
-      } catch (error) {
-        console.warn("Failed to get bounds from map, using fallback", error);
-      }
-    }
-
-    // Fallback: Calculate bounds mathematically (for initial render)
-    // This won't account for navbar but works when map isn't ready
-    const latitudeDelta = (180 / Math.pow(2, debouncedViewport.zoom)) * 1.2;
-    const longitudeDelta = (360 / Math.pow(2, debouncedViewport.zoom)) * 1.2;
-
-    return {
-      ne_lat: debouncedViewport.latitude + latitudeDelta,
-      ne_lng: debouncedViewport.longitude + longitudeDelta,
-      sw_lat: debouncedViewport.latitude - latitudeDelta,
-      sw_lng: debouncedViewport.longitude - longitudeDelta,
-    };
-  }, [debouncedViewport]);
-
-  /**
-   * Track last URL to prevent infinite loop
-   *
-   * BUG FIX: Previous version had searchParams in useEffect dependencies,
-   * causing an infinite loop:
-   * 1. useEffect updates URL with router.replace()
-   * 2. URL changes → searchParams changes
-   * 3. searchParams in dependencies → useEffect runs again
-   * 4. Go to step 1 (infinite loop!)
-   *
-   * SOLUTION: Use useRef to track last URL built, without depending on
-   * searchParams in useEffect dependencies. This breaks the loop while
-   * still preventing duplicate URL updates.
+   * Track last URL to prevent duplicate updates
    */
   const lastUrlRef = useRef<string>("");
 
   /**
-   * Sync bounds to URL (Zillow/Airbnb pattern)
-   * Updates URL when user stops moving the map (debounced)
-   * IMPORTANT: Only updates if URL values actually changed to prevent infinite loops
+   * Store searchParams in a ref so we can access it in event listener
+   * without creating a dependency (which would cause infinite loops)
+   */
+  const searchParamsRef = useRef(searchParams);
+  useEffect(() => {
+    searchParamsRef.current = searchParams;
+  }, [searchParams]);
+
+  /**
+   * OPTIMIZATION: Sync URL when MapBox enters 'idle' state
    *
-   * NOTE: mapRef intentionally NOT in dependencies
-   * - mapRef is mutable reference (doesn't change)
-   * - We only use it inside the bounds calculation above
-   * - Adding it would unnecessarily trigger effect runs
+   * Instead of debouncing (arbitrary 500ms wait), we listen to MapBox's native 'idle' event.
+   * This fires when:
+   * - User stops dragging
+   * - Zoom animation completes
+   * - Any other interaction ends
+   *
+   * Benefits:
+   * - No artificial delay - URL updates immediately when user stops
+   * - Synchronized with actual map state
+   * - Cleaner code - just 1 event listener instead of debounce + memoization
+   * - Better UX - instant URL updates
    */
   useEffect(() => {
-    // Skip on initial mount (already at correct URL from server)
-    if (!mounted) return;
+    if (!mapRef?.current || !mounted) return;
 
-    // Build new URL, preserving existing query params (e.g., ai_search)
-    const newUrl = buildBoundsUrl(debouncedBounds, searchParams);
+    const updateUrlOnIdle = () => {
+      try {
+        const bounds = mapRef.current?.getBounds();
+        if (!bounds) return;
 
-    // Only update URL if it actually changed
-    // This prevents infinite re-render loops AND duplicate router.replace() calls
-    if (lastUrlRef.current !== newUrl) {
-      lastUrlRef.current = newUrl;
-      router.replace(newUrl, { scroll: false });
-    }
-    // NOTE: searchParams intentionally NOT in dependencies to avoid infinite loop
-    // We use it inline but don't react to its changes (would cause loop via router.replace)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedBounds, router, mounted]); // ← mapRef, searchParams NOT included
+        const ne = bounds.getNorthEast();
+        const sw = bounds.getSouthWest();
+        const boundsData = {
+          ne_lat: ne.lat,
+          ne_lng: ne.lng,
+          sw_lat: sw.lat,
+          sw_lng: sw.lng,
+        };
+
+        // Build new URL, preserving existing query params (e.g., ai_search)
+        // Use ref to get current searchParams without creating a dependency
+        const newUrl = buildBoundsUrl(boundsData, searchParamsRef.current);
+
+        // Only update if URL actually changed
+        if (lastUrlRef.current !== newUrl) {
+          lastUrlRef.current = newUrl;
+          router.replace(newUrl, { scroll: false });
+        }
+      } catch (error) {
+        console.warn("Failed to update URL on idle:", error);
+      }
+    };
+
+    // Listen for 'idle' event - fires when MapBox detects no more interactions
+    mapRef.current.on("idle", updateUrlOnIdle);
+
+    return () => {
+      mapRef.current?.off("idle", updateUrlOnIdle);
+    };
+  }, [mounted, router]);
 
   /**
    * Handle map movement
