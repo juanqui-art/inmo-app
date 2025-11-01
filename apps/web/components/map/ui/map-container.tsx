@@ -33,7 +33,7 @@
 
 "use client";
 
-import { memo, useState } from "react";
+import { memo, useState, useCallback, useEffect } from "react";
 import Map, { type ViewStateChangeEvent, type MapRef } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import { MapLayers } from "./map-layers";
@@ -97,6 +97,58 @@ export const MapContainer = memo(function MapContainer({
   // Local state for selected property popup
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
 
+  const handlePropertyClick = useCallback((propertyId: string) => {
+    setSelectedPropertyId(propertyId);
+  }, []);
+
+  /**
+   * Attach click listeners to the marker layer when the map is ready
+   * This happens AFTER the Source and Layers are rendered
+   */
+  useEffect(() => {
+    if (!mapRef?.current) return;
+
+    const map = mapRef.current.getMap();
+    if (!map) return;
+
+    const checkAndAttachListener = () => {
+      const layer = map.getLayer("unclustered-point");
+      if (!layer) {
+        setTimeout(checkAndAttachListener, 100);
+        return;
+      }
+
+      const onClick = (e: any) => {
+        if (e.features && e.features.length > 0) {
+          const propertyId = e.features[0].id;
+          handlePropertyClick(propertyId);
+        }
+      };
+
+      const onMouseEnter = () => {
+        map.getCanvas().style.cursor = "pointer";
+      };
+
+      const onMouseLeave = () => {
+        map.getCanvas().style.cursor = "";
+      };
+
+      map.on("click", "unclustered-point", onClick);
+      map.on("mouseenter", "unclustered-point", onMouseEnter);
+      map.on("mouseleave", "unclustered-point", onMouseLeave);
+
+      // Return cleanup function
+      return () => {
+        map.off("click", "unclustered-point", onClick);
+        map.off("mouseenter", "unclustered-point", onMouseEnter);
+        map.off("mouseleave", "unclustered-point", onMouseLeave);
+      };
+    };
+
+    const cleanup = checkAndAttachListener();
+    return cleanup;
+  }, [mapRef, handlePropertyClick]);
+
   return (
     <div className="relative w-full h-screen isolate">
       <Map
@@ -112,13 +164,7 @@ export const MapContainer = memo(function MapContainer({
         attributionControl={false}
       >
         {/* MapLayers renders markers + clusters */}
-        {properties && (
-          <MapLayers
-            properties={properties}
-            onPropertyClick={setSelectedPropertyId}
-            mapRef={mapRef}
-          />
-        )}
+        {properties && <MapLayers properties={properties} />}
       </Map>
 
       {/* MapPopupManager handles popup display and auth modal */}
