@@ -80,25 +80,32 @@ export function FilterDropdown({
     }
   }, [isOpen]);
 
-  // ✅ Handle button click: if active with clear, just clear; otherwise toggle
+  // ✅ Handle button click: check if clicking on clear icon or main area
   const handleButtonClick = (e: React.MouseEvent) => {
-    // Don't toggle dropdown if clear button is present and active
-    if (isActive && onClear) {
+    const target = e.target as HTMLElement;
+
+    // Check if clicked on the X icon area (or its parent span)
+    const isClearIconClick = target.closest('[data-clear-icon]') !== null;
+
+    if (isActive && onClear && isClearIconClick) {
+      // User clicked the X icon
       e.preventDefault();
-      // Click on button with clear should NOT open dropdown
-      // User must first clear the filter, then click again to open
+      e.stopPropagation();
+      onClear();
       return;
     }
+
+    if (isActive && onClear) {
+      // User clicked the main button area when filter is active
+      // Don't open dropdown - they need to clear first
+      e.preventDefault();
+      return;
+    }
+
     // Normal toggle behavior
     const newState = !isOpen;
     setIsOpen(newState);
     onOpenChange?.(newState);
-  };
-
-  // ✅ Handle clear button click (stop propagation to prevent toggle)
-  const handleClearClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onClear?.();
   };
 
   const displayValue = value || label;
@@ -121,15 +128,23 @@ export function FilterDropdown({
       >
         {icon && <span className="h-4 w-4 flex-shrink-0">{icon}</span>}
         <span className="truncate">{displayValue}</span>
-        {/* ✅ Show X button if active, otherwise show chevron */}
+        {/* ✅ Show X icon if active, otherwise show chevron */}
         {isActive && onClear ? (
-          <button
-            onClick={handleClearClick}
-            className="h-4 w-4 flex-shrink-0 text-oslo-gray-200 hover:text-white transition-colors"
+          <span
+            data-clear-icon
+            className="h-4 w-4 flex-shrink-0 text-oslo-gray-200 hover:text-white transition-colors cursor-pointer"
+            role="button"
+            tabIndex={0}
             aria-label="Limpiar filtro"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClear?.();
+              }
+            }}
           >
             <X className="h-4 w-4" />
-          </button>
+          </span>
         ) : (
           <ChevronDown
             className={`h-4 w-4 flex-shrink-0 transition-transform duration-200 ${
