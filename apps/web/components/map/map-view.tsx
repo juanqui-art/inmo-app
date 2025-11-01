@@ -103,7 +103,7 @@ export function MapView({
 
   // Hooks for business logic
   const { mounted, mapboxToken, isError } = useMapInitialization();
-  const { mapStyle } = useMapTheme();
+  const { mapStyle } = useMapTheme();  // Already memoized in the hook
   const { viewState: rawViewState, handleMove } = useMapViewport({
     initialViewport,
     initialCenter,
