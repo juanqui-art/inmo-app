@@ -88,21 +88,15 @@ export function FilterDropdown({
     const isClearIconClick = target.closest('[data-clear-icon]') !== null;
 
     if (isActive && onClear && isClearIconClick) {
-      // User clicked the X icon
+      // User clicked the X icon → Clear filter only, don't toggle dropdown
       e.preventDefault();
       e.stopPropagation();
       onClear();
       return;
     }
 
-    if (isActive && onClear) {
-      // User clicked the main button area when filter is active
-      // Don't open dropdown - they need to clear first
-      e.preventDefault();
-      return;
-    }
-
-    // Normal toggle behavior
+    // Normal toggle behavior (always works, whether active or not)
+    // Click anywhere else on the button opens/closes the dropdown
     const newState = !isOpen;
     setIsOpen(newState);
     onOpenChange?.(newState);
@@ -132,7 +126,7 @@ export function FilterDropdown({
         {isActive && onClear ? (
           <span
             data-clear-icon
-            className="h-4 w-4 flex-shrink-0 text-oslo-gray-200 hover:text-white transition-colors cursor-pointer bg-black rounded-full "
+            className="h-5 w-5 flex-shrink-0 text-oslo-gray-200 hover:text-white transition-colors cursor-pointer bg-black rounded-full "
             role="button"
             tabIndex={0}
             aria-label="Limpiar filtro"
@@ -143,7 +137,7 @@ export function FilterDropdown({
               }
             }}
           >
-            <X className="h-4 w-4  rounded-full p-1 hover:bg-oslo-gray-300 black/50" />
+            <X className="h-5 w-5  rounded-full  hover:bg-oslo-gray-300 black/50" />
           </span>
         ) : (
           <ChevronDown
