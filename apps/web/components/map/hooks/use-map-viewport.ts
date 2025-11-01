@@ -18,7 +18,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ViewStateChangeEvent, MapRef } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
@@ -111,6 +111,13 @@ export function useMapViewport({
    * - Wrapped in useMemo to prevent creating new object every render
    * - Only recalculates when debouncedViewport actually changes
    * - Prevents infinite loop caused by object identity changes
+   *
+   * PERFORMANCE FIX:
+   * - mapRef removed from dependencies (line 146)
+   * - mapRef is a mutable reference, doesn't cause recalculations
+   * - We only use it inside the memoized function
+   * - This reduces unnecessary memoization recalculations
+   * - React Scan: Was causing constant bounds recalculation (494ms "other time")
    */
   const debouncedBounds = useMemo(() => {
     // If mapRef available, use actual MapBox bounds
@@ -143,7 +150,7 @@ export function useMapViewport({
       sw_lat: debouncedViewport.latitude - latitudeDelta,
       sw_lng: debouncedViewport.longitude - longitudeDelta,
     };
-  }, [debouncedViewport, mapRef]);
+  }, [debouncedViewport]);
 
   /**
    * Track last URL to prevent infinite loop
@@ -192,8 +199,14 @@ export function useMapViewport({
   /**
    * Handle map movement
    * Updates viewport state when user drags/zooms the map
+   *
+   * PERFORMANCE FIX:
+   * - Wrapped in useCallback with empty dependency array
+   * - Stable reference across renders
+   * - Prevents MapContainer from unnecessary re-renders
+   * - React Scan: Reduces child component re-renders when map moves
    */
-  const handleMove = (evt: ViewStateChangeEvent) => {
+  const handleMove = useCallback((evt: ViewStateChangeEvent) => {
     setViewState({
       longitude: evt.viewState.longitude,
       latitude: evt.viewState.latitude,
@@ -202,7 +215,7 @@ export function useMapViewport({
       bearing: DEFAULT_MAP_CONFIG.DEFAULT_BEARING,
       transitionDuration: 0,
     });
-  };
+  }, []);
 
   return {
     viewState,

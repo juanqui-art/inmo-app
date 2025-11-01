@@ -33,12 +33,11 @@
 "use client";
 
 import { useRef, useEffect, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
 import type { MapViewport } from "@/lib/utils/url-helpers";
 import type { TransactionType } from "@repo/database";
 import type { MapRef } from "react-map-gl/mapbox";
 import { boundsToMapBoxFormat, calculateBounds } from "@/lib/utils/map-bounds";
-import { parseFilterParams } from "@/lib/utils/url-helpers";
+import { useMemoizedFilterParams } from "@/lib/hooks/use-memoized-filter-params";
 import { useMapInitialization } from "./hooks/use-map-initialization";
 import { useMapTheme } from "./hooks/use-map-theme";
 import { useMapViewport } from "./hooks/use-map-viewport";
@@ -97,9 +96,10 @@ export function MapView({
   // Used to get precise bounds that account for navbar
   const mapRef = useRef<MapRef>(null);
 
-  // Get current filters from URL
-  const searchParams = useSearchParams();
-  const urlFilters = parseFilterParams(searchParams);
+  // Get memoized filter parameters from URL
+  // Stable reference that only changes when filters actually change
+  // Prevents unnecessary re-filtering of properties
+  const urlFilters = useMemoizedFilterParams();
 
   // Hooks for business logic
   const { mounted, mapboxToken, isError } = useMapInitialization();

@@ -119,6 +119,13 @@ export function useMapClustering({
    * - Accounts for padding and any fixed header
    * - Supercluster gets correct bounds for filtering
    * - Fallback to symmetric calculation when map not ready
+   *
+   * PERFORMANCE FIX:
+   * - mapRef removed from dependencies (line 154)
+   * - mapRef is a mutable reference, doesn't cause recalculations
+   * - We only use it inside the memoized function
+   * - This reduces unnecessary memoization recalculations
+   * - React Scan: Was causing constant cluster recalculation
    */
   const clusters = useMemo(() => {
     let bounds: [number, number, number, number];
@@ -151,7 +158,7 @@ export function useMapClustering({
      * Returns array of cluster features and individual points
      */
     return supercluster.getClusters(bounds, Math.floor(viewState.zoom));
-  }, [supercluster, viewState, mapRef]);
+  }, [supercluster, viewState]);
 
   return clusters;
 }
