@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ReactScanProvider } from "@/components/react-scan-provider";
 import "./globals.css";
 import "./navbar-scroll-animations.css";
 
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ReactScanProvider />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
