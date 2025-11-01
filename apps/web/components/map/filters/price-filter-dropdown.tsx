@@ -99,9 +99,25 @@ export function PriceFilterDropdown({
   // }, [distribution, localMin, localMax])
 
   // Display value para el botón del dropdown con formato compacto (K, M)
-  const displayValue = minPrice || maxPrice
-    ? `$${formatPriceCompact(minPrice ?? rangeMinBound)} - $${formatPriceCompact(maxPrice ?? rangeMaxBound)}`
-    : 'Precio'
+  // Lógica: mostrar solo el valor que cambió, o rango si ambos cambiaron
+  const displayValue = (() => {
+    const hasMin = minPrice !== undefined && minPrice > rangeMinBound
+    const hasMax = maxPrice !== undefined && maxPrice < rangeMaxBound
+
+    if (hasMin && hasMax) {
+      // Ambos valores cambiaron: mostrar rango
+      return `$${formatPriceCompact(minPrice)} - $${formatPriceCompact(maxPrice)}`
+    } else if (hasMin) {
+      // Solo mínimo cambió
+      return `MIN $${formatPriceCompact(minPrice)}`
+    } else if (hasMax) {
+      // Solo máximo cambió
+      return `MAX $${formatPriceCompact(maxPrice)}`
+    } else {
+      // Sin cambios
+      return 'Precio'
+    }
+  })()
 
   // Handler para cambios en el histograma slider
   const handleHistogramChange = useCallback((newMin: number, newMax: number) => {
