@@ -17,43 +17,39 @@
  * - Sync happens ONLY when user clicks "Done"
  */
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { FilterDropdown } from './filter-dropdown'
 import { PriceHistogramSlider } from './price-histogram-slider'
 import {
   formatPrice,
+  formatNumberEcuador,
+  formatPriceCompact,
 } from '@/lib/utils/price-helpers'
 
 /**
- * Formatea un número con separadores de miles (Ecuador: punto)
- * En Ecuador usamos punto (.) para separar miles, no coma
- *
- * @example
- * formatNumberEcuador(1000000)  // "1.000.000"
- * formatNumberEcuador(50000)    // "50.000"
- * formatNumberEcuador(100)      // "100"
+ * PriceInput Component
+ * Reusable price input with formatted display and dollar sign
  */
-const formatNumberEcuador = (num: number): string => {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+interface PriceInputProps {
+  value: number
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  ariaLabel: string
 }
 
-/**
- * Formatea un número con K (miles) y M (millones)
- * Usado para el display del rango en el botón
- *
- * @example
- * formatPriceCompact(1000000)  // "1M"
- * formatPriceCompact(50000)    // "50K"
- * formatPriceCompact(100)      // "100"
- */
-const formatPriceCompact = (num: number): string => {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(0) + 'M'
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(0) + 'K'
-  }
-  return num.toString()
+function PriceInput({ value, onChange, ariaLabel }: PriceInputProps) {
+  return (
+    <div className="flex-1 min-w-0 flex items-center rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 focus-within:ring-2 focus-within:ring-oslo-gray-600">
+      <span className="px-2 py-2 text-oslo-gray-400 font-medium text-base flex-shrink-0">$</span>
+      <input
+        type="text"
+        value={formatNumberEcuador(value)}
+        onChange={onChange}
+        className="flex-1 min-w-0 px-0 py-2 pr-2 bg-oslo-gray-800 text-oslo-gray-100 text-base font-medium placeholder-oslo-gray-500 focus:outline-none"
+        placeholder="0"
+        aria-label={ariaLabel}
+      />
+    </div>
+  )
 }
 
 interface PriceFilterDropdownProps {
@@ -87,8 +83,12 @@ export function PriceFilterDropdown({
   const [localMax, setLocalMax] = useState<number>(maxPrice ?? rangeMaxBound)
 
   // ✅ Detectar si hay filtro activo (para mostrar X en el botón)
-  const isFilterActive = (minPrice !== undefined && minPrice > rangeMinBound) ||
-                         (maxPrice !== undefined && maxPrice < rangeMaxBound)
+  const isFilterActive = useMemo(
+    () =>
+      (minPrice !== undefined && minPrice > rangeMinBound) ||
+      (maxPrice !== undefined && maxPrice < rangeMaxBound),
+    [minPrice, maxPrice, rangeMinBound, rangeMaxBound]
+  )
 
   // ✅ Handler para limpiar el filtro completamente
   const handleClear = useCallback(() => {
@@ -102,15 +102,10 @@ export function PriceFilterDropdown({
     setLocalMax(maxPrice ?? rangeMaxBound)
   }, [minPrice, maxPrice, rangeMinBound, rangeMaxBound])
 
-  // Calcular cantidad de propiedades en el rango seleccionado
-  // TODO: Uncomment when property counter is re-enabled
-  // const propertyCount = useMemo(() => {
-  //   return calculatePropertyCount(distribution, localMin, localMax)
-  // }, [distribution, localMin, localMax])
 
   // Display value para el botón del dropdown con formato compacto (K, M)
   // Lógica: mostrar solo el valor que cambió, o rango si ambos cambiaron
-  const displayValue = (() => {
+  const displayValue = useMemo(() => {
     const hasMin = minPrice !== undefined && minPrice > rangeMinBound
     const hasMax = maxPrice !== undefined && maxPrice < rangeMaxBound
 
@@ -127,7 +122,7 @@ export function PriceFilterDropdown({
       // Sin cambios
       return 'Precio'
     }
-  })()
+  }, [minPrice, maxPrice, rangeMinBound, rangeMaxBound])
 
   // Handler para cambios en el histograma slider
   const handleHistogramChange = useCallback((newMin: number, newMax: number) => {
@@ -218,43 +213,11 @@ export function PriceFilterDropdown({
 
         {/* Inputs Numéricos con Formato de Moneda */}
         <div className="flex items-center gap-2 min-w-0 px-4">
-          {/* Input Mínimo con Símbolo de Dólar */}
-          <div className="flex-1 min-w-0 flex items-center rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 focus-within:ring-2 focus-within:ring-oslo-gray-600">
-            <span className="px-2 py-2 text-oslo-gray-400 font-medium text-base flex-shrink-0">$</span>
-            <input
-              type="text"
-              value={formatNumberEcuador(localMin)}
-              onChange={handleInputMinChange}
-              className="flex-1 min-w-0 px-0 py-2 pr-2 bg-oslo-gray-800 text-oslo-gray-100 text-base font-medium placeholder-oslo-gray-500 focus:outline-none"
-              placeholder="0"
-            />
-          </div>
-
+          <PriceInput value={localMin} onChange={handleInputMinChange} ariaLabel="Precio mínimo" />
           <span className="text-oslo-gray-400 flex-shrink-0">-</span>
-
-          {/* Input Máximo con Símbolo de Dólar */}
-          <div className="flex-1 min-w-0 flex items-center rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 focus-within:ring-2 focus-within:ring-oslo-gray-600">
-            <span className="px-2 py-2 text-oslo-gray-400 font-medium text-base flex-shrink-0">$</span>
-            <input
-              type="text"
-              value={formatNumberEcuador(localMax)}
-              onChange={handleInputMaxChange}
-              className="flex-1 min-w-0 px-0 py-2 pr-2 bg-oslo-gray-800 text-oslo-gray-100 text-base font-medium placeholder-oslo-gray-500 focus:outline-none"
-              placeholder="0"
-            />
-          </div>
+          <PriceInput value={localMax} onChange={handleInputMaxChange} ariaLabel="Precio máximo" />
         </div>
 
-        {/* Contador de Propiedades */}
-        {/*<div className="text-xs text-oslo-gray-400 text-center py-2 px-4 mx-4 bg-oslo-gray-800/30 rounded-lg">*/}
-        {/*  {distribution.length > 0 ? (*/}
-        {/*    <span>*/}
-        {/*      <strong>{propertyCount}</strong> propiedades disponibles*/}
-        {/*    </span>*/}
-        {/*  ) : (*/}
-        {/*    <span>Cargando distribución...</span>*/}
-        {/*  )}*/}
-        {/*</div>*/}
 
         {/* Botón "Listo" */}
         <div className="px-4">

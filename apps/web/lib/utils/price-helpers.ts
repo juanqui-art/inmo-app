@@ -21,6 +21,38 @@ export function formatPrice(price: number): string {
 }
 
 /**
+ * Formatea un número con separadores de miles (Ecuador: punto)
+ * En Ecuador usamos punto (.) para separar miles, no coma
+ *
+ * @example
+ * formatNumberEcuador(1000000)  // "1.000.000"
+ * formatNumberEcuador(50000)    // "50.000"
+ * formatNumberEcuador(100)      // "100"
+ */
+export function formatNumberEcuador(num: number): string {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+
+/**
+ * Formatea un número con K (miles) y M (millones)
+ * Usado para el display del rango en el botón del filtro
+ *
+ * @example
+ * formatPriceCompact(1000000)  // "1M"
+ * formatPriceCompact(50000)    // "50K"
+ * formatPriceCompact(100)      // "100"
+ */
+export function formatPriceCompact(num: number): string {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(0) + 'M'
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(0) + 'K'
+  }
+  return num.toString()
+}
+
+/**
  * Encuentra el bucket más cercano a un precio dado
  * Usado para "snapping" cuando usuario arrastra handle o escribe input
  *
