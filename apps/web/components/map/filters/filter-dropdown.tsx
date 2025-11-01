@@ -13,7 +13,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 
 interface FilterDropdownProps {
   label: string;
@@ -22,6 +22,8 @@ interface FilterDropdownProps {
   children: React.ReactNode;
   onOpenChange?: (open: boolean) => void;
   isOpen?: boolean;
+  isActive?: boolean;
+  onClear?: () => void;
 }
 
 export function FilterDropdown({
@@ -31,6 +33,8 @@ export function FilterDropdown({
   children,
   onOpenChange,
   isOpen: controlledIsOpen,
+  isActive = false,
+  onClear,
 }: FilterDropdownProps) {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isControlled = controlledIsOpen !== undefined;
@@ -76,10 +80,25 @@ export function FilterDropdown({
     }
   }, [isOpen]);
 
-  const handleToggle = () => {
+  // ✅ Handle button click: if active with clear, just clear; otherwise toggle
+  const handleButtonClick = (e: React.MouseEvent) => {
+    // Don't toggle dropdown if clear button is present and active
+    if (isActive && onClear) {
+      e.preventDefault();
+      // Click on button with clear should NOT open dropdown
+      // User must first clear the filter, then click again to open
+      return;
+    }
+    // Normal toggle behavior
     const newState = !isOpen;
     setIsOpen(newState);
     onOpenChange?.(newState);
+  };
+
+  // ✅ Handle clear button click (stop propagation to prevent toggle)
+  const handleClearClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClear?.();
   };
 
   const displayValue = value || label;
@@ -89,22 +108,35 @@ export function FilterDropdown({
       {/* Trigger Button */}
       <button
         ref={buttonRef}
-        onClick={handleToggle}
+        onClick={handleButtonClick}
         className={`flex h-12 items-center gap-2 px-4 py-2 rounded-full font-medium text-base transition-all duration-200 whitespace-nowrap ${
-          isOpen
-            ? "bg-oslo-gray-700 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
-            : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800"
+          isActive
+            ? "bg-oslo-gray-600 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
+            : isOpen
+              ? "bg-oslo-gray-700 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
+              : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800"
         }`}
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
         {icon && <span className="h-4 w-4 flex-shrink-0">{icon}</span>}
         <span className="truncate">{displayValue}</span>
-        <ChevronDown
-          className={`h-4 w-4 flex-shrink-0 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        />
+        {/* ✅ Show X button if active, otherwise show chevron */}
+        {isActive && onClear ? (
+          <button
+            onClick={handleClearClick}
+            className="h-4 w-4 flex-shrink-0 text-oslo-gray-200 hover:text-white transition-colors"
+            aria-label="Limpiar filtro"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        ) : (
+          <ChevronDown
+            className={`h-4 w-4 flex-shrink-0 transition-transform duration-200 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+          />
+        )}
       </button>
 
       {/* Dropdown Content */}
