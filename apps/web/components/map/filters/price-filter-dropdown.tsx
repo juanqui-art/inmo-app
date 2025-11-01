@@ -79,7 +79,7 @@ export function PriceFilterDropdown({
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
 
   // ✅ ESTADO LOCAL (no sincronizado con URL hasta "Done")
-  const [localMin, setLocalMin] = useState<number>(minPrice ?? rangeMinBound)
+  const [localMin, setLocalMin] = useState<number>(minPrice ?? 0)
   const [localMax, setLocalMax] = useState<number>(maxPrice ?? rangeMaxBound)
 
   // ✅ Detectar si hay filtro activo (para mostrar X en el botón)
@@ -98,9 +98,9 @@ export function PriceFilterDropdown({
 
   // Sincronizar estado local cuando props cambian (ej: opening dropdown)
   useEffect(() => {
-    setLocalMin(minPrice ?? rangeMinBound)
+    setLocalMin(minPrice ?? 0)
     setLocalMax(maxPrice ?? rangeMaxBound)
-  }, [minPrice, maxPrice, rangeMinBound, rangeMaxBound])
+  }, [minPrice, maxPrice, rangeMaxBound])
 
 
   // Display value para el botón del dropdown con formato compacto (K, M)
