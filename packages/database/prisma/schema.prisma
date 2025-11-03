@@ -68,6 +68,7 @@ model Property {
   @@index([city, state])
   @@index([price])
   @@index([agentId])
+  @@index([latitude, longitude]) // Geospatial index for map queries (10-50x faster)
   @@map("properties")
 }
 
