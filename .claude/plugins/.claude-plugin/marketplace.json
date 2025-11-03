@@ -1,0 +1,13 @@
+{
+  "name": "inmo-app-marketplace",
+  "owner": {
+    "name": "InmoApp Dev Team"
+  },
+  "plugins": [
+    {
+      "name": "inmo-app-modes",
+      "source": "./inmo-app-modes",
+      "description": "Múltiples modos de asistencia especializados para desarrollo de inmo-app"
+    }
+  ]
+}
