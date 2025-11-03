@@ -11,6 +11,7 @@
  */
 
 import { AISearchInline } from "@/components/ai-search/ai-search-inline";
+import { FilterBarSkeleton } from "./filter-skeletons";
 import { PriceFilterDropdown } from "./price-filter-dropdown";
 import { PropertyTypeDropdown } from "./property-type-dropdown";
 import { BedroomsFilter } from "./bedrooms-filter";
@@ -20,12 +21,14 @@ interface FilterBarProps {
   priceRangeMin?: number;
   priceRangeMax?: number;
   priceDistribution?: { bucket: number; count: number }[];
+  isLoading?: boolean;
 }
 
 export function FilterBar({
   priceRangeMin,
   priceRangeMax,
   priceDistribution,
+  isLoading = false,
 }: FilterBarProps) {
   const { filters, setPriceRange, setCategories, updateFilters } =
     useMapFilters();
@@ -33,6 +36,11 @@ export function FilterBar({
   const handleClearBedrooms = () => {
     updateFilters({ bedrooms: undefined });
   };
+
+  // Show skeleton loading state while data is being fetched
+  if (isLoading) {
+    return <FilterBarSkeleton />;
+  }
 
   return (
     <div className="flex justify-center  bg-oslo-gray-1000 ">

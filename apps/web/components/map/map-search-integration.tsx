@@ -274,12 +274,19 @@ export function MapSearchIntegration({
     }
   }, [searchResults]);
 
+  // Show loading state while price data is being fetched
+  const isPriceDataLoading =
+    priceRangeMin === undefined ||
+    priceRangeMax === undefined ||
+    priceDistribution === undefined;
+
   return (
     <>
       <FilterBar
         priceRangeMin={priceRangeMin}
         priceRangeMax={priceRangeMax}
         priceDistribution={priceDistribution}
+        isLoading={isPriceDataLoading}
       />
       <div className="relative w-full h-screen">
         {/* Filter Bar */}

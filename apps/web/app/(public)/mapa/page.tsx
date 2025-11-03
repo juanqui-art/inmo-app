@@ -55,7 +55,6 @@ import {
 } from "@/lib/cache/properties-cache";
 import { getCachedPriceDistribution } from "@/lib/cache/price-distribution-cache";
 import {
-  calculateBounds,
   boundsToMapBoxFormat,
   type MapBounds,
 } from "@/lib/utils/map-bounds";

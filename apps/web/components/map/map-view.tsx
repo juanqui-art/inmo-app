@@ -36,7 +36,6 @@ import { useRef } from "react";
 import type { MapViewport } from "@/lib/utils/url-helpers";
 import type { TransactionType } from "@repo/database";
 import type { MapRef } from "react-map-gl/mapbox";
-import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import type { MapBounds } from "@/lib/utils/map-bounds";
 import { calculateZoomLevel } from "@/lib/utils/map-bounds";
 import { useMapInitialization } from "./hooks/use-map-initialization";
