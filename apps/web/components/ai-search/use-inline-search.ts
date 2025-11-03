@@ -119,6 +119,24 @@ export function useInlineSearch(): UseInlineSearchReturn {
       // The map will handle displaying appropriate empty states
       setSearchResult(result);
 
+      // OPTIMIZATION: Cache result in sessionStorage to prevent duplicate API calls
+      // This avoids the second aiSearchAction() call in map-search-integration.tsx
+      if (typeof window !== "undefined") {
+        try {
+          sessionStorage.setItem(
+            "ai_search_result",
+            JSON.stringify({
+              data: result,
+              timestamp: Date.now(),
+              ttl: 60000, // 1 minute TTL
+            })
+          );
+        } catch (e) {
+          // Silently fail if sessionStorage is unavailable (e.g., private browsing)
+          console.debug("Could not save to sessionStorage:", e);
+        }
+      }
+
       if (result.success) {
         console.log("✅ Search successful:", {
           count: result.properties?.length,

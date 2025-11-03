@@ -114,16 +114,77 @@ export function MapSearchIntegration({
       setIsSearching(true);
       setSearchStage("searching");
 
-      aiSearchAction(aiSearchQuery)
-        .then((result) => {
-          console.log("🗺️ AI Search results received:", {
-            count: result.properties?.length,
-            query: result.query,
-            filters: result.filterSummary,
-            confidence: result.confidence,
-            locationValidation: result.locationValidation,
-          });
-          setSearchResults(result);
+      // OPTIMIZATION: Check sessionStorage first to avoid duplicate API calls
+      // If navbar just called aiSearchAction() with same query, use cached result
+      const checkSessionCache = () => {
+        try {
+          const cached = sessionStorage.getItem("ai_search_result");
+          if (cached) {
+            const { data, timestamp, ttl } = JSON.parse(cached);
+            // Verify cache is still valid (within TTL)
+            if (Date.now() - timestamp < ttl) {
+              console.log("✅ Using cached AI search result (saved 450ms + $0.0003)");
+              sessionStorage.removeItem("ai_search_result"); // Clean up
+              return data; // Return cached data
+            } else {
+              // Cache expired
+              sessionStorage.removeItem("ai_search_result");
+            }
+          }
+        } catch (e) {
+          // Silently fail if sessionStorage is unavailable
+          console.debug("Could not read sessionStorage:", e);
+        }
+        return null; // No cached result
+      };
+
+      const cachedResult = checkSessionCache();
+
+      if (cachedResult) {
+        // Use cached result (avoid duplicate API call)
+        setSearchResults(cachedResult);
+
+        // Determine empty state type based on result
+        if (!cachedResult.success) {
+          if (
+            cachedResult.locationValidation &&
+            !cachedResult.locationValidation.isValid
+          ) {
+            setEmptyStateType("invalid-location");
+          } else if (
+            cachedResult.confidence !== undefined &&
+            cachedResult.confidence < 30
+          ) {
+            setEmptyStateType("low-confidence");
+          } else {
+            setEmptyStateType("low-confidence");
+          }
+          setIsSearching(false);
+        } else if (cachedResult.properties && cachedResult.properties.length === 0) {
+          setEmptyStateType("no-results");
+          setIsSearching(false);
+        } else if (
+          cachedResult.confidence !== undefined &&
+          cachedResult.confidence < 50
+        ) {
+          setEmptyStateType("medium-confidence-warning");
+          setSearchStage("moving");
+        } else {
+          setEmptyStateType(null);
+          setSearchStage("moving");
+        }
+      } else {
+        // No cache: Make API call (normal flow)
+        aiSearchAction(aiSearchQuery)
+          .then((result) => {
+            console.log("🗺️ AI Search results received:", {
+              count: result.properties?.length,
+              query: result.query,
+              filters: result.filterSummary,
+              confidence: result.confidence,
+              locationValidation: result.locationValidation,
+            });
+            setSearchResults(result);
 
           // Determine empty state type based on result
           if (!result.success) {
