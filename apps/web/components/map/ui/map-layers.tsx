@@ -37,7 +37,9 @@ export const MapLayers = memo(function MapLayers({
 }: MapLayersProps) {
   console.log("🗺️ MapLayers render:", {
     propertyCount: properties.length,
-    firstProperty: properties[0],
+    firstPropertyTitle: properties[0]?.title,
+    firstPropertyCoords: properties[0] ? `(${properties[0].latitude}, ${properties[0].longitude})` : "N/A",
+    allPropertiesHaveCoords: properties.every(p => p.latitude && p.longitude),
   });
 
   /**

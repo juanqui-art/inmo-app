@@ -54,6 +54,10 @@ import {
   validateBoundsParams,
 } from "@/lib/cache/properties-cache";
 import { getCachedPriceDistribution } from "@/lib/cache/price-distribution-cache";
+import {
+  calculateBounds,
+  boundsToMapBoxFormat,
+} from "@/lib/utils/map-bounds";
 import { getCurrentUser } from "@/lib/auth";
 import { propertyRepository } from "@repo/database";
 import type { Metadata } from "next";
@@ -86,6 +90,18 @@ interface MapPageProps {
 export default async function MapPage(props: MapPageProps) {
   // Await searchParams (Next.js 15 requirement)
   const searchParams = await props.searchParams;
+
+  /**
+   * Detect if bounds are in URL
+   * If NO bounds params → fetch all properties (initial load)
+   * If YES bounds params → fetch within bounds (user navigated map)
+   */
+  const hasBoundsParams = (
+    searchParams.ne_lat !== undefined &&
+    searchParams.ne_lng !== undefined &&
+    searchParams.sw_lat !== undefined &&
+    searchParams.sw_lng !== undefined
+  );
 
   /**
    * Parse bounds from URL or use defaults
@@ -147,12 +163,16 @@ export default async function MapPage(props: MapPageProps) {
    * 5. If new bounds: queries DB once, caches result
    *
    * This prevents the renderización loops while keeping data fresh.
+   *
+   * INITIAL LOAD OPTIMIZATION:
+   * If NO bounds in URL → fetch ALL properties (to show 100%)
+   * If YES bounds in URL → fetch filtered by bounds (user navigated)
    */
   const { properties } = await getCachedPropertiesByBounds({
-    minLatitude: bounds.sw_lat,
-    maxLatitude: bounds.ne_lat,
-    minLongitude: bounds.sw_lng,
-    maxLongitude: bounds.ne_lng,
+    minLatitude: hasBoundsParams ? bounds.sw_lat : -90,
+    maxLatitude: hasBoundsParams ? bounds.ne_lat : 90,
+    minLongitude: hasBoundsParams ? bounds.sw_lng : -180,
+    maxLongitude: hasBoundsParams ? bounds.ne_lng : 180,
     filters: repositoryFilters as any, // Type assertion for flexibility
     take: 1000,
   });
@@ -181,11 +201,26 @@ export default async function MapPage(props: MapPageProps) {
   const priceStats = await getCachedPriceDistribution();
 
   /**
+   * Calculate initial bounds from ALL properties
+   * This uses Mapbox native fitBounds to auto-fit viewport
+   * Shows all 50 properties on initial load instead of default zoom
+   *
+   * WHY: Previous DEFAULT_ZOOM: 13 only showed 21/50 properties
+   * SOLUTION: Calculate bounds from actual property coordinates
+   * BENEFIT: Shows 100% of properties on initial map load
+   */
+  const propertyBounds = calculateBounds(properties);
+  const initialBounds = propertyBounds
+    ? boundsToMapBoxFormat(propertyBounds)
+    : undefined;
+
+  /**
    * Render map with real database properties and viewport from URL
    */
   return (
     <MapSearchIntegration
       properties={properties}
+      initialBounds={initialBounds}
       initialViewport={viewport}
       isAuthenticated={!!currentUser}
       priceRangeMin={minPrice}

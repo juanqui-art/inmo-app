@@ -60,6 +60,7 @@ interface MapSearchIntegrationProps {
   initialCenter?: [number, number];
   initialZoom?: number;
   initialViewport?: MapViewport;
+  initialBounds?: [[number, number], [number, number]];
   isAuthenticated?: boolean;
   priceRangeMin?: number;
   priceRangeMax?: number;
@@ -71,6 +72,7 @@ export function MapSearchIntegration({
   initialCenter,
   initialZoom,
   initialViewport,
+  initialBounds,
   isAuthenticated = false,
   priceRangeMin,
   priceRangeMax,
@@ -223,6 +225,7 @@ export function MapSearchIntegration({
           properties={properties}
           initialCenter={initialCenter}
           initialZoom={initialZoom}
+          initialBounds={initialBounds}
           initialViewport={smartViewport || initialViewport}
           isAuthenticated={isAuthenticated}
           searchResults={searchResults?.properties}

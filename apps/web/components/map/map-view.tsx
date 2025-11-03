@@ -36,6 +36,9 @@ import { useRef } from "react";
 import type { MapViewport } from "@/lib/utils/url-helpers";
 import type { TransactionType } from "@repo/database";
 import type { MapRef } from "react-map-gl/mapbox";
+import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
+import type { MapBounds } from "@/lib/utils/map-bounds";
+import { calculateZoomLevel } from "@/lib/utils/map-bounds";
 import { useMapInitialization } from "./hooks/use-map-initialization";
 import { useMapTheme } from "./hooks/use-map-theme";
 import { useMapViewport } from "./hooks/use-map-viewport";
@@ -72,6 +75,7 @@ interface MapViewProps {
   initialCenter?: [number, number];
   initialZoom?: number;
   initialViewport?: MapViewport;
+  initialBounds?: [[number, number], [number, number]];
   isAuthenticated?: boolean;
   /** AI Search results - optional filter */
   searchResults?: Array<{
@@ -87,6 +91,7 @@ export function MapView({
   initialCenter,
   initialZoom,
   initialViewport,
+  initialBounds,
   isAuthenticated = false,
   // searchResults, // TODO: Used when SearchResultsBadge is added back
 }: MapViewProps) {
@@ -97,8 +102,41 @@ export function MapView({
   // Hooks for business logic
   const { mounted, mapboxToken, isError } = useMapInitialization();
   const { mapStyle } = useMapTheme(); // Already memoized in the hook
+
+  /**
+   * Convert initialBounds to viewport (lat, lng, zoom)
+   * This allows us to use ONLY viewState (controlled) without initialViewState conflicts
+   *
+   * Bounds format from server: [[sw_lng, sw_lat], [ne_lng, ne_lat]]
+   * Convert to MapBounds for calculateZoomLevel, then to viewport
+   */
+  const boundsViewport = initialBounds && !initialViewport
+    ? (() => {
+        const [sw, ne] = initialBounds;
+        const bounds: MapBounds = {
+          sw_lng: sw[0],
+          sw_lat: sw[1],
+          ne_lng: ne[0],
+          ne_lat: ne[1],
+        };
+
+        const centerLat = (bounds.sw_lat + bounds.ne_lat) / 2;
+        const centerLng = (bounds.sw_lng + bounds.ne_lng) / 2;
+        const zoom = Math.max(calculateZoomLevel(bounds) - 2, 8); // Subtract 2 for more padding to show all properties
+
+        return {
+          latitude: centerLat,
+          longitude: centerLng,
+          zoom,
+        };
+      })()
+    : undefined;
+
+  // Prioritize bounds-derived viewport over other sources
+  const finalInitialViewport = boundsViewport || initialViewport;
+
   const { viewState: rawViewState, handleMove } = useMapViewport({
-    initialViewport,
+    initialViewport: finalInitialViewport,
     initialCenter,
     initialZoom,
     mounted,
