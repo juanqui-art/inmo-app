@@ -2,6 +2,34 @@
 
 Plugin de Claude Code con 3 modos de asistencia especializados para desarrollo de inmo-app.
 
+**Versión 2.0** - Ahora con 2 formas de activar: Slash Commands + Agentes
+
+## Cómo usar
+
+### Opción 1: Slash Commands (Recomendado para uso rápido)
+
+Los 5 modos están disponibles como comandos slash. Escribe en el terminal de Claude Code:
+
+```bash
+/efficiency [tu tarea aquí]   # Respuestas rápidas y directas
+/educator [tu tarea aquí]     # Modo enseñanza
+/debugger [tu tarea aquí]     # Modo diagnóstico
+/conciso [tu pregunta]        # Respuestas breves
+/detallado [tu pregunta]      # Respuestas completas
+```
+
+**Ventaja:** Directo, rápido, sin necesidad de búsqueda en menús. El comando aparece en autocompletado.
+
+### Opción 2: Agentes (Para invocación programática)
+
+Los 3 modos también están disponibles como **sub-agents**. Úsalos mediante el Skill tool:
+- Nombre: `efficiency`, `educator`, o `debugger`
+- Ubicación: `.claude/plugins/inmo-app-modes/agents/`
+
+**Ventaja:** Puedo invocarlos automáticamente en contextos complejos, sin que necesites escribir el comando.
+
+---
+
 ## Modos disponibles
 
 ### 1. **Efficiency Mode** ⚡
@@ -69,18 +97,90 @@ Especialista en encontrar y resolver problemas complejos.
 
 ---
 
+### 4. **Concise Mode** 📝
+Respuestas breves y directas al punto.
+
+**Cuándo usar:**
+- Solo necesitas la respuesta, sin explicaciones
+- Tienes prisa
+- Sabes qué preguntarle a Claude
+- Quieres respuestas cortas
+
+**Ejemplo:**
+```bash
+/conciso What's wrong with this component?
+/conciso How do I fix this error?
+```
+
+**Qué esperar:**
+- Respuesta directa (1-2 párrafos máximo)
+- Sin contexto innecesario
+- Solo los hechos esenciales
+
+---
+
+### 5. **Detailed Mode** 📖
+Respuestas completas y comprehensivas.
+
+**Cuándo usar:**
+- Quieres entender todo el contexto
+- Es un tema nuevo para ti
+- Necesitas múltiples perspectivas
+- Quieres explorar a fondo
+
+**Ejemplo:**
+```bash
+/detallado Explain how React.cache() works in this project
+/detallado Tell me everything about the map caching strategy
+```
+
+**Qué esperar:**
+- Explicación completa con contexto
+- Múltiples enfoques y perspectivas
+- Ejemplos detallados
+- Razonamiento profundo
+
+---
+
 ## Instalación/Activación
 
 El plugin está incluido en el proyecto. Se activa automáticamente cuando:
 
 1. Confías en la carpeta `.claude/` (Claude Code lo pide)
-2. Reinicias Claude Code (o esperas a que se recargue)
+2. **Reinicias Claude Code** (Esto es crítico después de actualizar el plugin)
 
 **Verificar que funciona:**
+
+**Opción 1 - Slash Commands (escribe en terminal de Claude Code):**
 ```bash
 /efficiency hello      # Debería responder en modo eficiente
 /educator hello        # Debería responder en modo educativo
 /debugger hello        # Debería responder en modo debugging
+/conciso hello         # Debería responder de forma breve
+/detallado hello       # Debería responder de forma completa
+```
+
+**Opción 2 - Agentes (invocación automática):**
+Los agentes se cargan automáticamente. Yo puedo invocarlos cuando necesito cambiar de modo.
+
+---
+
+## Estructura del Plugin
+
+```
+.claude/plugins/inmo-app-modes/
+├── plugin.json              # Configuración (v2.1: referencia a directorios)
+├── README.md                # Este archivo
+├── agents/                  # Agentes especializados
+│   ├── efficiency.md        # Modo rápido
+│   ├── educator.md          # Modo enseñanza
+│   └── debugger.md          # Modo diagnóstico
+└── commands/                # Slash commands (5 comandos)
+    ├── efficiency.md        # /efficiency
+    ├── educator.md          # /educator
+    ├── debugger.md          # /debugger
+    ├── conciso.md           # /conciso
+    └── detallado.md         # /detallado
 ```
 
 ---
@@ -131,7 +231,9 @@ El plugin está incluido en el proyecto. Se activa automáticamente cuando:
 │
 ├─ Código rápido y limpio? → /efficiency
 ├─ Aprender mientras haces? → /educator
-└─ Entender un error? → /debugger
+├─ Entender un error? → /debugger
+├─ Respuesta breve? → /conciso
+└─ Respuesta completa? → /detallado
 ```
 
 ---
@@ -140,23 +242,63 @@ El plugin está incluido en el proyecto. Se activa automáticamente cuando:
 
 - **Ubicación:** `.claude/plugins/inmo-app-modes/`
 - **Configuración:** `.claude/settings.json`
-- **Modelo:** Claude Haiku 4.5 (optimizado para cost-effectiveness)
-- **Versión:** 1.0.0
+- **Versión:** 2.0.0
+- **Actualización:** Ahora usa formato correcto de agentes/comandos (v1.0 tenía formato incorrecto)
 
-### System Prompts (qué controla cada modo)
+### Modelos por Agente
 
-Ver `.claude-plugin/plugin.json` para los system prompts completos de cada agente.
+- **efficiency** → `haiku` (rápido, cost-effective)
+- **educator** → `sonnet` (mejor para explicaciones)
+- **debugger** → `opus` (máxima capacidad para debugging complejo)
+
+### Archivos de Configuración
+
+```
+plugin.json          # Define nombre, versión, referencias a agents/ y commands/
+agents/              # YAML frontmatter + system prompts de agentes
+commands/            # Markdown con documentación de slash commands
+```
+
+---
+
+## Troubleshooting
+
+### Los slash commands no aparecen en autocompletado
+
+**Solución:**
+1. Asegúrate de que confías en `.claude/`
+2. **Reinicia Claude Code completamente** (Cmd+Q en Mac, cierra la ventana)
+3. Espera a que se recargue el plugin (puede tomar unos segundos)
+
+### Los agentes no se invocan automáticamente
+
+**Verificar:**
+1. Los archivos existen en `.claude/plugins/inmo-app-modes/agents/`
+2. El `plugin.json` tiene `"agents": "./agents/"`
+3. Reiniciaste Claude Code
+
+### ¿Cuál es la diferencia entre v1 y v2?
+
+| Aspecto | v1 (Incorrecto) | v2 (Correcto) |
+|---------|-----------------|---------------|
+| Formato | Objeto inline en plugin.json | Archivos markdown con YAML |
+| Agentes | No funcionaban | Funcionan con formato correcto |
+| Comandos | No existían | 3 slash commands funcionales |
+| Ubicación | Datos en plugin.json | Separados en agents/ y commands/ |
 
 ---
 
 ## Feedback y mejoras
 
 Si algún modo no funciona como esperas:
-1. Verifica que el plugin esté activado (reinicia Claude Code)
-2. Prueba con un ejemplo simple primero
-3. Si hay inconsistencias, documenta el comportamiento
+1. Reinicia Claude Code completamente
+2. Prueba con un ejemplo simple primero: `/efficiency hello`
+3. Verifica que los archivos existen en `agents/` y `commands/`
+4. Si hay inconsistencias, documenta el comportamiento
 
 ---
 
-**Última actualización:** Octubre 31, 2025
-**Plugin versión:** 1.0.0
+**Última actualización:** Noviembre 2, 2025
+**Plugin versión:** 2.1.0
+**Status:** ✅ Completamente funcional (5 slash commands + 3 agentes)
+**Nuevas características (v2.1):** Comandos /conciso y /detallado para control granular del nivel de respuesta

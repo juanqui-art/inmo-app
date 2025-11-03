@@ -1,0 +1,14 @@
+{
+  "name": "inmo-app-modes",
+  "version": "2.1.0",
+  "description": "Múltiples modos de asistencia especializados para desarrollo de inmo-app: efficiency, educator, debugger, conciso, y detallado. Incluye 3 agentes especializados y 5 slash commands personalizados.",
+  "author": {
+    "name": "InmoApp Dev Team",
+    "email": "dev@inmo-app.local"
+  },
+  "homepage": "https://github.com/juanquizhpi/inmo-app",
+  "license": "MIT",
+  "keywords": ["agents", "assistant-modes", "debugging", "education", "efficiency", "concise", "detailed"],
+  "agents": "./agents/",
+  "commands": "./commands/"
+}
