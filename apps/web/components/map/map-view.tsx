@@ -109,8 +109,12 @@ export function MapView({
    *
    * Bounds format from server: [[sw_lng, sw_lat], [ne_lng, ne_lat]]
    * Convert to MapBounds for calculateZoomLevel, then to viewport
+   *
+   * PRIORITY: initialBounds > initialViewport
+   * When both exist, bounds-derived viewport takes precedence
+   * because bounds contain the geographic extent we want to show
    */
-  const boundsViewport = initialBounds && !initialViewport
+  const boundsViewport = initialBounds
     ? (() => {
         const [sw, ne] = initialBounds;
         const bounds: MapBounds = {
@@ -134,7 +138,8 @@ export function MapView({
       })()
     : undefined;
 
-  // Prioritize bounds-derived viewport over other sources
+  // Prioritize bounds-derived viewport over URL params
+  // Bounds represent the geographic area we want to display
   const finalInitialViewport = boundsViewport || initialViewport;
 
   const { viewState: rawViewState, handleMove } = useMapViewport({

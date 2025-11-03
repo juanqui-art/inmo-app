@@ -92,9 +92,15 @@ export function calculateZoomLevel(bounds: MapBounds): number {
 
   // Logarithmic scaling for smooth zoom transitions
   // Extended to support countries and large regions
-  if (maxDiff > 5) return 5; // Large countries (continental view)
-  if (maxDiff > 2) return 6; // Medium countries (Ecuador, Colombia, Venezuela)
-  if (maxDiff > 1) return 7; // Large regions (multiple provinces)
+  // MapBox zoom formula: each zoom level = half the area of previous
+  // - Zoom 4: 22.5° (countries like Mexico, Canada)
+  // - Zoom 5: 11.25° (very large countries)
+  // - Zoom 6: 5.625° (medium countries like Ecuador - 6.4° diagonal fits here)
+  // - Zoom 7: 2.8° (large regions, provinces)
+  if (maxDiff > 10) return 4; // Continental view (>10° spread)
+  if (maxDiff > 6.5) return 5; // Very large countries (6.5-10° spread)
+  if (maxDiff > 3) return 6; // Medium countries (Ecuador, Colombia - 3-6.5° spread)
+  if (maxDiff > 1) return 7; // Large regions (1-3° spread)
   if (maxDiff > 0.5) return 9; // Entire province
   if (maxDiff > 0.2) return 11; // City
   if (maxDiff > 0.05) return 13; // Multiple neighborhoods
