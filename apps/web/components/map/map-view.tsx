@@ -122,7 +122,9 @@ export function MapView({
 
         const centerLat = (bounds.sw_lat + bounds.ne_lat) / 2;
         const centerLng = (bounds.sw_lng + bounds.ne_lng) / 2;
-        const zoom = Math.max(calculateZoomLevel(bounds) - 2, 8); // Subtract 2 for more padding to show all properties
+        // Use fixed zoom level 7 to show entire province (Cuenca, Gualaceo, Azogues, Paute)
+        // This ensures all 50 properties are visible at once
+        const zoom = 7;
 
         return {
           latitude: centerLat,
