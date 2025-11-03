@@ -91,6 +91,10 @@ export function calculateZoomLevel(bounds: MapBounds): number {
   const maxDiff = Math.max(lngDiff, latDiff);
 
   // Logarithmic scaling for smooth zoom transitions
+  // Extended to support countries and large regions
+  if (maxDiff > 5) return 5; // Large countries (continental view)
+  if (maxDiff > 2) return 6; // Medium countries (Ecuador, Colombia, Venezuela)
+  if (maxDiff > 1) return 7; // Large regions (multiple provinces)
   if (maxDiff > 0.5) return 9; // Entire province
   if (maxDiff > 0.2) return 11; // City
   if (maxDiff > 0.05) return 13; // Multiple neighborhoods

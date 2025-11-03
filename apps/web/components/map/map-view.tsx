@@ -122,9 +122,9 @@ export function MapView({
 
         const centerLat = (bounds.sw_lat + bounds.ne_lat) / 2;
         const centerLng = (bounds.sw_lng + bounds.ne_lng) / 2;
-        // Use zoom level 11 to show Cuenca area with surrounding properties
-        // Maintains viewport on Cuenca while showing all 50 properties
-        const zoom = 11;
+        // Calculate zoom dynamically based on bounds spread
+        // Automatically adapts to show anything from entire countries to single neighborhoods
+        const zoom = calculateZoomLevel(bounds);
 
         return {
           latitude: centerLat,

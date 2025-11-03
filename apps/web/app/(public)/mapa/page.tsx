@@ -57,6 +57,7 @@ import { getCachedPriceDistribution } from "@/lib/cache/price-distribution-cache
 import {
   calculateBounds,
   boundsToMapBoxFormat,
+  type MapBounds,
 } from "@/lib/utils/map-bounds";
 import { getCurrentUser } from "@/lib/auth";
 import { propertyRepository } from "@repo/database";
@@ -201,18 +202,25 @@ export default async function MapPage(props: MapPageProps) {
   const priceStats = await getCachedPriceDistribution();
 
   /**
-   * Calculate initial bounds from ALL properties
-   * This uses Mapbox native fitBounds to auto-fit viewport
-   * Shows all 50 properties on initial load instead of default zoom
+   * Use Ecuador's complete geographic bounds for initial viewport
+   * This ensures the entire country is visible on first load
    *
-   * WHY: Previous DEFAULT_ZOOM: 13 only showed 21/50 properties
-   * SOLUTION: Calculate bounds from actual property coordinates
-   * BENEFIT: Shows 100% of properties on initial map load
+   * Ecuador bounds (includes Galápagos):
+   * - South: -5.0° (south of Ecuador)
+   * - North: 1.4° (north of Ecuador)
+   * - West: -81.2° (includes Galápagos)
+   * - East: -75.2° (Brazil border)
+   *
+   * With dynamic calculateZoomLevel(), this will automatically
+   * calculate zoom level 6 to show Ecuador fully visible
    */
-  const propertyBounds = calculateBounds(properties);
-  const initialBounds = propertyBounds
-    ? boundsToMapBoxFormat(propertyBounds)
-    : undefined;
+  const ecuadorBounds: MapBounds = {
+    sw_lat: -5.0,   // South
+    sw_lng: -81.2,  // West (includes Galápagos)
+    ne_lat: 1.4,    // North
+    ne_lng: -75.2,  // East
+  };
+  const initialBounds = boundsToMapBoxFormat(ecuadorBounds);
 
   /**
    * Render map with real database properties and viewport from URL
