@@ -234,7 +234,8 @@ export function MapSearchIntegration({
           setEmptyStateType("low-confidence"); // Show generic error state
           setIsSearching(false);
         });
-    }
+      } // Close else block
+    } // Close if (aiSearchQuery && aiSearchQuery !== lastProcessedQuery.current)
     // NOTE: Don't reset searchResults when ai_search is removed
     // This allows bounds updates to preserve the search filter
   }, [aiSearchQuery]);
