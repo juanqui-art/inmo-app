@@ -122,9 +122,9 @@ export function MapView({
 
         const centerLat = (bounds.sw_lat + bounds.ne_lat) / 2;
         const centerLng = (bounds.sw_lng + bounds.ne_lng) / 2;
-        // Use fixed zoom level 7 to show entire province (Cuenca, Gualaceo, Azogues, Paute)
-        // This ensures all 50 properties are visible at once
-        const zoom = 7;
+        // Use zoom level 11 to show Cuenca area with surrounding properties
+        // Maintains viewport on Cuenca while showing all 50 properties
+        const zoom = 11;
 
         return {
           latitude: centerLat,
