@@ -24,6 +24,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { logger } from "@/lib/utils/logger";
 import { PropertyPopup } from "../property-popup";
 import { AuthModal } from "@/components/auth/auth-modal";
 import type { MapProperty } from "../map-view";
@@ -60,7 +61,7 @@ export function MapPopupManager({
     ? properties.find((p) => p.id === selectedPropertyId)
     : null;
 
-  console.log("🔍 MapPopupManager render:", {
+  logger.debug("🔍 MapPopupManager render:", {
     selectedPropertyId,
     selectedPropertyFound: !!selectedProperty,
     shouldShowPopup: !!selectedProperty && selectedProperty.latitude !== null && selectedProperty.longitude !== null,

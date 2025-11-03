@@ -32,6 +32,7 @@
  */
 
 import { useState, useRef, useEffect } from "react";
+import { logger } from "@/lib/utils/logger";
 import { aiSearchAction, type AISearchResult } from "@/app/actions/ai-search";
 
 interface UseInlineSearchReturn {
@@ -112,7 +113,7 @@ export function useInlineSearch(): UseInlineSearchReturn {
     setSearchResult(undefined);
 
     try {
-      console.log("🔍 Starting AI search:", trimmedQuery);
+      logger.debug("🔍 Starting AI search:", trimmedQuery);
       const result = await aiSearchAction(trimmedQuery);
 
       // Store result regardless of success/failure
@@ -133,18 +134,18 @@ export function useInlineSearch(): UseInlineSearchReturn {
           );
         } catch (e) {
           // Silently fail if sessionStorage is unavailable (e.g., private browsing)
-          console.debug("Could not save to sessionStorage:", e);
+          logger.debug("Could not save to sessionStorage:", e);
         }
       }
 
       if (result.success) {
-        console.log("✅ Search successful:", {
+        logger.debug("✅ Search successful:", {
           count: result.properties?.length,
           confidence: result.confidence,
         });
       } else {
         // Log info but don't treat as error - map will show empty state
-        console.log("ℹ️ Search returned with low confidence or no results:", {
+        logger.debug("ℹ️ Search returned with low confidence or no results:", {
           confidence: result.confidence,
           error: result.error,
           suggestions: result.suggestions,

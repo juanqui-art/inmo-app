@@ -46,6 +46,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { logger } from "@/lib/utils/logger";
 import type { AISearchResult } from "@/app/actions/ai-search";
 import { aiSearchAction } from "@/app/actions/ai-search";
 import { getSmartViewport } from "@/lib/utils/map-bounds";
@@ -123,7 +124,7 @@ export function MapSearchIntegration({
             const { data, timestamp, ttl } = JSON.parse(cached);
             // Verify cache is still valid (within TTL)
             if (Date.now() - timestamp < ttl) {
-              console.log("✅ Using cached AI search result (saved 450ms + $0.0003)");
+              logger.debug("✅ Using cached AI search result (saved 450ms + $0.0003)");
               sessionStorage.removeItem("ai_search_result"); // Clean up
               return data; // Return cached data
             } else {
@@ -133,7 +134,7 @@ export function MapSearchIntegration({
           }
         } catch (e) {
           // Silently fail if sessionStorage is unavailable
-          console.debug("Could not read sessionStorage:", e);
+          logger.debug("Could not read sessionStorage:", e);
         }
         return null; // No cached result
       };
@@ -177,7 +178,7 @@ export function MapSearchIntegration({
         // No cache: Make API call (normal flow)
         aiSearchAction(aiSearchQuery)
           .then((result) => {
-            console.log("🗺️ AI Search results received:", {
+            logger.debug("🗺️ AI Search results received:", {
               count: result.properties?.length,
               query: result.query,
               filters: result.filterSummary,
@@ -248,7 +249,7 @@ export function MapSearchIntegration({
         zoom: viewport.zoom,
       });
 
-      console.log("📍 Smart viewport calculated:", {
+      logger.debug("📍 Smart viewport calculated:", {
         resultCount: searchResults.properties.length,
         zoom: viewport.zoom,
         center: [viewport.latitude, viewport.longitude],

@@ -22,6 +22,7 @@
 
 import { memo, useMemo } from "react";
 import { Source, Layer } from "react-map-gl/mapbox";
+import { logger } from "@/lib/utils/logger";
 import type { MapProperty } from "../map-view";
 
 interface MapLayersProps {
@@ -35,7 +36,7 @@ interface MapLayersProps {
 export const MapLayers = memo(function MapLayers({
   properties,
 }: MapLayersProps) {
-  console.log("🗺️ MapLayers render:", {
+  logger.debug("🗺️ MapLayers render:", {
     propertyCount: properties.length,
     firstPropertyTitle: properties[0]?.title,
     firstPropertyCoords: properties[0] ? `(${properties[0].latitude}, ${properties[0].longitude})` : "N/A",
