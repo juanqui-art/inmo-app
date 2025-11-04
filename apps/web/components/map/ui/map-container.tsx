@@ -188,38 +188,48 @@ export const MapContainer = memo(function MapContainer({
 
         if (e.features && e.features.length > 0) {
           const feature = e.features[0];
-          const propertyId = feature.properties?.id || feature.id;
+          // propertyId is always in properties (we set it in GeoJSON)
+          const propertyId = feature.properties?.id;
 
-          logger.debug("📍 Marker clicked - extracting ID:", {
+          logger.debug("📍 Marker clicked - extracted propertyId:", {
             propertyId,
             featureId: feature.id,
             hasPropertiesId: !!feature.properties?.id,
           });
 
-          if (propertyId && feature.id !== undefined) {
-            // Set click state for animation
-            map.setFeatureState(
-              { source: "properties", id: feature.id },
-              { clicked: true }
-            );
+          if (propertyId) {
+            // Try to animate click state if feature has an ID
+            // (some features might not have feature.id, so wrap in try-catch)
+            if (feature.id !== undefined) {
+              try {
+                map.setFeatureState(
+                  { source: "properties", id: feature.id },
+                  { clicked: true }
+                );
 
-            // Reset after animation
-            setTimeout(() => {
-              map.setFeatureState(
-                { source: "properties", id: feature.id },
-                { clicked: false }
-              );
-            }, 300);
+                // Reset after animation
+                setTimeout(() => {
+                  try {
+                    map.setFeatureState(
+                      { source: "properties", id: feature.id },
+                      { clicked: false }
+                    );
+                  } catch (err) {
+                    logger.debug("ℹ️ Could not reset feature state:", err);
+                  }
+                }, 300);
+              } catch (err) {
+                logger.debug("ℹ️ Could not set feature state for animation:", err);
+              }
+            } else {
+              logger.debug("ℹ️ Feature has no ID, skipping click animation");
+            }
 
-            // Handle property click
+            // Handle property click - this is the main action
             logger.debug("✅ Calling handlePropertyClick with:", { propertyId });
             handlePropertyClick(propertyId);
           } else {
-            logger.warn("⚠️ Failed to extract propertyId:", {
-              propertyId,
-              featureId: feature.id,
-              reason: !propertyId ? "propertyId is falsy" : "feature.id is undefined",
-            });
+            logger.warn("⚠️ Failed to extract propertyId from feature properties");
           }
         } else {
           logger.warn("⚠️ Click event has no features");

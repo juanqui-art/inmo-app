@@ -101,7 +101,7 @@ export function PropertyPopup({
       latitude={property.latitude}
       closeButton={false}
       className="property-popup-full"
-      offset={[0, -70]}
+      offset={[0, -20]}
       closeOnClick={false}
       maxWidth="none"
     >
