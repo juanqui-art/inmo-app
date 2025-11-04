@@ -63,7 +63,14 @@ export function MapPopupManager({
 
   logger.debug("🔍 MapPopupManager render:", {
     selectedPropertyId,
+    propertiesCount: properties.length,
     selectedPropertyFound: !!selectedProperty,
+    selectedPropertyDetails: selectedProperty ? {
+      id: selectedProperty.id,
+      title: selectedProperty.title,
+      lat: selectedProperty.latitude,
+      lng: selectedProperty.longitude,
+    } : "NOT FOUND",
     shouldShowPopup: !!selectedProperty && selectedProperty.latitude !== null && selectedProperty.longitude !== null,
   });
 

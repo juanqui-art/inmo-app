@@ -36,6 +36,7 @@
 import { memo, useState, useCallback } from "react";
 import Map, { type ViewStateChangeEvent, type MapRef } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
+import { logger } from "@/lib/utils/logger";
 import { MapLayers } from "./map-layers";
 import { MapPopupManager } from "./map-popup-manager";
 import type { MapProperty } from "../map-view";
@@ -120,16 +121,29 @@ export const MapContainer = memo(function MapContainer({
       const unclusteredLayer = map.getLayer("unclustered-point");
       const clusterLayer = map.getLayer("clusters");
 
+      logger.debug("🎯 Layers found:", {
+        unclusteredLayer: !!unclusteredLayer,
+        clusterLayer: !!clusterLayer,
+      });
+
       if (!unclusteredLayer || !clusterLayer) {
+        logger.error("❌ Required layers not found!");
         return;
       }
 
       // ===== UNCLUSTERED MARKER HANDLERS =====
 
       const onMarkerClick = (e: any) => {
+        logger.debug("🖱️ CLICK detected on marker:", {
+          features: e.features?.length || 0,
+          firstFeature: e.features?.[0]?.properties,
+        });
+
         if (e.features && e.features.length > 0) {
           const feature = e.features[0];
           const propertyId = feature.properties?.id || feature.id;
+
+          logger.debug("📍 Marker clicked:", { propertyId, featureId: feature.id });
 
           if (propertyId && feature.id !== undefined) {
             // Set click state for animation
@@ -147,6 +161,7 @@ export const MapContainer = memo(function MapContainer({
             }, 300);
 
             // Handle property click
+            logger.debug("✅ Calling handlePropertyClick with:", { propertyId });
             handlePropertyClick(propertyId);
           }
         }
@@ -235,15 +250,21 @@ export const MapContainer = memo(function MapContainer({
 
       // ===== ATTACH EVENT LISTENERS =====
 
+      logger.debug("📌 Attaching click listeners to layers...");
+
       // Marker (unclustered point) events
       map.on("click", "unclustered-point", onMarkerClick);
+      logger.debug("✅ Marker click listener attached");
       map.on("mouseenter", "unclustered-point", onMarkerMouseEnter);
       map.on("mouseleave", "unclustered-point", onMarkerMouseLeave);
 
       // Cluster events
       map.on("click", "clusters", onClusterClick);
+      logger.debug("✅ Cluster click listener attached");
       map.on("mouseenter", "clusters", onClusterMouseEnter);
       map.on("mouseleave", "clusters", onClusterMouseLeave);
+
+      logger.debug("✅ All event listeners attached successfully");
     }, 0);
   }, [mapRef, handlePropertyClick]);
 
