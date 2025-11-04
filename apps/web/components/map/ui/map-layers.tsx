@@ -170,20 +170,20 @@ export const MapLayers = memo(function MapLayers({
         layout={{
           // Display pre-formatted price string
           "text-field": ["get", "priceFormatted"],
-          // Scale text size based on zoom
+          // Scale text size based on zoom - smaller to fit inside circle
           "text-size": [
             "interpolate",
             ["linear"],
             ["zoom"],
             10,
-            10,  // 10px at zoom 10
+            8,   // 8px at zoom 10
             15,
-            12,  // 12px at zoom 15
+            10,  // 10px at zoom 15
             18,
-            14,  // 14px at zoom 18
+            11,  // 11px at zoom 18
           ],
           "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-          "text-offset": [0, -1.5], // Position above the circle
+          "text-offset": [0, 0], // Center inside the circle
           "text-anchor": "center",
           "text-allow-overlap": false,
         }}
