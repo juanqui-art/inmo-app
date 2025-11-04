@@ -88,25 +88,31 @@ export const MapLayers = memo(function MapLayers({
         type="circle"
         filter={["!", ["has", "point_count"]]}
         paint={{
-          // Zoom-based scaling + hover effect
+          // Zoom-based scaling with hover size adjustment
           "circle-radius": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            10,
             [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
-              10, 8,      // hover zoom 10 = 8px
-              15, 12,     // hover zoom 15 = 12px
-              18, 16,     // hover zoom 18 = 16px
+              "case",
+              ["boolean", ["feature-state", "hover"], false],
+              8,  // hover: 8px at zoom 10
+              6,  // normal: 6px at zoom 10
             ],
+            15,
             [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
-              10, 6,      // normal zoom 10 = 6px
-              15, 10,     // normal zoom 15 = 10px
-              18, 14,     // normal zoom 18 = 14px
+              "case",
+              ["boolean", ["feature-state", "hover"], false],
+              12, // hover: 12px at zoom 15
+              10, // normal: 10px at zoom 15
+            ],
+            18,
+            [
+              "case",
+              ["boolean", ["feature-state", "hover"], false],
+              16, // hover: 16px at zoom 18
+              14, // normal: 14px at zoom 18
             ],
           ],
           "circle-color": [
@@ -124,7 +130,12 @@ export const MapLayers = memo(function MapLayers({
             1.0,        // hover: fully opaque
             0.9,        // normal: slightly transparent
           ],
-          "circle-blur": 0.15, // Glow effect
+          "circle-blur": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.25,  // hover: more glow
+            0.15,  // normal: subtle glow
+          ],
           "circle-stroke-width": 3,
           "circle-stroke-color": MAP_COLORS.EFFECTS.STROKE,
           "circle-stroke-opacity": [
@@ -152,38 +163,92 @@ export const MapLayers = memo(function MapLayers({
             50,
             MAP_COLORS.CLUSTERS.LARGE,   // 50+ properties
           ],
-          // Zoom-based scaling + hover effect
+          // Zoom-based scaling with hover size adjustment
           "circle-radius": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
+            "step",
+            ["get", "point_count"],
+            // Small clusters (2-9 properties)
             [
-              // Hover sizes (larger)
-              "step",
-              ["get", "point_count"],
-              26, // Small clusters hover
+              "interpolate",
+              ["linear"],
+              ["zoom"],
               10,
-              36, // Medium clusters hover
-              50,
-              46, // Large clusters hover
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                20, // hover
+                16, // normal
+              ],
+              15,
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                26, // hover
+                22, // normal
+              ],
+              18,
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                32, // hover
+                28, // normal
+              ],
             ],
+            10,
+            // Medium clusters (10-49 properties)
             [
-              // Normal sizes with zoom scaling
-              "step",
-              ["get", "point_count"],
-              [
-                "interpolate", ["linear"], ["zoom"],
-                10, 16, 15, 22, 18, 28
-              ], // Small clusters
+              "interpolate",
+              ["linear"],
+              ["zoom"],
               10,
               [
-                "interpolate", ["linear"], ["zoom"],
-                10, 22, 15, 30, 18, 38
-              ], // Medium clusters
-              50,
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                26, // hover
+                22, // normal
+              ],
+              15,
               [
-                "interpolate", ["linear"], ["zoom"],
-                10, 28, 15, 38, 18, 46
-              ], // Large clusters
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                34, // hover
+                30, // normal
+              ],
+              18,
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                42, // hover
+                38, // normal
+              ],
+            ],
+            50,
+            // Large clusters (50+ properties)
+            [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              10,
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                32, // hover
+                28, // normal
+              ],
+              15,
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                42, // hover
+                38, // normal
+              ],
+              18,
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                50, // hover
+                46, // normal
+              ],
             ],
           ],
           "circle-opacity": [
@@ -192,7 +257,12 @@ export const MapLayers = memo(function MapLayers({
             1.0,        // hover: fully opaque
             0.85,       // normal: semi-transparent
           ],
-          "circle-blur": 0.2, // Glow effect (slightly more than markers)
+          "circle-blur": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.3,  // hover: more glow
+            0.2,  // normal: subtle glow
+          ],
           "circle-stroke-width": 3,
           "circle-stroke-color": MAP_COLORS.EFFECTS.STROKE,
           "circle-stroke-opacity": [
