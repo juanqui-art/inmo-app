@@ -4,10 +4,17 @@
  * Utilities for syncing map viewport state with URL query parameters
  * Enables shareable map locations and browser history navigation
  *
+ * Uses Mapbox GL JS built-in utilities (LngLat, LngLatBounds) for
+ * reliable coordinate handling and validation.
+ *
  * USAGE:
  * - buildMapUrl(): Construct URL with viewport params
  * - parseMapParams(): Extract and validate viewport from URL
+ * - buildBoundsUrl(): Construct URL with bounds params
+ * - parseBoundsParams(): Extract and validate bounds from URL
  */
+
+import mapboxgl from 'mapbox-gl';
 
 /**
  * Map viewport parameters that can be encoded in URL
@@ -72,7 +79,16 @@ const ECUADOR_BOUNDS = {
 } as const;
 
 /**
- * Clamp bounds to Ecuador geographic region
+ * Ecuador bounds as Mapbox LngLatBounds for validation
+ * Used in isInEcuadorMapbox() and other coordinate validation functions
+ */
+const ECUADOR_BOUNDS_MAPBOX = new mapboxgl.LngLatBounds(
+  [ECUADOR_BOUNDS.minLng, ECUADOR_BOUNDS.minLat], // SW
+  [ECUADOR_BOUNDS.maxLng, ECUADOR_BOUNDS.maxLat], // NE
+);
+
+/**
+ * Clamp bounds to Ecuador geographic region using Mapbox GL JS
  *
  * PERFORMANCE FIX:
  * - User can pan/zoom mapa beyond Ecuador boundaries
@@ -82,9 +98,10 @@ const ECUADOR_BOUNDS = {
  * - This causes unnecessary re-renders = 286ms slowdown
  *
  * SOLUTION:
- * - Clamp bounds BEFORE updating URL
+ * - Clamp bounds BEFORE updating URL using Mapbox native utilities
  * - Prevents invalid server queries
  * - Stops the re-render loop
+ * - Uses Mapbox LngLatBounds for robust edge case handling
  *
  * @param bounds - Map bounds to clamp
  * @returns Clamped bounds within Ecuador range
@@ -104,11 +121,27 @@ const ECUADOR_BOUNDS = {
  * // }
  */
 function clampBoundsToEcuador(bounds: MapBounds): MapBounds {
+  // Convert to Mapbox format for validation
+  const boundsMapbox = new mapboxgl.LngLatBounds(
+    [bounds.sw_lng, bounds.sw_lat],
+    [bounds.ne_lng, bounds.ne_lat],
+  );
+
+  // Get intersection with Ecuador bounds
+  const sw = boundsMapbox.getSouthWest();
+  const ne = boundsMapbox.getNorthEast();
+
+  // Clamp coordinates to Ecuador
+  const clampedSwLat = Math.max(sw.lat, ECUADOR_BOUNDS.minLat);
+  const clampedSwLng = Math.max(sw.lng, ECUADOR_BOUNDS.minLng);
+  const clampedNeLat = Math.min(ne.lat, ECUADOR_BOUNDS.maxLat);
+  const clampedNeLng = Math.min(ne.lng, ECUADOR_BOUNDS.maxLng);
+
   return {
-    ne_lat: Math.min(bounds.ne_lat, ECUADOR_BOUNDS.maxLat),
-    ne_lng: Math.min(bounds.ne_lng, ECUADOR_BOUNDS.maxLng),
-    sw_lat: Math.max(bounds.sw_lat, ECUADOR_BOUNDS.minLat),
-    sw_lng: Math.max(bounds.sw_lng, ECUADOR_BOUNDS.minLng),
+    sw_lat: clampedSwLat,
+    sw_lng: clampedSwLng,
+    ne_lat: clampedNeLat,
+    ne_lng: clampedNeLng,
   };
 }
 
@@ -667,4 +700,209 @@ export function dynamicFiltersToPropertyFilters(
   }
 
   return filters;
+}
+
+/**
+ * Convert MapBounds to Mapbox GL JS LngLatBounds
+ *
+ * Useful for using Mapbox native utilities like:
+ * - bounds.contains(lngLat)
+ * - bounds.extend(lngLat)
+ * - bounds.getCenter()
+ *
+ * @param bounds - Custom MapBounds format
+ * @returns Mapbox LngLatBounds object
+ *
+ * @example
+ * const bounds = { sw_lat: -2.95, sw_lng: -79.05, ne_lat: -2.85, ne_lng: -78.95 };
+ * const mapboxBounds = toMapboxBounds(bounds);
+ * mapboxBounds.contains(new mapboxgl.LngLat(-79.0, -2.9)); // true
+ */
+export function toMapboxBounds(bounds: MapBounds): mapboxgl.LngLatBounds {
+  return new mapboxgl.LngLatBounds(
+    [bounds.sw_lng, bounds.sw_lat], // SW corner [lng, lat]
+    [bounds.ne_lng, bounds.ne_lat], // NE corner [lng, lat]
+  );
+}
+
+/**
+ * Convert Mapbox GL JS LngLatBounds to MapBounds
+ *
+ * @param bounds - Mapbox LngLatBounds object
+ * @returns Custom MapBounds format
+ *
+ * @example
+ * const mapboxBounds = new mapboxgl.LngLatBounds([-79.05, -2.95], [-78.95, -2.85]);
+ * const bounds = fromMapboxBounds(mapboxBounds);
+ * // Returns: { sw_lat: -2.95, sw_lng: -79.05, ne_lat: -2.85, ne_lng: -78.95 }
+ */
+export function fromMapboxBounds(bounds: mapboxgl.LngLatBounds): MapBounds {
+  return {
+    sw_lat: bounds.getSouth(),
+    sw_lng: bounds.getWest(),
+    ne_lat: bounds.getNorth(),
+    ne_lng: bounds.getEast(),
+  };
+}
+
+/**
+ * Check if a point is within bounds using Mapbox GL JS
+ *
+ * @param latitude - Point latitude
+ * @param longitude - Point longitude
+ * @param bounds - Bounding box
+ * @returns true if point is within bounds
+ *
+ * @example
+ * const bounds = { sw_lat: -2.95, sw_lng: -79.05, ne_lat: -2.85, ne_lng: -78.95 };
+ * isPointInBounds(-2.9, -79.0, bounds); // true
+ */
+export function isPointInBounds(
+  latitude: number,
+  longitude: number,
+  bounds: MapBounds,
+): boolean {
+  try {
+    const mapboxBounds = toMapboxBounds(bounds);
+    const lngLat = new mapboxgl.LngLat(longitude, latitude);
+    return mapboxBounds.contains(lngLat);
+  } catch {
+    // If coordinates are invalid, return false
+    return false;
+  }
+}
+
+/**
+ * Calculate distance between two geographic points in meters
+ *
+ * Uses Mapbox GL JS LngLat.distanceTo() for accurate calculations.
+ * Accounts for Earth's curvature using the Haversine formula.
+ *
+ * @param lat1 - Start latitude
+ * @param lng1 - Start longitude
+ * @param lat2 - End latitude
+ * @param lng2 - End longitude
+ * @returns Distance in meters
+ *
+ * @example
+ * const distance = calculateDistance(-2.9, -79.0, -2.8, -78.9);
+ * console.log(distance); // ~11000 (approximately 11 km)
+ */
+export function calculateDistance(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+): number {
+  try {
+    const from = new mapboxgl.LngLat(lng1, lat1);
+    const to = new mapboxgl.LngLat(lng2, lat2);
+    return from.distanceTo(to); // Returns distance in meters
+  } catch {
+    // If coordinates are invalid, return 0
+    return 0;
+  }
+}
+
+/**
+ * Validate if coordinates are within valid geographic ranges
+ *
+ * @param latitude - Latitude to validate (-90 to 90)
+ * @param longitude - Longitude to validate (-180 to 180)
+ * @returns true if coordinates are valid
+ *
+ * @example
+ * isValidCoordinate(-2.9, -79.0); // true
+ * isValidCoordinate(91, -79.0);   // false (latitude > 90)
+ */
+export function isValidCoordinate(latitude: number, longitude: number): boolean {
+  return (
+    latitude >= CONSTRAINTS.LAT_MIN &&
+    latitude <= CONSTRAINTS.LAT_MAX &&
+    longitude >= CONSTRAINTS.LNG_MIN &&
+    longitude <= CONSTRAINTS.LNG_MAX
+  );
+}
+
+/**
+ * Check if coordinates are within Ecuador's geographic boundaries
+ *
+ * Useful for validating properties are in the service area.
+ *
+ * @param latitude - Point latitude
+ * @param longitude - Point longitude
+ * @returns true if point is in Ecuador
+ *
+ * @example
+ * isInEcuador(-2.9, -79.0);   // true (Cuenca)
+ * isInEcuador(40.7, -74.0);   // false (New York)
+ */
+export function isInEcuador(latitude: number, longitude: number): boolean {
+  return (
+    latitude >= ECUADOR_BOUNDS.minLat &&
+    latitude <= ECUADOR_BOUNDS.maxLat &&
+    longitude >= ECUADOR_BOUNDS.minLng &&
+    longitude <= ECUADOR_BOUNDS.maxLng
+  );
+}
+
+/**
+ * Check if coordinates are within Ecuador using Mapbox GL JS utilities
+ *
+ * Alternative to isInEcuador() using native Mapbox LngLatBounds validation.
+ * Useful if you're already working with Mapbox LngLat objects.
+ *
+ * @param latitude - Point latitude
+ * @param longitude - Point longitude
+ * @returns true if point is in Ecuador
+ *
+ * @example
+ * isInEcuadorMapbox(-2.9, -79.0);   // true (Cuenca)
+ * isInEcuadorMapbox(40.7, -74.0);   // false (New York)
+ */
+export function isInEcuadorMapbox(latitude: number, longitude: number): boolean {
+  try {
+    const lngLat = new mapboxgl.LngLat(longitude, latitude);
+    return ECUADOR_BOUNDS_MAPBOX.contains(lngLat);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validate if bounds are properly formed and contain valid coordinates
+ *
+ * Checks that:
+ * - All coordinates are valid numbers
+ * - SW coordinates < NE coordinates (proper bounds)
+ * - Coordinates are within valid ranges
+ *
+ * @param bounds - Bounds to validate
+ * @returns true if bounds are valid
+ *
+ * @example
+ * const validBounds = { sw_lat: -2.95, sw_lng: -79.05, ne_lat: -2.85, ne_lng: -78.95 };
+ * isValidBounds(validBounds); // true
+ *
+ * const invalidBounds = { sw_lat: -2.85, sw_lng: -78.95, ne_lat: -2.95, ne_lng: -79.05 };
+ * isValidBounds(invalidBounds); // false (SW > NE)
+ */
+export function isValidBounds(bounds: MapBounds): boolean {
+  // Check all coordinates are valid
+  if (
+    !isValidCoordinate(bounds.sw_lat, bounds.sw_lng) ||
+    !isValidCoordinate(bounds.ne_lat, bounds.ne_lng)
+  ) {
+    return false;
+  }
+
+  // Check bounds are properly formed (SW < NE)
+  if (
+    bounds.sw_lat >= bounds.ne_lat ||
+    bounds.sw_lng >= bounds.ne_lng
+  ) {
+    return false;
+  }
+
+  return true;
 }
