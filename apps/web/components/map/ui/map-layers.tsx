@@ -103,7 +103,7 @@ export const MapLayers = memo(function MapLayers({
         type="circle"
         filter={["!", ["has", "point_count"]]}
         paint={{
-          // Zoom-based scaling with hover size adjustment
+          // Zoom-based scaling with hover size adjustment - slightly larger circles
           "circle-radius": [
             "interpolate",
             ["linear"],
@@ -112,22 +112,22 @@ export const MapLayers = memo(function MapLayers({
             [
               "case",
               ["boolean", ["feature-state", "hover"], false],
-              8,  // hover: 8px at zoom 10
-              6,  // normal: 6px at zoom 10
+              10, // hover: 10px at zoom 10
+              8,  // normal: 8px at zoom 10 (increased from 6px)
             ],
             15,
             [
               "case",
               ["boolean", ["feature-state", "hover"], false],
-              12, // hover: 12px at zoom 15
-              10, // normal: 10px at zoom 15
+              14, // hover: 14px at zoom 15
+              12, // normal: 12px at zoom 15 (increased from 10px)
             ],
             18,
             [
               "case",
               ["boolean", ["feature-state", "hover"], false],
-              16, // hover: 16px at zoom 18
-              14, // normal: 14px at zoom 18
+              18, // hover: 18px at zoom 18
+              16, // normal: 16px at zoom 18 (increased from 14px)
             ],
           ],
           "circle-color": [
@@ -189,9 +189,9 @@ export const MapLayers = memo(function MapLayers({
         }}
         paint={{
           "text-color": "#ffffff",
-          // Text halo for better readability against any background
-          "text-halo-color": "rgba(0, 0, 0, 0.6)",
-          "text-halo-width": 1.5,
+          // Enhanced halo creates semi-transparent background effect
+          "text-halo-color": "rgba(0, 0, 0, 0.85)",
+          "text-halo-width": 2.5,
           // Opacity matches marker hover state
           "text-opacity": [
             "case",
