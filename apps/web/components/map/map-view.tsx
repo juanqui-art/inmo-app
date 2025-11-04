@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Map, { Source, Layer, Popup } from "react-map-gl/mapbox";
-import type { MapLayerMouseEvent, MapRef } from "react-map-gl/mapbox";
+import type { MapRef } from "react-map-gl/mapbox";
+import type { MapMouseEvent } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { env } from "@repo/env";
 import type { TransactionType } from "@repo/database";
@@ -34,6 +35,14 @@ export interface MapProperty {
 interface MapViewProps {
   properties: MapProperty[];
   isAuthenticated?: boolean;
+  initialBounds?: {
+    ne_lat: number;
+    ne_lng: number;
+    sw_lat: number;
+    sw_lng: number;
+  };
+  priceRangeMin?: number;
+  priceRangeMax?: number;
 }
 
 // SVG for the badge background. It's a simple rounded rectangle.
@@ -43,7 +52,7 @@ const badgeSvg = `
 </svg>
 `;
 
-export function MapView({ properties }: MapViewProps) {
+export function MapView({ properties, initialBounds }: MapViewProps) {
   const mapRef = useRef<MapRef>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<MapProperty | null>(
@@ -66,7 +75,7 @@ export function MapView({ properties }: MapViewProps) {
 
   // Handle marker click (clusters and individual properties)
   const handleClick = useCallback(
-    (event: MapLayerMouseEvent) => {
+    (event: MapMouseEvent) => {
       const feature = event.features?.[0];
       if (!feature) return;
 
@@ -103,6 +112,20 @@ export function MapView({ properties }: MapViewProps) {
     },
     [properties],
   );
+
+  // Fit bounds when map is loaded and initialBounds change
+  useEffect(() => {
+    if (!isMapLoaded || !initialBounds || !mapRef.current) return;
+
+    const map = mapRef.current.getMap();
+    map.fitBounds(
+      [
+        [initialBounds.sw_lng, initialBounds.sw_lat],
+        [initialBounds.ne_lng, initialBounds.ne_lat],
+      ],
+      { padding: 50, duration: 600 }
+    );
+  }, [isMapLoaded, initialBounds]);
 
   // Check for Mapbox token
   const mapboxToken = env.NEXT_PUBLIC_MAPBOX_TOKEN;
