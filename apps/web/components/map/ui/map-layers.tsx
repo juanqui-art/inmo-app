@@ -147,6 +147,83 @@ export const MapLayers = memo(function MapLayers({
         }}
       />
 
+      {/* Price Labels for Individual Properties */}
+      <Layer
+        id="unclustered-price"
+        type="symbol"
+        filter={["!", ["has", "point_count"]]}
+        layout={{
+          // Format price as "$150K" or "$1.2M"
+          "text-field": [
+            "concat",
+            "$",
+            [
+              "case",
+              // >= 1,000,000: show as "1.2M"
+              [">=", ["get", "price"], 1000000],
+              [
+                "concat",
+                [
+                  "to-string",
+                  [
+                    "round",
+                    ["*", ["divide", ["get", "price"], 1000000], 10],
+                  ],
+                ],
+                "M",
+              ],
+              // >= 1,000: show as "150K"
+              [">=", ["get", "price"], 1000],
+              [
+                "concat",
+                [
+                  "to-string",
+                  [
+                    "round",
+                    ["divide", ["get", "price"], 1000],
+                  ],
+                ],
+                "K",
+              ],
+              // < 1,000: show full amount
+              [
+                "to-string",
+                ["round", ["get", "price"]],
+              ],
+            ],
+          ],
+          // Scale text size based on zoom
+          "text-size": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            10,
+            10,  // 10px at zoom 10
+            15,
+            12,  // 12px at zoom 15
+            18,
+            14,  // 14px at zoom 18
+          ],
+          "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+          "text-offset": [0, -1.5], // Position above the circle
+          "text-anchor": "center",
+          "text-allow-overlap": false,
+        }}
+        paint={{
+          "text-color": "#ffffff",
+          // Text halo for better readability against any background
+          "text-halo-color": "rgba(0, 0, 0, 0.6)",
+          "text-halo-width": 1.5,
+          // Opacity matches marker hover state
+          "text-opacity": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            1.0,   // hover: fully visible
+            0.85,  // normal: slightly transparent
+          ],
+        }}
+      />
+
       {/* Clustered Points - Size and color based on count (Oslo Gray palette) */}
       <Layer
         id="clusters"
