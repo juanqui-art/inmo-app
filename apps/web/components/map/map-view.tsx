@@ -1,55 +1,17 @@
-/**
- * MapView - Interactive MapBox GL Component
- *
- * PATTERN: Orchestrator Component (Separation of Concerns)
- *
- * ARCHITECTURE:
- * - Uses custom hooks for business logic (initialization, theme, viewport)
- * - Uses presentational components for UI (error, loading, container)
- * - This component only orchestrates, no business logic
- *
- * FEATURES:
- * - Dark/light mode automatic switching
- * - Responsive viewport
- * - URL State: Shareable map positions (viewport syncs to URL)
- * - Debounced URL updates (500ms) for performance
- * - Smart viewport fitting for AI search results
- *   - 1 result → close-up street-level view (zoom 16)
- *   - Multiple results → fitted view showing all (zoom auto)
- *   - 0 results → default Cuenca view (zoom 11)
- * - Property markers with interactive controls
- *
- * REFACTORED:
- * - Separated concerns into hooks and UI components
- * - ~60 lines (was 335 lines before refactoring)
- * - Each hook/component has single responsibility
- * - Testable and reusable
- *
- * RESOURCES:
- * - https://visgl.github.io/react-map-gl/
- * - https://docs.mapbox.com/mapbox-gl-js/
- */
-
 "use client";
 
-import { useRef } from "react";
-import type { MapViewport } from "@/lib/utils/url-helpers";
+import { useState, useCallback, useRef } from "react";
+import Map, { Source, Layer, Popup } from "react-map-gl/mapbox";
+import type { MapLayerMouseEvent, MapRef } from "react-map-gl/mapbox";
+import "mapbox-gl/dist/mapbox-gl.css";
+import { env } from "@repo/env";
 import type { TransactionType } from "@repo/database";
-import type { MapRef } from "react-map-gl/mapbox";
-import type { MapBounds } from "@/lib/utils/map-bounds";
-import { calculateZoomLevel } from "@/lib/utils/map-bounds";
-import { useMapInitialization } from "./hooks/use-map-initialization";
-import { useMapTheme } from "./hooks/use-map-theme";
-import { useMapViewport } from "./hooks/use-map-viewport";
-import { MapContainer } from "./ui/map-container";
-import { MapErrorState } from "./ui/map-error-state";
-import { MapLoadingState } from "./ui/map-loading-state";
+import { formatPriceCompact } from "@/lib/utils/price-helpers";
+import { MapSpinner } from "./map-spinner";
+import { PropertyCardHorizontal } from "./property-card-horizontal";
+import { CLUSTER_CONFIG } from "@/lib/types/map";
 
-/**
- * Minimal property data needed for map rendering
- * Flexible type that works with partial selects from Prisma
- * Extended to support popup display and details
- */
+// Property interface
 export interface MapProperty {
   id: string;
   title: string;
@@ -71,266 +33,254 @@ export interface MapProperty {
 
 interface MapViewProps {
   properties: MapProperty[];
-  initialCenter?: [number, number];
-  initialZoom?: number;
-  initialViewport?: MapViewport;
-  initialBounds?: [[number, number], [number, number]];
   isAuthenticated?: boolean;
-  /** AI Search results - optional filter */
-  searchResults?: Array<{
-    id: string;
-    city?: string | null;
-    address?: string | null;
-    price: number;
-  }>;
 }
 
-export function MapView({
-  properties,
-  initialCenter,
-  initialZoom,
-  initialViewport,
-  initialBounds,
-  isAuthenticated = false,
-  // searchResults, // TODO: Used when SearchResultsBadge is added back
-}: MapViewProps) {
-  // Create ref for MapBox map instance
-  // Used to get precise bounds that account for navbar
+// SVG for the badge background. It's a simple rounded rectangle.
+const badgeSvg = `
+<svg width="48" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="48" height="24" rx="12" fill="#3b82f6"/>
+</svg>
+`;
+
+export function MapView({ properties }: MapViewProps) {
   const mapRef = useRef<MapRef>(null);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<MapProperty | null>(
+    null,
+  );
 
-  // Hooks for business logic
-  const { mounted, mapboxToken, isError } = useMapInitialization();
-  const { mapStyle } = useMapTheme(); // Already memoized in the hook
+  const handleMapLoad = useCallback(() => {
+    setIsMapLoaded(true);
+    const map = mapRef.current?.getMap();
+    if (!map) return;
 
-  /**
-   * Convert initialBounds to viewport (lat, lng, zoom)
-   * This allows us to use ONLY viewState (controlled) without initialViewState conflicts
-   *
-   * Bounds format from server: [[sw_lng, sw_lat], [ne_lng, ne_lat]]
-   * Convert to MapBounds for calculateZoomLevel, then to viewport
-   *
-   * PRIORITY: initialBounds > initialViewport
-   * When both exist, bounds-derived viewport takes precedence
-   * because bounds contain the geographic extent we want to show
-   */
-  const boundsViewport = initialBounds
-    ? (() => {
-        const [sw, ne] = initialBounds;
-        const bounds: MapBounds = {
-          sw_lng: sw[0],
-          sw_lat: sw[1],
-          ne_lng: ne[0],
-          ne_lat: ne[1],
-        };
+    const image = new Image(48, 24);
+    image.src = "data:image/svg+xml;base64," + btoa(badgeSvg);
+    image.onload = () => {
+      if (!map.hasImage("badge-background")) {
+        map.addImage("badge-background", image, { sdf: true });
+      }
+    };
+  }, []);
 
-        const centerLat = (bounds.sw_lat + bounds.ne_lat) / 2;
-        const centerLng = (bounds.sw_lng + bounds.ne_lng) / 2;
-        // Calculate zoom dynamically based on bounds spread
-        // Automatically adapts to show anything from entire countries to single neighborhoods
-        const zoom = calculateZoomLevel(bounds);
+  // Handle marker click (clusters and individual properties)
+  const handleClick = useCallback(
+    (event: MapLayerMouseEvent) => {
+      const feature = event.features?.[0];
+      if (!feature) return;
 
-        return {
-          latitude: centerLat,
-          longitude: centerLng,
-          zoom,
-        };
-      })()
-    : undefined;
+      // Check if it's a cluster
+      if (feature.properties?.cluster) {
+        const clusterId = feature.properties.cluster_id;
+        const mapboxSource = mapRef.current?.getMap().getSource("properties");
 
-  // Prioritize bounds-derived viewport over URL params
-  // Bounds represent the geographic area we want to display
-  const finalInitialViewport = boundsViewport || initialViewport;
+        if (mapboxSource && "getClusterExpansionZoom" in mapboxSource) {
+          (mapboxSource as any).getClusterExpansionZoom(
+            clusterId,
+            (err: Error | null, zoom: number) => {
+              if (err) return;
 
-  const { viewState: rawViewState, handleMove } = useMapViewport({
-    initialViewport: finalInitialViewport,
-    initialCenter,
-    initialZoom,
-    mounted,
-    mapRef, // Pass ref to hook
-  });
+              const geometry = feature.geometry as { coordinates: number[] };
+              mapRef.current?.flyTo({
+                center: geometry.coordinates as [number, number],
+                zoom: zoom + CLUSTER_CONFIG.ZOOM_INCREMENT,
+                duration: 600,
+              });
+            },
+          );
+        }
+      }
+      // Handle individual property click
+      else if (feature.properties?.id) {
+        const property = properties.find(
+          (p) => p.id === (feature.properties!.id as string),
+        );
+        if (property) {
+          setSelectedProperty(property);
+        }
+      }
+    },
+    [properties],
+  );
 
-  /**
-   * Memoize viewState to prevent unnecessary MapContainer re-renders
-   *
-   * PROBLEM: viewState is a new object every render from useMapViewport
-   * - Even though values might not change, it's a new reference
-   * - React.memo() on MapContainer sees this as a prop change
-   * - Causes infinite MapContainer re-renders
-   *
-   * SOLUTION: Only create new viewState object if VALUES actually changed
-   * - Compare individual values (longitude, latitude, zoom, etc)
-   * - Memoization breaks the re-render loop
-   * - MapContainer now only re-renders when viewport actually changes
-   *
-   * PERFORMANCE IMPACT:
-   * ✅ MapContainer re-renders only when needed
-   * ✅ Eliminates constant re-renders from reference changes
-   * ✅ Reduces "other time" by 50%+
-   */
-  // const viewState = useMemo(
-  //   () => rawViewState,
-  //   [
-  //     rawViewState.longitude,
-  //     rawViewState.latitude,
-  //     rawViewState.zoom,
-  //     rawViewState.pitch,
-  //     rawViewState.bearing,
-  //     rawViewState.transitionDuration,
-  //   ],
-  // );
-
-  /**
-   * CLIENT-SIDE FILTERING
-   *
-   * Filters properties based on:
-   * 1. AI search results (if available)
-   * 2. URL filter parameters (minPrice, maxPrice, category, bedrooms, etc.)
-   *
-   * This enables real-time filtering without server re-renders when filters change
-   */
-  // const displayedProperties = useMemo(() => {
-  //   let filtered = properties;
-  //
-  //   // First filter by AI search results if available
-  //   if (searchResults) {
-  //     filtered = filtered.filter((prop) =>
-  //       searchResults.some((result) => result.id === prop.id)
-  //     );
-  //   }
-  //
-  //   // Then apply URL-based filters
-  //   if (urlFilters.minPrice !== undefined) {
-  //     filtered = filtered.filter((prop) => prop.price >= urlFilters.minPrice!);
-  //   }
-  //
-  //   if (urlFilters.maxPrice !== undefined) {
-  //     filtered = filtered.filter((prop) => prop.price <= urlFilters.maxPrice!);
-  //   }
-  //
-  //   if (urlFilters.category) {
-  //     const categories = Array.isArray(urlFilters.category)
-  //       ? urlFilters.category
-  //       : [urlFilters.category];
-  //     filtered = filtered.filter((prop) =>
-  //       categories.includes(prop.category || "")
-  //     );
-  //   }
-  //
-  //   if (urlFilters.transactionType) {
-  //     const types = Array.isArray(urlFilters.transactionType)
-  //       ? urlFilters.transactionType
-  //       : [urlFilters.transactionType];
-  //     filtered = filtered.filter((prop) =>
-  //       types.includes(prop.transactionType)
-  //     );
-  //   }
-  //
-  //   if (urlFilters.bedrooms !== undefined) {
-  //     filtered = filtered.filter(
-  //       (prop) => (prop.bedrooms ?? 0) >= urlFilters.bedrooms!
-  //     );
-  //   }
-  //
-  //   if (urlFilters.bathrooms !== undefined) {
-  //     filtered = filtered.filter(
-  //       (prop) => (prop.bathrooms ?? 0) >= urlFilters.bathrooms!
-  //     );
-  //   }
-  //
-  //   return filtered;
-  // }, [properties, searchResults, urlFilters]);
-
-  // TODO(debug): Commenting out searchResults effect for minimal testing
-  // // Apply fitBounds animation when search results change
-  // // Only trigger when searchResults changes, not on every render
-  // useEffect(() => {
-  //   if (mapRef.current && searchResults && searchResults.length > 0) {
-  //     // searchResults already contains the properties with coordinates
-  //     // from AI search - use them directly to calculate bounds
-  //     const bounds = calculateBounds(
-  //       searchResults as Array<{
-  //         latitude?: number | null;
-  //         longitude?: number | null;
-  //       }>,
-  //     );
-
-  //     if (bounds) {
-  //       const mapBoxBounds = boundsToMapBoxFormat(bounds);
-
-  //       // Apply fitBounds with animation
-  //       // Account for navbar (56px) + filter bar (56px) = 112px top padding
-  //       mapRef.current.fitBounds(mapBoxBounds, {
-  //         padding: {
-  //           top: 130, // Account for navbar + filter bar
-  //           bottom: 50,
-  //           left: 50,
-  //           right: 50,
-  //         },
-  //         duration: 600, // Smooth 600ms transition
-  //         maxZoom: 17, // Don't zoom in closer than street level
-  //       });
-
-  //       console.log("🎬 fitBounds animation applied:", {
-  //         resultCount: searchResults.length,
-  //         bounds,
-  //       });
-  //     }
-  //   }
-  // }, [searchResults]);
-
-  // Error state: Missing MapBox token
-  if (isError) {
-    return <MapErrorState />;
+  // Check for Mapbox token
+  const mapboxToken = env.NEXT_PUBLIC_MAPBOX_TOKEN;
+  if (!mapboxToken) {
+    return (
+      <div className="w-full h-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+        <p className="text-red-600 dark:text-red-400">
+          Error: Mapbox token no configurado
+        </p>
+      </div>
+    );
   }
 
-  // Loading state: Hydration in progress
-  if (!mounted) {
-    return <MapLoadingState />;
-  }
+  // Convert properties to GeoJSON format, including a compact formatted price
+  const geojsonData = {
+    type: "FeatureCollection",
+    features: properties
+      // .filter((p) => p.latitude && p.longitude)
+      .map((property) => ({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [property.longitude!, property.latitude!],
+        },
+        properties: {
+          id: property.id,
+          title: property.title,
+          price: property.price,
+          formattedPrice: formatPriceCompact(property.price),
+          transactionType: property.transactionType,
+          category: property.category,
+          city: property.city,
+          bedrooms: property.bedrooms,
+          bathrooms: property.bathrooms,
+          area: property.area,
+        },
+      })),
+  };
 
-  // Render map with MapLayers (markers + clusters)
   return (
-    <MapContainer
-      mapRef={mapRef}
-      viewState={rawViewState}
-      onMove={handleMove}
-      mapStyle={mapStyle}
-      mapboxToken={mapboxToken!}
-      properties={properties}
-      isAuthenticated={isAuthenticated}
-      // searchResults={searchResults} // TODO: Add back when SearchResultsBadge is used
-    />
+    <div className="w-full h-full relative">
+      {!isMapLoaded && <MapSpinner />}
+      <Map
+        ref={mapRef}
+        initialViewState={{
+          latitude: -2.9,
+          longitude: -79.0,
+          zoom: 6,
+        }}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle="mapbox://styles/mapbox/dark-v11"
+        mapboxAccessToken={mapboxToken}
+        interactiveLayerIds={["properties-badge-layer", "clusters"]}
+        onClick={handleClick}
+        onLoad={handleMapLoad}
+      >
+        <Source
+          id="properties"
+          type="geojson"
+          data={geojsonData as any}
+          cluster={true}
+          clusterMaxZoom={CLUSTER_CONFIG.MAX_ZOOM}
+          clusterRadius={CLUSTER_CONFIG.RADIUS}
+          clusterProperties={{
+            // Calculate max price in cluster for color coding
+            maxPrice: ["max", ["get", "price"]],
+          }}
+        >
+          {/* Cluster circles - size based on count, color blue */}
+          <Layer
+            id="clusters"
+            type="circle"
+            filter={["has", "point_count"]}
+            paint={{
+              "circle-radius": [
+                "step",
+                ["get", "point_count"],
+                16, // < 10 properties
+                10,
+                20, // 10-25 properties
+                25,
+                24, // 25-50 properties
+                50,
+                30, // 50+ properties
+              ],
+              "circle-color": "#3b82f6", // Blue
+              "circle-stroke-width": 2,
+              "circle-stroke-color": "#ffffff",
+              "circle-opacity": 0.8,
+            }}
+          />
+
+          {/* Cluster count labels */}
+          <Layer
+            id="cluster-count"
+            type="symbol"
+            filter={["has", "point_count"]}
+            layout={{
+              "text-field": ["get", "point_count_abbreviated"],
+              "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+              "text-size": 14,
+              "text-allow-overlap": true,
+            }}
+            paint={{
+              "text-color": "#ffffff",
+            }}
+          />
+
+          {/* Individual property badges - only for unclustered points */}
+          <Layer
+            id="properties-badge-layer"
+            type="symbol"
+            filter={["!", ["has", "point_count"]]}
+            layout={{
+              // Text properties
+              "text-field": ["concat", "$", ["get", "formattedPrice"]],
+              "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+              "text-size": 15,
+              "text-allow-overlap": true,
+
+              // Icon properties (the badge background)
+              "icon-image": "badge-background",
+              "icon-allow-overlap": true,
+
+              // Fit the icon to the text
+              "icon-text-fit": "both",
+              "icon-text-fit-padding": [4, 8, 4, 8],
+            }}
+            paint={{
+              "text-color": "#ffffff",
+              // Blue color for all badges
+              "icon-color": "#3b82f6",
+            }}
+          />
+        </Source>
+
+        {/* Popup for selected property */}
+        {selectedProperty?.latitude && selectedProperty.longitude && (
+          <Popup
+            latitude={selectedProperty.latitude}
+            longitude={selectedProperty.longitude}
+            onClose={() => setSelectedProperty(null)}
+            closeButton={true}
+            closeOnClick={true}
+            className="mapbox-popup-content"
+            style={{
+              padding: "0",
+            }}
+            maxWidth="410px"
+          >
+            <div className="relative">
+              {/* Close button overlay */}
+              <button
+                type="button"
+                onClick={() => setSelectedProperty(null)}
+                className="absolute top-3 right-2 z-50 w-8 h-8 flex items-center justify-center bg-white/80 hover:bg-white rounded-full shadow-lg transition-all hover:scale-110"
+                aria-label="Cerrar popup"
+              >
+                <svg
+                  className="w-5 h-5 text-gray-900"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+              <PropertyCardHorizontal property={selectedProperty} />
+            </div>
+          </Popup>
+        )}
+      </Map>
+    </div>
   );
 }
-
-/**
- * COMPLETED FEATURES:
- * ✅ Interactive MapBox GL with dark/light mode
- * ✅ Property markers with price display
- * ✅ Navigation controls (zoom, compass, pitch)
- * ✅ URL State: Shareable map positions (/mapa?lat=-2.90&lng=-79.00&zoom=12)
- * ✅ Debounced URL updates (500ms delay)
- * ✅ Browser history support (back/forward)
- * ✅ Separation of Concerns refactoring
- *
- * NEXT STEPS:
- *
- * Phase 3 - Search & Filters:
- * - Implement MapSearchBar (location search with geocoding)
- * - Implement MapFilters (price, transaction type, property category)
- * - Add filter persistence in URL params
- * - Add "Clear filters" functionality
- *
- * Phase 4 - Property Popups:
- * - Add PropertyPopup component (shows on marker click)
- * - Display property details (image, title, specs)
- * - Add "View Details" link to property page
- * - Add favorite toggle in popup
- *
- * Phase 5 - Advanced Features:
- * - Clustering for many markers (>50 properties)
- * - Viewport-based property filtering (only show visible properties)
- * - Fly-to animation when selecting from search
- * - Geolocation button ("Find my location")
- * - Draw custom search areas on map
- */

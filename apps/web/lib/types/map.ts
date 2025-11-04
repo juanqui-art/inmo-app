@@ -67,20 +67,12 @@ export interface MapBounds {
 }
 
 /**
- * Default map configuration for Ecuador
+ * Default map configuration - Technical Mapbox constraints only
+ *
+ * NOTE: Geographic fallbacks (center, zoom) are defined locally in components
+ * that need them (e.g., mapa/page.tsx) to avoid redundancy.
  */
 export const DEFAULT_MAP_CONFIG = {
-  // Cuenca, Ecuador (center of Azuay)
-  AZUAY_CENTER: {
-    latitude: -2.9001,
-    longitude: -79.0058,
-  },
-  // Quito, Ecuador (fallback)
-  ECUADOR_CENTER: {
-    latitude: -0.1807,
-    longitude: -78.4678,
-  },
-  DEFAULT_ZOOM: 16,
   MIN_ZOOM: 3,
   MAX_ZOOM: 20,
   DEFAULT_PITCH: 0,
@@ -121,23 +113,23 @@ export const CLUSTER_CONFIG = {
 export const MAP_COLORS = {
   // Marker colors by transaction type
   MARKERS: {
-    SALE: "#3b82f6",      // Blue-500 (Tailwind)
-    RENT: "#10b981",      // Green-500 (Tailwind)
+    SALE: "#3b82f6", // Blue-500 (Tailwind)
+    RENT: "#10b981", // Green-500 (Tailwind)
   },
 
   // Cluster colors by tier - vibrant palette for visibility on gray maps
   // Visual hierarchy: Green → Blue → Magenta to indicate cluster density
   CLUSTERS: {
-    SMALL: "#10b981",     // Green-500 (2-9 properties) - fresh, spacious
-    MEDIUM: "#3b82f6",    // Blue-500 (10-49 properties) - prominent
-    LARGE: "#ec4899",     // Pink-500 (50+ properties) - high density
+    SMALL: "#10b981", // Green-500 (2-9 properties) - fresh, spacious
+    MEDIUM: "#3b82f6", // Blue-500 (10-49 properties) - prominent
+    LARGE: "#ec4899", // Pink-500 (50+ properties) - high density
   },
 
   // Supporting colors for effects
   EFFECTS: {
-    STROKE: "#FFFFFF",    // White for strokes/borders
-    SHADOW: "rgba(0, 0, 0, 0.2)",  // Shadow effect
-    HOVER: "rgba(255, 255, 255, 0.3)",  // Hover highlight
+    STROKE: "#FFFFFF", // White for strokes/borders
+    SHADOW: "rgba(0, 0, 0, 0.2)", // Shadow effect
+    HOVER: "rgba(255, 255, 255, 0.3)", // Hover highlight
   },
 } as const;
 
