@@ -102,8 +102,12 @@ export const MapContainer = memo(function MapContainer({
   }, []);
 
   /**
-   * Attach click listeners to the marker layer when the map is ready
+   * Attach click and hover listeners to marker and cluster layers
    * Uses Map's onLoad event to guarantee the Source and Layers are rendered
+   * Implements:
+   * - Hover effects with feature-state
+   * - Click feedback animations
+   * - Cluster click handler (zoom in)
    */
   const handleMapLoad = useCallback(() => {
     if (!mapRef?.current) return;
@@ -113,33 +117,133 @@ export const MapContainer = memo(function MapContainer({
 
     // Wait a tick to ensure layers are fully loaded
     setTimeout(() => {
-      const layer = map.getLayer("unclustered-point");
-      if (!layer) {
+      const unclusteredLayer = map.getLayer("unclustered-point");
+      const clusterLayer = map.getLayer("clusters");
+
+      if (!unclusteredLayer || !clusterLayer) {
         return;
       }
 
-      const onClick = (e: any) => {
+      // ===== UNCLUSTERED MARKER HANDLERS =====
+
+      const onMarkerClick = (e: any) => {
         if (e.features && e.features.length > 0) {
-          // Use properties.id as primary source (guaranteed to be in GeoJSON)
-          // Fallback to top-level id if needed
-          const propertyId = e.features[0].properties?.id || e.features[0].id;
-          if (propertyId) {
+          const feature = e.features[0];
+          const propertyId = feature.properties?.id || feature.id;
+
+          if (propertyId && feature.id !== undefined) {
+            // Set click state for animation
+            map.setFeatureState(
+              { source: "properties", id: feature.id },
+              { clicked: true }
+            );
+
+            // Reset after animation
+            setTimeout(() => {
+              map.setFeatureState(
+                { source: "properties", id: feature.id },
+                { clicked: false }
+              );
+            }, 300);
+
+            // Handle property click
             handlePropertyClick(propertyId);
           }
         }
       };
 
-      const onMouseEnter = () => {
-        map.getCanvas().style.cursor = "pointer";
+      const onMarkerMouseEnter = (e: any) => {
+        if (e.features && e.features.length > 0) {
+          const feature = e.features[0];
+          if (feature.id !== undefined) {
+            // Set hover state
+            map.setFeatureState(
+              { source: "properties", id: feature.id },
+              { hover: true }
+            );
+            map.getCanvas().style.cursor = "pointer";
+          }
+        }
       };
 
-      const onMouseLeave = () => {
-        map.getCanvas().style.cursor = "";
+      const onMarkerMouseLeave = (e: any) => {
+        if (e.features && e.features.length > 0) {
+          const feature = e.features[0];
+          if (feature.id !== undefined) {
+            // Remove hover state
+            map.setFeatureState(
+              { source: "properties", id: feature.id },
+              { hover: false }
+            );
+            map.getCanvas().style.cursor = "";
+          }
+        }
       };
 
-      map.on("click", "unclustered-point", onClick);
-      map.on("mouseenter", "unclustered-point", onMouseEnter);
-      map.on("mouseleave", "unclustered-point", onMouseLeave);
+      // ===== CLUSTER HANDLERS =====
+
+      const onClusterClick = (e: any) => {
+        if (e.features && e.features.length > 0) {
+          const feature = e.features[0];
+          const clusterId = feature.properties?.cluster_id;
+
+          if (clusterId !== undefined) {
+            // Get cluster expansion zoom
+            const source = map.getSource("properties") as any;
+
+            if (source && source.getClusterExpansionZoom) {
+              source.getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
+                if (err) return;
+
+                // Zoom to cluster
+                map.easeTo({
+                  center: feature.geometry.coordinates,
+                  zoom: zoom,
+                  duration: 300, // 300ms animation
+                });
+              });
+            }
+          }
+        }
+      };
+
+      const onClusterMouseEnter = (e: any) => {
+        if (e.features && e.features.length > 0) {
+          const feature = e.features[0];
+          if (feature.id !== undefined) {
+            map.setFeatureState(
+              { source: "properties", id: feature.id },
+              { hover: true }
+            );
+            map.getCanvas().style.cursor = "pointer";
+          }
+        }
+      };
+
+      const onClusterMouseLeave = (e: any) => {
+        if (e.features && e.features.length > 0) {
+          const feature = e.features[0];
+          if (feature.id !== undefined) {
+            map.setFeatureState(
+              { source: "properties", id: feature.id },
+              { hover: false }
+            );
+            map.getCanvas().style.cursor = "";
+          }
+        }
+      };
+
+      // ===== ATTACH EVENT LISTENERS =====
+
+      // Marker (unclustered point) events
+      map.on("click", "unclustered-point", onMarkerClick);
+      map.on("mouseenter", "unclustered-point", onMarkerMouseEnter);
+      map.on("mouseleave", "unclustered-point", onMarkerMouseLeave);
+
+      // Cluster events
+      map.on("click", "clusters", onClusterClick);
+      map.on("mouseenter", "clusters", onClusterMouseEnter);
+      map.on("mouseleave", "clusters", onClusterMouseLeave);
     }, 0);
   }, [mapRef, handlePropertyClick]);
 

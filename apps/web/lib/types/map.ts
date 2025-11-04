@@ -103,15 +103,41 @@ export const MAPBOX_STYLES = {
  */
 export const CLUSTER_CONFIG = {
   /** Cluster radius in pixels */
-  RADIUS: 40,
-  /** Max zoom to cluster points (16 = stop clustering at zoom 16) */
-  MAX_ZOOM: 16,
+  RADIUS: 50,
+  /** Max zoom to cluster points (15 = stop clustering at zoom 15) */
+  MAX_ZOOM: 15,
   /** Min zoom for clustering */
   MIN_ZOOM: 0,
   /** Min points to form cluster */
   MIN_POINTS: 2,
   /** Zoom increment when clicking cluster */
   ZOOM_INCREMENT: 2,
+} as const;
+
+/**
+ * Marker and Cluster Colors
+ * Consistent with InmoApp Oslo Gray brand palette
+ */
+export const MAP_COLORS = {
+  // Marker colors by transaction type
+  MARKERS: {
+    SALE: "#3b82f6",      // Blue-500 (Tailwind)
+    RENT: "#10b981",      // Green-500 (Tailwind)
+  },
+
+  // Cluster colors by tier (Oslo Gray palette)
+  CLUSTERS: {
+    SMALL: "#7C8899",     // Oslo Gray-400 (2-9 properties)
+    MEDIUM: "#5A6576",    // Oslo Gray-500 (10-49 properties)
+    LARGE: "#3F4754",     // Oslo Gray-600 (50+ properties)
+  },
+
+  // Supporting colors for effects
+  EFFECTS: {
+    STROKE: "#FFFFFF",    // White for strokes/borders
+    SHADOW: "rgba(0, 0, 0, 0.2)",  // Shadow effect
+    HOVER: "rgba(255, 255, 255, 0.3)",  // Hover highlight
+  },
 } as const;
 
 /**
