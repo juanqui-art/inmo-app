@@ -116,7 +116,7 @@ export const CLUSTER_CONFIG = {
 
 /**
  * Marker and Cluster Colors
- * Consistent with InmoApp Oslo Gray brand palette
+ * Consistent with InmoApp Oslo Gray brand palette with enhanced contrast
  */
 export const MAP_COLORS = {
   // Marker colors by transaction type
@@ -125,11 +125,12 @@ export const MAP_COLORS = {
     RENT: "#10b981",      // Green-500 (Tailwind)
   },
 
-  // Cluster colors by tier (Oslo Gray palette)
+  // Cluster colors by tier with improved contrast
+  // Visual hierarchy: Light → Medium → Dark to indicate cluster density
   CLUSTERS: {
-    SMALL: "#7C8899",     // Oslo Gray-400 (2-9 properties)
-    MEDIUM: "#5A6576",    // Oslo Gray-500 (10-49 properties)
-    LARGE: "#3F4754",     // Oslo Gray-600 (50+ properties)
+    SMALL: "#B0B8C8",     // Light slate-gray (2-9 properties) - subtle, spacious
+    MEDIUM: "#667080",    // Medium slate-gray (10-49 properties) - more prominent
+    LARGE: "#1F2937",     // Dark slate-900 (50+ properties) - high density
   },
 
   // Supporting colors for effects
