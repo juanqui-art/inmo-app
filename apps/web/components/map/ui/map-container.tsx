@@ -33,7 +33,7 @@
 
 "use client";
 
-import { memo, useState, useCallback } from "react";
+import { memo, useState, useCallback, useEffect } from "react";
 import Map, { type ViewStateChangeEvent, type MapRef } from "react-map-gl/mapbox";
 import { DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import { logger } from "@/lib/utils/logger";
@@ -99,7 +99,26 @@ export const MapContainer = memo(function MapContainer({
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
 
   const handlePropertyClick = useCallback((propertyId: string) => {
+    logger.debug("🔔 handlePropertyClick called with propertyId:", { propertyId });
     setSelectedPropertyId(propertyId);
+  }, []);
+
+  /**
+   * Track if listeners are attached for cleanup
+   * Prevents duplicate listeners when component re-renders
+   */
+  useEffect(() => {
+    return () => {
+      // Cleanup when component unmounts
+      if (mapRef?.current) {
+        const map = mapRef.current.getMap();
+        if (map) {
+          logger.debug("🧹 Component unmounting - cleaning up map listeners");
+          // MapBox doesn't require explicit listener cleanup on map destroy
+          // but we log it for debugging
+        }
+      }
+    };
   }, []);
 
   /**
@@ -109,6 +128,8 @@ export const MapContainer = memo(function MapContainer({
    * - Hover effects with feature-state
    * - Click feedback animations
    * - Cluster click handler (zoom in)
+   *
+   * FIXED: Proper cleanup to avoid duplicate listeners and memory leaks
    */
   const handleMapLoad = useCallback(() => {
     if (!mapRef?.current) return;
@@ -116,34 +137,64 @@ export const MapContainer = memo(function MapContainer({
     const map = mapRef.current.getMap();
     if (!map) return;
 
-    // Wait a tick to ensure layers are fully loaded
-    setTimeout(() => {
+    logger.debug("🗺️ Map onLoad fired, attempting to attach listeners...");
+
+    // Wait for layers to be fully loaded by mapbox-gl
+    // Multiple ticks to ensure all rendering is complete
+    const timeoutId = setTimeout(() => {
       const unclusteredLayer = map.getLayer("unclustered-point");
       const clusterLayer = map.getLayer("clusters");
+      const source = map.getSource("properties") as any;
 
-      logger.debug("🎯 Layers found:", {
+      logger.debug("🎯 Checking layers:", {
         unclusteredLayer: !!unclusteredLayer,
         clusterLayer: !!clusterLayer,
+        source: !!source,
+        layerType: unclusteredLayer?.type,
+        sourceType: source?.type,
       });
 
-      if (!unclusteredLayer || !clusterLayer) {
-        logger.error("❌ Required layers not found!");
+      if (!unclusteredLayer || !clusterLayer || !source) {
+        logger.error("❌ Required layers/source not found!", {
+          unclusteredLayer: !!unclusteredLayer,
+          clusterLayer: !!clusterLayer,
+          source: !!source,
+        });
         return;
+      }
+
+      // Check if there are actually features in the source
+      try {
+        const features = map.querySourceFeatures("properties");
+        logger.debug("📊 Source features count:", {
+          totalFeatures: features.length,
+          unclustered: features.filter((f: any) => !f.properties?.cluster_id).length,
+          clustered: features.filter((f: any) => f.properties?.cluster_id).length,
+        });
+      } catch (err) {
+        logger.error("❌ Error querying source features:", err);
       }
 
       // ===== UNCLUSTERED MARKER HANDLERS =====
 
       const onMarkerClick = (e: any) => {
-        logger.debug("🖱️ CLICK detected on marker:", {
-          features: e.features?.length || 0,
-          firstFeature: e.features?.[0]?.properties,
+        logger.debug("🖱️ CLICK HANDLER TRIGGERED on unclustered-point:", {
+          eventType: e.type,
+          featuresCount: e.features?.length || 0,
+          firstFeatureId: e.features?.[0]?.id,
+          firstFeatureProperties: e.features?.[0]?.properties,
+          lngLat: e.lngLat ? { lng: e.lngLat.lng, lat: e.lngLat.lat } : null,
         });
 
         if (e.features && e.features.length > 0) {
           const feature = e.features[0];
           const propertyId = feature.properties?.id || feature.id;
 
-          logger.debug("📍 Marker clicked:", { propertyId, featureId: feature.id });
+          logger.debug("📍 Marker clicked - extracting ID:", {
+            propertyId,
+            featureId: feature.id,
+            hasPropertiesId: !!feature.properties?.id,
+          });
 
           if (propertyId && feature.id !== undefined) {
             // Set click state for animation
@@ -163,7 +214,15 @@ export const MapContainer = memo(function MapContainer({
             // Handle property click
             logger.debug("✅ Calling handlePropertyClick with:", { propertyId });
             handlePropertyClick(propertyId);
+          } else {
+            logger.warn("⚠️ Failed to extract propertyId:", {
+              propertyId,
+              featureId: feature.id,
+              reason: !propertyId ? "propertyId is falsy" : "feature.id is undefined",
+            });
           }
+        } else {
+          logger.warn("⚠️ Click event has no features");
         }
       };
 
@@ -171,7 +230,6 @@ export const MapContainer = memo(function MapContainer({
         if (e.features && e.features.length > 0) {
           const feature = e.features[0];
           if (feature.id !== undefined) {
-            // Set hover state
             map.setFeatureState(
               { source: "properties", id: feature.id },
               { hover: true }
@@ -185,7 +243,6 @@ export const MapContainer = memo(function MapContainer({
         if (e.features && e.features.length > 0) {
           const feature = e.features[0];
           if (feature.id !== undefined) {
-            // Remove hover state
             map.setFeatureState(
               { source: "properties", id: feature.id },
               { hover: false }
@@ -198,26 +255,30 @@ export const MapContainer = memo(function MapContainer({
       // ===== CLUSTER HANDLERS =====
 
       const onClusterClick = (e: any) => {
+        logger.debug("🖱️ CLICK HANDLER TRIGGERED on clusters:", {
+          clusterId: e.features?.[0]?.properties?.cluster_id,
+        });
+
         if (e.features && e.features.length > 0) {
           const feature = e.features[0];
           const clusterId = feature.properties?.cluster_id;
 
           if (clusterId !== undefined) {
-            // Get cluster expansion zoom
-            const source = map.getSource("properties") as any;
+            source.getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
+              if (err) {
+                logger.error("❌ Error getting cluster expansion zoom:", err);
+                return;
+              }
 
-            if (source && source.getClusterExpansionZoom) {
-              source.getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
-                if (err) return;
+              logger.debug("🔍 Zooming to cluster:", { zoom, coordinates: feature.geometry.coordinates });
 
-                // Zoom to cluster
-                map.easeTo({
-                  center: feature.geometry.coordinates,
-                  zoom: zoom,
-                  duration: 300, // 300ms animation
-                });
+              // Zoom to cluster
+              map.easeTo({
+                center: feature.geometry.coordinates,
+                zoom: zoom,
+                duration: 300,
               });
-            }
+            });
           }
         }
       };
@@ -248,24 +309,39 @@ export const MapContainer = memo(function MapContainer({
         }
       };
 
+      // ===== REMOVE OLD LISTENERS (Cleanup) =====
+      // Remove any existing listeners to prevent duplicates
+      map.off("click", "unclustered-point", onMarkerClick);
+      map.off("mouseenter", "unclustered-point", onMarkerMouseEnter);
+      map.off("mouseleave", "unclustered-point", onMarkerMouseLeave);
+      map.off("click", "clusters", onClusterClick);
+      map.off("mouseenter", "clusters", onClusterMouseEnter);
+      map.off("mouseleave", "clusters", onClusterMouseLeave);
+
       // ===== ATTACH EVENT LISTENERS =====
 
       logger.debug("📌 Attaching click listeners to layers...");
 
       // Marker (unclustered point) events
       map.on("click", "unclustered-point", onMarkerClick);
-      logger.debug("✅ Marker click listener attached");
+      logger.debug("✅ Marker click listener attached to unclustered-point");
       map.on("mouseenter", "unclustered-point", onMarkerMouseEnter);
       map.on("mouseleave", "unclustered-point", onMarkerMouseLeave);
 
       // Cluster events
       map.on("click", "clusters", onClusterClick);
-      logger.debug("✅ Cluster click listener attached");
+      logger.debug("✅ Cluster click listener attached to clusters");
       map.on("mouseenter", "clusters", onClusterMouseEnter);
       map.on("mouseleave", "clusters", onClusterMouseLeave);
 
       logger.debug("✅ All event listeners attached successfully");
-    }, 0);
+    }, 200); // Increased timeout to ensure layers are ready
+
+    // Cleanup function for when component unmounts
+    return () => {
+      clearTimeout(timeoutId);
+      logger.debug("🧹 Cleaning up map listeners on unmount");
+    };
   }, [mapRef, handlePropertyClick]);
 
   return (

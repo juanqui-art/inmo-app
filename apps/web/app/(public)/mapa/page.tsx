@@ -54,10 +54,7 @@ import {
   validateBoundsParams,
 } from "@/lib/cache/properties-cache";
 import { getCachedPriceDistribution } from "@/lib/cache/price-distribution-cache";
-import {
-  boundsToMapBoxFormat,
-  type MapBounds,
-} from "@/lib/utils/map-bounds";
+import { boundsToMapBoxFormat } from "@/lib/utils/map-bounds";
 import { getCurrentUser } from "@/lib/auth";
 import { propertyRepository } from "@repo/database";
 import type { Metadata } from "next";
@@ -201,25 +198,21 @@ export default async function MapPage(props: MapPageProps) {
   const priceStats = await getCachedPriceDistribution();
 
   /**
-   * Use Ecuador's complete geographic bounds for initial viewport
-   * This ensures the entire country is visible on first load
+   * VIEWPORT INITIALIZATION STRATEGY
    *
-   * Ecuador bounds (includes Galápagos):
-   * - South: -5.0° (south of Ecuador)
-   * - North: 1.4° (north of Ecuador)
-   * - West: -81.2° (includes Galápagos)
-   * - East: -75.2° (Brazil border)
+   * Priority:
+   * 1. If user provided bounds in URL → use those bounds (user navigated map)
+   * 2. If NO bounds in URL → use default viewport (initial load)
    *
-   * With dynamic calculateZoomLevel(), this will automatically
-   * calculate zoom level 6 to show Ecuador fully visible
+   * Why?
+   * - Ecuador's full bounds zoom out too far (zoom ~6), causing all markers to cluster
+   * - Instead, use DEFAULT_ZOOM (16) to show individual markers on initial load
+   * - When user zooms out, they can still see clusters
+   * - URL bounds are respected for shareable links
    */
-  const ecuadorBounds: MapBounds = {
-    sw_lat: -5.0,   // South
-    sw_lng: -81.2,  // West (includes Galápagos)
-    ne_lat: 1.4,    // North
-    ne_lng: -75.2,  // East
-  };
-  const initialBounds = boundsToMapBoxFormat(ecuadorBounds);
+  const initialBounds = hasBoundsParams
+    ? boundsToMapBoxFormat(bounds)
+    : undefined;
 
   /**
    * Render map with real database properties and viewport from URL
