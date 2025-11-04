@@ -165,89 +165,82 @@ export const MapLayers = memo(function MapLayers({
           ],
           // Zoom-based scaling with hover size adjustment
           "circle-radius": [
-            "step",
-            ["get", "point_count"],
-            // Small clusters (2-9 properties)
-            [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
-              10,
-              [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                20, // hover
-                16, // normal
-              ],
-              15,
-              [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                26, // hover
-                22, // normal
-              ],
-              18,
-              [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                32, // hover
-                28, // normal
-              ],
-            ],
+            "interpolate",
+            ["linear"],
+            ["zoom"],
             10,
-            // Medium clusters (10-49 properties)
             [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
+              "step",
+              ["get", "point_count"],
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                20, // small hover
+                16, // small normal
+              ],
               10,
               [
                 "case",
                 ["boolean", ["feature-state", "hover"], false],
-                26, // hover
-                22, // normal
+                26, // medium hover
+                22, // medium normal
               ],
-              15,
+              50,
               [
                 "case",
                 ["boolean", ["feature-state", "hover"], false],
-                34, // hover
-                30, // normal
-              ],
-              18,
-              [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                42, // hover
-                38, // normal
+                32, // large hover
+                28, // large normal
               ],
             ],
-            50,
-            // Large clusters (50+ properties)
+            15,
             [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
+              "step",
+              ["get", "point_count"],
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                26, // small hover
+                22, // small normal
+              ],
               10,
               [
                 "case",
                 ["boolean", ["feature-state", "hover"], false],
-                32, // hover
-                28, // normal
+                34, // medium hover
+                30, // medium normal
               ],
-              15,
+              50,
               [
                 "case",
                 ["boolean", ["feature-state", "hover"], false],
-                42, // hover
-                38, // normal
+                42, // large hover
+                38, // large normal
               ],
-              18,
+            ],
+            18,
+            [
+              "step",
+              ["get", "point_count"],
               [
                 "case",
                 ["boolean", ["feature-state", "hover"], false],
-                50, // hover
-                46, // normal
+                32, // small hover
+                28, // small normal
+              ],
+              10,
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                42, // medium hover
+                38, // medium normal
+              ],
+              50,
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                50, // large hover
+                46, // large normal
               ],
             ],
           ],
