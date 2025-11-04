@@ -45,20 +45,6 @@ export const MapLayers = memo(function MapLayers({
   });
 
   /**
-   * Format price for display on map
-   * Converts: 150000 → "$150K", 1500000 → "$1.5M", etc.
-   */
-  const formatPrice = (price: number): string => {
-    if (price >= 1000000) {
-      return `$${(price / 1000000).toFixed(1)}M`;
-    }
-    if (price >= 1000) {
-      return `$${Math.round(price / 1000)}K`;
-    }
-    return `$${price}`;
-  };
-
-  /**
    * Convert properties to GeoJSON format
    * Expensive operation - memoized
    */
@@ -77,7 +63,6 @@ export const MapLayers = memo(function MapLayers({
           properties: {
             id: property.id,
             price: property.price,
-            priceFormatted: formatPrice(property.price),
             transactionType: property.transactionType,
             title: property.title,
           },
@@ -162,47 +147,7 @@ export const MapLayers = memo(function MapLayers({
         }}
       />
 
-      {/* Price Labels for Individual Properties */}
-      <Layer
-        id="unclustered-price"
-        type="symbol"
-        filter={["!", ["has", "point_count"]]}
-        layout={{
-          // Display pre-formatted price string
-          "text-field": ["get", "priceFormatted"],
-          // Scale text size based on zoom - smaller to fit inside circle
-          "text-size": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            10,
-            8,   // 8px at zoom 10
-            15,
-            10,  // 10px at zoom 15
-            18,
-            11,  // 11px at zoom 18
-          ],
-          "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
-          "text-offset": [0, 0], // Center inside the circle
-          "text-anchor": "center",
-          "text-allow-overlap": false,
-        }}
-        paint={{
-          "text-color": "#ffffff",
-          // Enhanced halo creates semi-transparent background effect
-          "text-halo-color": "rgba(0, 0, 0, 0.85)",
-          "text-halo-width": 2.5,
-          // Opacity matches marker hover state
-          "text-opacity": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            1.0,   // hover: fully visible
-            0.85,  // normal: slightly transparent
-          ],
-        }}
-      />
-
-      {/* Clustered Points - Size and color based on count (Oslo Gray palette) */}
+      {/* Clustered Points - Size and color based on count (vibrant palette) */}
       <Layer
         id="clusters"
         type="circle"
