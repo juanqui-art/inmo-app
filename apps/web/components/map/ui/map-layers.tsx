@@ -45,6 +45,20 @@ export const MapLayers = memo(function MapLayers({
   });
 
   /**
+   * Format price for display on map
+   * Converts: 150000 → "$150K", 1500000 → "$1.5M", etc.
+   */
+  const formatPrice = (price: number): string => {
+    if (price >= 1000000) {
+      return `$${(price / 1000000).toFixed(1)}M`;
+    }
+    if (price >= 1000) {
+      return `$${Math.round(price / 1000)}K`;
+    }
+    return `$${price}`;
+  };
+
+  /**
    * Convert properties to GeoJSON format
    * Expensive operation - memoized
    */
@@ -63,6 +77,7 @@ export const MapLayers = memo(function MapLayers({
           properties: {
             id: property.id,
             price: property.price,
+            priceFormatted: formatPrice(property.price),
             transactionType: property.transactionType,
             title: property.title,
           },
@@ -153,8 +168,8 @@ export const MapLayers = memo(function MapLayers({
         type="symbol"
         filter={["!", ["has", "point_count"]]}
         layout={{
-          // Format price as text - simplified approach
-          "text-field": ["get", "price"],
+          // Display pre-formatted price string
+          "text-field": ["get", "priceFormatted"],
           // Scale text size based on zoom
           "text-size": [
             "interpolate",
