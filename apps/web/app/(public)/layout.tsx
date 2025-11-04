@@ -83,7 +83,7 @@ export default function PublicLayout({
         No min-height to allow hero full-screen
         WHY? Hero section handles its own height (100vh)
       */}
-      <main>{children}</main>
+      <main className="w-full">{children}</main>
 
       {/*
         FOOTER
