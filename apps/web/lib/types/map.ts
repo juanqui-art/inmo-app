@@ -125,12 +125,12 @@ export const MAP_COLORS = {
     RENT: "#10b981",      // Green-500 (Tailwind)
   },
 
-  // Cluster colors by tier with improved contrast
-  // Visual hierarchy: Light → Medium → Dark to indicate cluster density
+  // Cluster colors by tier - vibrant palette for visibility on gray maps
+  // Visual hierarchy: Green → Blue → Magenta to indicate cluster density
   CLUSTERS: {
-    SMALL: "#B0B8C8",     // Light slate-gray (2-9 properties) - subtle, spacious
-    MEDIUM: "#667080",    // Medium slate-gray (10-49 properties) - more prominent
-    LARGE: "#1F2937",     // Dark slate-900 (50+ properties) - high density
+    SMALL: "#10b981",     // Green-500 (2-9 properties) - fresh, spacious
+    MEDIUM: "#3b82f6",    // Blue-500 (10-49 properties) - prominent
+    LARGE: "#ec4899",     // Pink-500 (50+ properties) - high density
   },
 
   // Supporting colors for effects
