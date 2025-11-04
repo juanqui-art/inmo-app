@@ -153,45 +153,8 @@ export const MapLayers = memo(function MapLayers({
         type="symbol"
         filter={["!", ["has", "point_count"]]}
         layout={{
-          // Format price as "$150K" or "$1.2M"
-          "text-field": [
-            "concat",
-            "$",
-            [
-              "case",
-              // >= 1,000,000: show as "1.2M"
-              [">=", ["get", "price"], 1000000],
-              [
-                "concat",
-                [
-                  "to-string",
-                  [
-                    "round",
-                    ["*", ["divide", ["get", "price"], 1000000], 10],
-                  ],
-                ],
-                "M",
-              ],
-              // >= 1,000: show as "150K"
-              [">=", ["get", "price"], 1000],
-              [
-                "concat",
-                [
-                  "to-string",
-                  [
-                    "round",
-                    ["divide", ["get", "price"], 1000],
-                  ],
-                ],
-                "K",
-              ],
-              // < 1,000: show full amount
-              [
-                "to-string",
-                ["round", ["get", "price"]],
-              ],
-            ],
-          ],
+          // Format price as text - simplified approach
+          "text-field": ["get", "price"],
           // Scale text size based on zoom
           "text-size": [
             "interpolate",
