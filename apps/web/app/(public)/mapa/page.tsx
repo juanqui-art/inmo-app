@@ -21,6 +21,7 @@ import {
   parseBoundsParams,
   parseFilterParams,
   dynamicFiltersToPropertyFilters,
+  hasBoundsParams,
 } from "@/lib/utils/url-helpers";
 
 export const metadata: Metadata = {
@@ -47,12 +48,26 @@ export default async function MapPage(props: MapPageProps) {
   const searchParams = await props.searchParams;
 
   /**
-   * STEP 1: Parse bounds from URL
-   * If NO bounds in URL → use world bounds (initial load shows all properties)
-   * If YES bounds in URL → fetch only within those bounds (user navigated map)
+   * STEP 1: Detect if user provided bounds in URL
+   * - NO bounds → initial load: fetch ALL properties using world bounds
+   * - YES bounds → user navigated map: fetch only within those bounds
    */
+  const userProvidedBounds = hasBoundsParams(searchParams);
 
-  const bounds = parseBoundsParams(searchParams, DEFAULT_VIEWPORT);
+  // For display: use URL bounds if present, else use default viewport
+  const displayBounds = userProvidedBounds
+    ? parseBoundsParams(searchParams, DEFAULT_VIEWPORT)
+    : null;
+
+  // For fetch: use world bounds on initial load, else use URL bounds
+  const fetchBounds = userProvidedBounds
+    ? displayBounds!
+    : {
+        ne_lat: 90,
+        ne_lng: 180,
+        sw_lat: -90,
+        sw_lng: -180,
+      };
 
   /**
    * STEP 2: Parse filters from URL
@@ -66,10 +81,10 @@ export default async function MapPage(props: MapPageProps) {
    * Server-side fetch ensures fresh data without client delay
    */
   const { properties } = await propertyRepository.findInBounds({
-    minLatitude: bounds.sw_lat,
-    maxLatitude: bounds.ne_lat,
-    minLongitude: bounds.sw_lng,
-    maxLongitude: bounds.ne_lng,
+    minLatitude: fetchBounds.sw_lat,
+    maxLatitude: fetchBounds.ne_lat,
+    minLongitude: fetchBounds.sw_lng,
+    maxLongitude: fetchBounds.ne_lng,
     filters: {
       ...repositoryFilters,
       status: "AVAILABLE",
@@ -94,13 +109,17 @@ export default async function MapPage(props: MapPageProps) {
    * Render map page with:
    * - FilterBar at top (manages filter state + URL sync)
    * - MapView below (displays properties with clustering)
-   * - Both receive server-fetched data + bounds from URL
+   * - Both receive server-fetched data + bounds from URL (if user provided them)
+   *
+   * displayBounds:
+   * - null on initial load → MapView uses default viewport (Cuenca, zoom 12)
+   * - bounds object if user navigated → MapView fits to those bounds
    */
   return (
     <MapPageClient
       properties={serialized}
       isAuthenticated={!!currentUser}
-      initialBounds={bounds}
+      initialBounds={displayBounds ?? undefined}
       priceRangeMin={priceRangeMin}
       priceRangeMax={priceRangeMax}
     />

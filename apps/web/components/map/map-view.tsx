@@ -123,7 +123,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
         [initialBounds.sw_lng, initialBounds.sw_lat],
         [initialBounds.ne_lng, initialBounds.ne_lat],
       ],
-      { padding: 50, duration: 600 }
+      { padding: 50, duration: 600 },
     );
   }, [isMapLoaded, initialBounds]);
 
@@ -173,7 +173,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
         initialViewState={{
           latitude: -2.9,
           longitude: -79.0,
-          zoom: 6,
+          zoom: 12,
         }}
         style={{ width: "100%", height: "100%" }}
         mapStyle="mapbox://styles/mapbox/dark-v11"
