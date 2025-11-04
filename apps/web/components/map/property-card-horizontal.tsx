@@ -182,19 +182,7 @@ export function PropertyCardHorizontal({
                 {categoryLabels[property.category] || property.category}
               </Badge>
             )}
-          </div>
 
-          {/* Right: Social Actions */}
-          <div className="flex items-center gap-2">
-            {/* View Counter */}
-            {/*<div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30">*/}
-            {/*  <Eye className="w-4 h-4 text-white" />*/}
-            {/*  <span className="text-white text-sm font-semibold">*/}
-            {/*    {viewCount.toLocaleString()}*/}
-            {/*  </span>*/}
-            {/*</div>*/}
-
-            {/* Like Button - Favorites */}
             <button
               onClick={handleFavoriteClick}
               disabled={false}
