@@ -1,6 +1,6 @@
 # 📚 InmoApp Documentation Index
 
-> **Navegación completa de documentación** | Última actualización: Octubre 29, 2025 (Phase 3 - Reorganización)
+> **Navegación completa de documentación** | Última actualización: Noviembre 5, 2025 (Mapbox docs cleanup)
 
 ---
 
@@ -19,6 +19,7 @@
 Si buscas **notas de sesiones anteriores** o **documentos de investigación**, mira en:
 - **[archive/sessions/](../archive/sessions/)** - Notas de desarrollo previas (AI Search, feature builds)
 - **[archive/research/](../archive/research/)** - Materiales de investigación y exploración
+- **[archive/docs-old-map-implementation/](../archive/docs-old-map-implementation/)** - Documentación de implementación anterior del mapa (Supercluster, hooks personalizados, URL sync)
 
 ---
 
@@ -61,13 +62,8 @@ docs/
 │   └── GLASSMORPHISM_IMPLEMENTATION_SUMMARY.md
 │
 ├── ✨ features/                    (Features en desarrollo)
-│   ├── MAP.md
-│   ├── map-features-roadmap.md
-│   ├── CLUSTERING_GUIDE.md
-│   ├── CLUSTERING_AND_BOUNDS_QUICK_REFERENCE.md
-│   ├── CLUSTERING_EXERCISES.md
-│   ├── GLASSMORPHISM_CLUSTERING_GUIDE.md
-│   ├── MAP_BOUNDS_URL_GUIDE.md
+│   ├── MAP.md                       (Implementación actual - Nov 2025)
+│   ├── MAPBOX_POPUP_STYLING.md      (CSS overrides para popups)
 │   ├── ai-search-implementation.md
 │   ├── ai-search-sesion-1-completed.md
 │   ├── ai-search-testing-guide.md
@@ -106,8 +102,7 @@ docs/
 │   └── WORKTREES_CHEATSHEET.md
 │
 ├── 💡 decisions/                   (Decisiones técnicas)
-│   ├── CLUSTERING_SOLUTION.md
-│   └── MAP_BOUNDS_CALCULATION.md
+│   └── (Vacío - ADRs de mapa movidos a archive/docs-old-map-implementation/)
 │
 ├── 📊 progress/                    (Estado del proyecto)
 │   └── ROADMAP.md
