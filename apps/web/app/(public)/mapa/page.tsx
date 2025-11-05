@@ -15,12 +15,13 @@
 
 import type { Metadata } from "next";
 import { MapPageClient } from "@/components/map/map-page-client";
+import MapStoreInitializer from "@/components/map/map-store-initializer"; // NEW IMPORT
 import { getCurrentUser } from "@/lib/auth";
-import { propertyRepository, serializeProperties } from "@repo/database";
+import { propertyRepository, serializeProperties, type PropertyFilters } from "@repo/database"; // NEW: Import PropertyFilters
 import {
   parseBoundsParams,
   parseFilterParams,
-  dynamicFiltersToPropertyFilters,
+  // dynamicFiltersToPropertyFilters, // REMOVED
   hasBoundsParams,
 } from "@/lib/utils/url-helpers";
 
@@ -74,7 +75,7 @@ export default async function MapPage(props: MapPageProps) {
    * Supports: transactionType, category, minPrice, maxPrice, bedrooms, bathrooms
    */
   const dynamicFilters = parseFilterParams(searchParams);
-  const repositoryFilters = dynamicFiltersToPropertyFilters(dynamicFilters);
+  const repositoryFilters: PropertyFilters = dynamicFilters as PropertyFilters; // DIRECTLY USE dynamicFilters
 
   /**
    * STEP 3: Fetch properties within bounds + filters
@@ -102,6 +103,10 @@ export default async function MapPage(props: MapPageProps) {
   const { minPrice: priceRangeMin, maxPrice: priceRangeMax } =
     await propertyRepository.getPriceRange(repositoryFilters as any);
 
+  const priceDistribution = await propertyRepository.getPriceDistribution({
+    filters: repositoryFilters as any,
+  });
+
   // Get current user for auth state
   const currentUser = await getCurrentUser();
 
@@ -116,12 +121,17 @@ export default async function MapPage(props: MapPageProps) {
    * - bounds object if user navigated → MapView fits to those bounds
    */
   return (
-    <MapPageClient
-      properties={serialized}
-      isAuthenticated={!!currentUser}
-      initialBounds={displayBounds ?? undefined}
-      priceRangeMin={priceRangeMin}
-      priceRangeMax={priceRangeMax}
-    />
+    <>
+      <MapStoreInitializer
+        properties={serialized}
+        priceDistribution={priceDistribution}
+        priceRangeMin={priceRangeMin}
+        priceRangeMax={priceRangeMax}
+      />
+      <MapPageClient
+        isAuthenticated={!!currentUser}
+        initialBounds={displayBounds ?? undefined}
+      />
+    </>
   );
 }

@@ -17,7 +17,7 @@
  * - Sync happens ONLY when user clicks "Done"
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react' // Add useRef
 import { FilterDropdown } from './filter-dropdown'
 import { PriceHistogramSlider } from './price-histogram-slider'
 import {
@@ -25,6 +25,7 @@ import {
   formatNumberEcuador,
   formatPriceCompact,
 } from '@/lib/utils/price-helpers'
+import { useMapStore } from '@/stores/map-store';
 
 /**
  * PriceInput Component
@@ -52,13 +53,37 @@ function PriceInput({ value, onChange, ariaLabel }: PriceInputProps) {
   )
 }
 
+// Simple SVG Spinner component
+function Spinner() {
+  return (
+    <svg
+      className="animate-spin h-8 w-8 text-white"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      ></circle>
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      ></path>
+    </svg>
+  );
+}
+
+
 interface PriceFilterDropdownProps {
   minPrice?: number
   maxPrice?: number
   onPriceChange: (minPrice?: number, maxPrice?: number) => void
-  dbMinPrice?: number
-  dbMaxPrice?: number
-  distribution?: { bucket: number; count: number }[]
   onOpenChange?: (open: boolean) => void
 }
 
@@ -66,14 +91,18 @@ export function PriceFilterDropdown({
   minPrice,
   maxPrice,
   onPriceChange,
-  dbMinPrice,
-  dbMaxPrice,
-  distribution = [],
   onOpenChange,
 }: PriceFilterDropdownProps) {
-  // Determinar los límites del rango basado en BD o defaults
-  const rangeMinBound = dbMinPrice ?? 0
-  const rangeMaxBound = dbMaxPrice ?? 2000000
+  // Obtener datos del store de Zustand de forma granular
+  const priceDistribution = useMapStore((state) => state.priceDistribution);
+  const priceRangeMin = useMapStore((state) => state.priceRangeMin);
+  const priceRangeMax = useMapStore((state) => state.priceRangeMax);
+  const isLoading = useMapStore((state) => state.isLoading);
+  const setIsLoading = useMapStore((state) => state.setIsLoading);
+
+  // Determinar los límites del rango basado en BD o defaults (ahora del store)
+  const rangeMinBound = priceRangeMin ?? 0
+  const rangeMaxBound = priceRangeMax ?? 2000000
 
   // ✅ ESTADO DEL DROPDOWN
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
@@ -81,6 +110,9 @@ export function PriceFilterDropdown({
   // ✅ ESTADO LOCAL (no sincronizado con URL hasta "Done")
   const [localMin, setLocalMin] = useState<number>(minPrice ?? 0)
   const [localMax, setLocalMax] = useState<number>(maxPrice ?? rangeMaxBound)
+
+  // Ref to track previous loading state
+  const wasLoadingRef = useRef(false);
 
   // ✅ Detectar si hay filtro activo (para mostrar X en el botón)
   const isFilterActive = useMemo(
@@ -101,6 +133,14 @@ export function PriceFilterDropdown({
     setLocalMin(minPrice ?? 0)
     setLocalMax(maxPrice ?? rangeMaxBound)
   }, [minPrice, maxPrice, rangeMaxBound])
+
+  // Effect to close dropdown when loading is finished
+  useEffect(() => {
+    if (wasLoadingRef.current && !isLoading) {
+      setIsDropdownOpen(false);
+    }
+    wasLoadingRef.current = isLoading;
+  }, [isLoading]);
 
 
   // Display value para el botón del dropdown con formato compacto (K, M)
@@ -164,17 +204,20 @@ export function PriceFilterDropdown({
 
   // ✅ ÚNICO punto donde se actualiza URL (Realtor.com pattern)
   const handleDone = useCallback(() => {
+    setIsLoading(true); // Start loading
+
     // Solo enviar valores si son diferentes de los bounds
     const finalMin = localMin > rangeMinBound ? localMin : undefined
     const finalMax = localMax < rangeMaxBound ? localMax : undefined
 
     onPriceChange(finalMin, finalMax)
-    setIsDropdownOpen(false) // Cerrar dropdown
-  }, [localMin, localMax, rangeMinBound, rangeMaxBound, onPriceChange])
+    // NO cerramos el dropdown aquí
+  }, [localMin, localMax, rangeMinBound, rangeMaxBound, onPriceChange, setIsLoading])
 
   // Handler para resetear al cerrar sin "Done"
   const handleOpenChange = useCallback(
     (open: boolean) => {
+      if (isLoading) return; // Prevent closing while loading
       setIsDropdownOpen(open)
       if (!open) {
         // Reset a valores de URL al cerrar
@@ -183,7 +226,7 @@ export function PriceFilterDropdown({
       }
       onOpenChange?.(open)
     },
-    [minPrice, maxPrice, rangeMinBound, rangeMaxBound, onOpenChange]
+    [minPrice, maxPrice, rangeMinBound, rangeMaxBound, onOpenChange, isLoading]
   )
 
   return (
@@ -195,7 +238,13 @@ export function PriceFilterDropdown({
       isActive={isFilterActive}
       onClear={handleClear}
     >
-      <div className="w-80 m-0 p-0 space-y-4">
+      <div className="w-80 m-0 p-0 space-y-4 relative">
+        {isLoading && (
+          <div className="absolute inset-0 bg-oslo-gray-900/70 flex items-center justify-center z-10 rounded-lg">
+            <Spinner />
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-center justify-between px-3 ">
           <h3 className="text-lg font-bold text-oslo-gray-100">Precio</h3>
@@ -204,7 +253,7 @@ export function PriceFilterDropdown({
         {/* Histograma Interactivo */}
         <div className="px-3">
           <PriceHistogramSlider
-            distribution={distribution}
+            distribution={priceDistribution}
             localMin={localMin}
             localMax={localMax}
             onRangeChange={handleHistogramChange}
@@ -223,7 +272,8 @@ export function PriceFilterDropdown({
         <div className="px-4">
           <button
             onClick={handleDone}
-            className="w-full px-4 py-2 rounded-lg bg-oslo-gray-700 text-oslo-gray-100 font-medium text-base hover:bg-oslo-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-oslo-gray-600"
+            disabled={isLoading} // Disable button while loading
+            className="w-full px-4 py-2 rounded-lg bg-oslo-gray-700 text-oslo-gray-100 font-medium text-base hover:bg-oslo-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-oslo-gray-600 disabled:bg-oslo-gray-800 disabled:cursor-not-allowed"
           >
             Listo
           </button>

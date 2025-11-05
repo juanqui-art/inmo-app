@@ -18,18 +18,10 @@ import { BedroomsFilter } from "./bedrooms-filter";
 import { useMapFilters } from "./use-map-filters";
 
 interface FilterBarProps {
-  priceRangeMin?: number;
-  priceRangeMax?: number;
-  priceDistribution?: { bucket: number; count: number }[];
   isLoading?: boolean;
 }
 
-export function FilterBar({
-  priceRangeMin,
-  priceRangeMax,
-  priceDistribution,
-  isLoading = false,
-}: FilterBarProps) {
+export function FilterBar({ isLoading = false }: FilterBarProps) {
   const { filters, setPriceRange, setCategories, updateFilters } =
     useMapFilters();
 
@@ -56,9 +48,6 @@ export function FilterBar({
             minPrice={filters.minPrice}
             maxPrice={filters.maxPrice}
             onPriceChange={setPriceRange}
-            dbMinPrice={priceRangeMin}
-            dbMaxPrice={priceRangeMax}
-            distribution={priceDistribution}
           />
         </div>
 
