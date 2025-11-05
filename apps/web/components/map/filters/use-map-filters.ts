@@ -15,7 +15,6 @@ import { useCallback } from "react";
 import {
   parseFilterParams,
   buildFilterUrl,
-  parseBoundsParams,
 } from "@/lib/utils/url-helpers";
 import type { DynamicFilterParams } from "@/lib/utils/url-helpers";
 import type { TransactionType, PropertyCategory } from "@repo/database";
@@ -59,6 +58,9 @@ export function useMapFilters() {
   };
 
   // Update filter and sync to URL
+  // IMPORTANT: Do NOT preserve bounds when filters change
+  // Bounds should only be set by the map viewport, not by filter changes
+  // This prevents filters from being limited to old viewport bounds
   const updateFilters = useCallback(
     (newFilters: Partial<MapFiltersState>) => {
       // Merge with existing filters
@@ -67,21 +69,14 @@ export function useMapFilters() {
         ...newFilters,
       };
 
-      // Preserve bounds if they exist
-      const bounds = parseBoundsParams(
-        searchParams,
-        { latitude: -2.9001, longitude: -79.0058, zoom: 12 }
-      );
-
-      // Build new URL with updated filters and preserved bounds
+      // Build new URL with updated filters ONLY
+      // Do NOT include bounds - let the server fetch all properties matching filters
       const filterString = buildFilterUrl(updated);
-      const boundsString = `ne_lat=${bounds.ne_lat}&ne_lng=${bounds.ne_lng}&sw_lat=${bounds.sw_lat}&sw_lng=${bounds.sw_lng}`;
-      const allParams = filterString ? `${filterString}&${boundsString}` : boundsString;
 
-      // Update URL without reloading
-      router.replace(`/mapa?${allParams}`);
+      // Update URL without reloading (replace to clear bounds)
+      router.replace(`/mapa${filterString ? `?${filterString}` : ""}`);
     },
-    [currentParams, searchParams, router]
+    [currentParams, router]
   );
 
   // Toggle transaction type
@@ -137,16 +132,12 @@ export function useMapFilters() {
   );
 
   // Clear all filters
+  // IMPORTANT: Also clear bounds to show all properties
+  // This allows the server to fetch all properties without viewport restrictions
   const clearFilters = useCallback(() => {
-    // Preserve bounds but remove all filters
-    const bounds = parseBoundsParams(
-      searchParams,
-      { latitude: -2.9001, longitude: -79.0058, zoom: 12 }
-    );
-
-    const boundsString = `ne_lat=${bounds.ne_lat}&ne_lng=${bounds.ne_lng}&sw_lat=${bounds.sw_lat}&sw_lng=${bounds.sw_lng}`;
-    router.replace(`/mapa?${boundsString}`);
-  }, [searchParams, router]);
+    // Reset to base map URL with no filters and no bounds
+    router.replace(`/mapa`);
+  }, [router]);
 
   // Check if any filters are active
   const hasActiveFilters = Boolean(
