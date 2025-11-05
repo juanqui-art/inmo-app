@@ -40,7 +40,7 @@ interface MapPageProps {
 const DEFAULT_VIEWPORT = {
   latitude: -2.9001, // Cuenca, Ecuador
   longitude: -79.0058,
-  zoom: 12,
+  zoom: 3,
 } as const;
 
 export default async function MapPage(props: MapPageProps) {

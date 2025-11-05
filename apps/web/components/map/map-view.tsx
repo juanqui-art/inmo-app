@@ -173,7 +173,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
         initialViewState={{
           latitude: -2.9,
           longitude: -79.0,
-          zoom: 12,
+          zoom: 6,
         }}
         style={{ width: "100%", height: "100%" }}
         mapStyle="mapbox://styles/mapbox/dark-v11"
