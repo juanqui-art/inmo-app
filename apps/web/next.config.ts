@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     "@repo/env",
     "@repo/database",
+    "@repo/shared",
     "@repo/ui",
     "@repo/supabase",
     "react-map-gl",

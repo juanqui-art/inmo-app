@@ -5,6 +5,7 @@
  * - Validación con Zod
  * - Permisos verificados por PropertyRepository
  * - Revalidación de cache con revalidatePath
+ * - Error handling y logging con @repo/shared
  */
 
 "use server";
@@ -18,77 +19,138 @@ import {
   createPropertySchema,
   updatePropertySchema,
 } from "@/lib/validations/property";
+import { withFormActionHandler } from "@/lib/action-wrapper";
+import { ValidationError, NotFoundError, PermissionError } from "@repo/shared/errors";
 
 /**
- * CREATE PROPERTY ACTION
+ * CREATE PROPERTY ACTION (Refactored with error handling)
  * Solo AGENT y ADMIN pueden crear propiedades
  */
-export async function createPropertyAction(
-  _prevState: unknown,
-  formData: FormData,
-) {
-  // 1. Verificar que el usuario es AGENT o ADMIN
-  const user = await requireRole(["AGENT", "ADMIN"]);
+export const createPropertyAction = withFormActionHandler(
+  async (formData: FormData, context) => {
+    // 1. Verificar que el usuario es AGENT o ADMIN
+    const user = await requireRole(["AGENT", "ADMIN"]);
 
-  // 2. Extraer y transformar datos del formulario
-  const rawData = {
-    title: formData.get("title") as string,
-    description: formData.get("description") as string,
-    price: Number(formData.get("price")),
-    transactionType: formData.get("transactionType") as "SALE" | "RENT",
-    category: formData.get("category") as string,
-    status: (formData.get("status") as string) || "AVAILABLE",
-    bedrooms: formData.get("bedrooms")
-      ? Number(formData.get("bedrooms"))
-      : undefined,
-    bathrooms: formData.get("bathrooms")
-      ? Number(formData.get("bathrooms"))
-      : undefined,
-    area: formData.get("area") ? Number(formData.get("area")) : undefined,
-    address: formData.get("address") as string | undefined,
-    city: formData.get("city") as string | undefined,
-    state: formData.get("state") as string | undefined,
-    zipCode: formData.get("zipCode") as string | undefined,
-    latitude: formData.get("latitude")
-      ? Number(formData.get("latitude"))
-      : undefined,
-    longitude: formData.get("longitude")
-      ? Number(formData.get("longitude"))
-      : undefined,
-  };
+    context.logger.info("Creating property", { userId: user.id });
 
-  // 3. Validar con Zod
-  const validatedData = createPropertySchema.safeParse(rawData);
-
-  if (!validatedData.success) {
-    return {
-      error: validatedData.error.flatten().fieldErrors,
+    // 2. Extraer y transformar datos del formulario
+    const rawData = {
+      title: formData.get("title") as string,
+      description: formData.get("description") as string,
+      price: Number(formData.get("price")),
+      transactionType: formData.get("transactionType") as "SALE" | "RENT",
+      category: formData.get("category") as string,
+      status: (formData.get("status") as string) || "AVAILABLE",
+      bedrooms: formData.get("bedrooms")
+        ? Number(formData.get("bedrooms"))
+        : undefined,
+      bathrooms: formData.get("bathrooms")
+        ? Number(formData.get("bathrooms"))
+        : undefined,
+      area: formData.get("area") ? Number(formData.get("area")) : undefined,
+      address: formData.get("address") as string | undefined,
+      city: formData.get("city") as string | undefined,
+      state: formData.get("state") as string | undefined,
+      zipCode: formData.get("zipCode") as string | undefined,
+      latitude: formData.get("latitude")
+        ? Number(formData.get("latitude"))
+        : undefined,
+      longitude: formData.get("longitude")
+        ? Number(formData.get("longitude"))
+        : undefined,
     };
-  }
 
-  try {
+    // 3. Validar con Zod
+    const validatedData = createPropertySchema.safeParse(rawData);
+
+    if (!validatedData.success) {
+      const fieldErrors = validatedData.error.flatten().fieldErrors;
+      context.logger.warn("Validation failed", { fieldErrors });
+
+      throw new ValidationError("Invalid property data", {
+        fieldErrors,
+      });
+    }
+
     // 4. Crear propiedad usando el repository
-    await propertyRepository.create(validatedData.data, user.id);
-  } catch (error) {
-    console.error("Error creating property:", error);
-    return {
-      error: {
-        general:
-          error instanceof Error
-            ? error.message
-            : "Error al crear la propiedad",
-      },
-    };
+    const property = await propertyRepository.create(validatedData.data, user.id);
+
+    context.logger.info("Property created successfully", {
+      propertyId: property.id,
+    });
+
+    // 5. Revalidar caches
+    revalidatePath("/mapa");
+    revalidatePath("/dashboard/propiedades");
+
+    // 6. Redirigir a la lista
+    redirect("/dashboard/propiedades");
+  },
+  {
+    actionName: "createProperty",
+    requiredRoles: ["AGENT", "ADMIN"],
   }
+);
 
-  // 5. Revalidar caches
-  // Invalida el mapa y lista de propiedades
-  revalidatePath("/mapa");
-  revalidatePath("/dashboard/propiedades");
-
-  // 6. Redirigir a la lista (fuera del try/catch para que funcione)
-  redirect("/dashboard/propiedades");
-}
+/**
+ * CREATE PROPERTY ACTION (Original - kept for reference)
+ *
+ * This is the original implementation before refactoring.
+ * Can be removed once the new implementation is tested.
+ */
+// export async function createPropertyAction(
+//   _prevState: unknown,
+//   formData: FormData,
+// ) {
+//   const user = await requireRole(["AGENT", "ADMIN"]);
+//   const rawData = {
+//     title: formData.get("title") as string,
+//     description: formData.get("description") as string,
+//     price: Number(formData.get("price")),
+//     transactionType: formData.get("transactionType") as "SALE" | "RENT",
+//     category: formData.get("category") as string,
+//     status: (formData.get("status") as string) || "AVAILABLE",
+//     bedrooms: formData.get("bedrooms")
+//       ? Number(formData.get("bedrooms"))
+//       : undefined,
+//     bathrooms: formData.get("bathrooms")
+//       ? Number(formData.get("bathrooms"))
+//       : undefined,
+//     area: formData.get("area") ? Number(formData.get("area")) : undefined,
+//     address: formData.get("address") as string | undefined,
+//     city: formData.get("city") as string | undefined,
+//     state: formData.get("state") as string | undefined,
+//     zipCode: formData.get("zipCode") as string | undefined,
+//     latitude: formData.get("latitude")
+//       ? Number(formData.get("latitude"))
+//       : undefined,
+//     longitude: formData.get("longitude")
+//       ? Number(formData.get("longitude"))
+//       : undefined,
+//   };
+//   const validatedData = createPropertySchema.safeParse(rawData);
+//   if (!validatedData.success) {
+//     return {
+//       error: validatedData.error.flatten().fieldErrors,
+//     };
+//   }
+//   try {
+//     await propertyRepository.create(validatedData.data, user.id);
+//   } catch (error) {
+//     console.error("Error creating property:", error);
+//     return {
+//       error: {
+//         general:
+//           error instanceof Error
+//             ? error.message
+//             : "Error al crear la propiedad",
+//       },
+//     };
+//   }
+//   revalidatePath("/mapa");
+//   revalidatePath("/dashboard/propiedades");
+//   redirect("/dashboard/propiedades");
+// }
 
 /**
  * UPDATE PROPERTY ACTION
