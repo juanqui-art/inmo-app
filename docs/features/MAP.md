@@ -1,368 +1,380 @@
 # Map Feature - InmoApp
 
-Implementación completa del mapa interactivo con markers, clustering y sincronización de URL.
+Implementación del mapa interactivo con Mapbox GL usando enfoque simplificado.
 
 ---
 
 ## 📍 Overview
 
-**Estado:** ✅ Completo (con recientes fixes)
+**Estado:** ✅ Funcional (implementación simplificada Nov 2025)
 **Ubicación:** `/mapa` route
-**Componentes principales:** `map-view.tsx`, `map-container.tsx`, hooks de mapa
+**Componente principal:** `map-view.tsx` (single file, ~260 líneas)
+**Arquitectura:** Mapbox GL nativo con clustering integrado
 
-El mapa es el corazón de InmoApp. Permite a los usuarios:
+El mapa permite a los usuarios:
 - ✅ Ver properties en un mapa interactivo
 - ✅ Navegar usando pan y zoom
-- ✅ Ver clusters de properties cercanas
-- ✅ Hacer clic en markers para ver detalles
-- ✅ Compartir posiciones del mapa (shareable URLs)
-- ✅ Filtrar properties (backend completo)
+- ✅ Ver clusters de properties cercanas (clustering nativo de Mapbox)
+- ✅ Hacer clic en markers para ver detalles en popup
+- ✅ Badges de precio con iconos SDF
 
 ---
 
-## ✨ Features Implementadas
+## 🏗️ Arquitectura Actual
 
-### 1. Interactive Map Rendering
-✅ **Status:** Completo
+### Componente Principal
 
-MapBox GL renderiza el mapa base con:
-- Light/dark mode automático
-- Navegación fluid (pan, zoom)
-- Min/max zoom configurables
+**Archivo:** `apps/web/components/map/map-view.tsx` (~260 líneas)
+
+```
+MapView (single component)
+  ├── react-map-gl <Map>
+  ├── <Source> (GeoJSON con clustering nativo)
+  ├── 3 Layers:
+  │   ├── clusters (circle layer) - círculos azules
+  │   ├── cluster-count (symbol layer) - números
+  │   └── properties-badge-layer (symbol layer) - badges con precio
+  └── <Popup> (inline, simple)
+```
+
+**Características:**
+- Single file component (sin hooks personalizados)
+- Clustering **nativo de Mapbox** (no usa Supercluster library)
+- Dark mode hardcoded
+- No URL synchronization
+- No theme switching
+- Event handlers inline
+
+---
+
+## 🎨 Implementación Visual
+
+### 1. Clusters (Círculos Azules)
 
 ```typescript
-<Map
-  {...viewState}
-  mapStyle={mapStyle}  // light-v11 o dark-v11
-  minZoom={3}
-  maxZoom={20}
-  padding={{ top: 80 }} // Considera header fijo
+<Layer
+  id="clusters"
+  type="circle"
+  filter={["has", "point_count"]}
+  paint={{
+    "circle-radius": [
+      "step",
+      ["get", "point_count"],
+      16,  // < 10 properties
+      10, 20,  // 10-25 properties
+      25, 24,  // 25-50 properties
+      50, 30,  // 50+ properties
+    ],
+    "circle-color": "#3b82f6",  // Blue
+    "circle-stroke-width": 2,
+    "circle-stroke-color": "#ffffff",
+    "circle-opacity": 0.8,
+  }}
 />
 ```
 
-### 2. Property Markers
-✅ **Status:** Completo
+**Comportamiento:**
+- Tamaño aumenta según cantidad de properties
+- Color azul uniforme (#3b82f6)
+- Click → zoom in automático usando `getClusterExpansionZoom`
 
-Cada property se muestra como un marker:
-- Precio como badge
-- Colores según tipo (SALE: azul, RENT: verde)
-- Hover effects
-- Click para mostrar popup
+### 2. Property Badges (Symbol Layer + SDF Icon)
 
-**Problema resuelto:** Markers desaparecían en parte superior
-**Solución:** `map.getBounds()` + padding de MapBox
-
-### 3. Smart Clustering
-✅ **Status:** Completo (Recently fixed)
-
-Supercluster agrupa markers cercanos:
-- Dinámico según zoom level
-- Glassmorphism design con gradientes
-- Click en cluster → zoom in
-- Tamaño del cluster → cantidad de properties
-
-**Problema anterior:** Clustering filtraba properties en área superior
-**Solución:** Usar `map.getBounds()` en lugar de cálculo simétrico
-
-### 4. URL State Synchronization
-✅ **Status:** Completo
-
-El estado del mapa se sincroniza con URL:
-```
-/mapa?ne_lat=-2.85&ne_lng=-78.95&sw_lat=-2.95&sw_lng=-79.05
+```typescript
+<Layer
+  id="properties-badge-layer"
+  type="symbol"
+  filter={["!", ["has", "point_count"]]}
+  layout={{
+    "text-field": ["concat", "$", ["get", "formattedPrice"]],
+    "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+    "text-size": 15,
+    "icon-image": "badge-background",  // SDF icon
+    "icon-text-fit": "both",
+    "icon-text-fit-padding": [4, 8, 4, 8],
+  }}
+  paint={{
+    "text-color": "#ffffff",
+    "icon-color": "#3b82f6",  // Blue
+  }}
+/>
 ```
 
-**Beneficios:**
-- Shareable map links
-- Browser history (back/forward)
-- Deep linking
-- Bookmarkable states
+**Técnica SDF (Signed Distance Field):**
+- SVG badge background cargado como imagen SDF
+- Permite colorear dinámicamente con `icon-color`
+- `icon-text-fit` ajusta el badge al texto del precio
+- Resultado: badges responsivos que se adaptan al precio
 
-**Implementación:**
-- `useMapViewport()` detecta cambios
-- Debounce de 500ms (previene spam)
-- `buildBoundsUrl()` construye URL
-- `parseBoundsParams()` parsea URL
+### 3. Cluster Count Labels
 
-### 5. Dynamic Filtering (Backend Completo)
-✅ **Status:** Backend completo, UI pendiente
-
-El servidor filtra properties basándose en:
-- `transactionType` (SALE, RENT)
-- `category` (HOUSE, APARTMENT, etc)
-- `minPrice`, `maxPrice`
-- `bedrooms`, `bathrooms`
-- `minArea`, `maxArea`
-- Text search
-
-**URL params:**
+```typescript
+<Layer
+  id="cluster-count"
+  type="symbol"
+  filter={["has", "point_count"]}
+  layout={{
+    "text-field": ["get", "point_count_abbreviated"],
+    "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+    "text-size": 14,
+  }}
+  paint={{
+    "text-color": "#ffffff",
+  }}
+/>
 ```
-/mapa?ne_lat=...&transactionType=SALE&minPrice=100000&maxPrice=500000
-```
-
-**Estado:** El backend procesa los filtros, pero falta UI sidebar
 
 ---
 
-## 🔧 Technical Implementation
+## 🔧 Configuración
 
-### Components Hierarchy
+### Clustering Config
 
-```
-MapPage (Server, mapa/page.tsx)
-  ├── Fetch properties from DB
-  └── <MapView> (Client)
-       ├── useMapInitialization()
-       ├── useMapTheme()
-       ├── useMapViewport() ← Viewport + URL sync
-       └── <MapContainer> (Client)
-            ├── useMapClustering() ← Clustering with map.getBounds()
-            └── <Map>
-                 ├── <ClusterMarker>
-                 ├── <PropertyMarker>
-                 └── <PropertyPopup>
-```
+**Archivo:** `lib/types/map.ts`
 
-### Key Files
-
-| Archivo | Responsabilidad |
-|---------|-----------------|
-| `map-view.tsx` | Orchestrator component |
-| `map-container.tsx` | MapBox GL wrapper |
-| `use-map-viewport.ts` | Viewport + URL sync |
-| `use-map-clustering.ts` | Clustering logic ← Recently fixed |
-| `property-marker.tsx` | Individual marker |
-| `cluster-marker.tsx` | Cluster marker |
-| `use-map-theme.ts` | Dark mode support |
-| `use-map-initialization.ts` | MapBox token setup |
-
-### Hooks Deep Dive
-
-#### `useMapViewport` (70 líneas)
-**Responsabilidades:**
-1. Gestiona `viewState` (lat, lng, zoom, pitch, bearing)
-2. Sincroniza cambios con URL (debounced)
-3. Calcula `debouncedBounds` usando `map.getBounds()`
-4. Previene infinite loops con `useRef`
-
-**Datos:**
 ```typescript
-viewState = {
-  longitude: -79.00,
-  latitude: -2.90,
-  zoom: 12,
-  pitch: 0,
-  bearing: 0,
-  transitionDuration: 0
+export const CLUSTER_CONFIG = {
+  RADIUS: 50,           // pixels para agrupar
+  MAX_ZOOM: 14,         // dejar de agrupar en zoom 14
+  ZOOM_INCREMENT: 1,    // cuánto zoom al hacer click
+};
+```
+
+### Initial Viewport
+
+```typescript
+initialViewState={{
+  latitude: -2.9,      // Cuenca, Ecuador
+  longitude: -79.0,
+  zoom: 6,            // Vista de Ecuador completo
+}}
+```
+
+### Map Style
+
+- **Actual:** `mapbox://styles/mapbox/dark-v11` (hardcoded)
+- **No hay:** Theme switching automático
+
+---
+
+## 💾 Datos (GeoJSON)
+
+### Conversión de Properties
+
+```typescript
+const geojsonData = {
+  type: "FeatureCollection",
+  features: properties.map((property) => ({
+    type: "Feature",
+    geometry: {
+      type: "Point",
+      coordinates: [property.longitude, property.latitude],
+    },
+    properties: {
+      id: property.id,
+      title: property.title,
+      price: property.price,
+      formattedPrice: formatPriceCompact(property.price),
+      transactionType: property.transactionType,
+      category: property.category,
+      city: property.city,
+      bedrooms: property.bedrooms,
+      bathrooms: property.bathrooms,
+      area: property.area,
+    },
+  })),
+};
+```
+
+### Cluster Properties
+
+```typescript
+<Source
+  cluster={true}
+  clusterMaxZoom={CLUSTER_CONFIG.MAX_ZOOM}
+  clusterRadius={CLUSTER_CONFIG.RADIUS}
+  clusterProperties={{
+    // Calcular max price en el cluster (para coloring futuro)
+    maxPrice: ["max", ["get", "price"]],
+  }}
+/>
+```
+
+---
+
+## 🎯 Event Handlers
+
+### Click Handler (Clusters + Properties)
+
+```typescript
+const handleClick = (event: MapLayerMouseEvent) => {
+  const feature = event.features?.[0];
+
+  // Si es cluster → zoom in
+  if (feature.properties?.cluster) {
+    const clusterId = feature.properties.cluster_id;
+    const mapboxSource = mapRef.current?.getMap().getSource("properties");
+
+    if (mapboxSource && "getClusterExpansionZoom" in mapboxSource) {
+      mapboxSource.getClusterExpansionZoom(
+        clusterId,
+        (err: Error | null, zoom: number) => {
+          if (err) return;
+          mapRef.current?.flyTo({
+            center: geometry.coordinates,
+            zoom: zoom + CLUSTER_CONFIG.ZOOM_INCREMENT,
+            duration: 600,
+          });
+        }
+      );
+    }
+  }
+
+  // Si es property individual → mostrar popup
+  else if (feature.properties?.id) {
+    const property = properties.find(p => p.id === feature.properties.id);
+    setSelectedProperty(property);
+  }
+};
+```
+
+---
+
+## 🪟 Popup
+
+### Implementación Simple
+
+```typescript
+{selectedProperty?.latitude && selectedProperty.longitude && (
+  <Popup
+    latitude={selectedProperty.latitude}
+    longitude={selectedProperty.longitude}
+    onClose={() => setSelectedProperty(null)}
+    closeButton={true}
+    closeOnClick={true}
+    offset={[0, -10]}
+    maxWidth="400px"
+  >
+    <PropertyCardHorizontal
+      property={selectedProperty}
+      variant="popup"
+    />
+  </Popup>
+)}
+```
+
+**Características:**
+- Popup integrado (no component separado)
+- Usa `PropertyCardHorizontal` existente
+- Close automático al hacer click fuera
+- Offset para posicionar encima del badge
+
+**Styling:** Ver `MAPBOX_POPUP_STYLING.md` para CSS overrides
+
+---
+
+## 📂 Archivos Relacionados
+
+```
+apps/web/components/map/
+├── map-view.tsx                    ← Componente principal (TODO EN UNO)
+├── property-card-horizontal.tsx   ← Card usado en popup
+├── map-spinner.tsx                 ← Loading state
+├── property-popup.tsx              ← (Popup alternativo, no usado actualmente)
+├── property-popup-compact.tsx
+├── map-filters.tsx                 ← Filtros (separado)
+├── property-list-drawer.tsx        ← Drawer lateral
+└── filters/                        ← Componentes de filtros
+    ├── filter-bar.tsx
+    ├── category-filter.tsx
+    ├── price-range-filter.tsx
+    └── ...
+
+apps/web/lib/
+├── types/map.ts                    ← Types + CLUSTER_CONFIG
+└── utils/
+    └── price-helpers.ts            ← formatPriceCompact()
+```
+
+---
+
+## 🚀 Uso
+
+### En una página
+
+```typescript
+import { MapView } from "@/components/map/map-view";
+
+export default async function MapPage() {
+  const properties = await getProperties(); // Tu data source
+
+  return (
+    <div className="h-screen">
+      <MapView
+        properties={properties}
+        isAuthenticated={isAuthenticated}
+      />
+    </div>
+  );
 }
-
-debouncedBounds = {
-  ne_lat: -2.85,
-  ne_lng: -78.90,
-  sw_lat: -2.95,
-  sw_lng: -79.10
-}
 ```
 
-#### `useMapClustering` (100+ líneas)
-**Responsabilidades:**
-1. Inicializa Supercluster con properties
-2. Calcula clusters para viewport actual
-3. **Nuevo:** Usa `map.getBounds()` para bounds precisos
-4. Retorna clusters + individual points
+---
 
-**Problema anterior:**
+## 🐛 Troubleshooting
+
+### Mapbox token no configurado
+
+**Error:** "Error: Mapbox token no configurado"
+
+**Solución:**
+```bash
+# En apps/web/.env.local
+NEXT_PUBLIC_MAPBOX_TOKEN=pk.ey...
+```
+
+### Badges no aparecen
+
+**Causa:** SDF image no cargó
+
+**Solución:** Verificar que `handleMapLoad` ejecute:
 ```typescript
-// ❌ Bounds simétricos (INCORRECTO)
-const latDelta = (180 / 2^zoom) * 1.2;
-bounds = [lng - delta, lat - delta, lng + delta, lat + delta];
-// Esto filtraba properties en área superior
+const image = new Image(48, 24);
+image.src = "data:image/svg+xml;base64," + btoa(badgeSvg);
+image.onload = () => {
+  if (!map.hasImage("badge-background")) {
+    map.addImage("badge-background", image, { sdf: true });
+  }
+};
 ```
 
-**Solución implementada:**
-```typescript
-// ✅ Bounds precisos de MapBox (CORRECTO)
-if (mapRef?.current) {
-  const bounds = mapRef.current.getBounds();
-  const ne = bounds.getNorthEast();
-  const sw = bounds.getSouthWest();
-  // Bounds asimétricos, considera el header de 80px
-}
-```
+### Popup styling issues
+
+**Solución:** Ver `MAPBOX_POPUP_STYLING.md` para CSS overrides globales
 
 ---
 
-## 🐛 Issues Resueltas
+## 📚 Referencias
 
-### Issue #1: Markers Desapareciendo en Parte Superior
-**Síntoma:** Markers no visibles en los primeros ~64px bajo header
-**Causa Raíz:** Combinación de problemas
-1. Header tenía `z-index: 50`
-2. Markers tenían `z-index: 0`
-3. Además: Clustering usaba bounds incorrecto
-
-**Soluciones aplicadas:**
-1. ✅ `padding={{ top: 80 }}` en MapBox (visual fix)
-2. ✅ `map.getBounds()` en clustering (data accuracy fix)
-
-**Commits:**
-- `5f7fde4` - MapBox padding
-- `0ec87fc` - getBounds() en useMapViewport
-- `d2e2bc8` - getBounds() en useMapClustering
+- [react-map-gl Documentation](https://visgl.github.io/react-map-gl/)
+- [Mapbox GL JS Layers](https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/)
+- [SDF Icons Guide](https://docs.mapbox.com/help/troubleshooting/using-recolorable-images-in-mapbox-maps/)
+- Popup Styling: `MAPBOX_POPUP_STYLING.md`
+- Troubleshooting: `../troubleshooting/MAP_ISSUES.md`
 
 ---
 
-## 📊 Data Flow: Visitando el Mapa
+## 🗂️ Documentación Archivada
 
-```
-1. URL: /mapa?ne_lat=-2.85&ne_lng=-78.95...
-   ↓
-2. Server: parseBoundsParams() → bounds
-   ↓
-3. Server: getCachedPropertiesByBounds(bounds) → query DB
-   ↓
-4. Server: boundsToViewport() → viewport para inicializar map
-   ↓
-5. Client: MapView renderiza con properties
-   ↓
-6. Client: useMapViewport() + useMapClustering()
-   ↓
-7. MapBox renderiza markers/clusters
-   ↓
-8. Usuario arrastra mapa
-   ↓
-9. handleMove() → viewState actualiza
-   ↓
-10. useMapViewport() debounce 500ms
-    ↓
-11. map.getBounds() calcula bounds precisos
-    ↓
-12. router.replace() actualiza URL
-    ↓
-13. Server re-ejecuta (soft navigation)
-    ↓
-14. Ciclo repite desde paso 2
-```
+La implementación anterior (hooks personalizados, Supercluster, URL sync, bounds calculation) fue archivada en:
+- `archive/docs-old-map-implementation/`
+
+**Razón:** Se optó por empezar de nuevo con enfoque simplificado (single component, clustering nativo de Mapbox)
+
+Esta documentación refleja la **implementación actual** (Noviembre 2025).
 
 ---
 
-## 🎯 Next Steps
-
-### ⏳ In Progress / Planned
-
-#### 1. Filter UI Sidebar (HIGH PRIORITY)
-```
-Status: Design phase
-Backend: ✅ Completo
-Frontend: ❌ Pendiente
-
-Components needed:
-- MapFilters (container)
-- TransactionTypeFilter (checkboxes)
-- PriceRangeFilter (range slider)
-- CategoryFilter (checkboxes)
-- BedroomFilter (number selector)
-```
-
-#### 2. Property Search with Geocoding
-```
-Status: Design phase
-Requiere: MapBox Geocoding API
-
-Feature:
-- Search bar en map header
-- Auto-complete locations
-- Click resultado → fly to location
-```
-
-#### 3. Bounds Fitting
-```
-Status: Design phase
-Requiere: calculateOptimalBounds()
-
-Feature:
-- When filters change → fit view to show all results
-- When cluster expands → fit cluster bounds
-```
-
-#### 4. Property Details Drawer
-```
-Status: Partially done
-PropertyPopup: ✅ Existe
-PropertyListDrawer: ❌ Comentado
-
-Feature:
-- Show properties list alongside map
-- Hover property → highlight marker
-- Click property → navigate to detail page
-```
-
----
-
-## 🚀 Performance Metrics
-
-**Current:**
-- Initial load: ~1-2s (including Prisma query)
-- Properties fetched: ~1000 by default
-- Clustering calculation: <50ms
-- URL update debounce: 500ms
-- Marker render: <100ms per marker
-
-**Optimizations done:**
-- ✅ `React.cache()` deduplicates DB requests
-- ✅ `useMemo()` para clustering
-- ✅ Debouncing para URL updates
-- ✅ MapBox native padding (no JS calculations)
-
----
-
-## 🧪 Testing the Map
-
-### Manual Testing Checklist
-
-- [ ] Open `/mapa` - map loads
-- [ ] Zoom in/out - works smoothly
-- [ ] Pan (drag) - viewport updates
-- [ ] Markers visible - in all areas including top
-- [ ] Click marker - shows popup
-- [ ] Popup has correct property info
-- [ ] Close popup - works
-- [ ] Click cluster - zooms to cluster
-- [ ] URL changes while dragging - updates with bounds
-- [ ] Refresh page - loads same viewport (URL state works)
-- [ ] Share URL - copied URL loads same map
-- [ ] Try zoom 3, 12, 16 - clustering works at all levels
-- [ ] Dark mode - works correctly
-
-### Automated Testing (TODO)
-```typescript
-test('useMapViewport does not infinite loop', () => {
-  // Verify bounds change triggers URL update only once
-});
-
-test('useMapClustering with map.getBounds()', () => {
-  // Verify all properties in viewport included in clustering
-});
-
-test('markers visible in all viewport areas', () => {
-  // Verify top area not clipped
-});
-```
-
----
-
-## 📚 Related Docs
-
-- **[Architecture](../ARCHITECTURE.md)** - Cómo todo encaja
-- **[Clustering Solution](../decisions/CLUSTERING_SOLUTION.md)** - Decisión técnica
-- **[Map Padding](../decisions/PADDING_IMPLEMENTATION.md)** - Por qué 80px
-- **[Performance](../technical/PERFORMANCE.md)** - Optimizaciones
-- **[Map Issues](../troubleshooting/MAP_ISSUES.md)** - Solución de problemas
-
----
-
-**Last Updated:** Oct 24, 2025
-**Features Status:** 5/7 completas
-**Next Priority:** Filter UI sidebar
-
-¿Listo para trabajar en filtros? Ver [guides/ADDING_FEATURES.md](../guides/ADDING_FEATURES.md)
+**Última actualización:** Noviembre 5, 2025
+**Versión implementación:** Simplificada (single component, Mapbox native clustering)
+**Componentes:** 1 archivo principal (~260 líneas)
