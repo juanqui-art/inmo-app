@@ -34,7 +34,6 @@ export interface MapProperty {
 
 interface MapViewProps {
   properties: MapProperty[];
-  isAuthenticated?: boolean;
   initialBounds?: {
     ne_lat: number;
     ne_lng: number;

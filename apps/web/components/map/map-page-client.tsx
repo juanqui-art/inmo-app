@@ -15,14 +15,10 @@ import type { MapBounds } from "@/lib/utils/url-helpers";
 import { useMapStore } from "@/stores/map-store";
 
 interface MapPageClientProps {
-  isAuthenticated: boolean;
   initialBounds?: MapBounds;
 }
 
-export function MapPageClient({
-  isAuthenticated,
-  initialBounds,
-}: MapPageClientProps) {
+export function MapPageClient({ initialBounds }: MapPageClientProps) {
   // Obtener datos del store de Zustand de forma granular
   const properties = useMapStore((state) => state.properties);
   const priceRangeMin = useMapStore((state) => state.priceRangeMin);
@@ -32,16 +28,13 @@ export function MapPageClient({
     <div className="flex flex-col w-full h-screen">
       {/* Filter Bar - sticky at top */}
       <div className="flex-shrink-0">
-        <FilterBar
-          isLoading={false}
-        />
+        <FilterBar />
       </div>
 
       {/* Map - fills remaining space */}
       <div className="flex-1 w-full overflow-hidden">
         <MapView
           properties={properties}
-          isAuthenticated={isAuthenticated}
           initialBounds={initialBounds}
           priceRangeMin={priceRangeMin}
           priceRangeMax={priceRangeMax}

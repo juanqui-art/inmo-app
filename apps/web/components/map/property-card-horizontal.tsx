@@ -35,6 +35,7 @@ import type { MapProperty } from "./map-view";
 import { PropertyImageFallback } from "./property-image-fallback";
 import { useFavorites } from "@/hooks/use-favorites";
 import { generateSlug } from "@/lib/utils/slug-generator";
+import { useAuthStore } from "@/stores/auth-store";
 import {
   TRANSACTION_BADGE_STYLES,
   CATEGORY_BADGE_STYLE,
@@ -44,7 +45,6 @@ interface PropertyCardHorizontalProps {
   property: PropertyWithRelations | SerializedProperty | MapProperty;
   // onViewDetails is deprecated - button now navigates directly via Link to /propiedades/[id-slug]
   onViewDetails?: () => void;
-  isAuthenticated?: boolean;
   onFavoriteClick?: (propertyId: string) => void;
 }
 
@@ -61,9 +61,9 @@ interface PropertyCardHorizontalProps {
  */
 export function PropertyCardHorizontal({
   property,
-  isAuthenticated = false,
   onFavoriteClick,
 }: PropertyCardHorizontalProps) {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { isFavorite, toggleFavorite, isPending } = useFavorites();
 
   // Current state
