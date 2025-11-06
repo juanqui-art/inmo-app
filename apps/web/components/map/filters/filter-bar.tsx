@@ -7,32 +7,18 @@
  * - AI Search as primary search input
  * - Price, Property Type, Bedrooms dropdowns
  * - Glassmorphism design with dark mode
- * - Responsive (horizontal scroll on mobile if needed)
+ * - Responsive (hides filters on smaller screens)
  */
 
 import { AISearchInline } from "@/components/ai-search/ai-search-inline";
-import { FilterBarSkeleton } from "./filter-skeletons";
+import { BedroomsFilter } from "./bedrooms-filter";
 import { PriceFilterDropdown } from "./price-filter-dropdown";
 import { PropertyTypeDropdown } from "./property-type-dropdown";
-import { BedroomsFilter } from "./bedrooms-filter";
 import { useMapFilters } from "./use-map-filters";
 
-interface FilterBarProps {
-  isLoading?: boolean;
-}
-
-export function FilterBar({ isLoading = false }: FilterBarProps) {
+export function FilterBar() {
   const { filters, setPriceRange, setCategories, updateFilters } =
     useMapFilters();
-
-  const handleClearBedrooms = () => {
-    updateFilters({ bedrooms: undefined });
-  };
-
-  // Show skeleton loading state while data is being fetched
-  if (isLoading) {
-    return <FilterBarSkeleton />;
-  }
 
   return (
     <div className="flex justify-center  bg-oslo-gray-1000 ">
@@ -64,7 +50,6 @@ export function FilterBar({ isLoading = false }: FilterBarProps) {
           <BedroomsFilter
             selected={filters.bedrooms}
             onSelect={(bedrooms) => updateFilters({ bedrooms })}
-            onClear={handleClearBedrooms}
           />
         </div>
       </div>

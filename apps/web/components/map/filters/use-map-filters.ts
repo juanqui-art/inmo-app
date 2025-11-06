@@ -15,18 +15,8 @@ import { useCallback } from "react";
 import {
   parseFilterParams,
   buildFilterUrl,
+  type DynamicFilterParams,
 } from "@/lib/utils/url-helpers";
-import type { DynamicFilterParams } from "@/lib/utils/url-helpers";
-import type { TransactionType, PropertyCategory } from "@repo/database";
-
-export interface MapFiltersState {
-  transactionType?: TransactionType[];
-  category?: PropertyCategory[];
-  minPrice?: number;
-  maxPrice?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-}
 
 /**
  * Hook to manage map filter state synced with URL
@@ -36,36 +26,18 @@ export function useMapFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Parse current filters from URL
-  const currentParams = parseFilterParams(searchParams);
-
-  // Normalize to arrays for multi-select
-  const filters: MapFiltersState = {
-    transactionType: currentParams.transactionType
-      ? Array.isArray(currentParams.transactionType)
-        ? (currentParams.transactionType as TransactionType[])
-        : ([currentParams.transactionType] as TransactionType[])
-      : undefined,
-    category: currentParams.category
-      ? Array.isArray(currentParams.category)
-        ? (currentParams.category as PropertyCategory[])
-        : ([currentParams.category] as PropertyCategory[])
-      : undefined,
-    minPrice: currentParams.minPrice,
-    maxPrice: currentParams.maxPrice,
-    bedrooms: currentParams.bedrooms,
-    bathrooms: currentParams.bathrooms,
-  };
+  // Parse current filters from URL. The parser now handles normalization.
+  const filters = parseFilterParams(searchParams);
 
   // Update filter and sync to URL
   // IMPORTANT: Do NOT preserve bounds when filters change
   // Bounds should only be set by the map viewport, not by filter changes
   // This prevents filters from being limited to old viewport bounds
   const updateFilters = useCallback(
-    (newFilters: Partial<MapFiltersState>) => {
+    (newFilters: Partial<DynamicFilterParams>) => {
       // Merge with existing filters
       const updated: DynamicFilterParams = {
-        ...currentParams,
+        ...filters,
         ...newFilters,
       };
 
@@ -76,35 +48,49 @@ export function useMapFilters() {
       // Update URL without reloading (replace to clear bounds)
       router.replace(`/mapa${filterString ? `?${filterString}` : ""}`);
     },
-    [currentParams, router]
+    [filters, router]
   );
 
   // Toggle transaction type
   const toggleTransactionType = useCallback(
-    (type: TransactionType) => {
-      const current = filters.transactionType || [];
-      const updated = current.includes(type)
+    (type: string) => {
+      // Type guard: ensure transactionType is an array
+      const current = Array.isArray(filters.transactionType)
+        ? filters.transactionType
+        : filters.transactionType
+          ? [filters.transactionType]
+          : [];
+
+      const updated = current.includes(type as any)
         ? current.filter((t) => t !== type)
-        : [...current, type];
+        : [...current, type as any];
 
       updateFilters({
-        transactionType: updated.length > 0 ? updated : undefined,
+        transactionType: updated.length > 0 ? (updated as any) : undefined,
       });
     },
     [filters.transactionType, updateFilters]
   );
 
-  // Set single category or toggle (deprecated - use setCategories)
+  /**
+   * @deprecated Use `setCategories` for multi-select support.
+   */
   const setCategory = useCallback(
-    (category: PropertyCategory) => {
+    (category: string) => {
+      // Type guard: ensure category is an array
+      const current = Array.isArray(filters.category)
+        ? filters.category
+        : filters.category
+          ? [filters.category]
+          : [];
+
       // Toggle: if already selected, deselect; otherwise select
-      const current = filters.category || [];
-      const updated = current.includes(category)
+      const updated = current.includes(category as any)
         ? []
-        : [category];
+        : [category as any];
 
       updateFilters({
-        category: updated.length > 0 ? updated : undefined,
+        category: updated.length > 0 ? (updated as any) : undefined,
       });
     },
     [filters.category, updateFilters]
@@ -112,9 +98,9 @@ export function useMapFilters() {
 
   // Set multiple categories (for multi-select dropdowns)
   const setCategories = useCallback(
-    (categories: PropertyCategory[]) => {
+    (categories: string[]) => {
       updateFilters({
-        category: categories.length > 0 ? categories : undefined,
+        category: categories.length > 0 ? (categories as any) : undefined,
       });
     },
     [updateFilters]

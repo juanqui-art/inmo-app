@@ -32,8 +32,8 @@ export function PriceHistogramSlider({
   localMax,
   onRangeChange,
 }: PriceHistogramSliderProps) {
-  // Distribución visible (excluir primer bucket $0 que es outlier)
-  const visibleDistribution = distribution!.length > 1 ? distribution!.slice(1) : distribution!
+  // ✅ MANTENER TODOS los buckets incluyendo $0 para que el slider llegue a 0
+  const visibleDistribution = distribution!
 
   // Dimensiones del SVG (más compacto, solo visualización)
   const SVG_WIDTH = 300
@@ -52,7 +52,6 @@ export function PriceHistogramSlider({
   const PADDING_X = 12          // Espacio lateral del histograma (airespace a los lados)
 
   // Calcular índices actuales basados en localMin/localMax
-  // ✅ NOTA: Usar visibleDistribution (sin primer bucket $0) para consistencia con SVG
   const minIndex = useMemo(() => {
     return findBucketIndex(localMin, visibleDistribution)
   }, [localMin, visibleDistribution])
@@ -62,7 +61,6 @@ export function PriceHistogramSlider({
   }, [localMax, visibleDistribution])
 
   // Handler para Radix Slider onChange (recibe ÍNDICES, no precios)
-  // ✅ NOTA: Usar visibleDistribution para consistencia con SVG
   const handleSliderChange = useCallback(
     (indices: number[]) => {
       if (indices.length === 2 && visibleDistribution && visibleDistribution.length > 0) {
@@ -127,9 +125,19 @@ export function PriceHistogramSlider({
       {/* 2. SLIDER INTERACTIVO SEPARADO - Línea horizontal clara */}
       {/* ✅ NOTA: Usar visibleDistribution para consistencia con SVG */}
       {visibleDistribution && visibleDistribution.length > 0 && (
-        <div className="w-full ">
+        <div className="w-full space-y-3">
+          {/* ✅ ETIQUETAS DE RANGO - Mostrar min y max del histograma */}
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs text-oslo-gray-400 font-medium">
+              ${(visibleDistribution[minIndex]?.bucket ?? 0).toLocaleString()}
+            </span>
+            <span className="text-xs text-oslo-gray-400 font-medium">
+              ${(visibleDistribution[maxIndex]?.bucket ?? 0).toLocaleString()}
+            </span>
+          </div>
+
           <Slider.Root
-            className="relative  flex w-full touch-none select-none items-center bottom-5"
+            className="relative flex w-full touch-none select-none items-center"
             value={[minIndex, maxIndex]}
             onValueChange={handleSliderChange}
             min={0}
@@ -143,13 +151,13 @@ export function PriceHistogramSlider({
 
             {/* Handle mínimo */}
             <Slider.Thumb
-              className="block h-3 w-3 rounded-full border-1 border-oslo-gray-100 bg-white shadow-md transition-all hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
+              className="block h-3 w-3 rounded-full border-2 border-white bg-indigo-500 shadow-md transition-all hover:scale-125 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
               aria-label="Min price"
             />
 
             {/* Handle máximo */}
             <Slider.Thumb
-              className="block h-3 w-3 rounded-full border-1 border-oslo-gray-100 bg-white shadow-md transition-all hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
+              className="block h-3 w-3 rounded-full border-2 border-white bg-indigo-500 shadow-md transition-all hover:scale-125 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-oslo-gray-900"
               aria-label="Max price"
             />
           </Slider.Root>

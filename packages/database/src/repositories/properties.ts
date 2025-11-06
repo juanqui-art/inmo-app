@@ -57,10 +57,11 @@ export type PropertyWithRelations = Prisma.PropertyGetPayload<{
 
 /**
  * Filtros para búsqueda de propiedades
+ * transactionType y category pueden ser arrays para multi-select
  */
 export interface PropertyFilters {
-  transactionType?: TransactionType
-  category?: PropertyCategory
+  transactionType?: TransactionType | TransactionType[]
+  category?: PropertyCategory | PropertyCategory[]
   status?: PropertyStatus
   minPrice?: number
   maxPrice?: number
@@ -99,16 +100,29 @@ export class PropertyRepository {
     const { filters = {}, skip = 0, take = 20 } = params
 
     const where: Prisma.PropertyWhereInput = {
-      ...(filters.transactionType && { transactionType: filters.transactionType }),
-      ...(filters.category && { category: filters.category }),
+      ...(filters.transactionType && {
+        transactionType: Array.isArray(filters.transactionType)
+          ? { in: filters.transactionType }
+          : filters.transactionType,
+      }),
+      ...(filters.category && {
+        category: Array.isArray(filters.category)
+          ? { in: filters.category }
+          : filters.category,
+      }),
       ...(filters.status && { status: filters.status }),
       ...(filters.agentId && { agentId: filters.agentId }),
       ...(filters.city && { city: { contains: filters.city, mode: 'insensitive' } }),
       ...(filters.state && { state: { contains: filters.state, mode: 'insensitive' } }),
       ...(filters.bedrooms && { bedrooms: { gte: filters.bedrooms } }),
       ...(filters.bathrooms && { bathrooms: { gte: filters.bathrooms } }),
-      ...(filters.minPrice && { price: { gte: filters.minPrice } }),
-      ...(filters.maxPrice && { price: { lte: filters.maxPrice } }),
+      // Combine minPrice and maxPrice into single price object to avoid overwrite
+      ...((filters.minPrice || filters.maxPrice) && {
+        price: {
+          ...(filters.minPrice && { gte: filters.minPrice }),
+          ...(filters.maxPrice && { lte: filters.maxPrice }),
+        },
+      }),
       ...(filters.minArea && { area: { gte: filters.minArea } }),
       ...(filters.maxArea && { area: { lte: filters.maxArea } }),
       ...(filters.search && {
@@ -324,16 +338,29 @@ export class PropertyRepository {
         lte: maxLongitude,
       },
       // Filtros adicionales (mismo patrón que list())
-      ...(filters.transactionType && { transactionType: filters.transactionType }),
-      ...(filters.category && { category: filters.category }),
+      ...(filters.transactionType && {
+        transactionType: Array.isArray(filters.transactionType)
+          ? { in: filters.transactionType }
+          : filters.transactionType,
+      }),
+      ...(filters.category && {
+        category: Array.isArray(filters.category)
+          ? { in: filters.category }
+          : filters.category,
+      }),
       ...(filters.status && { status: filters.status }),
       ...(filters.agentId && { agentId: filters.agentId }),
       ...(filters.city && { city: { contains: filters.city, mode: 'insensitive' } }),
       ...(filters.state && { state: { contains: filters.state, mode: 'insensitive' } }),
       ...(filters.bedrooms && { bedrooms: { gte: filters.bedrooms } }),
       ...(filters.bathrooms && { bathrooms: { gte: filters.bathrooms } }),
-      ...(filters.minPrice && { price: { gte: filters.minPrice } }),
-      ...(filters.maxPrice && { price: { lte: filters.maxPrice } }),
+      // Combine minPrice and maxPrice into single price object to avoid overwrite
+      ...((filters.minPrice || filters.maxPrice) && {
+        price: {
+          ...(filters.minPrice && { gte: filters.minPrice }),
+          ...(filters.maxPrice && { lte: filters.maxPrice }),
+        },
+      }),
       ...(filters.minArea && { area: { gte: filters.minArea } }),
       ...(filters.maxArea && { area: { lte: filters.maxArea } }),
       ...(filters.search && {
@@ -398,8 +425,16 @@ export class PropertyRepository {
   async getPriceRange(filters?: PropertyFilters): Promise<{ minPrice: number; maxPrice: number }> {
     const where: Prisma.PropertyWhereInput = {
       // Aplicar los mismos filtros que en list() si se proporcionan
-      ...(filters?.transactionType && { transactionType: filters.transactionType }),
-      ...(filters?.category && { category: filters.category }),
+      ...(filters?.transactionType && {
+        transactionType: Array.isArray(filters.transactionType)
+          ? { in: filters.transactionType }
+          : filters.transactionType,
+      }),
+      ...(filters?.category && {
+        category: Array.isArray(filters.category)
+          ? { in: filters.category }
+          : filters.category,
+      }),
       ...(filters?.status && { status: filters.status }),
       ...(filters?.agentId && { agentId: filters.agentId }),
       ...(filters?.city && { city: { contains: filters.city, mode: 'insensitive' } }),
@@ -452,8 +487,16 @@ export class PropertyRepository {
     // Construir where clause para Prisma
     const where: Prisma.PropertyWhereInput = {
       status: 'AVAILABLE',
-      ...(filters?.transactionType && { transactionType: filters.transactionType }),
-      ...(filters?.category && { category: filters.category }),
+      ...(filters?.transactionType && {
+        transactionType: Array.isArray(filters.transactionType)
+          ? { in: filters.transactionType }
+          : filters.transactionType,
+      }),
+      ...(filters?.category && {
+        category: Array.isArray(filters.category)
+          ? { in: filters.category }
+          : filters.category,
+      }),
       ...(filters?.agentId && { agentId: filters.agentId }),
       ...(filters?.city && { city: { contains: filters.city, mode: 'insensitive' } }),
       ...(filters?.state && { state: { contains: filters.state, mode: 'insensitive' } }),

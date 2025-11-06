@@ -11,5 +11,4 @@ export { PriceDropdownSelect } from "./price-dropdown-select";
 export { PropertyTypeDropdown } from "./property-type-dropdown";
 export { BedroomsFilter } from "./bedrooms-filter";
 export { useMapFilters } from "./use-map-filters";
-
-export type { MapFiltersState } from "./use-map-filters";
+export type { DynamicFilterParams } from "@/lib/utils/url-helpers";

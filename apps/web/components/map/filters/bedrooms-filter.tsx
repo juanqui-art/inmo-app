@@ -14,8 +14,7 @@ import { FilterDropdown, FilterOption } from "./filter-dropdown";
 
 interface BedroomsFilterProps {
   selected?: number;
-  onSelect: (bedrooms: number) => void;
-  onClear?: () => void;
+  onSelect: (bedrooms: number | undefined) => void;
 }
 
 const BEDROOM_OPTIONS = [
@@ -30,19 +29,14 @@ const BEDROOM_OPTIONS = [
 export function BedroomsFilter({
   selected,
   onSelect,
-  onClear,
 }: BedroomsFilterProps) {
   const displayValue = selected !== undefined ? `${selected}+` : "Bedrooms";
 
   const handleSelect = useCallback(
     (bedrooms?: number) => {
-      if (bedrooms === undefined) {
-        onClear?.();
-      } else {
-        onSelect(bedrooms);
-      }
+      onSelect(bedrooms);
     },
-    [onSelect, onClear]
+    [onSelect]
   );
 
   return (

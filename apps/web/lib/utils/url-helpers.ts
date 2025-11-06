@@ -501,8 +501,24 @@ const PROPERTY_CATEGORIES = [
 
 // Zod schema for filter parameters
 const FilterSchema = z.object({
-  transactionType: z.enum(TRANSACTION_TYPES).optional(),
-  category: z.enum(PROPERTY_CATEGORIES).optional(),
+  transactionType: z.preprocess(
+    (val) =>
+      val === undefined || val === null
+        ? undefined
+        : Array.isArray(val)
+        ? val
+        : [val],
+    z.array(z.enum(TRANSACTION_TYPES)).optional(),
+  ),
+  category: z.preprocess(
+    (val) =>
+      val === undefined || val === null
+        ? undefined
+        : Array.isArray(val)
+        ? val
+        : [val],
+    z.array(z.enum(PROPERTY_CATEGORIES)).optional(),
+  ),
   minPrice: z.coerce.number().positive().optional(),
   maxPrice: z.coerce.number().positive().optional(),
   bedrooms: z.coerce.number().int().positive().optional(),
@@ -528,15 +544,20 @@ export type DynamicFilterParams = z.infer<typeof FilterSchema>;
 export function parseFilterParams(
   searchParams: URLSearchParams | Record<string, string | string[] | undefined>,
 ): DynamicFilterParams {
-  // Ensure we are working with URLSearchParams
-  const params = searchParams instanceof URLSearchParams ? searchParams : new URLSearchParams(searchParams as Record<string, string>);
+  // Ensure we are working with URLSearchParams for consistent processing
+  const params =
+    searchParams instanceof URLSearchParams
+      ? searchParams
+      : new URLSearchParams(searchParams as Record<string, string>);
 
-  // Convert URLSearchParams to a plain object. If multiple values exist for a key, only the first is used.
-  const rawParams: Record<string, string> = {};
-  for (const key of params.keys()) {
-    const value = params.get(key);
-    if (value !== null) {
-      rawParams[key] = value;
+  // Convert URLSearchParams to a plain object, supporting multiple values for a key.
+  const rawParams: Record<string, string | string[]> = {};
+  for (const key of new Set(Array.from(params.keys()))) {
+    const values = params.getAll(key);
+    if (values.length > 1) {
+      rawParams[key] = values;
+    } else if (values.length === 1) {
+      rawParams[key] = values[0] ?? '';
     }
   }
 
@@ -548,8 +569,11 @@ export function parseFilterParams(
   }
 
   // Optional: Log errors for debugging purposes during development
-  if (process.env.NODE_ENV === 'development') {
-    console.error("Zod validation error in parseFilterParams:", result.error.flatten());
+  if (process.env.NODE_ENV === "development") {
+    console.error(
+      "Zod validation error in parseFilterParams:",
+      result.error.flatten(),
+    );
   }
 
   return {}; // Return an empty object on validation failure
