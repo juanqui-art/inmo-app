@@ -394,8 +394,8 @@ export function buildBoundsUrl(
  */
 export function parseBoundsParams(
   searchParams: URLSearchParams | Record<string, string | string[] | undefined>,
-  fallback: MapViewport,
-): MapBounds {
+  fallback?: MapViewport,
+): MapBounds | null {
   try {
     // Try to extract bounds params (new pattern)
     const ne_lat =
@@ -432,6 +432,7 @@ export function parseBoundsParams(
       Number.isNaN(swLat) ||
       Number.isNaN(swLng)
     ) {
+      if (!fallback) return null;
       // Fallback: try old viewport params
       const viewport = parseMapParams(searchParams, fallback);
       return viewportToBounds(viewport);
@@ -448,6 +449,7 @@ export function parseBoundsParams(
       swLng < CONSTRAINTS.LNG_MIN ||
       swLng > CONSTRAINTS.LNG_MAX
     ) {
+      if (!fallback) return null;
       // Fallback to viewport params
       const viewport = parseMapParams(searchParams, fallback);
       return viewportToBounds(viewport);
@@ -455,6 +457,7 @@ export function parseBoundsParams(
 
     // Validate bounds logic (ne > sw)
     if (neLat <= swLat || neLng <= swLng) {
+      if (!fallback) return null;
       // Fallback to viewport params
       const viewport = parseMapParams(searchParams, fallback);
       return viewportToBounds(viewport);
@@ -463,122 +466,93 @@ export function parseBoundsParams(
     // All valid
     return { ne_lat: neLat, ne_lng: neLng, sw_lat: swLat, sw_lng: swLng };
   } catch {
+    if (!fallback) return null;
     // Any parsing error → fallback to viewport
     const viewport = parseMapParams(searchParams, fallback);
     return viewportToBounds(viewport);
   }
 }
 
-/**
- * Filter parameters for dynamic property filtering on map
- * Extracted from URL query params
- */
-export interface DynamicFilterParams {
-  transactionType?: string | string[];
-  category?: string | string[];
-  minPrice?: number;
-  maxPrice?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  minArea?: number;
-  maxArea?: number;
-  city?: string;
-  search?: string;
-}
+import { z } from "zod";
 
 /**
- * Parse and validate filter parameters from URL search params
+ * =================================================================================
+ * FILTER PARAMS (ZOD SCHEMA)
+ * =================================================================================
+ */
+
+// Define valid enum values to be used in the Zod schema
+// Source: packages/database/prisma/schema.prisma
+const TRANSACTION_TYPES = ["SALE", "RENT"] as const;
+const PROPERTY_CATEGORIES = [
+  "HOUSE",
+  "APARTMENT",
+  "SUITE",
+  "VILLA",
+  "PENTHOUSE",
+  "DUPLEX",
+  "LOFT",
+  "LAND",
+  "COMMERCIAL",
+  "OFFICE",
+  "WAREHOUSE",
+  "FARM",
+] as const;
+
+// Zod schema for filter parameters
+const FilterSchema = z.object({
+  transactionType: z.enum(TRANSACTION_TYPES).optional(),
+  category: z.enum(PROPERTY_CATEGORIES).optional(),
+  minPrice: z.coerce.number().positive().optional(),
+  maxPrice: z.coerce.number().positive().optional(),
+  bedrooms: z.coerce.number().int().positive().optional(),
+  bathrooms: z.coerce.number().positive().optional(),
+  minArea: z.coerce.number().positive().optional(),
+  maxArea: z.coerce.number().positive().optional(),
+  city: z.string().optional(),
+  search: z.string().optional(),
+});
+
+/**
+ * Type inferred from the Zod schema. This is now the single source of truth
+ * for the filter parameters' shape and type, compatible with `PropertyFilters`.
+ */
+export type DynamicFilterParams = z.infer<typeof FilterSchema>;
+
+/**
+ * Parse and validate filter parameters from URL search params using Zod.
  *
  * @param searchParams - URL search params
- * @returns Validated filter params object
- *
- * @example
- * // URL: /mapa?...&transactionType=SALE&minPrice=100000&maxPrice=300000
- * parseFilterParams(searchParams)
- * // Returns: { transactionType: 'SALE', minPrice: 100000, maxPrice: 300000 }
+ * @returns A validated filter params object. Returns an empty object if validation fails.
  */
 export function parseFilterParams(
   searchParams: URLSearchParams | Record<string, string | string[] | undefined>,
 ): DynamicFilterParams {
-  const getParam = (key: string): string | string[] | undefined => {
-    if (searchParams instanceof URLSearchParams) {
-      const values = searchParams.getAll(key);
-      return values.length === 0 ? undefined : values.length === 1 ? values[0] : values;
-    }
-    return searchParams[key];
-  };
+  // Ensure we are working with URLSearchParams
+  const params = searchParams instanceof URLSearchParams ? searchParams : new URLSearchParams(searchParams as Record<string, string>);
 
-  const filters: DynamicFilterParams = {};
-
-  // Transaction type filter (can be multiple)
-  const transactionType = getParam("transactionType");
-  if (transactionType) {
-    filters.transactionType = transactionType;
-  }
-
-  // Category filter (can be multiple)
-  const category = getParam("category");
-  if (category) {
-    filters.category = category;
-  }
-
-  // Price range filters
-  const minPrice = getParam("minPrice");
-  if (minPrice && !Array.isArray(minPrice)) {
-    const price = parseFloat(minPrice);
-    if (!isNaN(price) && price >= 0) {
-      filters.minPrice = price;
+  // Convert URLSearchParams to a plain object. If multiple values exist for a key, only the first is used.
+  const rawParams: Record<string, string> = {};
+  for (const key of params.keys()) {
+    const value = params.get(key);
+    if (value !== null) {
+      rawParams[key] = value;
     }
   }
 
-  const maxPrice = getParam("maxPrice");
-  if (maxPrice && !Array.isArray(maxPrice)) {
-    const price = parseFloat(maxPrice);
-    if (!isNaN(price) && price >= 0) {
-      filters.maxPrice = price;
-    }
+  // Use safeParse to validate the object. It doesn't throw on error.
+  const result = FilterSchema.safeParse(rawParams);
+
+  if (result.success) {
+    return result.data; // Return the validated, typed data
   }
 
-  // Bedroom filter
-  const bedrooms = getParam("bedrooms");
-  if (bedrooms && !Array.isArray(bedrooms)) {
-    const num = parseInt(bedrooms);
-    if (!isNaN(num) && num > 0) {
-      filters.bedrooms = num;
-    }
+  // Optional: Log errors for debugging purposes during development
+  if (process.env.NODE_ENV === 'development') {
+    console.error("Zod validation error in parseFilterParams:", result.error.flatten());
   }
 
-  // Bathroom filter
-  const bathrooms = getParam("bathrooms");
-  if (bathrooms && !Array.isArray(bathrooms)) {
-    const num = parseFloat(bathrooms);
-    if (!isNaN(num) && num > 0) {
-      filters.bathrooms = num;
-    }
-  }
-
-  // Area filter
-  const minArea = getParam("minArea");
-  if (minArea && !Array.isArray(minArea)) {
-    const num = parseFloat(minArea);
-    if (!isNaN(num) && num > 0) {
-      filters.minArea = num;
-    }
-  }
-
-  // City filter
-  const city = getParam("city");
-  if (city && !Array.isArray(city)) {
-    filters.city = city;
-  }
-
-  // Search text
-  const search = getParam("search");
-  if (search && !Array.isArray(search)) {
-    filters.search = search;
-  }
-
-  return filters;
+  return {}; // Return an empty object on validation failure
 }
 
 /**
