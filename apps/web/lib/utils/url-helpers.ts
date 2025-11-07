@@ -560,20 +560,26 @@ export type DynamicFilterParams = z.infer<typeof FilterSchema>;
 export function parseFilterParams(
   searchParams: URLSearchParams | Record<string, string | string[] | undefined>,
 ): DynamicFilterParams {
-  // Ensure we are working with URLSearchParams for consistent processing
-  const params =
-    searchParams instanceof URLSearchParams
-      ? searchParams
-      : new URLSearchParams(searchParams as Record<string, string>);
+  // Convert to plain object that Zod can handle
+  let rawParams: Record<string, string | string[]> = {};
 
-  // Convert URLSearchParams to a plain object, supporting multiple values for a key.
-  const rawParams: Record<string, string | string[]> = {};
-  for (const key of new Set(Array.from(params.keys()))) {
-    const values = params.getAll(key);
-    if (values.length > 1) {
-      rawParams[key] = values;
-    } else if (values.length === 1) {
-      rawParams[key] = values[0] ?? '';
+  if (searchParams instanceof URLSearchParams) {
+    // If it's URLSearchParams, convert to object with array support
+    for (const key of new Set(Array.from(searchParams.keys()))) {
+      const values = searchParams.getAll(key);
+      if (values.length > 1) {
+        rawParams[key] = values;
+      } else if (values.length === 1) {
+        rawParams[key] = values[0] ?? '';
+      }
+    }
+  } else {
+    // If it's already a Record (from Next.js Server Components)
+    // Filter out undefined values and pass through
+    for (const [key, value] of Object.entries(searchParams)) {
+      if (value !== undefined) {
+        rawParams[key] = value;
+      }
     }
   }
 
