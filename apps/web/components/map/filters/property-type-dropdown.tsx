@@ -77,7 +77,7 @@ export function PropertyTypeDropdown() {
   const draftCategory = useMapStore((state) => state.draftFilters.category)
   const setDraftFilter = useMapStore((state) => state.setDraftFilter)
   const commitDraftFilters = useMapStore((state) => state.commitDraftFilters)
-  const resetDraftFilters = useMapStore((state) => state.resetDraftFilters)
+  const clearDraftFilters = useMapStore((state) => state.clearDraftFilters)
   const clearAllFilters = useMapStore((state) => state.clearAllFilters)
 
   // =========================================================================
