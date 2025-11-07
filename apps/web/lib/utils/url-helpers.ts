@@ -521,8 +521,24 @@ const FilterSchema = z.object({
   ),
   minPrice: z.coerce.number().nonnegative().optional(),  // Allow $0 as minimum
   maxPrice: z.coerce.number().nonnegative().optional(),  // Allow full range
-  bedrooms: z.coerce.number().int().positive().optional(),
-  bathrooms: z.coerce.number().positive().optional(),
+  bedrooms: z.preprocess(
+    (val) =>
+      val === undefined || val === null
+        ? undefined
+        : Array.isArray(val)
+        ? val
+        : [val],
+    z.array(z.coerce.number().int().positive()).optional(),
+  ),
+  bathrooms: z.preprocess(
+    (val) =>
+      val === undefined || val === null
+        ? undefined
+        : Array.isArray(val)
+        ? val
+        : [val],
+    z.array(z.coerce.number().positive()).optional(),
+  ),
   minArea: z.coerce.number().positive().optional(),
   maxArea: z.coerce.number().positive().optional(),
   city: z.string().optional(),
@@ -572,6 +588,9 @@ export function parseFilterParams(
   if (process.env.NODE_ENV === "development") {
     console.error(
       "Zod validation error in parseFilterParams:",
+      "Raw params:",
+      rawParams,
+      "Validation errors:",
       result.error.flatten(),
     );
   }
@@ -609,12 +628,14 @@ export function buildFilterUrl(filters: DynamicFilterParams): string {
     params.set("maxPrice", filters.maxPrice.toString());
   }
 
-  if (filters.bedrooms !== undefined) {
-    params.set("bedrooms", filters.bedrooms.toString());
+  if (filters.bedrooms) {
+    const values = Array.isArray(filters.bedrooms) ? filters.bedrooms : [filters.bedrooms];
+    values.forEach((val) => params.append("bedrooms", val.toString()));
   }
 
-  if (filters.bathrooms !== undefined) {
-    params.set("bathrooms", filters.bathrooms.toString());
+  if (filters.bathrooms) {
+    const values = Array.isArray(filters.bathrooms) ? filters.bathrooms : [filters.bathrooms];
+    values.forEach((val) => params.append("bathrooms", val.toString()));
   }
 
   if (filters.minArea !== undefined) {
