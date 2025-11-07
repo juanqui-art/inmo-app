@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
 /**
- * Property Type Filter Dropdown (Realtor.com Style)
+ * Property Type Filter Dropdown (Refactored)
  *
  * Multi-select property categories with grid layout
  * - 3-column grid layout (Ecuador market)
@@ -9,77 +9,100 @@
  * - "Todos" option to clear all
  * - "Listo" button to confirm selection
  * - Spanish labels optimized for Ecuador
+ *
+ * REFACTORING NOTES:
+ * - ✅ Removed props (selected, onSelect)
+ * - ✅ Uses Zustand directly (draftFilters + commitDraftFilters pattern)
+ * - ✅ Follows same pattern as PriceFilterDropdown
  */
 
-import { useState, useCallback, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import {
-  Home,
-  Building2,
-  Zap,
-  MapPin,
-  Warehouse,
-  Building,
-  Castle,
-  Factory,
-  Landmark,
-  TreePine,
-  ChevronDown,
-} from "lucide-react";
-import { Check } from "lucide-react";
-import type { PropertyCategory } from "@repo/database";
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-interface PropertyTypeDropdownProps {
-  selected?: PropertyCategory[];
-  onSelect: (categories: PropertyCategory[]) => void;
-}
+import { motion, AnimatePresence } from 'motion/react'
+import {
+  Building,
+  Building2,
+  Castle,
+  Check,
+  ChevronDown,
+  Factory,
+  Home,
+  Landmark,
+  MapPin,
+  TreePine,
+  Warehouse,
+  Zap,
+} from 'lucide-react'
+import type { PropertyCategory } from '@repo/database'
+
+import { useMapStore } from '@/stores/map-store'
 
 const CATEGORIES = [
   // Residential
-  { value: "HOUSE" as PropertyCategory, label: "Casa", icon: Home },
+  { value: 'HOUSE' as PropertyCategory, label: 'Casa', icon: Home },
   {
-    value: "APARTMENT" as PropertyCategory,
-    label: "Departamento",
+    value: 'APARTMENT' as PropertyCategory,
+    label: 'Departamento',
     icon: Building2,
   },
-  { value: "SUITE" as PropertyCategory, label: "Suite", icon: Zap },
-  { value: "VILLA" as PropertyCategory, label: "Villa", icon: Castle },
+  { value: 'SUITE' as PropertyCategory, label: 'Suite', icon: Zap },
+  { value: 'VILLA' as PropertyCategory, label: 'Villa', icon: Castle },
   {
-    value: "PENTHOUSE" as PropertyCategory,
-    label: "Penthouse",
+    value: 'PENTHOUSE' as PropertyCategory,
+    label: 'Penthouse',
     icon: Building,
   },
-  { value: "DUPLEX" as PropertyCategory, label: "Dúplex", icon: Building2 },
-  { value: "LOFT" as PropertyCategory, label: "Loft", icon: Warehouse },
+  { value: 'DUPLEX' as PropertyCategory, label: 'Dúplex', icon: Building2 },
+  { value: 'LOFT' as PropertyCategory, label: 'Loft', icon: Warehouse },
 
   // Land & Commercial
-  { value: "LAND" as PropertyCategory, label: "Terreno", icon: MapPin },
+  { value: 'LAND' as PropertyCategory, label: 'Terreno', icon: MapPin },
   {
-    value: "COMMERCIAL" as PropertyCategory,
-    label: "Local",
+    value: 'COMMERCIAL' as PropertyCategory,
+    label: 'Local',
     icon: Warehouse,
   },
-  { value: "OFFICE" as PropertyCategory, label: "Oficina", icon: Landmark },
-  { value: "WAREHOUSE" as PropertyCategory, label: "Bodega", icon: Factory },
-  { value: "FARM" as PropertyCategory, label: "Finca", icon: TreePine },
-];
+  { value: 'OFFICE' as PropertyCategory, label: 'Oficina', icon: Landmark },
+  { value: 'WAREHOUSE' as PropertyCategory, label: 'Bodega', icon: Factory },
+  { value: 'FARM' as PropertyCategory, label: 'Finca', icon: TreePine },
+]
 
-export function PropertyTypeDropdown({
-  selected = [],
-  onSelect,
-}: PropertyTypeDropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [tempSelected, setTempSelected] = useState<PropertyCategory[]>(selected);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+/**
+ * PropertyTypeDropdown - No props needed!
+ * Accesses category filter state and actions directly from Zustand
+ */
+export function PropertyTypeDropdown() {
+  // =========================================================================
+  // STORE SELECTORS (Granular to prevent unnecessary re-renders)
+  // =========================================================================
+  const committedCategory = useMapStore((state) => state.filters.category)
+  const draftCategory = useMapStore((state) => state.draftFilters.category)
+  const setDraftFilter = useMapStore((state) => state.setDraftFilter)
+  const commitDraftFilters = useMapStore((state) => state.commitDraftFilters)
+  const resetDraftFilters = useMapStore((state) => state.resetDraftFilters)
+  const clearAllFilters = useMapStore((state) => state.clearAllFilters)
 
-  // Sync temp state when dropdown opens
-  const handleOpenChange = useCallback((open: boolean) => {
-    if (open) {
-      setTempSelected(selected);
-    }
-    setIsOpen(open);
-  }, [selected]);
+  // =========================================================================
+  // LOCAL STATE
+  // =========================================================================
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  // Current display values (draft if available, otherwise committed)
+  const selected = draftCategory ?? committedCategory ?? []
+
+  // Handle dropdown open/close
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      setIsOpen(open)
+      if (!open) {
+        // Reset draft to committed state when closing without confirming
+        resetDraftFilters()
+      }
+    },
+    [resetDraftFilters]
+  )
 
   // Handle click outside
   useEffect(() => {
@@ -88,63 +111,75 @@ export function PropertyTypeDropdown({
         containerRef.current &&
         !containerRef.current.contains(e.target as Node)
       ) {
-        handleOpenChange(false);
+        handleOpenChange(false)
       }
     }
 
     if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside)
       return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
     }
-  }, [isOpen, handleOpenChange]);
+  }, [isOpen, handleOpenChange])
 
   // Handle keyboard
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape" && isOpen) {
-        handleOpenChange(false);
-        buttonRef.current?.focus();
+      if (e.key === 'Escape' && isOpen) {
+        handleOpenChange(false)
+        buttonRef.current?.focus()
       }
     }
 
     if (isOpen) {
-      document.addEventListener("keydown", handleKeyDown);
+      document.addEventListener('keydown', handleKeyDown)
       return () => {
-        document.removeEventListener("keydown", handleKeyDown);
-      };
+        document.removeEventListener('keydown', handleKeyDown)
+      }
     }
-  }, [isOpen, handleOpenChange]);
+  }, [isOpen, handleOpenChange])
 
   const handleToggle = () => {
-    handleOpenChange(!isOpen);
-  };
+    handleOpenChange(!isOpen)
+  }
 
-  const handleCategoryToggle = useCallback((category: PropertyCategory) => {
-    setTempSelected((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category],
-    );
-  }, []);
+  // Handle category toggle (updates draft)
+  const handleCategoryToggle = useCallback(
+    (category: PropertyCategory) => {
+      const updated = selected.includes(category)
+        ? selected.filter((c) => c !== category)
+        : [...selected, category]
 
+      setDraftFilter('category', updated.length > 0 ? updated : undefined)
+    },
+    [selected, setDraftFilter]
+  )
+
+  // Clear all (updates draft)
   const handleSelectAll = useCallback(() => {
-    setTempSelected([]);
-  }, []);
+    setDraftFilter('category', undefined)
+  }, [setDraftFilter])
 
+  // Clear category filter (X button)
+  const handleClear = useCallback(() => {
+    clearAllFilters()
+    handleOpenChange(false)
+  }, [clearAllFilters, handleOpenChange])
+
+  // Commit changes to store
   const handleDone = useCallback(() => {
-    onSelect(tempSelected);
-    handleOpenChange(false);
-  }, [tempSelected, onSelect, handleOpenChange]);
+    commitDraftFilters()
+    handleOpenChange(false)
+  }, [commitDraftFilters, handleOpenChange])
 
   // Display value logic
   const displayValue =
     selected.length === 0
-      ? "Tipo"
+      ? 'Tipo'
       : selected.length === 1
-        ? CATEGORIES.find((c) => c.value === selected[0])?.label || "Tipo"
-        : `${selected.length} seleccionados`;
+        ? CATEGORIES.find((c) => c.value === selected[0])?.label || 'Tipo'
+        : `${selected.length} seleccionados`
 
   return (
     <div ref={containerRef} className="relative">

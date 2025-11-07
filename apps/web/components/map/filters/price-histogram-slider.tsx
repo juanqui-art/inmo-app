@@ -16,7 +16,9 @@
  */
 
 import { useCallback, useMemo } from 'react'
+
 import * as Slider from '@radix-ui/react-slider'
+
 import { findBucketIndex, isBucketInRange } from '@/lib/utils/price-helpers'
 
 interface PriceHistogramSliderProps {
@@ -33,7 +35,7 @@ export function PriceHistogramSlider({
   onRangeChange,
 }: PriceHistogramSliderProps) {
   // ✅ MANTENER TODOS los buckets incluyendo $0 para que el slider llegue a 0
-  const visibleDistribution = distribution!
+  const visibleDistribution = distribution
 
   // Dimensiones del SVG (más compacto, solo visualización)
   const SVG_WIDTH = 300
@@ -52,12 +54,17 @@ export function PriceHistogramSlider({
   const PADDING_X = 12          // Espacio lateral del histograma (airespace a los lados)
 
   // Calcular índices actuales basados en localMin/localMax
+  // IMPORTANT: Always ensure indices are within valid range [0, length-1]
   const minIndex = useMemo(() => {
-    return findBucketIndex(localMin, visibleDistribution)
+    if (!visibleDistribution || visibleDistribution.length === 0) return 0
+    const idx = findBucketIndex(localMin, visibleDistribution)
+    return Math.max(0, Math.min(idx, visibleDistribution.length - 1))
   }, [localMin, visibleDistribution])
 
   const maxIndex = useMemo(() => {
-    return findBucketIndex(localMax, visibleDistribution)
+    if (!visibleDistribution || visibleDistribution.length === 0) return 0
+    const idx = findBucketIndex(localMax, visibleDistribution)
+    return Math.max(0, Math.min(idx, visibleDistribution.length - 1))
   }, [localMax, visibleDistribution])
 
   // Handler para Radix Slider onChange (recibe ÍNDICES, no precios)

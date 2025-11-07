@@ -1,175 +1,183 @@
-'use client'
+"use client";
 
 /**
- * Price Filter Dropdown (Realtor.com Style - v2)
+ * Price Filter Dropdown (Realtor.com Style - Refactored)
  *
  * Improved price range selector with:
  * - Interactive histogram slider (SVG custom)
- * - Local state (no URL sync until "Done")
+ * - Draft state pattern (changes until "Done")
  * - Explicit confirmation pattern
  * - Snap to buckets (discrete, round values)
  * - Real-time property counter
  * - Realtor.com inspired design
  *
- * STATE PATTERN:
- * - localMin/localMax: Internal state (interactive, ephemeral)
- * - minPrice/maxPrice (props): External state from URL (persistent)
- * - Sync happens ONLY when user clicks "Done"
+ * STATE MANAGEMENT:
+ * - Uses Zustand directly (no props drilling)
+ * - draftFilters: Ephemeral state during interaction
+ * - filters: Committed state (synced with URL)
+ * - Dropdown doesn't control URL sync (parent/middleware does)
+ *
+ * BENEFITS:
+ * - No props needed: independent component
+ * - Single source of truth: Zustand store
+ * - Cleaner separation: component vs URL sync
  */
 
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react' // Add useRef
-import { FilterDropdown } from './filter-dropdown'
-import { PriceHistogramSlider } from './price-histogram-slider'
-import {
-  formatPrice,
-  formatPriceCompact,
-} from '@/lib/utils/price-helpers'
-import { useMapStore } from '@/stores/map-store';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { Spinner } from "@/components/common";
+import { FilterDropdown } from "./filter-dropdown";
+import { PriceHistogramSlider } from "./price-histogram-slider";
+import { formatPrice, formatPriceCompact } from "@/lib/utils/price-helpers";
+import { useMapStore } from "@/stores/map-store";
 
-// Simple SVG Spinner component
-function Spinner() {
-  return (
-    <svg
-      className="animate-spin h-8 w-8 text-white"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      ></circle>
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-      ></path>
-    </svg>
-  );
-}
+/**
+ * PriceFilterDropdown - No props needed!
+ * Accesses all state and actions directly from Zustand
+ */
+export function PriceFilterDropdown() {
+  // =========================================================================
+  // STORE SELECTORS (Granular to prevent unnecessary re-renders)
+  // =========================================================================
 
-
-interface PriceFilterDropdownProps {
-  minPrice?: number
-  maxPrice?: number
-  onPriceChange: (minPrice?: number, maxPrice?: number) => void
-  onOpenChange?: (open: boolean) => void
-}
-
-export function PriceFilterDropdown({
-  minPrice,
-  maxPrice,
-  onPriceChange,
-  onOpenChange,
-}: PriceFilterDropdownProps) {
-  // Obtener datos del store de Zustand de forma granular
+  // Price bounds and distribution from database
   const priceDistribution = useMapStore((state) => state.priceDistribution);
   const priceRangeMax = useMapStore((state) => state.priceRangeMax);
   const isLoading = useMapStore((state) => state.isLoading);
   const setIsLoading = useMapStore((state) => state.setIsLoading);
 
-  // Determinar los límites del rango basado en BD o defaults (ahora del store)
-  // ✅ UI minimum is ALWAYS 0 (separated from database minimum)
-  const rangeMaxBound = priceRangeMax ?? 2000000
+  // Committed filters (from URL)
+  const committedMinPrice = useMapStore((state) => state.filters.minPrice);
+  const committedMaxPrice = useMapStore((state) => state.filters.maxPrice);
 
-  // ✅ ESTADO DEL DROPDOWN
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
+  // Draft filters (ephemeral, during interaction)
+  const draftMinPrice = useMapStore((state) => state.draftFilters.minPrice);
+  const draftMaxPrice = useMapStore((state) => state.draftFilters.maxPrice);
 
-  // ✅ ESTADO LOCAL (no sincronizado con URL hasta "Done")
-  const [localMin, setLocalMin] = useState<number>(minPrice ?? 0)
-  const [localMax, setLocalMax] = useState<number>(maxPrice ?? rangeMaxBound)
+  // Store actions
+  const setDraftFilters = useMapStore((state) => state.setDraftFilters);
+  const commitDraftFilters = useMapStore((state) => state.commitDraftFilters);
+  const clearDraftFilters = useMapStore((state) => state.clearDraftFilters);
+  const clearAllFilters = useMapStore((state) => state.clearAllFilters);
 
-  // Ref to track previous loading state
+  // Determine range bounds (UI minimum is ALWAYS 0)
+  const rangeMaxBound = priceRangeMax ?? 2_000_000;
+
+  // =========================================================================
+  // LOCAL STATE (only for dropdown UI)
+  // =========================================================================
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+
+  // Ref to track previous loading state (for auto-closing dropdown)
   const wasLoadingRef = useRef(false);
 
-  // ✅ Detectar si hay filtro activo (para mostrar X en el botón)
-  const isFilterActive = useMemo(
-    () =>
-      (minPrice !== undefined && minPrice > 0) ||
-      (maxPrice !== undefined && maxPrice < rangeMaxBound),
-    [minPrice, maxPrice, rangeMaxBound]
-  )
+  // =========================================================================
+  // EFFECTS
+  // =========================================================================
 
-  // ✅ Handler para limpiar el filtro completamente
-  const handleClear = useCallback(() => {
-    onPriceChange(undefined, undefined)
-    setIsDropdownOpen(false)
-  }, [onPriceChange])
-
-  // Sincronizar estado local cuando props cambian (ej: opening dropdown)
+  // Close dropdown automatically when loading finishes
+  // This happens when server finishes fetching filtered properties
   useEffect(() => {
-    setLocalMin(minPrice ?? 0)
-    setLocalMax(maxPrice ?? rangeMaxBound)
-  }, [minPrice, maxPrice, rangeMaxBound])
-
-  // Effect to close dropdown when loading is finished
-  useEffect(() => {
+    // If we were loading and now we're done
     if (wasLoadingRef.current && !isLoading) {
       setIsDropdownOpen(false);
     }
     wasLoadingRef.current = isLoading;
   }, [isLoading]);
 
+  // =========================================================================
+  // COMPUTED VALUES
+  // =========================================================================
 
-  // Display value para el botón del dropdown con formato compacto (K, M)
-  // Lógica: mostrar solo el valor que cambió, o rango si ambos cambiaron
+  // Current display values: use draft if available, otherwise committed
+  const displayMin = draftMinPrice ?? committedMinPrice ?? 0;
+  const displayMax = draftMaxPrice ?? committedMaxPrice ?? rangeMaxBound;
+
+  // Detect if filter is active (for showing X button)
+  const isFilterActive = useMemo(
+    () =>
+      (committedMinPrice !== undefined && committedMinPrice > 0) ||
+      (committedMaxPrice !== undefined && committedMaxPrice < rangeMaxBound),
+    [committedMinPrice, committedMaxPrice, rangeMaxBound],
+  );
+
+  // Display value for button (compact format: $1.2M, $500K)
   const displayValue = useMemo(() => {
-    const hasMin = minPrice !== undefined && minPrice > 0
-    const hasMax = maxPrice !== undefined && maxPrice < rangeMaxBound
+    const hasMin = committedMinPrice !== undefined && committedMinPrice > 0;
+    const hasMax =
+      committedMaxPrice !== undefined && committedMaxPrice < rangeMaxBound;
 
     if (hasMin && hasMax) {
-      // Ambos valores cambiaron: mostrar rango
-      return `$${formatPriceCompact(minPrice)} - $${formatPriceCompact(maxPrice)}`
+      return `$${formatPriceCompact(committedMinPrice)} - $${formatPriceCompact(
+        committedMaxPrice,
+      )}`;
     } else if (hasMin) {
-      // Solo mínimo cambió
-      return `MIN $${formatPriceCompact(minPrice)}`
+      return `MIN $${formatPriceCompact(committedMinPrice)}`;
     } else if (hasMax) {
-      // Solo máximo cambió
-      return `MAX $${formatPriceCompact(maxPrice)}`
+      return `MAX $${formatPriceCompact(committedMaxPrice)}`;
     } else {
-      // Sin cambios
-      return 'Precio'
+      return "Precio";
     }
-  }, [minPrice, maxPrice, rangeMaxBound])
+  }, [committedMinPrice, committedMaxPrice, rangeMaxBound]);
 
-  // Handler para cambios en el histograma slider
-  const handleHistogramChange = useCallback((newMin: number, newMax: number) => {
-    setLocalMin(newMin)
-    setLocalMax(newMax)
-  }, [])
+  // =========================================================================
+  // HANDLERS
+  // =========================================================================
 
+  // Handle slider changes (updates draft state)
+  // IMPORTANT: Use setDraftFilters (batch update) instead of two separate calls
+  // to prevent slider glitching due to intermediate state updates
+  const handleHistogramChange = useCallback(
+    (newMin: number, newMax: number) => {
+      setDraftFilters({
+        minPrice: newMin >= 0 ? newMin : undefined,  // Allow $0 as minimum
+        maxPrice: newMax <= rangeMaxBound ? newMax : undefined,  // Allow full range
+      });
+    },
+    [setDraftFilters, rangeMaxBound],
+  );
 
-  // ✅ ÚNICO punto donde se actualiza URL (Realtor.com pattern)
+  // Handle "Done" button (commits draft to store)
   const handleDone = useCallback(() => {
-    setIsLoading(true); // Start loading
+    // Commit draft filters to store
+    commitDraftFilters();
 
-    // Solo enviar valores si son diferentes de los bounds
-    const finalMin = localMin > 0 ? localMin : undefined
-    const finalMax = localMax < rangeMaxBound ? localMax : undefined
+    // Show loading spinner while server fetches filtered data
+    setIsLoading(true);
 
-    onPriceChange(finalMin, finalMax)
-    // NO cerramos el dropdown aquí
-  }, [localMin, localMax, rangeMaxBound, onPriceChange, setIsLoading])
+    // IMPORTANT:
+    // 1. commitDraftFilters() updates store.filters
+    // 2. useFilterUrlSync() detects change and updates URL
+    // 3. Server fetches new properties and updates store
+    // 4. setIsLoading(false) is called when done
+    // 5. useEffect closes dropdown automatically
+  }, [commitDraftFilters, setIsLoading]);
 
-  // Handler para resetear al cerrar sin "Done"
+  // Handle clear filter button
+  const handleClear = useCallback(() => {
+    clearAllFilters();
+    setIsDropdownOpen(false);
+  }, [clearAllFilters]);
+
+  // Handle dropdown open/close
   const handleOpenChange = useCallback(
     (open: boolean) => {
-      if (isLoading) return; // Prevent closing while loading
-      setIsDropdownOpen(open)
-      if (!open) {
-        // Reset a valores de URL al cerrar
-        setLocalMin(minPrice ?? 0)
-        setLocalMax(maxPrice ?? rangeMaxBound)
+      // Prevent closing while loading (spinner is showing)
+      if (isLoading && !open) return;
+
+      setIsDropdownOpen(open);
+
+      if (open) {
+        // When opening dropdown, ALWAYS clear draft to empty
+        // This ensures displayMin/displayMax show committed values
+        // and draft is ready for fresh user interactions
+        // WITHOUT this, previously committed values persist in draft,
+        // making the slider "stuck" to the previous range
+        clearDraftFilters();
       }
-      onOpenChange?.(open)
     },
-    [minPrice, maxPrice, rangeMaxBound, onOpenChange, isLoading]
-  )
+    [isLoading, clearDraftFilters],
+  );
 
   return (
     <FilterDropdown
@@ -181,49 +189,54 @@ export function PriceFilterDropdown({
       onClear={handleClear}
     >
       <div className="w-80 m-0 p-0 space-y-3 relative">
+        {/* Loading Overlay */}
         {isLoading && (
           <div className="absolute inset-0 bg-oslo-gray-900/70 flex items-center justify-center z-10 rounded-lg">
-            <Spinner />
+            <Spinner
+              size="8"
+              color="text-white"
+              ariaLabel="Cargando precios..."
+            />
           </div>
         )}
 
-        {/* Header con rango actual */}
+        {/* Header with current range */}
         <div className="px-4 pt-3">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-lg font-bold text-oslo-gray-100">Precio</h3>
             <div className="text-right">
               <p className="text-xs text-oslo-gray-400">Rango</p>
               <p className="text-sm font-semibold text-indigo-400">
-                {formatPrice(localMin)} - {formatPrice(localMax)}
+                {formatPrice(displayMin)} - {formatPrice(displayMax)}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Histograma Interactivo */}
+        {/* Interactive Histogram Slider */}
         <div className="px-3">
           <PriceHistogramSlider
             distribution={priceDistribution}
-            localMin={localMin}
-            localMax={localMax}
+            localMin={displayMin}
+            localMax={displayMax}
             onRangeChange={handleHistogramChange}
           />
         </div>
 
-        {/* Botón "Listo" */}
+        {/* "Done" Button */}
         <div className="px-4">
           <button
             type="button"
             onClick={handleDone}
-            disabled={isLoading} // Disable button while loading
+            disabled={isLoading}
             className="w-full px-4 py-2 rounded-lg bg-oslo-gray-700 text-oslo-gray-100 font-medium text-base hover:bg-oslo-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-oslo-gray-600 disabled:bg-oslo-gray-800 disabled:cursor-not-allowed"
           >
             Listo
           </button>
         </div>
 
-        {/* ✅ ESTADO DEL FILTRO - Indicador */}
-        {(localMin > 0 || localMax < rangeMaxBound) && (
+        {/* Active Filter Indicator */}
+        {(displayMin > 0 || displayMax < rangeMaxBound) && (
           <div className="px-4 flex items-center gap-2 text-xs">
             <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
             <span className="text-oslo-gray-400">Filtro activo</span>
@@ -231,5 +244,5 @@ export function PriceFilterDropdown({
         )}
       </div>
     </FilterDropdown>
-  )
+  );
 }

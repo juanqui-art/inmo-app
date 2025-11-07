@@ -39,7 +39,9 @@ export function FilterDropdown({
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isControlled = controlledIsOpen !== undefined;
   const isOpen = isControlled ? controlledIsOpen : internalIsOpen;
-  const setIsOpen = isControlled ? (v: boolean) => onOpenChange?.(v) : setInternalIsOpen;
+  const setIsOpen = isControlled
+    ? (v: boolean) => onOpenChange?.(v)
+    : setInternalIsOpen;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -85,7 +87,7 @@ export function FilterDropdown({
     const target = e.target as HTMLElement;
 
     // Check if clicked on the X icon area (or its parent span)
-    const isClearIconClick = target.closest('[data-clear-icon]') !== null;
+    const isClearIconClick = target.closest("[data-clear-icon]") !== null;
 
     if (isActive && onClear && isClearIconClick) {
       // User clicked the X icon → Clear filter only, don't toggle dropdown
@@ -112,7 +114,7 @@ export function FilterDropdown({
         onClick={handleButtonClick}
         className={`flex h-12 items-center gap-2 px-4 py-2 rounded-full font-medium text-base transition-all duration-200 whitespace-nowrap ${
           isActive
-            ? "bg-oslo-gray-600 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
+            ? "bg-oslo-gray-600/30 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
             : isOpen
               ? "bg-oslo-gray-700 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
               : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800"
@@ -126,12 +128,12 @@ export function FilterDropdown({
         {isActive && onClear ? (
           <span
             data-clear-icon
-            className="h-5 w-5 flex-shrink-0 text-oslo-gray-200 hover:text-white transition-colors cursor-pointer bg-black rounded-full "
+            className="h-5 w-5 flex-shrink-0 text-oslo-gray-300 hover:text-oslo-gray-900/90 transition-colors cursor-pointer bg-black rounded-full hover:bg-oslo-gray-900 "
             role="button"
             tabIndex={0}
             aria-label="Limpiar filtro"
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 onClear?.();
               }

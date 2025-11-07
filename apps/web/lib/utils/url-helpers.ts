@@ -519,8 +519,8 @@ const FilterSchema = z.object({
         : [val],
     z.array(z.enum(PROPERTY_CATEGORIES)).optional(),
   ),
-  minPrice: z.coerce.number().positive().optional(),
-  maxPrice: z.coerce.number().positive().optional(),
+  minPrice: z.coerce.number().nonnegative().optional(),  // Allow $0 as minimum
+  maxPrice: z.coerce.number().nonnegative().optional(),  // Allow full range
   bedrooms: z.coerce.number().int().positive().optional(),
   bathrooms: z.coerce.number().positive().optional(),
   minArea: z.coerce.number().positive().optional(),
