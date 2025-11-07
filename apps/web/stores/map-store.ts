@@ -30,8 +30,8 @@ export interface FilterState {
   minPrice?: number;
   maxPrice?: number;
   category?: string[];
-  bedrooms?: number[];
-  bathrooms?: number[];
+  bedrooms?: number;
+  bathrooms?: number;
   transactionType?: string[];
 }
 
@@ -248,14 +248,9 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
       category: draft.category !== undefined
         ? (draft.category.length > 0 ? draft.category : undefined)
         : current.category,
-      bedrooms:
-        draft.bedrooms !== undefined
-          ? (draft.bedrooms.length > 0 ? draft.bedrooms : undefined)
-          : current.bedrooms,
-      bathrooms:
-        draft.bathrooms !== undefined
-          ? (draft.bathrooms.length > 0 ? draft.bathrooms : undefined)
-          : current.bathrooms,
+      // For numbers: just use draft if defined, otherwise current
+      bedrooms: draft.bedrooms !== undefined ? draft.bedrooms : current.bedrooms,
+      bathrooms: draft.bathrooms !== undefined ? draft.bathrooms : current.bathrooms,
       transactionType:
         draft.transactionType !== undefined
           ? (draft.transactionType.length > 0 ? draft.transactionType : undefined)

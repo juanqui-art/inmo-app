@@ -526,18 +526,18 @@ const FilterSchema = z.object({
       val === undefined || val === null
         ? undefined
         : Array.isArray(val)
-        ? val
-        : [val],
-    z.array(z.coerce.number().int().positive()).optional(),
+        ? val[0]  // Take first value if array (min bedrooms)
+        : val,
+    z.coerce.number().int().positive().optional(),
   ),
   bathrooms: z.preprocess(
     (val) =>
       val === undefined || val === null
         ? undefined
         : Array.isArray(val)
-        ? val
-        : [val],
-    z.array(z.coerce.number().positive()).optional(),
+        ? val[0]  // Take first value if array (min bathrooms)
+        : val,
+    z.coerce.number().positive().optional(),
   ),
   minArea: z.coerce.number().positive().optional(),
   maxArea: z.coerce.number().positive().optional(),
@@ -634,14 +634,12 @@ export function buildFilterUrl(filters: DynamicFilterParams): string {
     params.set("maxPrice", filters.maxPrice.toString());
   }
 
-  if (filters.bedrooms) {
-    const values = Array.isArray(filters.bedrooms) ? filters.bedrooms : [filters.bedrooms];
-    values.forEach((val) => params.append("bedrooms", val.toString()));
+  if (filters.bedrooms !== undefined) {
+    params.set("bedrooms", filters.bedrooms.toString());
   }
 
-  if (filters.bathrooms) {
-    const values = Array.isArray(filters.bathrooms) ? filters.bathrooms : [filters.bathrooms];
-    values.forEach((val) => params.append("bathrooms", val.toString()));
+  if (filters.bathrooms !== undefined) {
+    params.set("bathrooms", filters.bathrooms.toString());
   }
 
   if (filters.minArea !== undefined) {
