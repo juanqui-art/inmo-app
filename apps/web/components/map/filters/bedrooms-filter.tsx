@@ -79,7 +79,7 @@ export function BedroomsFilter() {
   const selected = draftBedrooms ?? committedBedrooms;
 
   const displayValue = useMemo(
-    () => (selected !== undefined ? `${selected}+` : "Bedrooms"),
+    () => (selected !== undefined ? `${selected}+` : "Habitaciones"),
     [selected],
   );
 
