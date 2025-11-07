@@ -108,7 +108,9 @@ export function MapSearchEmptyState({
 
         {/* Icon */}
         <div className="flex justify-center mb-4">
-          <div className={`p-3 rounded-full bg-oslo-gray-700/50 ${config.iconColor}`}>
+          <div
+            className={`p-3 rounded-full bg-oslo-gray-700/50 ${config.iconColor}`}
+          >
             <Icon className="w-8 h-8" />
           </div>
         </div>
@@ -123,7 +125,9 @@ export function MapSearchEmptyState({
 
         {/* Query */}
         <div className="bg-oslo-gray-900/60 rounded-lg p-3 mb-4">
-          <p className="text-xs font-semibold text-oslo-gray-500 mb-1">Tu búsqueda:</p>
+          <p className="text-xs font-semibold text-oslo-gray-500 mb-1">
+            Tu búsqueda:
+          </p>
           <p className="text-sm text-white italic">"{query}"</p>
           {confidence !== undefined && (
             <p className="text-xs text-oslo-gray-500 mt-1">
@@ -133,43 +137,49 @@ export function MapSearchEmptyState({
         </div>
 
         {/* Filter Summary (for no-results) */}
-        {type === "no-results" && filterSummary && Object.keys(filterSummary).length > 0 && (
-          <div className="bg-oslo-gray-900/40 rounded-lg p-3 mb-4">
-            <p className="text-xs font-semibold text-oslo-gray-500 mb-2">
-              Filtros aplicados:
-            </p>
-            <div className="space-y-1">
-              {Object.entries(filterSummary).map(([key, value]) => (
-                <div key={key} className="flex items-center gap-2 text-xs">
-                  <span className="text-oslo-gray-400">{key}:</span>
-                  <span className="text-white font-medium">
-                    {typeof value === "object" ? JSON.stringify(value) : String(value)}
-                  </span>
-                </div>
-              ))}
+        {type === "no-results" &&
+          filterSummary &&
+          Object.keys(filterSummary).length > 0 && (
+            <div className="bg-oslo-gray-900/40 rounded-lg p-3 mb-4">
+              <p className="text-xs font-semibold text-oslo-gray-500 mb-2">
+                Filtros aplicados:
+              </p>
+              <div className="space-y-1">
+                {Object.entries(filterSummary).map(([key, value]) => (
+                  <div key={key} className="flex items-center gap-2 text-xs">
+                    <span className="text-oslo-gray-400">{key}:</span>
+                    <span className="text-white font-medium">
+                      {typeof value === "object"
+                        ? JSON.stringify(value)
+                        : String(value)}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Available Cities (for invalid-location) */}
-        {type === "invalid-location" && availableCities && availableCities.length > 0 && (
-          <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-3 mb-4">
-            <p className="text-xs font-semibold text-blue-300 mb-2 flex items-center gap-2">
-              <MapPin className="w-3.5 h-3.5" />
-              Ciudades disponibles:
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {availableCities.map((city) => (
-                <span
-                  key={city}
-                  className="px-2 py-1 bg-blue-800/40 text-blue-200 text-xs rounded-full"
-                >
-                  {city}
-                </span>
-              ))}
+        {type === "invalid-location" &&
+          availableCities &&
+          availableCities.length > 0 && (
+            <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-3 mb-4">
+              <p className="text-xs font-semibold text-blue-300 mb-2 flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5" />
+                Ciudades disponibles:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {availableCities.map((city) => (
+                  <span
+                    key={city}
+                    className="px-2 py-1 bg-blue-800/40 text-blue-200 text-xs rounded-full"
+                  >
+                    {city}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Suggestions */}
         {suggestions && suggestions.length > 0 && (
@@ -180,7 +190,10 @@ export function MapSearchEmptyState({
             </p>
             <ul className="space-y-1">
               {suggestions.map((suggestion, idx) => (
-                <li key={idx} className="text-xs text-cyan-200 flex items-start gap-2">
+                <li
+                  key={idx}
+                  className="text-xs text-cyan-200 flex items-start gap-2"
+                >
                   <span className="text-cyan-400 mt-0.5">•</span>
                   <span>{suggestion}</span>
                 </li>

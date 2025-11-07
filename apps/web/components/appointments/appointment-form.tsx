@@ -11,7 +11,10 @@
  */
 
 import { useTransition, useEffect, useState } from "react";
-import { createAppointmentAction, getAvailableSlotsAction } from "@/app/actions/appointments";
+import {
+  createAppointmentAction,
+  getAvailableSlotsAction,
+} from "@/app/actions/appointments";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@repo/ui";
 import { Label } from "@/components/ui/label";
@@ -202,9 +205,7 @@ export function AppointmentForm({
 
       {/* Notes */}
       <div className="space-y-2">
-        <Label htmlFor="notes">
-          Notas adicionales (opcional)
-        </Label>
+        <Label htmlFor="notes">Notas adicionales (opcional)</Label>
         <Textarea
           id="notes"
           name="notes"

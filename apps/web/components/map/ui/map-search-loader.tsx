@@ -99,7 +99,10 @@ export function MapSearchLoader({
                 transition={{ delay: 0.2 }}
                 className="text-center text-oslo-gray-400 text-sm"
               >
-                {resultCount} {resultCount === 1 ? "propiedad encontrada" : "propiedades encontradas"}
+                {resultCount}{" "}
+                {resultCount === 1
+                  ? "propiedad encontrada"
+                  : "propiedades encontradas"}
               </motion.p>
             )}
 

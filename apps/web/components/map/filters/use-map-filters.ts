@@ -48,7 +48,7 @@ export function useMapFilters() {
       // Update URL without reloading (replace to clear bounds)
       router.replace(`/mapa${filterString ? `?${filterString}` : ""}`);
     },
-    [filters, router]
+    [filters, router],
   );
 
   // Toggle transaction type
@@ -69,7 +69,7 @@ export function useMapFilters() {
         transactionType: updated.length > 0 ? (updated as any) : undefined,
       });
     },
-    [filters.transactionType, updateFilters]
+    [filters.transactionType, updateFilters],
   );
 
   /**
@@ -93,7 +93,7 @@ export function useMapFilters() {
         category: updated.length > 0 ? (updated as any) : undefined,
       });
     },
-    [filters.category, updateFilters]
+    [filters.category, updateFilters],
   );
 
   // Set multiple categories (for multi-select dropdowns)
@@ -103,7 +103,7 @@ export function useMapFilters() {
         category: categories.length > 0 ? (categories as any) : undefined,
       });
     },
-    [updateFilters]
+    [updateFilters],
   );
 
   // Set price range
@@ -114,7 +114,7 @@ export function useMapFilters() {
         maxPrice,
       });
     },
-    [updateFilters]
+    [updateFilters],
   );
 
   // Clear all filters
@@ -132,7 +132,7 @@ export function useMapFilters() {
       filters.minPrice ||
       filters.maxPrice ||
       filters.bedrooms ||
-      filters.bathrooms
+      filters.bathrooms,
   );
 
   return {

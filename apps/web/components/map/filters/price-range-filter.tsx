@@ -51,7 +51,7 @@ export function PriceRangeFilter({
       setMaxInput(max?.toString() || "");
       onPriceChange(min, max);
     },
-    [onPriceChange]
+    [onPriceChange],
   );
 
   const isPresetActive = (min?: number, max?: number) => {

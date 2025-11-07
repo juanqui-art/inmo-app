@@ -141,7 +141,13 @@ export const useFavoritesStore = create<FavoritesState>()(
        * 5. On error: rollback + show toast
        */
       toggleFavorite: async (propertyId: string) => {
-        const { favorites, _addToFavorites, _removeFromFavorites, _addToPending, _removeFromPending } = get();
+        const {
+          favorites,
+          _addToFavorites,
+          _removeFromFavorites,
+          _addToPending,
+          _removeFromPending,
+        } = get();
 
         // Determinar la acción (agregar o quitar)
         const wasLiked = favorites.has(propertyId);
@@ -226,8 +232,12 @@ export const useFavoritesStore = create<FavoritesState>()(
               const currentFavorites = get().favorites;
 
               pendingIds.forEach((propertyId) => {
-                const wasOptimisticallyAdded = currentFavorites.has(propertyId) && !serverFavorites.has(propertyId);
-                const wasOptimisticallyRemoved = !currentFavorites.has(propertyId) && serverFavorites.has(propertyId);
+                const wasOptimisticallyAdded =
+                  currentFavorites.has(propertyId) &&
+                  !serverFavorites.has(propertyId);
+                const wasOptimisticallyRemoved =
+                  !currentFavorites.has(propertyId) &&
+                  serverFavorites.has(propertyId);
 
                 if (wasOptimisticallyAdded) {
                   serverFavorites.add(propertyId);
@@ -314,8 +324,8 @@ export const useFavoritesStore = create<FavoritesState>()(
           pendingIds: new Set<string>(),
         };
       },
-    }
-  )
+    },
+  ),
 );
 
 /**

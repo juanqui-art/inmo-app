@@ -4,4 +4,4 @@
  * Centralized exports for shared, reusable components
  */
 
-export { Spinner } from './spinner'
+export { Spinner } from "./spinner";

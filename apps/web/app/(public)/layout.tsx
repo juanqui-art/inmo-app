@@ -61,6 +61,7 @@
  */
 
 import { PublicHeader } from "@/components/layout/public-header";
+import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { Toaster } from "sonner";
 
 export default function PublicLayout({
@@ -69,7 +70,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen">
+    <div className="relative flex flex-col min-h-screen">
       {/*
         HEADER (floating)
         - Positioned absolutely over hero
@@ -80,16 +81,17 @@ export default function PublicLayout({
 
       {/*
         MAIN CONTENT
-        No min-height to allow hero full-screen
-        WHY? Hero section handles its own height (100vh)
+        flex-1 para que crezca y llene el espacio disponible
+        WHY? Permite que el mapa ocupe el viewport completo sin scroll
       */}
-      <main className="w-full">{children}</main>
+      <main className="w-full flex-1">{children}</main>
 
       {/*
         FOOTER
         - Links, social, copyright
-        - Always at bottom
+        - Conditional: Hidden on /mapa route
       */}
+      <ConditionalFooter />
 
       {/*
         TOAST NOTIFICATIONS

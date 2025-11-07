@@ -14,7 +14,7 @@
  * - parseBoundsParams(): Extract and validate bounds from URL
  */
 
-import mapboxgl from 'mapbox-gl';
+import mapboxgl from "mapbox-gl";
 
 /**
  * Map viewport parameters that can be encoded in URL
@@ -328,8 +328,7 @@ export function boundsToViewport(bounds: MapBounds): MapViewport {
   // Calculate zoom from latitude delta
   // Inverse of: latitudeDelta = (180 / 2^zoom) * 1.2
   const latitudeDelta = Math.abs(bounds.ne_lat - bounds.sw_lat);
-  const zoomFloat =
-    Math.log2(180 / latitudeDelta) - Math.log2(1.2);
+  const zoomFloat = Math.log2(180 / latitudeDelta) - Math.log2(1.2);
   const zoom = Math.max(0, Math.min(22, Math.round(zoomFloat)));
 
   return { latitude, longitude, zoom };
@@ -371,10 +370,22 @@ export function buildBoundsUrl(
 
   // Update/set bounds params (overwrites existing bounds if any)
   // Round to reduce URL clutter (4 decimals = ~11m precision)
-  params.set("ne_lat", clampedBounds.ne_lat.toFixed(CONSTRAINTS.DECIMAL_PLACES));
-  params.set("ne_lng", clampedBounds.ne_lng.toFixed(CONSTRAINTS.DECIMAL_PLACES));
-  params.set("sw_lat", clampedBounds.sw_lat.toFixed(CONSTRAINTS.DECIMAL_PLACES));
-  params.set("sw_lng", clampedBounds.sw_lng.toFixed(CONSTRAINTS.DECIMAL_PLACES));
+  params.set(
+    "ne_lat",
+    clampedBounds.ne_lat.toFixed(CONSTRAINTS.DECIMAL_PLACES),
+  );
+  params.set(
+    "ne_lng",
+    clampedBounds.ne_lng.toFixed(CONSTRAINTS.DECIMAL_PLACES),
+  );
+  params.set(
+    "sw_lat",
+    clampedBounds.sw_lat.toFixed(CONSTRAINTS.DECIMAL_PLACES),
+  );
+  params.set(
+    "sw_lng",
+    clampedBounds.sw_lng.toFixed(CONSTRAINTS.DECIMAL_PLACES),
+  );
 
   return `/mapa?${params.toString()}`;
 }
@@ -506,8 +517,8 @@ const FilterSchema = z.object({
       val === undefined || val === null
         ? undefined
         : Array.isArray(val)
-        ? val
-        : [val],
+          ? val
+          : [val],
     z.array(z.enum(TRANSACTION_TYPES)).optional(),
   ),
   category: z.preprocess(
@@ -515,19 +526,19 @@ const FilterSchema = z.object({
       val === undefined || val === null
         ? undefined
         : Array.isArray(val)
-        ? val
-        : [val],
+          ? val
+          : [val],
     z.array(z.enum(PROPERTY_CATEGORIES)).optional(),
   ),
-  minPrice: z.coerce.number().nonnegative().optional(),  // Allow $0 as minimum
-  maxPrice: z.coerce.number().nonnegative().optional(),  // Allow full range
+  minPrice: z.coerce.number().nonnegative().optional(), // Allow $0 as minimum
+  maxPrice: z.coerce.number().nonnegative().optional(), // Allow full range
   bedrooms: z.preprocess(
     (val) =>
       val === undefined || val === null
         ? undefined
         : Array.isArray(val)
-        ? val[0]  // Take first value if array (min bedrooms)
-        : val,
+          ? val[0] // Take first value if array (min bedrooms)
+          : val,
     z.coerce.number().int().positive().optional(),
   ),
   bathrooms: z.preprocess(
@@ -535,8 +546,8 @@ const FilterSchema = z.object({
       val === undefined || val === null
         ? undefined
         : Array.isArray(val)
-        ? val[0]  // Take first value if array (min bathrooms)
-        : val,
+          ? val[0] // Take first value if array (min bathrooms)
+          : val,
     z.coerce.number().positive().optional(),
   ),
   minArea: z.coerce.number().positive().optional(),
@@ -570,7 +581,7 @@ export function parseFilterParams(
       if (values.length > 1) {
         rawParams[key] = values;
       } else if (values.length === 1) {
-        rawParams[key] = values[0] ?? '';
+        rawParams[key] = values[0] ?? "";
       }
     }
   } else {
@@ -622,7 +633,9 @@ export function buildFilterUrl(filters: DynamicFilterParams): string {
   }
 
   if (filters.category) {
-    const values = Array.isArray(filters.category) ? filters.category : [filters.category];
+    const values = Array.isArray(filters.category)
+      ? filters.category
+      : [filters.category];
     values.forEach((val) => params.append("category", val));
   }
 
@@ -770,7 +783,10 @@ export function calculateDistance(
  * isValidCoordinate(-2.9, -79.0); // true
  * isValidCoordinate(91, -79.0);   // false (latitude > 90)
  */
-export function isValidCoordinate(latitude: number, longitude: number): boolean {
+export function isValidCoordinate(
+  latitude: number,
+  longitude: number,
+): boolean {
   return (
     latitude >= CONSTRAINTS.LAT_MIN &&
     latitude <= CONSTRAINTS.LAT_MAX &&
@@ -815,7 +831,10 @@ export function isInEcuador(latitude: number, longitude: number): boolean {
  * isInEcuadorMapbox(-2.9, -79.0);   // true (Cuenca)
  * isInEcuadorMapbox(40.7, -74.0);   // false (New York)
  */
-export function isInEcuadorMapbox(latitude: number, longitude: number): boolean {
+export function isInEcuadorMapbox(
+  latitude: number,
+  longitude: number,
+): boolean {
   try {
     const lngLat = new mapboxgl.LngLat(longitude, latitude);
     return ECUADOR_BOUNDS_MAPBOX.contains(lngLat);
@@ -852,10 +871,7 @@ export function isValidBounds(bounds: MapBounds): boolean {
   }
 
   // Check bounds are properly formed (SW < NE)
-  if (
-    bounds.sw_lat >= bounds.ne_lat ||
-    bounds.sw_lng >= bounds.ne_lng
-  ) {
+  if (bounds.sw_lat >= bounds.ne_lat || bounds.sw_lng >= bounds.ne_lng) {
     return false;
   }
 

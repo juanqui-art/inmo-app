@@ -29,7 +29,10 @@ export default async function PerfilPage() {
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{user.email}</span>
             <form action="/api/auth/logout" method="POST">
-              <button type="submit" className="text-sm text-destructive hover:underline">
+              <button
+                type="submit"
+                className="text-sm text-destructive hover:underline"
+              >
                 Cerrar sesión
               </button>
             </form>

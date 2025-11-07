@@ -226,7 +226,6 @@ export async function copyLinkToClipboard(url: string): Promise<boolean> {
   }
 }
 
-
 /**
  * Generic share handler
  *

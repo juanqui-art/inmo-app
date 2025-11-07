@@ -46,7 +46,9 @@ export function UserDropdown({ user, isHomepage = false }: UserDropdownProps) {
             unoptimized
           />
         ) : (
-          <User className={`w-5 h-5 ${isHomepage ? "text-white" : "text-oslo-gray-300"}`} />
+          <User
+            className={`w-5 h-5 ${isHomepage ? "text-white" : "text-oslo-gray-300"}`}
+          />
         )}
       </button>
 

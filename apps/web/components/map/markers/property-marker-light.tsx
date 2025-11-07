@@ -55,7 +55,8 @@ function getColorScheme(transactionType: TransactionType) {
         borderColor: "border-emerald-500",
         borderHoverColor: "group-hover:border-emerald-600",
         iconBg: "bg-emerald-50 dark:bg-emerald-950/50",
-        iconHoverBg: "group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900",
+        iconHoverBg:
+          "group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900",
         iconColor: "text-emerald-600",
         shadowColor: "shadow-emerald-500/10",
         shadowHoverColor: "group-hover:shadow-emerald-500/20",
@@ -97,14 +98,10 @@ export function PropertyMarkerLight({
           {/* Price Badge */}
           <div
             className={`mb-2 rounded-lg bg-white dark:bg-slate-900 px-3 py-1.5 font-semibold text-sm transition-all duration-300 border-2 ${colors.borderColor} ${colors.borderHoverColor} shadow-md ${colors.shadowColor} ${colors.shadowHoverColor} ${
-              isHighlighted
-                ? "scale-125 shadow-lg"
-                : "group-hover:shadow-lg"
+              isHighlighted ? "scale-125 shadow-lg" : "group-hover:shadow-lg"
             }`}
           >
-            <span className="text-slate-900 dark:text-slate-50">
-              {price}
-            </span>
+            <span className="text-slate-900 dark:text-slate-50">{price}</span>
           </div>
 
           {/* Pin with Icon */}
@@ -120,7 +117,8 @@ export function PropertyMarkerLight({
           <div
             className={`absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent transition-all duration-300 ${colors.borderColor} ${colors.borderHoverColor}`}
             style={{
-              borderTopColor: transactionType === "SALE" ? "#3b82f6" : "#10b981",
+              borderTopColor:
+                transactionType === "SALE" ? "#3b82f6" : "#10b981",
             }}
           />
         </div>

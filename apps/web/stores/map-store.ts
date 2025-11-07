@@ -79,7 +79,10 @@ interface MapStoreState {
   /**
    * Update specific filter field in committed state
    */
-  updateFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void;
+  updateFilter: <K extends keyof FilterState>(
+    key: K,
+    value: FilterState[K],
+  ) => void;
 
   /**
    * Clear all committed filters and draft state
@@ -95,7 +98,7 @@ interface MapStoreState {
    */
   setDraftFilter: <K extends keyof FilterState>(
     key: K,
-    value: FilterState[K]
+    value: FilterState[K],
   ) => void;
 
   /**
@@ -210,7 +213,7 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
    */
   setDraftFilter: <K extends keyof FilterState>(
     key: K,
-    value: FilterState[K]
+    value: FilterState[K],
   ) =>
     set((state) => ({
       draftFilters: {
@@ -245,15 +248,22 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
       maxPrice:
         draft.maxPrice !== undefined ? draft.maxPrice : current.maxPrice,
       // For arrays: empty array [] means "no filter" (equivalent to undefined)
-      category: draft.category !== undefined
-        ? (draft.category.length > 0 ? draft.category : undefined)
-        : current.category,
+      category:
+        draft.category !== undefined
+          ? draft.category.length > 0
+            ? draft.category
+            : undefined
+          : current.category,
       // For numbers: just use draft if defined, otherwise current
-      bedrooms: draft.bedrooms !== undefined ? draft.bedrooms : current.bedrooms,
-      bathrooms: draft.bathrooms !== undefined ? draft.bathrooms : current.bathrooms,
+      bedrooms:
+        draft.bedrooms !== undefined ? draft.bedrooms : current.bedrooms,
+      bathrooms:
+        draft.bathrooms !== undefined ? draft.bathrooms : current.bathrooms,
       transactionType:
         draft.transactionType !== undefined
-          ? (draft.transactionType.length > 0 ? draft.transactionType : undefined)
+          ? draft.transactionType.length > 0
+            ? draft.transactionType
+            : undefined
           : current.transactionType,
     };
 

@@ -12,16 +12,16 @@
  * - Redirects to correct slug if user provides incorrect one (SEO best practice)
  */
 
-import { notFound, redirect } from 'next/navigation';
-import type { Metadata } from 'next';
-import { PropertyRepository } from '@repo/database';
-import { parseIdSlugParam, generateSlug } from '@/lib/utils/slug-generator';
-import { AppointmentButton } from '@/components/appointments/appointment-button';
-import { getCurrentUser } from '@/lib/auth';
+import { notFound, redirect } from "next/navigation";
+import type { Metadata } from "next";
+import { PropertyRepository } from "@repo/database";
+import { parseIdSlugParam, generateSlug } from "@/lib/utils/slug-generator";
+import { AppointmentButton } from "@/components/appointments/appointment-button";
+import { getCurrentUser } from "@/lib/auth";
 
 interface PropertyDetailPageProps {
   params: Promise<{
-    'id-slug': string;
+    "id-slug": string;
   }>;
 }
 
@@ -30,23 +30,24 @@ interface PropertyDetailPageProps {
  * Will be enhanced with actual property data
  */
 export async function generateMetadata(
-  props: PropertyDetailPageProps
+  props: PropertyDetailPageProps,
 ): Promise<Metadata> {
   const params = await props.params;
-  const { id } = parseIdSlugParam(params['id-slug']);
+  const { id } = parseIdSlugParam(params["id-slug"]);
 
   const propertyRepository = new PropertyRepository();
   const property = await propertyRepository.findById(id);
 
   if (!property) {
     return {
-      title: 'Propiedad no encontrada',
+      title: "Propiedad no encontrada",
     };
   }
 
   return {
     title: property.title,
-    description: property.description || `${property.title} - ${property.price}`,
+    description:
+      property.description || `${property.title} - ${property.price}`,
   };
 }
 
@@ -66,10 +67,10 @@ export async function generateMetadata(
  * - Old URLs with incorrect slugs still work (via redirect)
  */
 export default async function PropertyDetailPage(
-  props: PropertyDetailPageProps
+  props: PropertyDetailPageProps,
 ) {
   const params = await props.params;
-  const { id, slug: providedSlug } = parseIdSlugParam(params['id-slug']);
+  const { id, slug: providedSlug } = parseIdSlugParam(params["id-slug"]);
 
   // Fetch property from database
   const propertyRepository = new PropertyRepository();
@@ -91,9 +92,9 @@ export default async function PropertyDetailPage(
   const user = await getCurrentUser();
 
   // Format price
-  const formattedPrice = new Intl.NumberFormat('es-EC', {
-    style: 'currency',
-    currency: 'USD',
+  const formattedPrice = new Intl.NumberFormat("es-EC", {
+    style: "currency",
+    currency: "USD",
     minimumFractionDigits: 0,
   }).format(Number(property.price));
 
@@ -135,9 +136,7 @@ export default async function PropertyDetailPage(
             </div>
 
             {/* Property Specs */}
-            {(property.bedrooms ||
-              property.bathrooms ||
-              property.area) && (
+            {(property.bedrooms || property.bathrooms || property.area) && (
               <div className="grid grid-cols-3 gap-4">
                 {property.bedrooms && (
                   <div className="bg-oslo-gray-50 dark:bg-oslo-gray-900 p-4 rounded-lg text-center">
@@ -165,7 +164,7 @@ export default async function PropertyDetailPage(
                       Área (m²)
                     </p>
                     <p className="text-3xl font-bold text-oslo-gray-950 dark:text-white">
-                      {Number(property.area).toLocaleString('es-EC')}
+                      {Number(property.area).toLocaleString("es-EC")}
                     </p>
                   </div>
                 )}
@@ -216,7 +215,7 @@ export default async function PropertyDetailPage(
                   )}
                   <div className="text-center">
                     <p className="font-semibold text-oslo-gray-950 dark:text-white">
-                      {property.agent.name || 'Agente'}
+                      {property.agent.name || "Agente"}
                     </p>
                     {property.agent.email && (
                       <p className="text-sm text-oslo-gray-600 dark:text-oslo-gray-400">
@@ -238,7 +237,7 @@ export default async function PropertyDetailPage(
                   </button>
                   <AppointmentButton
                     propertyId={id}
-                    isAuthenticated={!!user && user.role === 'CLIENT'}
+                    isAuthenticated={!!user && user.role === "CLIENT"}
                   />
                 </div>
               </div>

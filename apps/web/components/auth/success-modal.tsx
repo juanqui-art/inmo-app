@@ -81,8 +81,8 @@ export function SuccessModal({
 
           {/* Description */}
           <DialogDescription className="text-center text-base">
-            Tu sesión fue iniciada exitosamente. Ya puedes guardar tus propiedades
-            favoritas.
+            Tu sesión fue iniciada exitosamente. Ya puedes guardar tus
+            propiedades favoritas.
           </DialogDescription>
 
           {/* Progress indicator - auto close animation */}

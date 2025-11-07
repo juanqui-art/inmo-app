@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * Price Histogram Slider (Realtor.com Style)
@@ -15,17 +15,17 @@
  * - Patrón profesional: igual a Realtor.com, Zillow, etc.
  */
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from "react";
 
-import * as Slider from '@radix-ui/react-slider'
+import * as Slider from "@radix-ui/react-slider";
 
-import { findBucketIndex, isBucketInRange } from '@/lib/utils/price-helpers'
+import { findBucketIndex, isBucketInRange } from "@/lib/utils/price-helpers";
 
 interface PriceHistogramSliderProps {
-  distribution: { bucket: number; count: number }[]
-  localMin: number
-  localMax: number
-  onRangeChange: (min: number, max: number) => void
+  distribution: { bucket: number; count: number }[];
+  localMin: number;
+  localMax: number;
+  onRangeChange: (min: number, max: number) => void;
 }
 
 export function PriceHistogramSlider({
@@ -35,57 +35,61 @@ export function PriceHistogramSlider({
   onRangeChange,
 }: PriceHistogramSliderProps) {
   // ✅ MANTENER TODOS los buckets incluyendo $0 para que el slider llegue a 0
-  const visibleDistribution = distribution
+  const visibleDistribution = distribution;
 
   // Dimensiones del SVG (más compacto, solo visualización)
-  const SVG_WIDTH = 300
-  const SVG_HEIGHT = 150
-  const BAR_HEIGHT = SVG_HEIGHT - 30 // Espacio para margen
+  const SVG_WIDTH = 300;
+  const SVG_HEIGHT = 150;
+  const BAR_HEIGHT = SVG_HEIGHT - 30; // Espacio para margen
 
   // Altura máxima del histograma basada en distribución visible
-  const maxCount = Math.max(...visibleDistribution.map((d) => d.count), 1)
+  const maxCount = Math.max(...visibleDistribution.map((d) => d.count), 1);
 
   // Ancho de cada barra basado en distribución visible
-  const barWidth = SVG_WIDTH / Math.max(visibleDistribution.length, 1)
+  const barWidth = SVG_WIDTH / Math.max(visibleDistribution.length, 1);
 
   // 🎨 AJUSTES DE DISEÑO - Personaliza aquí
-  const BAR_WIDTH_RATIO = 0.45  // Qué tan delgadas (0.3 = muy delgadas, 1.0 = llenan todo)
-  const BAR_RADIUS = 3          // Curvatura de esquinas superiores (0 = cuadrado, 5+ = muy redondeado)
-  const PADDING_X = 12          // Espacio lateral del histograma (airespace a los lados)
+  const BAR_WIDTH_RATIO = 0.45; // Qué tan delgadas (0.3 = muy delgadas, 1.0 = llenan todo)
+  const BAR_RADIUS = 3; // Curvatura de esquinas superiores (0 = cuadrado, 5+ = muy redondeado)
+  const PADDING_X = 12; // Espacio lateral del histograma (airespace a los lados)
 
   // Calcular índices actuales basados en localMin/localMax
   // IMPORTANT: Always ensure indices are within valid range [0, length-1]
   const minIndex = useMemo(() => {
-    if (!visibleDistribution || visibleDistribution.length === 0) return 0
-    const idx = findBucketIndex(localMin, visibleDistribution)
-    return Math.max(0, Math.min(idx, visibleDistribution.length - 1))
-  }, [localMin, visibleDistribution])
+    if (!visibleDistribution || visibleDistribution.length === 0) return 0;
+    const idx = findBucketIndex(localMin, visibleDistribution);
+    return Math.max(0, Math.min(idx, visibleDistribution.length - 1));
+  }, [localMin, visibleDistribution]);
 
   const maxIndex = useMemo(() => {
-    if (!visibleDistribution || visibleDistribution.length === 0) return 0
-    const idx = findBucketIndex(localMax, visibleDistribution)
-    return Math.max(0, Math.min(idx, visibleDistribution.length - 1))
-  }, [localMax, visibleDistribution])
+    if (!visibleDistribution || visibleDistribution.length === 0) return 0;
+    const idx = findBucketIndex(localMax, visibleDistribution);
+    return Math.max(0, Math.min(idx, visibleDistribution.length - 1));
+  }, [localMax, visibleDistribution]);
 
   // Handler para Radix Slider onChange (recibe ÍNDICES, no precios)
   const handleSliderChange = useCallback(
     (indices: number[]) => {
-      if (indices.length === 2 && visibleDistribution && visibleDistribution.length > 0) {
-        const minIdx = Math.max(0, indices[0]!)
-        const maxIdx = Math.min(visibleDistribution.length - 1, indices[1]!)
+      if (
+        indices.length === 2 &&
+        visibleDistribution &&
+        visibleDistribution.length > 0
+      ) {
+        const minIdx = Math.max(0, indices[0]!);
+        const maxIdx = Math.min(visibleDistribution.length - 1, indices[1]!);
 
         // Convertir índices a precios usando buckets
-        const newMin = visibleDistribution[minIdx]!.bucket
-        const newMax = visibleDistribution[maxIdx]!.bucket
+        const newMin = visibleDistribution[minIdx]!.bucket;
+        const newMax = visibleDistribution[maxIdx]!.bucket;
 
         // Validar que min <= max
         if (newMin <= newMax) {
-          onRangeChange(newMin, newMax)
+          onRangeChange(newMin, newMax);
         }
       }
     },
-    [visibleDistribution, onRangeChange]
-  )
+    [visibleDistribution, onRangeChange],
+  );
 
   return (
     <div className="w-full space-y-2">
@@ -95,17 +99,17 @@ export function PriceHistogramSlider({
           viewBox={`-${PADDING_X} 0 ${SVG_WIDTH + PADDING_X * 2} ${SVG_HEIGHT}`}
           preserveAspectRatio="none"
           // className="w-full h-24 border border-oslo-gray-700 rounded-lg bg-oslo-gray-950/50"
-          style={{ userSelect: 'none' }}
+          style={{ userSelect: "none" }}
         >
           {/* Barras del histograma (sin primer bucket outlier) */}
           {visibleDistribution.map((bucket, index) => {
-            const x = index * barWidth
-            const height = (bucket.count / maxCount) * BAR_HEIGHT
-            const isInRange = isBucketInRange(bucket, localMin, localMax)
+            const x = index * barWidth;
+            const height = (bucket.count / maxCount) * BAR_HEIGHT;
+            const isInRange = isBucketInRange(bucket, localMin, localMax);
 
             // 🎨 Calcula el ancho y posición para centrar la barra delgada
-            const barActualWidth = barWidth * BAR_WIDTH_RATIO
-            const barX = x + (barWidth - barActualWidth) / 2
+            const barActualWidth = barWidth * BAR_WIDTH_RATIO;
+            const barX = x + (barWidth - barActualWidth) / 2;
 
             return (
               <g key={`bar-${index}`}>
@@ -117,16 +121,14 @@ export function PriceHistogramSlider({
                   height={height}
                   rx={BAR_RADIUS}
                   ry={BAR_RADIUS}
-                  fill={isInRange ? '#6366f1' : '#4b5563'}
+                  fill={isInRange ? "#6366f1" : "#4b5563"}
                   opacity={isInRange ? 1 : 0.3}
                   className="transition-colors duration-150"
                 />
               </g>
-            )
+            );
           })}
         </svg>
-
-
       </div>
 
       {/* 2. SLIDER INTERACTIVO SEPARADO - Línea horizontal clara */}
@@ -170,8 +172,6 @@ export function PriceHistogramSlider({
           </Slider.Root>
         </div>
       )}
-
-
     </div>
-  )
+  );
 }

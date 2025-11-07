@@ -98,16 +98,16 @@ export default async function HomePage() {
     await Promise.all([
       // Featured Properties
       // TODO: Add 'featured' field to Property model
-      // For now, just get newest 12 properties
+      // For now, just get newest 9 properties
       propertyRepo.list({
         filters: { status: "AVAILABLE" },
-        take: 12,
+        take: 9,
       }),
 
       // Recent Listings
       propertyRepo.list({
         filters: { status: "AVAILABLE" },
-        take: 8,
+        take: 9,
       }),
 
       // Stats: Property count
@@ -172,7 +172,9 @@ export default async function HomePage() {
       )}
 
       {/* Trending Properties (Social Commerce) */}
-      <TrendingPropertiesSection />
+      {serializedFeatured.length > 0 && (
+        <TrendingPropertiesSection properties={serializedFeatured} />
+      )}
 
       {/* Stats Section (Social Proof) */}
       <StatsSection

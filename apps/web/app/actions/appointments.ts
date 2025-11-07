@@ -25,17 +25,15 @@ import { z } from "zod";
 
 const createAppointmentSchema = z.object({
   propertyId: z.string().uuid("Invalid property ID format"),
-  scheduledAt: z.coerce
-    .date()
-    .refine(
-      (date) => {
-        const validation = validateAppointmentDateTime(date);
-        return validation.valid;
-      },
-      {
-        message: "Invalid appointment date or time",
-      }
-    ),
+  scheduledAt: z.coerce.date().refine(
+    (date) => {
+      const validation = validateAppointmentDateTime(date);
+      return validation.valid;
+    },
+    {
+      message: "Invalid appointment date or time",
+    },
+  ),
   notes: z.string().max(500).optional(),
 });
 
@@ -97,7 +95,9 @@ export async function createAppointmentAction(formData: {
 
     // 4. Obtener propiedad para validar que existe y obtener datos
     const propertyRepository = new PropertyRepository();
-    const property = await propertyRepository.findById(validatedData.propertyId);
+    const property = await propertyRepository.findById(
+      validatedData.propertyId,
+    );
     if (!property) {
       throw new Error("Property not found");
     }
@@ -106,10 +106,12 @@ export async function createAppointmentAction(formData: {
     const appointmentRepository = new AppointmentRepository();
     const isAvailable = await appointmentRepository.isSlotAvailable(
       validatedData.propertyId,
-      validatedData.scheduledAt
+      validatedData.scheduledAt,
     );
     if (!isAvailable) {
-      throw new Error("This time slot is no longer available. Please choose another time.");
+      throw new Error(
+        "This time slot is no longer available. Please choose another time.",
+      );
     }
 
     // 6. Crear cita
@@ -201,7 +203,7 @@ export async function updateAppointmentStatusAction(data: {
     // 3. Obtener cita
     const appointmentRepository = new AppointmentRepository();
     const appointment = await appointmentRepository.getAppointmentById(
-      validatedData.id
+      validatedData.id,
     );
     if (!appointment) {
       throw new Error("Appointment not found");
@@ -215,14 +217,14 @@ export async function updateAppointmentStatusAction(data: {
     // 5. Verificar que cita esté en estado PENDING (solo se puede confirmar/cancelar si está pendiente)
     if (appointment.status !== "PENDING") {
       throw new Error(
-        `Cannot ${validatedData.status === "CONFIRMED" ? "confirm" : "cancel"} an appointment with status ${appointment.status}`
+        `Cannot ${validatedData.status === "CONFIRMED" ? "confirm" : "cancel"} an appointment with status ${appointment.status}`,
       );
     }
 
     // 6. Actualizar estado
     await appointmentRepository.updateAppointmentStatus(
       validatedData.id,
-      validatedData.status
+      validatedData.status,
     );
 
     // 7. Enviar email de notificación
@@ -233,7 +235,8 @@ export async function updateAppointmentStatusAction(data: {
         agentName: appointment.agent.name || "Agente",
         agentEmail: appointment.agent.email,
         propertyTitle: appointment.property.title,
-        propertyAddress: appointment.property.address || "Address not specified",
+        propertyAddress:
+          appointment.property.address || "Address not specified",
         appointmentDate: appointment.scheduledAt,
       });
     } else {
@@ -244,10 +247,11 @@ export async function updateAppointmentStatusAction(data: {
           agentName: appointment.agent.name || "Agente",
           agentEmail: appointment.agent.email,
           propertyTitle: appointment.property.title,
-          propertyAddress: appointment.property.address || "Address not specified",
+          propertyAddress:
+            appointment.property.address || "Address not specified",
           appointmentDate: appointment.scheduledAt,
         },
-        "agent"
+        "agent",
       );
     }
 
@@ -312,7 +316,7 @@ export async function getAvailableSlotsAction(data: {
     const appointmentRepository = new AppointmentRepository();
     const slots = await appointmentRepository.getAvailableSlots(
       validatedData.propertyId,
-      validatedData.date
+      validatedData.date,
     );
 
     return {
@@ -376,7 +380,7 @@ export async function getAgentAppointmentsAction(filters?: {
         status: filters?.status,
         startDate: filters?.startDate ? new Date(filters.startDate) : undefined,
         endDate: filters?.endDate ? new Date(filters.endDate) : undefined,
-      }
+      },
     );
 
     return {
@@ -422,7 +426,9 @@ export async function getUserAppointmentsAction() {
 
     // 2. Obtener citas del usuario
     const appointmentRepository = new AppointmentRepository();
-    const appointments = await appointmentRepository.getUserAppointments(user.id);
+    const appointments = await appointmentRepository.getUserAppointments(
+      user.id,
+    );
 
     return {
       success: true,

@@ -19,4 +19,4 @@
  * 4. Restart: bun run dev
  */
 
-export { env, type Env, type ClientEnv, type ServerEnv } from "@repo/env"
+export { env, type Env, type ClientEnv, type ServerEnv } from "@repo/env";

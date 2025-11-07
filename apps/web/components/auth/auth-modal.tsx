@@ -45,7 +45,7 @@ export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
         propertyId,
         // URL anterior para redirigir después de auth exitoso
         redirectTo: pathname,
-      })
+      }),
     );
 
     // Guardar que venimos de auth modal para mostrar success modal
@@ -80,7 +80,8 @@ export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
             Inicia sesión o crea una cuenta para guardar tus favoritos
           </DialogTitle>
           <DialogDescription className="text-base">
-            Guarda tus propiedades favoritas y accede desde cualquier lugar, en todos tus dispositivos.
+            Guarda tus propiedades favoritas y accede desde cualquier lugar, en
+            todos tus dispositivos.
           </DialogDescription>
         </div>
 
@@ -135,12 +136,12 @@ export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
           Al crear una cuenta, aceptas los{" "}
           <a href="/terms" className="underline hover:text-oslo-gray-400">
             Términos de Uso
-          </a>
-          {" "} y la{" "}
+          </a>{" "}
+          y la{" "}
           <a href="/privacy" className="underline hover:text-oslo-gray-400">
             Política de Privacidad
-          </a>
-          {" "} de InmoApp
+          </a>{" "}
+          de InmoApp
         </p>
       </DialogContent>
     </Dialog>

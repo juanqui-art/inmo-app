@@ -31,23 +31,25 @@
  * @returns URL-friendly slug
  */
 export function generateSlug(title: string, maxLength: number = 50): string {
-  return title
-    .toLowerCase()
-    .normalize('NFD') // Normalize Unicode: Á → A + ́
-    .replace(/[\u0300-\u036f]/g, '') // Remove diacritical marks (accents)
-    // Replace special Nordic/European characters
-    .replace(/ø/g, 'o')
-    .replace(/æ/g, 'ae')
-    .replace(/đ/g, 'd')
-    .replace(/ð/g, 'd')
-    .replace(/þ/g, 'th')
-    .trim()
-    .replace(/[^\w\s-]/g, '') // Remove special chars (keep alphanumeric, spaces, hyphens)
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Remove duplicate hyphens
-    .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
-    .slice(0, maxLength) // Limit to maxLength
-    .replace(/-+$/g, ''); // Remove trailing hyphens (in case slice cut mid-word)
+  return (
+    title
+      .toLowerCase()
+      .normalize("NFD") // Normalize Unicode: Á → A + ́
+      .replace(/[\u0300-\u036f]/g, "") // Remove diacritical marks (accents)
+      // Replace special Nordic/European characters
+      .replace(/ø/g, "o")
+      .replace(/æ/g, "ae")
+      .replace(/đ/g, "d")
+      .replace(/ð/g, "d")
+      .replace(/þ/g, "th")
+      .trim()
+      .replace(/[^\w\s-]/g, "") // Remove special chars (keep alphanumeric, spaces, hyphens)
+      .replace(/\s+/g, "-") // Replace spaces with hyphens
+      .replace(/-+/g, "-") // Remove duplicate hyphens
+      .replace(/^-+|-+$/g, "") // Remove leading/trailing hyphens
+      .slice(0, maxLength) // Limit to maxLength
+      .replace(/-+$/g, "")
+  ); // Remove trailing hyphens (in case slice cut mid-word)
 }
 
 /**
@@ -78,7 +80,7 @@ export function parseIdSlugParam(idSlugParam: string): {
   id: string;
   slug: string;
 } {
-  const parts = idSlugParam.split('-');
+  const parts = idSlugParam.split("-");
 
   // UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (36 chars)
   // First part is usually the ID before the first slug word
@@ -93,13 +95,13 @@ export function parseIdSlugParam(idSlugParam: string): {
   if (firstPart && /^[a-f0-9]{8}$/.test(firstPart)) {
     // Likely UUID: take next 4 UUID parts (8-4-4-4-12)
     const uuidParts = parts.slice(0, 5); // 8-4-4-4-12 = 5 parts
-    const id = uuidParts.join('-');
-    const slug = parts.slice(5).join('-');
+    const id = uuidParts.join("-");
+    const slug = parts.slice(5).join("-");
     return { id, slug };
   }
 
   // Fallback: assume first part is simple ID
-  const id = firstPart || '';
-  const slug = parts.slice(1).join('-');
+  const id = firstPart || "";
+  const slug = parts.slice(1).join("-");
   return { id, slug };
 }

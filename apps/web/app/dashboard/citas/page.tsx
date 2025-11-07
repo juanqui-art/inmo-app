@@ -24,7 +24,7 @@ export default async function DashboardCitasPage() {
   // Obtener citas del agente
   const appointmentRepository = new AppointmentRepository();
   const appointments = await appointmentRepository.getAgentAppointments(
-    user.id
+    user.id,
   );
 
   // Separar citas por estado
@@ -116,10 +116,7 @@ export default async function DashboardCitasPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {confirmed.map((appointment) => (
-              <AppointmentCard
-                key={appointment.id}
-                appointment={appointment}
-              />
+              <AppointmentCard key={appointment.id} appointment={appointment} />
             ))}
           </div>
         </section>
@@ -133,10 +130,7 @@ export default async function DashboardCitasPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {completed.map((appointment) => (
-              <AppointmentCard
-                key={appointment.id}
-                appointment={appointment}
-              />
+              <AppointmentCard key={appointment.id} appointment={appointment} />
             ))}
           </div>
         </section>

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * URL ↔ Zustand Filter Sync Hook
@@ -28,28 +28,28 @@
  * - Clean separation: components handle state, hook handles URL
  */
 
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useRef } from 'react'
-import { parseFilterParams, buildFilterUrl } from '@/lib/utils/url-helpers'
-import type { DynamicFilterParams } from '@/lib/utils/url-helpers'
-import { useMapStore } from '@/stores/map-store'
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { parseFilterParams, buildFilterUrl } from "@/lib/utils/url-helpers";
+import type { DynamicFilterParams } from "@/lib/utils/url-helpers";
+import { useMapStore } from "@/stores/map-store";
 
 /**
  * Hook to sync filter state between URL and Zustand store
  * Should be called once at the page level, not in components
  */
 export function useFilterUrlSync() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Store access
-  const filters = useMapStore((state) => state.filters)
-  const setFilters = useMapStore((state) => state.setFilters)
+  const filters = useMapStore((state) => state.filters);
+  const setFilters = useMapStore((state) => state.setFilters);
 
   // Refs to prevent circular updates
-  const isInitializedRef = useRef(false)
-  const lastUrlRef = useRef<string>('')
-  const lastFiltersRef = useRef(filters)
+  const isInitializedRef = useRef(false);
+  const lastUrlRef = useRef<string>("");
+  const lastFiltersRef = useRef(filters);
 
   // =========================================================================
   // EFFECT 1: Sync URL → Store (when URL changes)
@@ -57,7 +57,7 @@ export function useFilterUrlSync() {
   useEffect(() => {
     // On mount, parse URL and sync to store
     if (!isInitializedRef.current) {
-      const urlFilters = parseFilterParams(searchParams)
+      const urlFilters = parseFilterParams(searchParams);
 
       // Convert to store format
       setFilters({
@@ -67,16 +67,16 @@ export function useFilterUrlSync() {
         bedrooms: urlFilters.bedrooms,
         bathrooms: urlFilters.bathrooms,
         transactionType: urlFilters.transactionType as any,
-      })
+      });
 
-      isInitializedRef.current = true
-      lastUrlRef.current = window.location.search
+      isInitializedRef.current = true;
+      lastUrlRef.current = window.location.search;
     }
 
     // Check if URL changed (not triggered by our sync)
-    const currentUrl = window.location.search
+    const currentUrl = window.location.search;
     if (currentUrl !== lastUrlRef.current) {
-      const urlFilters = parseFilterParams(searchParams)
+      const urlFilters = parseFilterParams(searchParams);
 
       setFilters({
         minPrice: urlFilters.minPrice,
@@ -85,24 +85,24 @@ export function useFilterUrlSync() {
         bedrooms: urlFilters.bedrooms,
         bathrooms: urlFilters.bathrooms,
         transactionType: urlFilters.transactionType as any,
-      })
+      });
 
-      lastUrlRef.current = currentUrl
+      lastUrlRef.current = currentUrl;
     }
-  }, [searchParams, setFilters])
+  }, [searchParams, setFilters]);
 
   // =========================================================================
   // EFFECT 2: Sync Store → URL (when filters change)
   // =========================================================================
   useEffect(() => {
-    if (!isInitializedRef.current) return
+    if (!isInitializedRef.current) return;
 
     // Check if filters actually changed
     const filtersChanged =
-      JSON.stringify(lastFiltersRef.current) !== JSON.stringify(filters)
+      JSON.stringify(lastFiltersRef.current) !== JSON.stringify(filters);
 
     if (filtersChanged) {
-      lastFiltersRef.current = filters
+      lastFiltersRef.current = filters;
 
       // Build URL from filters
       const urlParams: DynamicFilterParams = {
@@ -112,14 +112,14 @@ export function useFilterUrlSync() {
         bedrooms: filters.bedrooms,
         bathrooms: filters.bathrooms,
         transactionType: filters.transactionType as any,
-      }
+      };
 
-      const filterString = buildFilterUrl(urlParams)
-      const newUrl = `/mapa${filterString ? `?${filterString}` : ''}`
+      const filterString = buildFilterUrl(urlParams);
+      const newUrl = `/mapa${filterString ? `?${filterString}` : ""}`;
 
       // Update URL
-      router.replace(newUrl)
-      lastUrlRef.current = `?${filterString || ''}`
+      router.replace(newUrl);
+      lastUrlRef.current = `?${filterString || ""}`;
     }
-  }, [filters, router])
+  }, [filters, router]);
 }

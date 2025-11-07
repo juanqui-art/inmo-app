@@ -38,7 +38,7 @@ export function PropertyPopupCompact({
   // Get first image or use placeholder
   const imageUrl =
     property.images && property.images.length > 0
-      ? property.images[0]?.url ?? "/images/property-placeholder.jpg"
+      ? (property.images[0]?.url ?? "/images/property-placeholder.jpg")
       : "/images/property-placeholder.jpg";
 
   // Format price
@@ -81,7 +81,9 @@ export function PropertyPopupCompact({
           <button
             onClick={() => onFavoriteToggle(property.id)}
             className="absolute top-2 right-2 bg-white/20 dark:bg-oslo-gray-800/40 rounded-full p-1.5 hover:bg-white/30 dark:hover:bg-oslo-gray-800/60 transition-colors backdrop-blur-sm"
-            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
           >
             <Heart
               className={`w-4 h-4 ${
@@ -122,15 +124,14 @@ export function PropertyPopupCompact({
             </div>
           )}
 
-          {property.bathrooms !== null &&
-            property.bathrooms !== undefined && (
-              <div className="flex items-center gap-1">
-                <Bath className="w-4 h-4 text-oslo-gray-500 dark:text-oslo-gray-400" />
-                <span className="text-xs font-medium text-oslo-gray-700 dark:text-oslo-gray-300">
-                  {Math.floor(property.bathrooms)}
-                </span>
-              </div>
-            )}
+          {property.bathrooms !== null && property.bathrooms !== undefined && (
+            <div className="flex items-center gap-1">
+              <Bath className="w-4 h-4 text-oslo-gray-500 dark:text-oslo-gray-400" />
+              <span className="text-xs font-medium text-oslo-gray-700 dark:text-oslo-gray-300">
+                {Math.floor(property.bathrooms)}
+              </span>
+            </div>
+          )}
 
           {property.area && (
             <div className="flex items-center gap-1">

@@ -12,12 +12,12 @@
  * formatPrice(75500)   // "$75,500"
  */
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('es-EC', {
-    style: 'currency',
-    currency: 'USD',
+  return new Intl.NumberFormat("es-EC", {
+    style: "currency",
+    currency: "USD",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(price)
+  }).format(price);
 }
 
 /**
@@ -30,7 +30,7 @@ export function formatPrice(price: number): string {
  * formatNumberEcuador(100)      // "100"
  */
 export function formatNumberEcuador(num: number): string {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 /**
@@ -44,12 +44,12 @@ export function formatNumberEcuador(num: number): string {
  */
 export function formatPriceCompact(num: number): string {
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(0) + 'M'
+    return (num / 1000000).toFixed(0) + "M";
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(0) + 'K'
+    return (num / 1000).toFixed(0) + "K";
   }
-  return num.toString()
+  return num.toString();
 }
 
 /**
@@ -67,17 +67,17 @@ export function formatPriceCompact(num: number): string {
  */
 export function findNearestBucket(
   price: number,
-  distribution: { bucket: number; count: number }[]
+  distribution: { bucket: number; count: number }[],
 ): number {
-  if (distribution.length === 0) return price
+  if (distribution.length === 0) return price;
 
   const nearest = distribution.reduce((prev, curr) => {
     return Math.abs(curr.bucket - price) < Math.abs(prev.bucket - price)
       ? curr
-      : prev
-  })
+      : prev;
+  });
 
-  return nearest.bucket
+  return nearest.bucket;
 }
 
 /**
@@ -95,22 +95,22 @@ export function findNearestBucket(
  */
 export function findBucketIndex(
   price: number,
-  distribution: { bucket: number; count: number }[]
+  distribution: { bucket: number; count: number }[],
 ): number {
-  if (!distribution || distribution.length === 0) return 0
+  if (!distribution || distribution.length === 0) return 0;
 
-  let nearestIndex = 0
-  let minDistance = Math.abs(distribution[0]!.bucket - price)
+  let nearestIndex = 0;
+  let minDistance = Math.abs(distribution[0]!.bucket - price);
 
   for (let i = 1; i < distribution.length; i++) {
-    const distance = Math.abs(distribution[i]!.bucket - price)
+    const distance = Math.abs(distribution[i]!.bucket - price);
     if (distance < minDistance) {
-      minDistance = distance
-      nearestIndex = i
+      minDistance = distance;
+      nearestIndex = i;
     }
   }
 
-  return nearestIndex
+  return nearestIndex;
 }
 
 /**
@@ -128,11 +128,11 @@ export function findBucketIndex(
 export function calculatePropertyCount(
   distribution: { bucket: number; count: number }[],
   minPrice: number,
-  maxPrice: number
+  maxPrice: number,
 ): number {
   return distribution
     .filter((bucket) => bucket.bucket >= minPrice && bucket.bucket <= maxPrice)
-    .reduce((sum, bucket) => sum + bucket.count, 0)
+    .reduce((sum, bucket) => sum + bucket.count, 0);
 }
 
 /**
@@ -151,10 +151,10 @@ export function xToPrice(
   x: number,
   svgWidth: number,
   minPrice: number,
-  maxPrice: number
+  maxPrice: number,
 ): number {
-  const normalized = Math.max(0, Math.min(1, x / svgWidth))
-  return minPrice + normalized * (maxPrice - minPrice)
+  const normalized = Math.max(0, Math.min(1, x / svgWidth));
+  return minPrice + normalized * (maxPrice - minPrice);
 }
 
 /**
@@ -173,10 +173,10 @@ export function priceToX(
   price: number,
   svgWidth: number,
   minPrice: number,
-  maxPrice: number
+  maxPrice: number,
 ): number {
-  const normalized = (price - minPrice) / (maxPrice - minPrice)
-  return Math.max(0, Math.min(svgWidth, normalized * svgWidth))
+  const normalized = (price - minPrice) / (maxPrice - minPrice);
+  return Math.max(0, Math.min(svgWidth, normalized * svgWidth));
 }
 
 /**
@@ -188,7 +188,7 @@ export function priceToX(
  * isValidPriceRange(200000, 100000) // false
  */
 export function isValidPriceRange(minPrice: number, maxPrice: number): boolean {
-  return minPrice <= maxPrice
+  return minPrice <= maxPrice;
 }
 
 /**
@@ -203,9 +203,9 @@ export function isValidPriceRange(minPrice: number, maxPrice: number): boolean {
 export function isBucketInRange(
   bucket: { bucket: number; count: number },
   minPrice: number,
-  maxPrice: number
+  maxPrice: number,
 ): boolean {
-  return bucket.bucket >= minPrice && bucket.bucket <= maxPrice
+  return bucket.bucket >= minPrice && bucket.bucket <= maxPrice;
 }
 
 /**
@@ -218,9 +218,9 @@ export function isBucketInRange(
  */
 export function formatPriceRange(
   minPrice: number | undefined,
-  maxPrice: number | undefined
+  maxPrice: number | undefined,
 ): string {
-  const minStr = minPrice ? formatPrice(minPrice) : '$0'
-  const maxStr = maxPrice ? formatPrice(maxPrice) : 'Sin límite'
-  return `${minStr} - ${maxStr}`
+  const minStr = minPrice ? formatPrice(minPrice) : "$0";
+  const maxStr = maxPrice ? formatPrice(maxPrice) : "Sin límite";
+  return `${minStr} - ${maxStr}`;
 }

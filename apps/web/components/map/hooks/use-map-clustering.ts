@@ -194,9 +194,7 @@ function calculateFallbackBounds(viewState: {
 /**
  * Type guard to check if cluster is a cluster (vs individual point)
  */
-export function isCluster(
-  cluster: ClusterOrPoint,
-): cluster is ClusterPoint {
+export function isCluster(cluster: ClusterOrPoint): cluster is ClusterPoint {
   return "cluster" in cluster.properties && cluster.properties.cluster === true;
 }
 

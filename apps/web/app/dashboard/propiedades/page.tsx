@@ -7,7 +7,6 @@ import { propertyRepository } from "@repo/database";
 import { Button } from "@repo/ui";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { PropertyActions } from "@/components/properties/property-actions";
 import { PropertyCard } from "@/components/properties/property-card";
 import { requireRole } from "@/lib/auth";
 
@@ -59,7 +58,6 @@ export default async function PropiedadesPage() {
             <PropertyCard
               key={property.id}
               property={property}
-              actions={<PropertyActions propertyId={property.id} />}
             />
           ))}
         </div>

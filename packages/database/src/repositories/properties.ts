@@ -529,6 +529,92 @@ export class PropertyRepository {
 
     return result
   }
+
+  /**
+   * Obtiene ciudades con autocomplete para el hero search bar
+   * Retorna ciudades distintas que coinciden con la consulta
+   * Ordenadas por número de propiedades disponibles (descendente)
+   *
+   * @param query - Término de búsqueda (mín 2 caracteres)
+   * @returns Array de ciudades con conteo de propiedades
+   *
+   * @example
+   * // Buscar ciudades que contengan "Cuen"
+   * const cities = await propertyRepository.getCitiesAutocomplete("Cuen")
+   * // Resultado: [
+   * //   { name: "Cuenca", state: "Azuay", propertyCount: 45, slug: "cuenca-azuay" }
+   * // ]
+   */
+  async getCitiesAutocomplete(query: string): Promise<
+    Array<{ name: string; state: string; slug: string; propertyCount: number }>
+  > {
+    // Validar longitud mínima
+    if (query.length < 2) {
+      return []
+    }
+
+    // Obtener propiedades que coinciden con la búsqueda
+    const properties = await db.property.findMany({
+      where: {
+        status: 'AVAILABLE',
+        city: {
+          contains: query,
+          mode: 'insensitive',
+        },
+      },
+      select: {
+        city: true,
+        state: true,
+      },
+      distinct: ['city'],
+    })
+
+    // Agrupar por ciudad y contar propiedades
+    const cityMap = new Map<
+      string,
+      { name: string; state: string; count: number }
+    >()
+
+    for (const property of properties) {
+      if (property.city) {
+        const key = `${property.city}-${property.state}`
+        if (!cityMap.has(key)) {
+          cityMap.set(key, {
+            name: property.city,
+            state: property.state || '',
+            count: 0,
+          })
+        }
+        const city = cityMap.get(key)
+        if (city) {
+          city.count += 1
+        }
+      }
+    }
+
+    // Contar propiedades por ciudad (nueva consulta para conteo exacto)
+    const cities = await Promise.all(
+      Array.from(cityMap.values()).map(async (city) => {
+        const count = await db.property.count({
+          where: {
+            status: 'AVAILABLE',
+            city: city.name,
+            state: city.state,
+          },
+        })
+
+        return {
+          name: city.name,
+          state: city.state,
+          slug: `${city.name.toLowerCase().replace(/\s+/g, '-')}-${city.state.toLowerCase().replace(/\s+/g, '-')}`,
+          propertyCount: count,
+        }
+      }),
+    )
+
+    // Ordenar por propertyCount descendente
+    return cities.sort((a, b) => b.propertyCount - a.propertyCount)
+  }
 }
 
 /**

@@ -60,13 +60,8 @@
  * - https://baymard.com/blog/footer-ux
  */
 
-import {
-  Facebook,
-  Home as HomeIcon,
-  Instagram,
-  Linkedin,
-  Twitter,
-} from "lucide-react";
+import { Home as HomeIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export function PublicFooter() {
@@ -77,10 +72,10 @@ export function PublicFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-oslo-gray-900 text-oslo-gray-300">
+    <footer className="bg-gradient-to-b from-oslo-gray-950 to-oslo-gray-900 text-oslo-gray-300 border-t border-oslo-gray-800">
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/*
             RESPONSIVE GRID:
             - Mobile: 1 column (stacked)
@@ -95,107 +90,80 @@ export function PublicFooter() {
 
           {/* Brand Column (Wider on desktop) */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <HomeIcon className="w-6 h-6 text-blue-400" />
-              <span className="font-bold text-xl text-white">InmoApp</span>
+            <Link href="/" className="flex items-center gap-3 mb-6 group">
+              <div className="p-2 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
+                <HomeIcon className="w-5 h-5 text-blue-400" />
+              </div>
+              <span className="font-bold text-2xl text-white">InmoApp</span>
             </Link>
 
-            <p className="text-oslo-gray-400 mb-6 max-w-sm">
+            <p className="text-oslo-gray-400 mb-8 max-w-sm leading-relaxed">
               Encuentra tu hogar ideal. Miles de propiedades en venta y renta en
               las mejores ubicaciones.
             </p>
 
             {/* Social Media Links */}
-            <div className="flex gap-4">
-              {/*
-                ICON BUTTONS:
-                - Large touch targets (w-10 h-10)
-                - Hover effect (scale + color)
-                - aria-label for accessibility
-
-                WHY gray by default, color on hover?
-                - Subtle when not focused
-                - Brand colors on interaction
-                - Modern pattern
-              */}
+            <div className="flex gap-3">
               <a
-                href="https://facebook.com"
+                href="https://facebook.com/inmoapp"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="
-                  w-10 h-10 flex items-center justify-center
-                  rounded-full
-                  bg-oslo-gray-800 hover:bg-blue-600
-                  text-oslo-gray-400 hover:text-white
-                  transition-all duration-200
-                  hover:scale-110
-                "
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-oslo-gray-800 hover:bg-blue-600 text-oslo-gray-400 hover:text-white transition-all duration-200 hover:scale-110"
               >
-                <Facebook className="w-5 h-5" />
+                <Image
+                  src="/social_icons/facebook.svg"
+                  alt="Facebook"
+                  width={24}
+                  height={24}
+                  className="brightness-0 invert"
+                />
               </a>
 
               <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter"
-                className="
-                  w-10 h-10 flex items-center justify-center
-                  rounded-full
-                  bg-oslo-gray-800 hover:bg-sky-500
-                  text-oslo-gray-400 hover:text-white
-                  transition-all duration-200
-                  hover:scale-110
-                "
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-
-              <a
-                href="https://instagram.com"
+                href="https://instagram.com/inmoapp"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="
-                  w-10 h-10 flex items-center justify-center
-                  rounded-full
-                  bg-oslo-gray-800 hover:bg-pink-600
-                  text-oslo-gray-400 hover:text-white
-                  transition-all duration-200
-                  hover:scale-110
-                "
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-oslo-gray-800 hover:bg-pink-600 text-oslo-gray-400 hover:text-white transition-all duration-200 hover:scale-110"
               >
-                <Instagram className="w-5 h-5" />
+                <Image
+                  src="/social_icons/instagram.svg"
+                  alt="Instagram"
+                  width={24}
+                  height={24}
+                  className="brightness-0 invert"
+                />
               </a>
 
               <a
-                href="https://linkedin.com"
+                href="https://tiktok.com/@inmoapp"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="
-                  w-10 h-10 flex items-center justify-center
-                  rounded-full
-                  bg-oslo-gray-800 hover:bg-blue-700
-                  text-oslo-gray-400 hover:text-white
-                  transition-all duration-200
-                  hover:scale-110
-                "
+                aria-label="TikTok"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-oslo-gray-800 hover:bg-black text-oslo-gray-400 hover:text-white transition-all duration-200 hover:scale-110"
               >
-                <Linkedin className="w-5 h-5" />
+                <Image
+                  src="/social_icons/tiktok.svg"
+                  alt="TikTok"
+                  width={21}
+                  height={21}
+                  className="brightness-0 invert"
+                />
               </a>
             </div>
           </div>
 
           {/* Propiedades Column */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Propiedades</h3>
-            <ul className="space-y-3">
+            <h3 className="text-white font-semibold mb-6 text-sm uppercase tracking-wider">
+              Propiedades
+            </h3>
+            <ul className="space-y-4">
               <li>
                 <Link
                   href="/propiedades"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Todas las Propiedades
                 </Link>
@@ -203,7 +171,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/propiedades?transactionType=SALE"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   En Venta
                 </Link>
@@ -211,7 +179,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/propiedades?transactionType=RENT"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   En Renta
                 </Link>
@@ -219,7 +187,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/propiedades?category=HOUSE"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Casas
                 </Link>
@@ -227,7 +195,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/propiedades?category=APARTMENT"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Departamentos
                 </Link>
@@ -237,12 +205,14 @@ export function PublicFooter() {
 
           {/* Empresa Column */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Empresa</h3>
-            <ul className="space-y-3">
+            <h3 className="text-white font-semibold mb-6 text-sm uppercase tracking-wider">
+              Empresa
+            </h3>
+            <ul className="space-y-4">
               <li>
                 <Link
                   href="/nosotros"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Sobre Nosotros
                 </Link>
@@ -250,7 +220,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/agentes"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Agentes
                 </Link>
@@ -258,7 +228,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/blog"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Blog
                 </Link>
@@ -266,7 +236,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/carreras"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Trabaja con Nosotros
                 </Link>
@@ -274,7 +244,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/contacto"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Contacto
                 </Link>
@@ -284,12 +254,14 @@ export function PublicFooter() {
 
           {/* Soporte Column */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Soporte</h3>
-            <ul className="space-y-3">
+            <h3 className="text-white font-semibold mb-6 text-sm uppercase tracking-wider">
+              Soporte
+            </h3>
+            <ul className="space-y-4">
               <li>
                 <Link
                   href="/ayuda"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Centro de Ayuda
                 </Link>
@@ -297,7 +269,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/faq"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Preguntas Frecuentes
                 </Link>
@@ -305,7 +277,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/terminos"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Términos de Uso
                 </Link>
@@ -313,7 +285,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/privacidad"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Política de Privacidad
                 </Link>
@@ -321,7 +293,7 @@ export function PublicFooter() {
               <li>
                 <Link
                   href="/cookies"
-                  className="hover:text-white transition-colors"
+                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
                   Política de Cookies
                 </Link>
@@ -333,29 +305,29 @@ export function PublicFooter() {
 
       {/* Bottom Bar (Copyright) */}
       <div className="border-t border-oslo-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-oslo-gray-400 text-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <p className="text-oslo-gray-500 text-sm">
               © {currentYear} InmoApp. Todos los derechos reservados.
             </p>
 
             {/* Legal Links (Small) */}
-            <div className="flex gap-6 text-sm">
+            <div className="flex gap-8 text-sm">
               <Link
                 href="/terminos"
-                className="text-oslo-gray-400 hover:text-white transition-colors"
+                className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-0.5 inline-block"
               >
                 Términos
               </Link>
               <Link
                 href="/privacidad"
-                className="text-oslo-gray-400 hover:text-white transition-colors"
+                className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-0.5 inline-block"
               >
                 Privacidad
               </Link>
               <Link
                 href="/cookies"
-                className="text-oslo-gray-400 hover:text-white transition-colors"
+                className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-0.5 inline-block"
               >
                 Cookies
               </Link>

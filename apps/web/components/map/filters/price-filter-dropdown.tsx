@@ -130,8 +130,8 @@ export function PriceFilterDropdown() {
   const handleHistogramChange = useCallback(
     (newMin: number, newMax: number) => {
       setDraftFilters({
-        minPrice: newMin >= 0 ? newMin : undefined,  // Allow $0 as minimum
-        maxPrice: newMax <= rangeMaxBound ? newMax : undefined,  // Allow full range
+        minPrice: newMin >= 0 ? newMin : undefined, // Allow $0 as minimum
+        maxPrice: newMax <= rangeMaxBound ? newMax : undefined, // Allow full range
       });
     },
     [setDraftFilters, rangeMaxBound],
@@ -156,8 +156,8 @@ export function PriceFilterDropdown() {
   // Handle clear filter button - only clears price filters
   const handleClear = useCallback(() => {
     // Clear only minPrice and maxPrice, leaving other filters intact
-    updateFilter('minPrice', undefined);
-    updateFilter('maxPrice', undefined);
+    updateFilter("minPrice", undefined);
+    updateFilter("maxPrice", undefined);
     setIsDropdownOpen(false);
   }, [updateFilter]);
 

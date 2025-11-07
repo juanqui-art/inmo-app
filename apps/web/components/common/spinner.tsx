@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * Loading Spinner Component
@@ -14,25 +14,25 @@ interface SpinnerProps {
    * Size in tailwind units (e.g., "8", "12", "16")
    * @default "8"
    */
-  size?: string
+  size?: string;
 
   /**
    * Tailwind color class (e.g., "text-white", "text-indigo-500")
    * @default "text-white"
    */
-  color?: string
+  color?: string;
 
   /**
    * Aria label for screen readers
    * @default "Cargando..."
    */
-  ariaLabel?: string
+  ariaLabel?: string;
 }
 
 export function Spinner({
-  size = '8',
-  color = 'text-white',
-  ariaLabel = 'Cargando...',
+  size = "8",
+  color = "text-white",
+  ariaLabel = "Cargando...",
 }: SpinnerProps) {
   return (
     <svg
@@ -58,5 +58,5 @@ export function Spinner({
         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
       />
     </svg>
-  )
+  );
 }

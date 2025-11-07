@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 /**
  * Map Filter Bar (Refactored)
@@ -21,11 +21,11 @@
  * - Easier to maintain and extend
  */
 
-import { AISearchInline } from "@/components/ai-search/ai-search-inline"
-import { BathroomsFilter } from "./bathrooms-filter"
-import { BedroomsFilter } from "./bedrooms-filter"
-import { PriceFilterDropdown } from "./price-filter-dropdown"
-import { PropertyTypeDropdown } from "./property-type-dropdown"
+import { AISearchInline } from "@/components/ai-search/ai-search-inline";
+import { BathroomsFilter } from "./bathrooms-filter";
+import { BedroomsFilter } from "./bedrooms-filter";
+import { PriceFilterDropdown } from "./price-filter-dropdown";
+import { PropertyTypeDropdown } from "./property-type-dropdown";
 
 /**
  * FilterBar - Pure layout component
@@ -61,5 +61,5 @@ export function FilterBar() {
         </div>
       </div>
     </div>
-  )
+  );
 }

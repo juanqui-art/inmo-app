@@ -16,11 +16,11 @@ interface FilterSkeletonProps {
   width?: string;
 }
 
-export function FilterSkeleton({
-  width = "w-32",
-}: FilterSkeletonProps) {
+export function FilterSkeleton({ width = "w-32" }: FilterSkeletonProps) {
   return (
-    <div className={`${width} h-10 bg-oslo-gray-800/50 animate-pulse rounded-lg`} />
+    <div
+      className={`${width} h-10 bg-oslo-gray-800/50 animate-pulse rounded-lg`}
+    />
   );
 }
 

@@ -67,10 +67,7 @@ export function MapFilterPanel() {
         />
 
         {/* Category */}
-        <CategoryFilter
-          selected={filters.category}
-          onSelect={setCategory}
-        />
+        <CategoryFilter selected={filters.category} onSelect={setCategory} />
 
         {/* Price Range */}
         <PriceRangeFilter

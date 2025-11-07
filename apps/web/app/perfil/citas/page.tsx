@@ -28,7 +28,7 @@ export default async function PerfilCitasPage() {
   const past = appointments.filter(
     (apt) =>
       (apt.status === "COMPLETED" || apt.status === "CANCELLED") &&
-      apt.scheduledAt < new Date()
+      apt.scheduledAt < new Date(),
   );
 
   return (

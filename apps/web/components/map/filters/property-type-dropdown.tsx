@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 /**
  * Property Type Filter Dropdown (Refactored)
@@ -16,7 +16,7 @@
  * - ✅ Follows same pattern as PriceFilterDropdown
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Building,
   Building2,
@@ -29,42 +29,42 @@ import {
   TreePine,
   Warehouse,
   Zap,
-} from 'lucide-react'
-import type { PropertyCategory } from '@repo/database'
+} from "lucide-react";
+import type { PropertyCategory } from "@repo/database";
 
-import { Spinner } from '@/components/common'
-import { FilterDropdown } from './filter-dropdown'
-import { useMapStore } from '@/stores/map-store'
+import { Spinner } from "@/components/common";
+import { FilterDropdown } from "./filter-dropdown";
+import { useMapStore } from "@/stores/map-store";
 
 const CATEGORIES = [
   // Residential
-  { value: 'HOUSE' as PropertyCategory, label: 'Casa', icon: Home },
+  { value: "HOUSE" as PropertyCategory, label: "Casa", icon: Home },
   {
-    value: 'APARTMENT' as PropertyCategory,
-    label: 'Departamento',
+    value: "APARTMENT" as PropertyCategory,
+    label: "Departamento",
     icon: Building2,
   },
-  { value: 'SUITE' as PropertyCategory, label: 'Suite', icon: Zap },
-  { value: 'VILLA' as PropertyCategory, label: 'Villa', icon: Castle },
+  { value: "SUITE" as PropertyCategory, label: "Suite", icon: Zap },
+  { value: "VILLA" as PropertyCategory, label: "Villa", icon: Castle },
   {
-    value: 'PENTHOUSE' as PropertyCategory,
-    label: 'Penthouse',
+    value: "PENTHOUSE" as PropertyCategory,
+    label: "Penthouse",
     icon: Building,
   },
-  { value: 'DUPLEX' as PropertyCategory, label: 'Dúplex', icon: Building2 },
-  { value: 'LOFT' as PropertyCategory, label: 'Loft', icon: Warehouse },
+  { value: "DUPLEX" as PropertyCategory, label: "Dúplex", icon: Building2 },
+  { value: "LOFT" as PropertyCategory, label: "Loft", icon: Warehouse },
 
   // Land & Commercial
-  { value: 'LAND' as PropertyCategory, label: 'Terreno', icon: MapPin },
+  { value: "LAND" as PropertyCategory, label: "Terreno", icon: MapPin },
   {
-    value: 'COMMERCIAL' as PropertyCategory,
-    label: 'Local',
+    value: "COMMERCIAL" as PropertyCategory,
+    label: "Local",
     icon: Warehouse,
   },
-  { value: 'OFFICE' as PropertyCategory, label: 'Oficina', icon: Landmark },
-  { value: 'WAREHOUSE' as PropertyCategory, label: 'Bodega', icon: Factory },
-  { value: 'FARM' as PropertyCategory, label: 'Finca', icon: TreePine },
-]
+  { value: "OFFICE" as PropertyCategory, label: "Oficina", icon: Landmark },
+  { value: "WAREHOUSE" as PropertyCategory, label: "Bodega", icon: Factory },
+  { value: "FARM" as PropertyCategory, label: "Finca", icon: TreePine },
+];
 
 /**
  * PropertyTypeDropdown - No props needed!
@@ -74,22 +74,22 @@ export function PropertyTypeDropdown() {
   // =========================================================================
   // STORE SELECTORS (Granular to prevent unnecessary re-renders)
   // =========================================================================
-  const committedCategory = useMapStore((state) => state.filters.category)
-  const draftCategory = useMapStore((state) => state.draftFilters.category)
-  const isLoading = useMapStore((state) => state.isLoading)
-  const setIsLoading = useMapStore((state) => state.setIsLoading)
-  const setDraftFilter = useMapStore((state) => state.setDraftFilter)
-  const commitDraftFilters = useMapStore((state) => state.commitDraftFilters)
-  const clearDraftFilters = useMapStore((state) => state.clearDraftFilters)
-  const updateFilter = useMapStore((state) => state.updateFilter)
+  const committedCategory = useMapStore((state) => state.filters.category);
+  const draftCategory = useMapStore((state) => state.draftFilters.category);
+  const isLoading = useMapStore((state) => state.isLoading);
+  const setIsLoading = useMapStore((state) => state.setIsLoading);
+  const setDraftFilter = useMapStore((state) => state.setDraftFilter);
+  const commitDraftFilters = useMapStore((state) => state.commitDraftFilters);
+  const clearDraftFilters = useMapStore((state) => state.clearDraftFilters);
+  const updateFilter = useMapStore((state) => state.updateFilter);
 
   // =========================================================================
   // LOCAL STATE
   // =========================================================================
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   // Ref to track previous loading state (for auto-closing dropdown)
-  const wasLoadingRef = useRef(false)
+  const wasLoadingRef = useRef(false);
 
   // =========================================================================
   // EFFECTS
@@ -100,71 +100,71 @@ export function PropertyTypeDropdown() {
   useEffect(() => {
     // If we were loading and now we're done
     if (wasLoadingRef.current && !isLoading) {
-      setIsOpen(false)
+      setIsOpen(false);
     }
-    wasLoadingRef.current = isLoading
-  }, [isLoading])
+    wasLoadingRef.current = isLoading;
+  }, [isLoading]);
 
   // =========================================================================
   // COMPUTED VALUES
   // =========================================================================
 
   // Current display values (draft if available, otherwise committed)
-  const selected = draftCategory ?? committedCategory ?? []
+  const selected = draftCategory ?? committedCategory ?? [];
 
   // Handle dropdown open/close
   const handleOpenChange = useCallback(
     (open: boolean) => {
       // Prevent closing while loading (spinner is showing)
-      if (isLoading && !open) return
+      if (isLoading && !open) return;
 
-      setIsOpen(open)
+      setIsOpen(open);
       if (open) {
         // When opening dropdown, ALWAYS clear draft to empty
         // This ensures displayValue shows committed values
         // and draft is ready for fresh user interactions
-        clearDraftFilters()
+        clearDraftFilters();
       }
     },
-    [isLoading, clearDraftFilters]
-  )
+    [isLoading, clearDraftFilters],
+  );
 
   // Handle category toggle (updates draft)
   const handleCategoryToggle = useCallback(
     (category: PropertyCategory) => {
       const updated = selected.includes(category)
         ? selected.filter((c) => c !== category)
-        : [...selected, category]
+        : [...selected, category];
 
       // Always set to array (empty or with values) to ensure draft wins over committed
       // Empty array means "no category filter applied"
-      setDraftFilter('category', updated)
+      setDraftFilter("category", updated);
     },
-    [selected, setDraftFilter]
-  )
+    [selected, setDraftFilter],
+  );
 
   // Clear all selected categories (reset to empty/all)
   const handleSelectAll = useCallback(() => {
     // Setting category to empty array [] deselects all visible categories
     // This ensures draft wins over committed in the UI
     // When committed, empty array means "no category filter"
-    setDraftFilter('category', [])
-  }, [setDraftFilter])
+    setDraftFilter("category", []);
+  }, [setDraftFilter]);
 
   // Clear category filter (X button) - only clears category
   const handleClear = useCallback(() => {
     // Clear only category, leaving other filters intact
-    updateFilter('category', undefined)
-    handleOpenChange(false)
-  }, [updateFilter, handleOpenChange])
+    updateFilter("category", undefined);
+    handleOpenChange(false);
+  }, [updateFilter, handleOpenChange]);
 
   // Commit changes to store
   const handleDone = useCallback(() => {
     // Commit draft filters to store
-    commitDraftFilters()
+    commitDraftFilters();
 
     // Show loading spinner while server fetches filtered data
-    setIsLoading(true)
+    setIsLoading(true);
 
     // IMPORTANT:
     // 1. commitDraftFilters() updates store.filters
@@ -172,28 +172,28 @@ export function PropertyTypeDropdown() {
     // 3. Server fetches new properties and updates store
     // 4. setIsLoading(false) is called when done
     // 5. useEffect closes dropdown automatically
-  }, [commitDraftFilters, setIsLoading])
+  }, [commitDraftFilters, setIsLoading]);
 
   // Display value logic - Show category names with ellipsis for 3+
   const displayValue = useMemo(() => {
-    if (selected.length === 0) return 'Tipo'
+    if (selected.length === 0) return "Tipo";
 
     if (selected.length === 1) {
-      return CATEGORIES.find((c) => c.value === selected[0])?.label || 'Tipo'
+      return CATEGORIES.find((c) => c.value === selected[0])?.label || "Tipo";
     }
 
     if (selected.length === 2) {
       const labels = selected
-        .map(v => CATEGORIES.find(c => c.value === v)?.label)
-        .filter(Boolean)
-      return labels.join(', ')
+        .map((v) => CATEGORIES.find((c) => c.value === v)?.label)
+        .filter(Boolean);
+      return labels.join(", ");
     }
 
     // 3 or more: Show first two + ellipsis
-    const first = CATEGORIES.find((c) => c.value === selected[0])?.label
-    const second = CATEGORIES.find((c) => c.value === selected[1])?.label
-    return `${first}, ${second}, ...`
-  }, [selected])
+    const first = CATEGORIES.find((c) => c.value === selected[0])?.label;
+    const second = CATEGORIES.find((c) => c.value === selected[1])?.label;
+    return `${first}, ${second}, ...`;
+  }, [selected]);
 
   return (
     <FilterDropdown
@@ -233,54 +233,54 @@ export function PropertyTypeDropdown() {
 
         {/* Content Area */}
         <div className="space-y-3 px-4 pt-4">
-        {/* "Todos" Button - Clears all selections */}
-        <button
-          onClick={handleSelectAll}
-          title="Mostrar todas las propiedades sin filtrar por tipo"
-          className={`w-full px-3 py-2 rounded-lg text-base font-medium text-center transition-colors ${
-            selected.length === 0
-              ? "bg-blue-600 text-white"
-              : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800"
-          }`}
-        >
-          Todos
-        </button>
+          {/* "Todos" Button - Clears all selections */}
+          <button
+            onClick={handleSelectAll}
+            title="Mostrar todas las propiedades sin filtrar por tipo"
+            className={`w-full px-3 py-2 rounded-lg text-base font-medium text-center transition-colors ${
+              selected.length === 0
+                ? "bg-blue-600 text-white"
+                : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800"
+            }`}
+          >
+            Todos
+          </button>
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-3 gap-2">
-          {CATEGORIES.map((category) => {
-            const Icon = category.icon;
-            const isSelected = selected.includes(category.value);
+          {/* Categories Grid */}
+          <div className="grid grid-cols-3 gap-2">
+            {CATEGORIES.map((category) => {
+              const Icon = category.icon;
+              const isSelected = selected.includes(category.value);
 
-            return (
-              <button
-                key={category.value}
-                onClick={() => handleCategoryToggle(category.value)}
-                className={`relative flex flex-col items-center gap-2 px-3 py-3 rounded-lg text-center transition-all ${
-                  isSelected
-                    ? "bg-oslo-gray-700 text-oslo-gray-50 shadow-lg shadow-oslo-gray-700/30"
-                    : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800"
-                }`}
-              >
-                {/* Checkmark Badge */}
-                {isSelected && (
-                  <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500">
-                    <Check className="h-3 w-3 text-white" />
-                  </div>
-                )}
+              return (
+                <button
+                  key={category.value}
+                  onClick={() => handleCategoryToggle(category.value)}
+                  className={`relative flex flex-col items-center gap-2 px-3 py-3 rounded-lg text-center transition-all ${
+                    isSelected
+                      ? "bg-oslo-gray-700 text-oslo-gray-50 shadow-lg shadow-oslo-gray-700/30"
+                      : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800"
+                  }`}
+                >
+                  {/* Checkmark Badge */}
+                  {isSelected && (
+                    <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500">
+                      <Check className="h-3 w-3 text-white" />
+                    </div>
+                  )}
 
-                {/* Icon */}
-                <Icon className="h-5 w-5 flex-shrink-0" />
+                  {/* Icon */}
+                  <Icon className="h-5 w-5 flex-shrink-0" />
 
-                {/* Label */}
-                <span className="text-xs font-medium leading-tight">
-                  {category.label}
-                </span>
-              </button>
-            );
-          })}
+                  {/* Label */}
+                  <span className="text-xs font-medium leading-tight">
+                    {category.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
       </div>
     </FilterDropdown>
   );

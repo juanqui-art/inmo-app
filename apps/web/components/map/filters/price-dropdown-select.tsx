@@ -34,7 +34,9 @@ const PRICE_OPTIONS = [
   { label: "$2.000.000+", value: 2000000 },
 ];
 
-const MAX_PRICE_OPTIONS = PRICE_OPTIONS.filter((opt) => opt.value !== undefined);
+const MAX_PRICE_OPTIONS = PRICE_OPTIONS.filter(
+  (opt) => opt.value !== undefined,
+);
 
 export function PriceDropdownSelect({
   value,

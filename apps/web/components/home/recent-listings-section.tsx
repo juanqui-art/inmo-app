@@ -51,174 +51,142 @@
  * - https://cssgrid-generator.netlify.app/
  */
 
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
+"use client";
+
+import useEmblaCarousel from "embla-carousel-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { PropertyCard } from "@/components/properties/property-card";
 import type { SerializedProperty } from "@/lib/utils/serialize-property";
+import { useFavorites } from "@/hooks/use-favorites";
+import { AuthModal } from "@/components/auth/auth-modal";
+import { ViewMoreCard } from "./view-more-card";
 
 interface RecentListingsSectionProps {
   properties: SerializedProperty[];
+  isAuthenticated?: boolean;
 }
 
 export function RecentListingsSection({
   properties,
+  isAuthenticated = false,
 }: RecentListingsSectionProps) {
-  // Don't render if no properties
-  if (properties.length === 0) {
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingPropertyId, setPendingPropertyId] = useState<string | null>(
+    null,
+  );
+
+  const handleFavoriteClick = (propertyId: string) => {
+    if (!isAuthenticated) {
+      setPendingPropertyId(propertyId);
+      setShowAuthModal(true);
+      return;
+    }
+    toggleFavorite(propertyId);
+  };
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    align: "start",
+  });
+
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  const updateButtonStates = useCallback(() => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    updateButtonStates();
+    emblaApi.on("select", updateButtonStates);
+    emblaApi.on("reInit", updateButtonStates);
+    return () => {
+      emblaApi.off("select", updateButtonStates);
+      emblaApi.off("reInit", updateButtonStates);
+    };
+  }, [emblaApi, updateButtonStates]);
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+
+  const displayedProperties = properties.slice(0, 9);
+
+  if (displayedProperties.length === 0) {
     return null;
   }
 
   return (
-    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-oslo-gray-900">
+    <section
+      className="py-12 px-4 sm:px-6 lg:px-8 bg-oslo-gray-950"
+      aria-label="Propiedades Recientes"
+    >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-oslo-gray-100">
-            Propiedades Recientes
-          </h2>
-          <p className="text-oslo-gray-400 mt-2">
-            Las últimas propiedades agregadas a la plataforma
-          </p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-oslo-gray-100">
+              Propiedades Recientes
+            </h2>
+            <p className="text-oslo-gray-400 mt-2">
+              Las últimas propiedades agregadas a la plataforma.
+            </p>
+          </div>
+          {/* Navigation Buttons */}
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={scrollPrev}
+              disabled={!canScrollPrev}
+              aria-label="Ver propiedades anteriores"
+              className="p-2 rounded-full bg-oslo-gray-800 border-2 border-oslo-gray-700 hover:border-indigo-500 hover:bg-oslo-gray-700 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-oslo-gray-700 transition-all duration-200 text-oslo-gray-200"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={scrollNext}
+              disabled={!canScrollNext}
+              aria-label="Ver más propiedades"
+              className="p-2 rounded-full bg-oslo-gray-800 border-2 border-oslo-gray-700 hover:border-indigo-500 hover:bg-oslo-gray-700 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-oslo-gray-700 transition-all duration-200 text-oslo-gray-200"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Grid Container */}
-        <div
-          className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          lg:grid-cols-4
-          gap-6
-        "
-        >
-          {/*
-            CSS GRID BREAKDOWN:
-
-            grid: Enable CSS Grid layout
-
-            grid-cols-1: Mobile (1 column)
-            - Full width cards
-            - Easy to read/tap
-
-            sm:grid-cols-2: Tablet (2 columns)
-            - 640px+ breakpoint
-            - Good balance of info + overview
-
-            lg:grid-cols-4: Desktop (4 columns)
-            - 1024px+ breakpoint
-            - Optimal use of horizontal space
-            - Quick scan of multiple properties
-
-            gap-6: 1.5rem spacing between cards
-            - Not too tight (cards don't touch)
-            - Not too loose (still feels grouped)
-
-            WHY CSS Grid vs Flexbox?
-            - Grid: Better for 2D layouts (rows AND columns)
-            - Flexbox: Better for 1D layouts (just rows OR columns)
-            - Grid: Easier responsive control
-            - Grid: Auto-fill/auto-fit features
-
-            PERFORMANCE:
-            - No JavaScript
-            - Native CSS (fastest)
-            - GPU accelerated
-          */}
-          {properties.slice(0, 8).map((property) => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
-        </div>
-
-        {/* Call to Action */}
-        <div className="text-center mt-8">
-          <Link
-            href="/propiedades"
-            className="
-              inline-flex items-center gap-2
-              px-6 py-3
-              bg-oslo-gray-800 hover:bg-oslo-gray-700
-              text-oslo-gray-100 font-semibold
-              border-2 border-oslo-gray-700
-              rounded-lg
-              transition-colors duration-200
-            "
-          >
-            Ver Todas las Propiedades
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+        {/* Carousel */}
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex gap-4 -ml-4">
+            {displayedProperties.map((property, index) => (
+              <div
+                key={property.id}
+                className="flex-[0_0_100%] min-w-0 pl-4 sm:flex-[0_0_50%] lg:flex-[0_0_33.333%]"
+              >
+                <PropertyCard
+                  property={property}
+                  onFavoriteToggle={handleFavoriteClick}
+                  isFavorite={isFavorite(property.id)}
+                  priority={index < 3}
+                />
+              </div>
+            ))}
+            <div className="flex-[0_0_100%] min-w-0 pl-4 sm:flex-[0_0_50%] lg:flex-[0_0_33.333%]">
+              <ViewMoreCard href="/propiedades" />
+            </div>
+          </div>
         </div>
       </div>
+
+      <AuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        propertyId={pendingPropertyId || undefined}
+      />
     </section>
   );
 }
-
-/**
- * USAGE in Homepage:
- *
- * import { RecentListingsSection } from '@/components/home/recent-listings-section'
- * import { propertyRepository } from '@repo/database'
- *
- * export default async function HomePage() {
- *   const recent = await propertyRepository.findMany({
- *     where: { status: 'AVAILABLE' },
- *     take: 8,
- *     orderBy: { createdAt: 'desc' },
- *     include: {
- *       images: { take: 1, orderBy: { order: 'asc' } },
- *       agent: { select: { name: true, avatar: true } }
- *     }
- *   })
- *
- *   return (
- *     <main>
- *       <HeroSection />
- *       <FeaturedPropertiesCarousel properties={featured} />
- *       <RecentListingsSection properties={recent} />
- *     </main>
- *   )
- * }
- */
-
-/**
- * DESIGN DECISIONS:
- *
- * 1. Background Color (bg-gray-50):
- *    - Visual separation from featured section
- *    - Alternating backgrounds = better readability
- *    - Not too dark (keeps it light and airy)
- *
- * 2. Max 8 Properties:
- *    - 2 rows on desktop (4x2)
- *    - Not overwhelming
- *    - Encourages click to "View All"
- *
- * 3. CTA Button Style:
- *    - Outlined (vs filled) to differentiate from primary CTA above
- *    - Border matches Featured's filled button
- *    - Hierarchy: Featured (primary) > Recent (secondary)
- *
- * 4. Center Text Header:
- *    - Draws attention
- *    - Consistent with section importance
- *    - Better for shorter headings
- *
- * FUTURE ENHANCEMENTS:
- *
- * 1. Filter Toggle:
- *    <Tabs>
- *      <Tab>Todas</Tab>
- *      <Tab>Venta</Tab>
- *      <Tab>Renta</Tab>
- *    </Tabs>
- *
- * 2. View Toggle:
- *    <button onClick={() => setView('grid')}>Grid</button>
- *    <button onClick={() => setView('list')}>List</button>
- *
- * 3. Skeleton Loading:
- *    <div className="grid grid-cols-4 gap-6">
- *      {[...Array(8)].map((_, i) => <PropertyCardSkeleton key={i} />)}
- *    </div>
- *
- * But start simple: Current implementation is clean and effective.
- */

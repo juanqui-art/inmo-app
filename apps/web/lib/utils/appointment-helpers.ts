@@ -48,27 +48,25 @@ export function getStatusLabel(status: AppointmentStatus): {
   label: string;
   color: string;
 } {
-  const statusMap: Record<
-    AppointmentStatus,
-    { label: string; color: string }
-  > = {
-    PENDING: {
-      label: "Pendiente de confirmación",
-      color: "amber",
-    },
-    CONFIRMED: {
-      label: "Confirmada",
-      color: "green",
-    },
-    CANCELLED: {
-      label: "Cancelada",
-      color: "red",
-    },
-    COMPLETED: {
-      label: "Completada",
-      color: "blue",
-    },
-  };
+  const statusMap: Record<AppointmentStatus, { label: string; color: string }> =
+    {
+      PENDING: {
+        label: "Pendiente de confirmación",
+        color: "amber",
+      },
+      CONFIRMED: {
+        label: "Confirmada",
+        color: "green",
+      },
+      CANCELLED: {
+        label: "Cancelada",
+        color: "red",
+      },
+      COMPLETED: {
+        label: "Completada",
+        color: "blue",
+      },
+    };
 
   return statusMap[status];
 }
@@ -94,7 +92,7 @@ export function canConfirmAppointment(status: AppointmentStatus): boolean {
  */
 export function getCancelConfirmationMessage(
   property: string,
-  date: string
+  date: string,
 ): string {
   return `¿Estás seguro de que deseas cancelar la cita para ${property} el ${date}? Esta acción no se puede deshacer.`;
 }
@@ -104,7 +102,7 @@ export function getCancelConfirmationMessage(
  */
 export function getAppointmentEmailSubject(
   type: "created" | "confirmed" | "cancelled",
-  property: string
+  property: string,
 ): string {
   const subjectMap = {
     created: `Nueva cita agendada - ${property}`,
@@ -130,7 +128,7 @@ export function getAppointmentDuration(): number {
 export function isTimeSlotConflict(
   date1: Date,
   date2: Date,
-  bufferMinutes = 0
+  bufferMinutes = 0,
 ): boolean {
   const time1 = date1.getTime();
   const time2 = date2.getTime();
@@ -164,7 +162,7 @@ export function getNextAvailableDate(from: Date): Date {
  */
 export function formatDuration(from: Date, to: Date): string {
   const days = Math.floor(
-    (to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24)
+    (to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24),
   );
 
   if (days === 0) return "Hoy";
@@ -177,8 +175,7 @@ export function formatDuration(from: Date, to: Date): string {
  */
 export function isAppointmentSoon(date: Date): boolean {
   const now = new Date();
-  const hoursUntil =
-    (date.getTime() - now.getTime()) / (1000 * 60 * 60);
+  const hoursUntil = (date.getTime() - now.getTime()) / (1000 * 60 * 60);
   return hoursUntil <= 24 && hoursUntil > 0;
 }
 

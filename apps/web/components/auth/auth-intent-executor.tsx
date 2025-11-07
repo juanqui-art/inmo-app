@@ -42,7 +42,7 @@ export function AuthIntentExecutor() {
             toast.success(
               result.isFavorite
                 ? "✅ Propiedad agregada a favoritos"
-                : "✅ Propiedad removida de favoritos"
+                : "✅ Propiedad removida de favoritos",
             );
           } else {
             toast.error(result.error || "❌ Error al guardar favorito");

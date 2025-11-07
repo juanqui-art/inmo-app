@@ -51,11 +51,9 @@ interface LocationData {
  * @param properties - Array of properties with coordinates
  * @returns Bounding box or null if no valid coordinates
  */
-export function calculateBounds(
-  properties: LocationData[]
-): MapBounds | null {
+export function calculateBounds(properties: LocationData[]): MapBounds | null {
   const validProps = properties.filter(
-    (p) => p.latitude != null && p.longitude != null
+    (p) => p.latitude != null && p.longitude != null,
   );
 
   if (validProps.length === 0) return null;
@@ -99,7 +97,7 @@ export function calculateBounds(
  * @returns A `SmartViewport` for 0 or 1 result, or `MapBounds` for multiple results.
  */
 export function getSmartViewport(
-  properties: LocationData[]
+  properties: LocationData[],
 ): SmartViewport | MapBounds | null {
   // Scenario 1: No results - return default Cuenca view
   if (properties.length === 0) {
@@ -155,7 +153,7 @@ export function getSmartViewport(
  * @returns Array format for MapBox fitBounds()
  */
 export function boundsToMapBoxFormat(
-  bounds: MapBounds
+  bounds: MapBounds,
 ): [[number, number], [number, number]] {
   return [
     [bounds.sw_lng, bounds.sw_lat], // Southwest corner

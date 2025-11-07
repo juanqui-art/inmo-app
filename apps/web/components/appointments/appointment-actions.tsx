@@ -8,9 +8,7 @@
  */
 
 import { useTransition, useState } from "react";
-import {
-  updateAppointmentStatusAction,
-} from "@/app/actions/appointments";
+import { updateAppointmentStatusAction } from "@/app/actions/appointments";
 import { Button } from "@repo/ui";
 import { Check, X } from "lucide-react";
 
@@ -23,9 +21,9 @@ export function AppointmentActions({
   appointmentId,
   status,
 }: AppointmentActionsProps) {
-  const [showConfirm, setShowConfirm] = useState<
-    "confirm" | "cancel" | null
-  >(null);
+  const [showConfirm, setShowConfirm] = useState<"confirm" | "cancel" | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -58,16 +56,14 @@ export function AppointmentActions({
       {showConfirm ? (
         <div className="text-sm space-y-2">
           <p>
-            {showConfirm === "confirm"
-              ? "¿Confirmar cita?"
-              : "¿Cancelar cita?"}
+            {showConfirm === "confirm" ? "¿Confirmar cita?" : "¿Cancelar cita?"}
           </p>
           <div className="flex gap-2">
             <Button
               size="sm"
               onClick={() =>
                 handleAction(
-                  showConfirm === "confirm" ? "CONFIRMED" : "CANCELLED"
+                  showConfirm === "confirm" ? "CONFIRMED" : "CANCELLED",
                 )
               }
               disabled={isPending}
@@ -106,9 +102,7 @@ export function AppointmentActions({
           </Button>
         </>
       )}
-      {error && (
-        <p className="text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
 }

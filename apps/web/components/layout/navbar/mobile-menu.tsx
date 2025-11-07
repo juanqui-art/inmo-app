@@ -91,7 +91,9 @@ export function MobileMenu({
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-oslo-gray-100">Mi cuenta</p>
+                <p className="text-sm font-medium text-oslo-gray-100">
+                  Mi cuenta
+                </p>
                 <p className="text-xs text-oslo-gray-400">Conectado</p>
               </div>
             </div>
