@@ -109,16 +109,19 @@ export function PropertyTypeDropdown() {
         ? selected.filter((c) => c !== category)
         : [...selected, category]
 
-      setDraftFilter('category', updated.length > 0 ? updated : undefined)
+      // Always set to array (empty or with values) to ensure draft wins over committed
+      // Empty array means "no category filter applied"
+      setDraftFilter('category', updated)
     },
     [selected, setDraftFilter]
   )
 
   // Clear all selected categories (reset to empty/all)
   const handleSelectAll = useCallback(() => {
-    // Setting category to undefined clears all selections (equivalent to "Todos")
-    // This triggers draft update which should re-render the UI
-    setDraftFilter('category', undefined)
+    // Setting category to empty array [] deselects all visible categories
+    // This ensures draft wins over committed in the UI
+    // When committed, empty array means "no category filter"
+    setDraftFilter('category', [])
   }, [setDraftFilter])
 
   // Clear category filter (X button) - only clears category

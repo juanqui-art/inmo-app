@@ -244,14 +244,21 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
         draft.minPrice !== undefined ? draft.minPrice : current.minPrice,
       maxPrice:
         draft.maxPrice !== undefined ? draft.maxPrice : current.maxPrice,
-      category: draft.category !== undefined ? draft.category : current.category,
+      // For arrays: empty array [] means "no filter" (equivalent to undefined)
+      category: draft.category !== undefined
+        ? (draft.category.length > 0 ? draft.category : undefined)
+        : current.category,
       bedrooms:
-        draft.bedrooms !== undefined ? draft.bedrooms : current.bedrooms,
+        draft.bedrooms !== undefined
+          ? (draft.bedrooms.length > 0 ? draft.bedrooms : undefined)
+          : current.bedrooms,
       bathrooms:
-        draft.bathrooms !== undefined ? draft.bathrooms : current.bathrooms,
+        draft.bathrooms !== undefined
+          ? (draft.bathrooms.length > 0 ? draft.bathrooms : undefined)
+          : current.bathrooms,
       transactionType:
         draft.transactionType !== undefined
-          ? draft.transactionType
+          ? (draft.transactionType.length > 0 ? draft.transactionType : undefined)
           : current.transactionType,
     };
 
