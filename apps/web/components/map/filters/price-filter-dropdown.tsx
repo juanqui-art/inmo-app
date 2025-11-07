@@ -200,21 +200,26 @@ export function PriceFilterDropdown() {
           </div>
         )}
 
-        {/* Header with current range */}
-        <div className="px-4 pt-3">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-bold text-oslo-gray-100">Precio</h3>
-            <div className="text-right">
-              <p className="text-xs text-oslo-gray-400">Rango</p>
-              <p className="text-sm font-semibold text-indigo-400">
-                {formatPrice(displayMin)} - {formatPrice(displayMax)}
-              </p>
-            </div>
+        {/* Header with Done Button - Top Section */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-oslo-gray-800">
+          <div>
+            <h3 className="text-sm font-semibold text-oslo-gray-50">Precio</h3>
+            <p className="text-xs text-oslo-gray-400 mt-1">
+              {formatPrice(displayMin)} - {formatPrice(displayMax)}
+            </p>
           </div>
+          <button
+            type="button"
+            onClick={handleDone}
+            disabled={isLoading}
+            className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold text-sm hover:bg-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900 disabled:bg-oslo-gray-700 disabled:cursor-not-allowed whitespace-nowrap ml-3"
+          >
+            Listo
+          </button>
         </div>
 
         {/* Interactive Histogram Slider */}
-        <div className="px-3">
+        <div className="px-4 pt-2">
           <PriceHistogramSlider
             distribution={priceDistribution}
             localMin={displayMin}
@@ -223,21 +228,9 @@ export function PriceFilterDropdown() {
           />
         </div>
 
-        {/* "Done" Button */}
-        <div className="px-4">
-          <button
-            type="button"
-            onClick={handleDone}
-            disabled={isLoading}
-            className="w-full px-4 py-2 rounded-lg bg-oslo-gray-700 text-oslo-gray-100 font-medium text-base hover:bg-oslo-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-oslo-gray-600 disabled:bg-oslo-gray-800 disabled:cursor-not-allowed"
-          >
-            Listo
-          </button>
-        </div>
-
         {/* Active Filter Indicator */}
         {(displayMin > 0 || displayMax < rangeMaxBound) && (
-          <div className="px-4 flex items-center gap-2 text-xs">
+          <div className="px-4 pb-2 flex items-center gap-2 text-xs">
             <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
             <span className="text-oslo-gray-400">Filtro activo</span>
           </div>

@@ -160,20 +160,20 @@ export function PropertyTypeDropdown() {
       onClear={handleClear}
     >
       {/* Header with Done Button */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-oslo-gray-800 mb-3">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-oslo-gray-800">
         <h3 className="text-sm font-semibold text-oslo-gray-50">
           Tipo de Propiedad
         </h3>
         <button
           onClick={handleDone}
-          className="text-xs font-semibold text-blue-500 hover:text-blue-400 transition-colors"
+          className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold text-sm hover:bg-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900 whitespace-nowrap"
         >
           Listo
         </button>
       </div>
 
       {/* Content Area */}
-      <div className="space-y-3">
+      <div className="space-y-3 px-4 pt-4">
         {/* "Todos" Button */}
         <button
           onClick={handleSelectAll}
