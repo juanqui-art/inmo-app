@@ -92,12 +92,14 @@ export function PropertyTypeDropdown() {
   const handleOpenChange = useCallback(
     (open: boolean) => {
       setIsOpen(open)
-      if (!open) {
-        // Reset draft to committed state when closing without confirming
-        resetDraftFilters()
+      if (open) {
+        // When opening dropdown, ALWAYS clear draft to empty
+        // This ensures displayValue shows committed values
+        // and draft is ready for fresh user interactions
+        clearDraftFilters()
       }
     },
-    [resetDraftFilters]
+    [clearDraftFilters]
   )
 
   // Handle category toggle (updates draft)
@@ -112,8 +114,10 @@ export function PropertyTypeDropdown() {
     [selected, setDraftFilter]
   )
 
-  // Clear all (updates draft)
+  // Clear all selected categories (reset to empty/all)
   const handleSelectAll = useCallback(() => {
+    // Setting category to undefined clears all selections (equivalent to "Todos")
+    // This triggers draft update which should re-render the UI
     setDraftFilter('category', undefined)
   }, [setDraftFilter])
 
@@ -174,12 +178,13 @@ export function PropertyTypeDropdown() {
 
       {/* Content Area */}
       <div className="space-y-3 px-4 pt-4">
-        {/* "Todos" Button */}
+        {/* "Todos" Button - Clears all selections */}
         <button
           onClick={handleSelectAll}
+          title="Mostrar todas las propiedades sin filtrar por tipo"
           className={`w-full px-3 py-2 rounded-lg text-base font-medium text-center transition-colors ${
             selected.length === 0
-              ? "bg-oslo-gray-700 text-oslo-gray-50"
+              ? "bg-blue-600 text-white"
               : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800"
           }`}
         >
