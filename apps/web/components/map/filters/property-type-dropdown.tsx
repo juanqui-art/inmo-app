@@ -78,7 +78,7 @@ export function PropertyTypeDropdown() {
   const setDraftFilter = useMapStore((state) => state.setDraftFilter)
   const commitDraftFilters = useMapStore((state) => state.commitDraftFilters)
   const clearDraftFilters = useMapStore((state) => state.clearDraftFilters)
-  const clearAllFilters = useMapStore((state) => state.clearAllFilters)
+  const updateFilter = useMapStore((state) => state.updateFilter)
 
   // =========================================================================
   // LOCAL STATE
@@ -121,11 +121,12 @@ export function PropertyTypeDropdown() {
     setDraftFilter('category', undefined)
   }, [setDraftFilter])
 
-  // Clear category filter (X button)
+  // Clear category filter (X button) - only clears category
   const handleClear = useCallback(() => {
-    clearAllFilters()
+    // Clear only category, leaving other filters intact
+    updateFilter('category', undefined)
     handleOpenChange(false)
-  }, [clearAllFilters, handleOpenChange])
+  }, [updateFilter, handleOpenChange])
 
   // Commit changes to store
   const handleDone = useCallback(() => {

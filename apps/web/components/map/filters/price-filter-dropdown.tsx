@@ -58,7 +58,7 @@ export function PriceFilterDropdown() {
   const setDraftFilters = useMapStore((state) => state.setDraftFilters);
   const commitDraftFilters = useMapStore((state) => state.commitDraftFilters);
   const clearDraftFilters = useMapStore((state) => state.clearDraftFilters);
-  const clearAllFilters = useMapStore((state) => state.clearAllFilters);
+  const updateFilter = useMapStore((state) => state.updateFilter);
 
   // Determine range bounds (UI minimum is ALWAYS 0)
   const rangeMaxBound = priceRangeMax ?? 2_000_000;
@@ -153,11 +153,13 @@ export function PriceFilterDropdown() {
     // 5. useEffect closes dropdown automatically
   }, [commitDraftFilters, setIsLoading]);
 
-  // Handle clear filter button
+  // Handle clear filter button - only clears price filters
   const handleClear = useCallback(() => {
-    clearAllFilters();
+    // Clear only minPrice and maxPrice, leaving other filters intact
+    updateFilter('minPrice', undefined);
+    updateFilter('maxPrice', undefined);
     setIsDropdownOpen(false);
-  }, [clearAllFilters]);
+  }, [updateFilter]);
 
   // Handle dropdown open/close
   const handleOpenChange = useCallback(

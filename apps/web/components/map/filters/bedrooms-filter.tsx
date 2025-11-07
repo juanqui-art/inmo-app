@@ -40,7 +40,6 @@ export function BedroomsFilter() {
   // =========================================================================
   const committedBedrooms = useMapStore((state) => state.filters.bedrooms)
   const updateFilter = useMapStore((state) => state.updateFilter)
-  const clearAllFilters = useMapStore((state) => state.clearAllFilters)
 
   // Current display value
   const selected = committedBedrooms?.[0]
@@ -62,10 +61,11 @@ export function BedroomsFilter() {
     [updateFilter]
   )
 
-  // Handle clear filter button
+  // Handle clear filter button - only clears bedrooms
   const handleClear = useCallback(() => {
-    clearAllFilters()
-  }, [clearAllFilters])
+    // Clear only bedrooms, leaving other filters intact
+    updateFilter('bedrooms', undefined)
+  }, [updateFilter])
 
   return (
     <FilterDropdown
