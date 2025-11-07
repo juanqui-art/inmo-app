@@ -46,8 +46,6 @@ interface PropertyPopupProps {
   onViewDetails: () => void;
   /** Popup variant: "full" for horizontal card, "compact" for minimal */
   variant?: PopupVariant;
-  /** Whether user is authenticated (for auth modals) */
-  isAuthenticated?: boolean;
   /** Callback when unauthenticated user tries to favorite */
   onUnauthenticatedFavoriteClick?: (propertyId: string) => void;
 }
@@ -57,7 +55,6 @@ export function PropertyPopup({
   onClose,
   onViewDetails,
   variant = "full",
-  isAuthenticated = false,
   onUnauthenticatedFavoriteClick,
 }: PropertyPopupProps) {
   // Guard against missing coordinates
@@ -119,7 +116,6 @@ export function PropertyPopup({
         <PropertyCardHorizontal
           property={property}
           onViewDetails={onViewDetails}
-          isAuthenticated={isAuthenticated}
           onFavoriteClick={onUnauthenticatedFavoriteClick}
         />
       </div>

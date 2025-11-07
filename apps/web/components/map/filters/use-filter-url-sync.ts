@@ -63,10 +63,10 @@ export function useFilterUrlSync() {
       setFilters({
         minPrice: urlFilters.minPrice,
         maxPrice: urlFilters.maxPrice,
-        category: urlFilters.category,
+        category: urlFilters.category as any,
         bedrooms: urlFilters.bedrooms,
         bathrooms: urlFilters.bathrooms,
-        transactionType: urlFilters.transactionType,
+        transactionType: urlFilters.transactionType as any,
       })
 
       isInitializedRef.current = true
@@ -81,10 +81,10 @@ export function useFilterUrlSync() {
       setFilters({
         minPrice: urlFilters.minPrice,
         maxPrice: urlFilters.maxPrice,
-        category: urlFilters.category,
+        category: urlFilters.category as any,
         bedrooms: urlFilters.bedrooms,
         bathrooms: urlFilters.bathrooms,
-        transactionType: urlFilters.transactionType,
+        transactionType: urlFilters.transactionType as any,
       })
 
       lastUrlRef.current = currentUrl
@@ -108,10 +108,10 @@ export function useFilterUrlSync() {
       const urlParams: DynamicFilterParams = {
         minPrice: filters.minPrice,
         maxPrice: filters.maxPrice,
-        category: filters.category,
+        category: filters.category as any,
         bedrooms: filters.bedrooms,
         bathrooms: filters.bathrooms,
-        transactionType: filters.transactionType,
+        transactionType: filters.transactionType as any,
       }
 
       const filterString = buildFilterUrl(urlParams)

@@ -239,7 +239,6 @@ export function MapContainer({
                 setSelectedPropertyId(null);
                 handleDrawerPropertyClick(selectedProperty.id);
               }}
-              isAuthenticated={isAuthenticated}
               onUnauthenticatedFavoriteClick={
                 !isAuthenticated
                   ? handleUnauthenticatedFavoriteClick

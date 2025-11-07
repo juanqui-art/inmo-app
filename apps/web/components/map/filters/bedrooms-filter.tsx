@@ -19,8 +19,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Bed } from "lucide-react";
-
 import { Spinner } from "@/components/common";
 import { FilterDropdown, FilterOption } from "./filter-dropdown";
 import { useMapStore } from "@/stores/map-store";
