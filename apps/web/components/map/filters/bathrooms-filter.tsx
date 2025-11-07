@@ -1,49 +1,52 @@
 'use client'
 
 /**
- * Bedrooms Filter (Refactored - Draft/Commit Pattern)
+ * Bathrooms Filter (Draft/Commit Pattern)
  *
- * Select number of bedrooms (1-5+)
+ * Select number of bathrooms (1-4+)
+ * - Includes fractional bathrooms (1.5+, 2.5+, 3.5+)
  * - Confirmation with "Listo" button
  * - Draft state during interaction
  * - Loading spinner on submit
  * - Integrated into filter bar
  *
- * REFACTORING NOTES:
+ * FEATURES:
  * - ✅ Removed all props (selected, onSelect)
  * - ✅ Gets all state directly from Zustand
- * - ✅ Added draft/commit pattern (like Price and Type filters)
- * - ✅ Added loading spinner and auto-close
+ * - ✅ Draft/commit pattern (like Price and Type filters)
+ * - ✅ Loading spinner and auto-close
  * - ✅ Clear filter button support
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { Bed } from 'lucide-react'
+import { Bath } from 'lucide-react'
 
 import { Spinner } from '@/components/common'
 import { FilterDropdown, FilterOption } from './filter-dropdown'
 import { useMapStore } from '@/stores/map-store'
 
-const BEDROOM_OPTIONS = [
+const BATHROOM_OPTIONS = [
   { label: 'Any', value: undefined },
   { label: '1+', value: 1 },
+  { label: '1.5+', value: 1.5 },
   { label: '2+', value: 2 },
+  { label: '2.5+', value: 2.5 },
   { label: '3+', value: 3 },
+  { label: '3.5+', value: 3.5 },
   { label: '4+', value: 4 },
-  { label: '5+', value: 5 },
 ]
 
 /**
- * BedroomsFilter - No props needed!
- * Accesses bedroom filter state and actions directly from Zustand
+ * BathroomsFilter - No props needed!
+ * Accesses bathroom filter state and actions directly from Zustand
  */
-export function BedroomsFilter() {
+export function BathroomsFilter() {
   // =========================================================================
   // STORE SELECTORS (Granular to prevent unnecessary re-renders)
   // =========================================================================
-  const committedBedrooms = useMapStore((state) => state.filters.bedrooms)
-  const draftBedrooms = useMapStore((state) => state.draftFilters.bedrooms)
+  const committedBathrooms = useMapStore((state) => state.filters.bathrooms)
+  const draftBathrooms = useMapStore((state) => state.draftFilters.bathrooms)
   const isLoading = useMapStore((state) => state.isLoading)
   const setIsLoading = useMapStore((state) => state.setIsLoading)
   const setDraftFilter = useMapStore((state) => state.setDraftFilter)
@@ -78,27 +81,30 @@ export function BedroomsFilter() {
   // =========================================================================
 
   // Current display value (draft if available, otherwise committed)
-  const selected = draftBedrooms?.[0] ?? committedBedrooms?.[0]
+  const selected = draftBathrooms?.[0] ?? committedBathrooms?.[0]
 
-  const displayValue = useMemo(
-    () => (selected !== undefined ? `${selected}+` : 'Bedrooms'),
-    [selected]
-  )
+  const displayValue = useMemo(() => {
+    if (selected === undefined) return 'Baños'
+    if (Number.isInteger(selected)) {
+      return `${selected}+`
+    }
+    return `${selected}+`
+  }, [selected])
 
   // Check if filter is active
   const isFilterActive = useMemo(
-    () => committedBedrooms?.[0] !== undefined,
-    [committedBedrooms]
+    () => committedBathrooms?.[0] !== undefined,
+    [committedBathrooms]
   )
 
   // =========================================================================
   // HANDLERS
   // =========================================================================
 
-  // Handle bedroom selection (updates draft state)
+  // Handle bathroom selection (updates draft state)
   const handleSelect = useCallback(
-    (bedrooms?: number) => {
-      setDraftFilter('bedrooms', bedrooms !== undefined ? [bedrooms] : undefined)
+    (bathrooms?: number) => {
+      setDraftFilter('bathrooms', bathrooms !== undefined ? [bathrooms] : undefined)
     },
     [setDraftFilter]
   )
@@ -137,18 +143,18 @@ export function BedroomsFilter() {
     // 5. useEffect closes dropdown automatically
   }, [commitDraftFilters, setIsLoading])
 
-  // Handle clear filter button - only clears bedrooms
+  // Handle clear filter button - only clears bathrooms
   const handleClear = useCallback(() => {
-    // Clear only bedrooms, leaving other filters intact
-    updateFilter('bedrooms', undefined)
+    // Clear only bathrooms, leaving other filters intact
+    updateFilter('bathrooms', undefined)
     setIsOpen(false)
   }, [updateFilter])
 
   return (
     <FilterDropdown
-      label="Bedrooms"
+      label="Baños"
       value={displayValue}
-      icon={<Bed />}
+      icon={<Bath />}
       isOpen={isOpen}
       onOpenChange={handleOpenChange}
       isActive={isFilterActive}
@@ -161,7 +167,7 @@ export function BedroomsFilter() {
             <Spinner
               size="8"
               color="text-white"
-              ariaLabel="Cargando habitaciones..."
+              ariaLabel="Cargando baños..."
             />
           </div>
         )}
@@ -169,7 +175,7 @@ export function BedroomsFilter() {
         {/* Header with Done Button */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-oslo-gray-800">
           <h3 className="text-sm font-semibold text-oslo-gray-50">
-            Habitaciones
+            Baños
           </h3>
           <button
             type="button"
@@ -183,7 +189,7 @@ export function BedroomsFilter() {
 
         {/* Options Grid */}
         <div className="space-y-1 px-4 pt-2">
-          {BEDROOM_OPTIONS.map((option) => (
+          {BATHROOM_OPTIONS.map((option) => (
             <FilterOption
               key={option.value ?? 'any'}
               label={option.label}

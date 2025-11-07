@@ -22,6 +22,7 @@
  */
 
 import { AISearchInline } from "@/components/ai-search/ai-search-inline"
+import { BathroomsFilter } from "./bathrooms-filter"
 import { BedroomsFilter } from "./bedrooms-filter"
 import { PriceFilterDropdown } from "./price-filter-dropdown"
 import { PropertyTypeDropdown } from "./property-type-dropdown"
@@ -52,6 +53,11 @@ export function FilterBar() {
         {/* Bedrooms Filter - No props needed */}
         <div className="hidden lg:block">
           <BedroomsFilter />
+        </div>
+
+        {/* Bathrooms Filter - No props needed */}
+        <div className="hidden lg:block">
+          <BathroomsFilter />
         </div>
       </div>
     </div>

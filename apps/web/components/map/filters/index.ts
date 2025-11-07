@@ -10,5 +10,6 @@ export { PriceRangeSlider } from "./price-range-slider";
 export { PriceDropdownSelect } from "./price-dropdown-select";
 export { PropertyTypeDropdown } from "./property-type-dropdown";
 export { BedroomsFilter } from "./bedrooms-filter";
+export { BathroomsFilter } from "./bathrooms-filter";
 export { useMapFilters } from "./use-map-filters";
 export type { DynamicFilterParams } from "@/lib/utils/url-helpers";
