@@ -358,3 +358,81 @@ export async function reorderPropertyImagesAction(
     };
   }
 }
+
+/**
+ * SEARCH CITIES ACTION
+ * Busca ciudades basadas en un query string
+ * Usado por el HeroSearchBar y otros componentes de búsqueda
+ *
+ * @param query - Texto de búsqueda (mínimo 2 caracteres)
+ * @returns Lista de ciudades que coinciden con el query
+ */
+export interface CitySearchResult {
+  id: string;
+  name: string;
+  state: string;
+  propertyCount: number;
+}
+
+export async function searchCitiesAction(
+  query: string,
+): Promise<{ cities: CitySearchResult[]; error?: string }> {
+  try {
+    // Validar input
+    if (!query || query.trim().length === 0) {
+      return { cities: [] };
+    }
+
+    if (query.length > 100) {
+      return { cities: [], error: "Búsqueda demasiado larga" };
+    }
+
+    // Buscar propiedades en ciudades que coincidan
+    // Usamos groupBy para obtener ciudades distintas con conteo
+    const { properties } = await propertyRepository.list({
+      filters: {
+        city: query,
+      },
+      take: 1000, // Obtener todas las propiedades que coincidan
+    });
+
+    // Agrupar por ciudad y contar
+    const cityMap = new Map<
+      string,
+      { state: string; propertyCount: number }
+    >();
+
+    properties.forEach((property) => {
+      if (property.city) {
+        const existing = cityMap.get(property.city);
+        if (existing) {
+          existing.propertyCount += 1;
+        } else {
+          cityMap.set(property.city, {
+            state: property.state || "",
+            propertyCount: 1,
+          });
+        }
+      }
+    });
+
+    // Convertir a array ordenado por cantidad de propiedades
+    const cities: CitySearchResult[] = Array.from(cityMap.entries())
+      .map(([name, data]) => ({
+        id: `${name.toLowerCase()}-${data.state.toLowerCase()}`,
+        name,
+        state: data.state,
+        propertyCount: data.propertyCount,
+      }))
+      .sort((a, b) => b.propertyCount - a.propertyCount); // Ciudades con más propiedades primero
+
+    return { cities };
+  } catch (error) {
+    console.error("Error searching cities:", error);
+    return {
+      cities: [],
+      error:
+        error instanceof Error ? error.message : "Error al buscar ciudades",
+    };
+  }
+}

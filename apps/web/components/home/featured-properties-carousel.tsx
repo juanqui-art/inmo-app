@@ -139,29 +139,35 @@ export function FeaturedPropertiesCarousel({
 
   return (
     <section
-      className="py-12 px-4 sm:px-6 lg:px-8 bg-oslo-gray-1000"
+      className="relative py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-oslo-gray-1000 via-oslo-gray-1000 to-oslo-gray-950 overflow-hidden"
       aria-label="Propiedades destacadas"
     >
-      <div className="max-w-7xl mx-auto">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-indigo-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative">
         {/* Header with navigation */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-12">
           <div>
-            <h2 className="text-3xl font-bold text-oslo-gray-100">
+            <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-oslo-gray-100 to-oslo-gray-300 bg-clip-text text-transparent">
               Propiedades Destacadas
             </h2>
-            <p className="text-oslo-gray-400 mt-2">
+            <p className="text-oslo-gray-400 mt-3 text-lg">
               Las mejores opciones seleccionadas para ti
             </p>
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-3 hidden sm:flex">
             <button
               type="button"
               onClick={scrollPrev}
               disabled={!canScrollPrev}
               aria-label="Ver propiedades anteriores"
-              className="p-2 rounded-full bg-oslo-gray-800 border-2 border-oslo-gray-700 hover:border-indigo-500 hover:bg-oslo-gray-700 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-oslo-gray-700 transition-all duration-200 text-oslo-gray-200"
+              className="p-3 rounded-full bg-oslo-gray-800/50 backdrop-blur-sm border border-oslo-gray-700 hover:border-indigo-500 hover:bg-oslo-gray-700 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-oslo-gray-700 transition-all duration-300 text-oslo-gray-200 hover:text-white hover:scale-110 active:scale-95"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -170,7 +176,7 @@ export function FeaturedPropertiesCarousel({
               onClick={scrollNext}
               disabled={!canScrollNext}
               aria-label="Ver más propiedades"
-              className="p-2 rounded-full bg-oslo-gray-800 border-2 border-oslo-gray-700 hover:border-indigo-500 hover:bg-oslo-gray-700 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-oslo-gray-700 transition-all duration-200 text-oslo-gray-200"
+              className="p-3 rounded-full bg-oslo-gray-800/50 backdrop-blur-sm border border-oslo-gray-700 hover:border-indigo-500 hover:bg-oslo-gray-700 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-oslo-gray-700 transition-all duration-300 text-oslo-gray-200 hover:text-white hover:scale-110 active:scale-95"
             >
               <ChevronRight className="w-5 h-5" />
             </button>

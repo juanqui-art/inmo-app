@@ -131,7 +131,7 @@ export function PropertyCard({
   }, [currentImageIndex]); // Re-bind if index changes, though not strictly necessary
 
   return (
-    <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden bg-oslo-gray-900 shadow-lg hover:shadow-2xl transition-shadow duration-300 group">
+    <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden bg-oslo-gray-900 shadow-lg hover:shadow-xl transition-all duration-300 group border border-oslo-gray-800 hover:border-oslo-gray-700">
       {/* Image Container & Overlays */}
       <div
         className="relative w-full h-full cursor-pointer"

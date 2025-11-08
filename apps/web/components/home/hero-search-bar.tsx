@@ -67,39 +67,39 @@
 
 "use client";
 
-import { Loader2, MapPin, Search } from "lucide-react";
+import { Loader2, MapPin, Search, Clock, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { debounce } from "@/lib/utils/debounce";
+import {
+  searchCitiesAction,
+  type CitySearchResult,
+} from "@/app/actions/properties";
+import { useSearchHistory } from "@/hooks/use-search-history";
 
 // Types for city autocomplete
-interface City {
-  id: string;
-  name: string;
-  state: string;
-  slug: string;
-  propertyCount?: number;
+interface City extends CitySearchResult {
+  slug?: string;
 }
 
-// Popular cities with emoji for quick access - Ecuador (Azuay & Cañar)
-const POPULAR_CITIES = [
-  { name: "Cuenca", state: "Azuay", slug: "cuenca-azuay", emoji: "🏛️" }, // Capital de Azuay, Patrimonio UNESCO
-  { name: "Azogues", state: "Cañar", slug: "azogues-canar", emoji: "🏔️" }, // Capital de Cañar, conurbación Cuenca
-  { name: "Gualaceo", state: "Azuay", slug: "gualaceo-azuay", emoji: "🌺" }, // Ciudad artesanal
-  { name: "La Troncal", state: "Cañar", slug: "la-troncal-canar", emoji: "🌾" }, // Ciudad más poblada de Cañar
-  { name: "Paute", state: "Azuay", slug: "paute-azuay", emoji: "🏞️" }, // Turismo, represa
-  { name: "Cañar", state: "Cañar", slug: "canar-canar", emoji: "🗿" }, // Ingapirca (ruinas incas)
+// Quick search categories
+const QUICK_SEARCH_CATEGORIES = [
+  { label: "Casas", query: "category=HOUSE" },
+  { label: "Departamentos", query: "category=APARTMENT" },
+  { label: "En Venta", query: "transactionType=SALE" },
+  { label: "En Renta", query: "transactionType=RENT" },
+  { label: "Terrenos", query: "category=LAND" },
 ];
 
 export function HeroSearchBar() {
   const router = useRouter();
+  const { history, addSearch, clearHistory, getTimeAgo } = useSearchHistory();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<City[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [showChips, setShowChips] = useState(true);
 
   // Refs for animations
   const inputRef = useRef<HTMLInputElement>(null);
@@ -166,43 +166,22 @@ export function HeroSearchBar() {
         setIsLoading(true);
 
         try {
-          // TODO: Replace with real API endpoint
-          // For now, mock data
-          const mockCities: City[] = [
-            {
-              id: "1",
-              name: "Miami",
-              state: "Florida",
-              slug: "miami-fl",
-              propertyCount: 1234,
-            },
-            {
-              id: "2",
-              name: "Miami Beach",
-              state: "Florida",
-              slug: "miami-beach-fl",
-              propertyCount: 567,
-            },
-            {
-              id: "3",
-              name: "Fort Lauderdale",
-              state: "Florida",
-              slug: "fort-lauderdale-fl",
-              propertyCount: 890,
-            },
-          ];
+          // Call the Server Action to search cities in Supabase
+          const result = await searchCitiesAction(searchQuery);
 
-          // Simulate API delay
-          await new Promise((resolve) => setTimeout(resolve, 300));
+          if (result.error) {
+            console.error("Search failed:", result.error);
+            setSuggestions([]);
+            return;
+          }
 
-          // Filter mock data by query
-          const filtered = mockCities.filter(
-            (city) =>
-              city.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              city.state.toLowerCase().includes(searchQuery.toLowerCase()),
-          );
+          // Map the results and add slug for navigation
+          const citiesWithSlug: City[] = result.cities.map((city) => ({
+            ...city,
+            slug: city.id, // Use the id as slug (lowercase-state format)
+          }));
 
-          setSuggestions(filtered);
+          setSuggestions(citiesWithSlug);
           setSelectedIndex(-1); // Reset selection
         } catch (error) {
           if (error instanceof Error && error.name !== "AbortError") {
@@ -243,14 +222,14 @@ export function HeroSearchBar() {
     }
 
     // Otherwise, search by text query
-    router.push(`/propiedades?q=${encodeURIComponent(query)}`);
+    router.push(`/mapa?q=${encodeURIComponent(query)}`);
   };
 
   /**
-   * Navigate to filtered listings page for selected city
+   * Navigate to map with selected city filter
    */
   const navigateToCity = (city: City) => {
-    router.push(`/propiedades?city=${city.slug}`);
+    router.push(`/mapa?city=${encodeURIComponent(city.name)}`);
     // Clear suggestions after navigation
     setSuggestions([]);
     setQuery("");
@@ -258,19 +237,30 @@ export function HeroSearchBar() {
 
   /**
    * Handle input change
-   * Hide chips when user starts typing
+   * Trigger search as user types
    */
   const handleInputChange = (value: string) => {
     setQuery(value);
-    setShowChips(value.length === 0); // Show chips only when input is empty
     debouncedSearch(value);
   };
 
   /**
-   * Handle chip click (popular city selection)
+   * Handle quick search category click
    */
-  const handleChipClick = (city: (typeof POPULAR_CITIES)[0]) => {
-    router.push(`/propiedades?city=${city.slug}`);
+  const handleQuickSearchClick = (categoryQuery: string) => {
+    router.push(`/mapa?${categoryQuery}`);
+  };
+
+  /**
+   * Handle history item click
+   */
+  const handleHistoryClick = (item: { query: string; type: string }) => {
+    if (item.type === "city") {
+      router.push(`/mapa?city=${encodeURIComponent(item.query)}`);
+    } else {
+      router.push(`/mapa?q=${encodeURIComponent(item.query)}`);
+    }
+    addSearch(item.query, item.type as "city" | "query");
   };
 
   /**
@@ -317,41 +307,6 @@ export function HeroSearchBar() {
       onSubmit={handleSubmit}
       className="relative w-full max-w-2xl mx-auto"
     >
-      {/* Popular Cities Chips - Show when input is empty */}
-      {showChips && (
-        <div className="mb-4 px-1">
-          <p className="text-xs sm:text-sm text-white/70 mb-3 font-medium text-center tracking-wide uppercase">
-            💡 Ciudades populares
-          </p>
-          <div className="flex flex-wrap gap-2 sm:gap-2.5 justify-center">
-            {POPULAR_CITIES.map((city) => (
-              <button
-                key={city.slug}
-                type="button"
-                onClick={() => handleChipClick(city)}
-                className="
-                  flex items-center gap-2
-                  px-4 py-2.5 sm:px-5 sm:py-3
-                  bg-white/10 hover:bg-white/20
-                  backdrop-blur-md
-                  text-white text-sm sm:text-base font-medium
-                  rounded-full
-                  border border-white/30
-                  transition-all duration-200
-                  hover:scale-105 hover:border-white/50
-                  active:scale-95
-                  shadow-lg hover:shadow-xl
-                  min-h-[44px] min-w-[44px]
-                "
-                aria-label={`Buscar propiedades en ${city.name}`}
-              >
-                <span className="text-base sm:text-lg">{city.emoji}</span>
-                <span className="whitespace-nowrap">{city.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       <div className="relative">
         {/* Search Icon */}
@@ -370,8 +325,7 @@ export function HeroSearchBar() {
             pl-12 sm:pl-14 pr-12 sm:pr-14
             py-4 sm:py-5
             text-base sm:text-lg text-white font-medium
-            bg-white/15 hover:bg-white/20 focus:bg-white/25
-            backdrop-blur-lg
+            bg-white/30 hover:bg-white/35 focus:bg-white/40
             rounded-xl sm:rounded-2xl
             border-2 border-white/40
             focus:border-white/80
@@ -393,153 +347,171 @@ export function HeroSearchBar() {
         )}
       </div>
 
-      {/* Autocomplete Suggestions - Categorized */}
-      {suggestions.length > 0 && (
+      {/* Dropdown Menu - Shows suggestions, history, or quick categories */}
+      {(suggestions.length > 0 || query.length === 0) && (
         <div
           id="search-suggestions"
           className="
-            absolute top-full mt-3 w-full
-            bg-white rounded-xl sm:rounded-2xl
+            absolute top-full mt-2 w-full
+            bg-oslo-gray-900 rounded-xl sm:rounded-2xl
             shadow-2xl
-            border border-oslo-gray-200
+            border border-oslo-gray-800
             max-h-[70vh] sm:max-h-96 overflow-y-auto
-            z-50
+            z-[100]
             animate-in fade-in slide-in-from-top-2 duration-200
           "
         >
-          {/* Category Header */}
-          <div className="sticky top-0 px-4 sm:px-5 py-3 border-b border-oslo-gray-100 bg-oslo-gray-50/95 backdrop-blur-sm z-10">
-            <p className="text-xs sm:text-sm font-semibold text-oslo-gray-600 uppercase tracking-wide">
-              📍 Ubicaciones encontradas
-            </p>
-          </div>
-
-          {/* Locations List */}
-          <ul className="py-2">
-            {suggestions.map((city, index) => (
-              <li
-                key={city.id}
-                aria-selected={index === selectedIndex}
-                className={`
-                  px-4 sm:px-5 py-4
-                  cursor-pointer
-                  flex items-center gap-3 sm:gap-4
-                  transition-all duration-150
-                  min-h-[60px]
-                  ${
-                    index === selectedIndex
-                      ? "bg-blue-50 border-l-4 border-blue-500"
-                      : "hover:bg-oslo-gray-50 active:bg-oslo-gray-100"
-                  }
-                `}
-                onClick={() => navigateToCity(city)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") navigateToCity(city);
-                }}
-                tabIndex={0}
-              >
-                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex-shrink-0">
-                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-oslo-gray-900 truncate text-base sm:text-lg">
-                    {city.name}, {city.state}
-                  </p>
-                  {city.propertyCount !== undefined && (
-                    <p className="text-sm sm:text-base text-oslo-gray-500 mt-0.5">
-                      {city.propertyCount.toLocaleString()} propiedades
-                      disponibles
-                    </p>
-                  )}
-                </div>
-                <svg
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-oslo-gray-400 flex-shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </li>
-            ))}
-          </ul>
-
-          {/* Smart Suggestions (if query has content) */}
-          {query.length >= 3 && (
+          {/* Location Suggestions (when user types) */}
+          {suggestions.length > 0 && (
             <>
-              <div className="sticky top-[52px] px-4 sm:px-5 py-3 border-t border-oslo-gray-100 bg-oslo-gray-50/95 backdrop-blur-sm z-10">
-                <p className="text-xs sm:text-sm font-semibold text-oslo-gray-600 uppercase tracking-wide">
-                  💡 Búsquedas relacionadas
+              <div className="sticky top-0 px-4 sm:px-5 py-3 border-b border-oslo-gray-800 bg-oslo-gray-800/50 backdrop-blur-sm z-10">
+                <p className="text-xs sm:text-sm font-semibold text-oslo-gray-400 uppercase tracking-wide">
+                  📍 Ubicaciones encontradas
                 </p>
               </div>
               <ul className="py-2">
-                <li
-                  className="
-                    px-4 sm:px-5 py-4
-                    cursor-pointer
-                    flex items-center gap-3 sm:gap-4
-                    hover:bg-oslo-gray-50 active:bg-oslo-gray-100
-                    transition-all duration-150
-                    min-h-[60px]
-                  "
-                  onClick={() =>
-                    router.push(`/propiedades?q=${query}&maxPrice=500000`)
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter")
-                      router.push(`/propiedades?q=${query}&maxPrice=500000`);
-                  }}
-                  tabIndex={0}
-                >
-                  <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex-shrink-0">
-                    <span className="text-lg sm:text-xl">🏠</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-oslo-gray-900 text-base sm:text-lg">
-                      Casas en {query} bajo $500k
-                    </p>
-                    <p className="text-xs sm:text-sm text-oslo-gray-500 mt-0.5">
-                      Búsqueda popular
-                    </p>
-                  </div>
-                </li>
-                <li
-                  className="
-                    px-4 sm:px-5 py-4
-                    cursor-pointer
-                    flex items-center gap-3 sm:gap-4
-                    hover:bg-oslo-gray-50 active:bg-oslo-gray-100
-                    transition-all duration-150
-                    min-h-[60px]
-                  "
-                  onClick={() =>
-                    router.push(`/propiedades?q=${query}&type=APARTMENT`)
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter")
-                      router.push(`/propiedades?q=${query}&type=APARTMENT`);
-                  }}
-                  tabIndex={0}
-                >
-                  <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-full flex-shrink-0">
-                    <span className="text-lg sm:text-xl">🏢</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-oslo-gray-900 text-base sm:text-lg">
-                      Departamentos en {query}
-                    </p>
-                    <p className="text-xs sm:text-sm text-oslo-gray-500 mt-0.5">
-                      Ver todos los departamentos
-                    </p>
-                  </div>
-                </li>
+                {suggestions.map((city, index) => (
+                  <li
+                    key={city.id}
+                    className={`
+                      px-4 sm:px-5 py-4
+                      cursor-pointer
+                      flex items-center gap-3 sm:gap-4
+                      transition-all duration-150
+                      min-h-[60px]
+                      border-l-4
+                      ${
+                        index === selectedIndex
+                          ? "bg-indigo-500/20 border-l-indigo-500"
+                          : "border-l-transparent hover:bg-oslo-gray-800/50 active:bg-oslo-gray-700/50"
+                      }
+                    `}
+                    onClick={() => {
+                      navigateToCity(city);
+                      addSearch(city.name, "city");
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        navigateToCity(city);
+                        addSearch(city.name, "city");
+                      }
+                    }}
+                    role="option"
+                    aria-selected={index === selectedIndex}
+                  >
+                    <div
+                      className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0 ${
+                        index === selectedIndex
+                          ? "bg-indigo-500/30"
+                          : "bg-oslo-gray-800"
+                      }`}
+                    >
+                      <MapPin
+                        className={`w-5 h-5 sm:w-6 sm:h-6 ${
+                          index === selectedIndex
+                            ? "text-indigo-400"
+                            : "text-oslo-gray-400"
+                        }`}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className={`font-semibold truncate text-base sm:text-lg ${
+                          index === selectedIndex
+                            ? "text-indigo-300"
+                            : "text-oslo-gray-100"
+                        }`}
+                      >
+                        {city.name}, {city.state}
+                      </p>
+                      {city.propertyCount !== undefined && (
+                        <p className="text-sm sm:text-base text-oslo-gray-400 mt-0.5">
+                          {city.propertyCount.toLocaleString()} propiedades
+                        </p>
+                      )}
+                    </div>
+                    <svg
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-oslo-gray-600 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </li>
+                ))}
               </ul>
+            </>
+          )}
+
+          {/* Recent Searches (when input is empty) */}
+          {query.length === 0 && history.length > 0 && (
+            <>
+              <div className="px-4 sm:px-5 py-3 border-b border-oslo-gray-800 bg-oslo-gray-800/50 flex items-center justify-between">
+                <p className="text-xs sm:text-sm font-semibold text-oslo-gray-400 uppercase tracking-wide flex items-center gap-2">
+                  <Clock className="w-4 h-4" /> Búsquedas recientes
+                </p>
+                <button
+                  type="button"
+                  onClick={clearHistory}
+                  className="text-xs text-oslo-gray-500 hover:text-oslo-gray-300 transition-colors"
+                  aria-label="Clear search history"
+                >
+                  Limpiar
+                </button>
+              </div>
+              <ul className="py-2">
+                {history.map((item) => (
+                  <li
+                    key={`${item.type}-${item.query}`}
+                    className="px-4 sm:px-5 py-3 cursor-pointer flex items-center justify-between hover:bg-oslo-gray-800/50 active:bg-oslo-gray-700/50 transition-all duration-150 min-h-[50px]"
+                    onClick={() => handleHistoryClick(item)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleHistoryClick(item);
+                    }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-oslo-gray-100 truncate">
+                        {item.query}
+                      </p>
+                      <p className="text-xs text-oslo-gray-500 mt-0.5">
+                        {getTimeAgo(item.timestamp)}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {/* Quick Search Categories (always visible when dropdown is open) */}
+          {(query.length === 0 || suggestions.length > 0) && (
+            <>
+              <div className="px-4 sm:px-5 py-3 border-t border-oslo-gray-800 bg-oslo-gray-800/50 backdrop-blur-sm">
+                <p className="text-xs sm:text-sm font-semibold text-oslo-gray-400 uppercase tracking-wide flex items-center gap-2">
+                  <Zap className="w-4 h-4" /> Búsquedas rápidas
+                </p>
+              </div>
+              <div className="p-3 sm:p-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {QUICK_SEARCH_CATEGORIES.map((category) => (
+                  <button
+                    key={category.label}
+                    type="button"
+                    onClick={() => handleQuickSearchClick(category.query)}
+                    className="px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-oslo-gray-800 hover:bg-indigo-500/20 border border-oslo-gray-700 hover:border-indigo-500 text-oslo-gray-100 hover:text-indigo-300 text-sm sm:text-base font-medium transition-all duration-150 active:scale-95"
+                  >
+                    {category.label}
+                  </button>
+                ))}
+              </div>
             </>
           )}
         </div>
@@ -549,25 +521,32 @@ export function HeroSearchBar() {
 }
 
 /**
- * TODO: Real Implementation Steps
+ * IMPLEMENTATION NOTES
  *
- * 1. Create API endpoint:
- *    GET /api/search/cities?q=miami
- *    Returns: City[] with name, state, slug, propertyCount
+ * ✅ COMPLETED (2025-11-08):
+ * - Integrated with searchCitiesAction Server Action
+ * - Real-time city search from Supabase database
+ * - Dynamic property counts per city
+ * - Navigation to /mapa with city filter param
  *
- * 2. Add caching layer:
- *    - Cache results in Map or localStorage
+ * FUTURE ENHANCEMENTS:
+ * 1. Add caching layer:
+ *    - Cache results in sessionStorage
  *    - Cache key: search query
  *    - Cache expiry: 5 minutes
  *
- * 3. Consider using Algolia or similar:
+ * 2. Consider using Algolia or Meilisearch:
  *    - Instant search (< 50ms)
  *    - Typo tolerance
  *    - Synonyms support
  *    - Cost: ~$1/mo for this use case
  *
- * 4. Analytics tracking:
+ * 3. Analytics tracking:
  *    - Track popular searches
  *    - Track "no results" queries
  *    - Use data to improve autocomplete
+ *
+ * 4. Geolocation search:
+ *    - "Near me" functionality
+ *    - Radius-based search
  */

@@ -176,17 +176,17 @@ export default async function HomePage() {
         <TrendingPropertiesSection properties={serializedFeatured} />
       )}
 
+      {/* Recent Listings Grid */}
+      {serializedRecent.length > 0 && (
+        <RecentListingsSection properties={serializedRecent} />
+      )}
+
       {/* Stats Section (Social Proof) */}
       <StatsSection
         propertyCount={propertyCount}
         cityCount={cityCount}
         agentCount={agentCount}
       />
-
-      {/* Recent Listings Grid */}
-      {serializedRecent.length > 0 && (
-        <RecentListingsSection properties={serializedRecent} />
-      )}
 
       {/* Agent CTA (Conversion) */}
       <AgentCTASection />

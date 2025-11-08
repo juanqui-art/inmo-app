@@ -1,5 +1,5 @@
 /**
- * HeroSection - Search-First Landing Section
+ * HeroSection - Search-First Landing Section with Advanced GSAP Animations
  *
  * PATTERN: Compound Component Pattern + GSAP Animations
  *
@@ -28,17 +28,27 @@
  * - Only for components with strong logical relationship
  * - Don't share complex state (use Context if needed)
  *
- * ANIMATIONS (GSAP):
- * - Entrance: Staggered fade-in with slide up
- * - Parallax: Background moves slower on scroll (depth effect)
+ * CURRENT ANIMATIONS (GSAP):
+ * - Heading: Blur-to-Focus character reveal (SplitText + filter animation)
+ * - Subheading: Simple fade-in for readability
+ * - Search bar: Slide up + fade
+ * - Background: Parallax on scroll
  * - Accessibility: Respects prefers-reduced-motion
  * - Performance: GPU-accelerated, 60fps guaranteed
+ *
+ * ALTERNATIVE TEXT ANIMATIONS (Commented for Future Use):
+ * 1. Blur-to-Focus Gradient Reveal ✅ IMPLEMENTED
+ * 2. 3D Cylinder Scroll Reveal (see ALTERNATIVE_ANIMATIONS.md)
+ * 3. Clip-Path Diagonal Wipe (see ALTERNATIVE_ANIMATIONS.md)
+ * 4. Word-by-Word Elastic Pop-In (see ALTERNATIVE_ANIMATIONS.md)
+ * 5. Morphing Letter Heights with Shadow Depth (see ALTERNATIVE_ANIMATIONS.md)
  *
  * RESOURCES:
  * - https://kentcdodds.com/blog/compound-components-with-react-hooks
  * - https://www.patterns.dev/posts/compound-pattern
  * - https://gsap.com/docs/v3/GSAP/gsap.timeline()
  * - https://gsap.com/docs/v3/Plugins/ScrollTrigger/
+ * - https://gsap.com/docs/v3/Plugins/SplitText/
  */
 
 "use client";
@@ -47,12 +57,12 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
 import { HeroBackground } from "./hero-background";
-import { HeroQuickFilters } from "./hero-quick-filters";
 import { HeroSearchBar } from "./hero-search-bar";
 
 // Register GSAP plugins
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -67,12 +77,15 @@ export function HeroSection() {
       if (prefersReducedMotion) {
         // Skip animations for users who prefer reduced motion
         gsap.set(
-          ".hero-background, .hero-heading, .hero-search, .hero-filters",
+          ".hero-background, .hero-heading, .hero-subheading, .hero-search",
           {
-            opacity: 1,
+            autoAlpha: 1, // Changed from opacity for consistent handling
             y: 0,
+            filter: "blur(0px)",
           },
         );
+        // Also reset popular cities visibility
+        gsap.set(".hero-popular-cities", { autoAlpha: 1 });
         return;
       }
 
@@ -82,56 +95,110 @@ export function HeroSection() {
       });
 
       // 1. Background fades in (animate the inner div)
-      tl.to(".hero-background > div", {
-        opacity: 1,
-        duration: 0.8,
-      })
-        // 2. Heading slides up with slight delay (overlap for smoothness)
-        .fromTo(
-          ".hero-heading",
-          {
-            y: 60,
-            opacity: 0,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power4.out",
-          },
-          "-=0.3",
-        )
-        // 3. Search bar appears from top
-        .fromTo(
-          ".hero-search",
-          {
-            y: 40,
-            opacity: 0,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-          },
-          "-=0.5",
-        )
-        // 4. Filter buttons stagger in (each 150ms apart)
-        .fromTo(
-          ".hero-filters button",
-          {
-            y: 20,
-            opacity: 0,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            stagger: 0.15,
-            duration: 0.6,
-          },
-          "-=0.4",
-        );
+      tl.to(
+        ".hero-background > div",
+        {
+          opacity: 1,
+          duration: 0.8,
+        },
+        0,
+      );
 
-      // Parallax effect on scroll (background moves slower than content)
+      // ============================================================
+      // 2. HEADING: Blur-to-Focus Gradient Reveal (Animation #1)
+      // ============================================================
+      // Split main heading into characters for advanced animation
+      const headingElement = document.querySelector(
+        ".hero-heading:not(.hero-subheading)",
+      );
+      if (headingElement) {
+        const split = new SplitText(headingElement, {
+          type: "chars",
+          charsClass: "char",
+        });
+
+        // Set initial state: blurred with reduced scale
+        gsap.set(split.chars, {
+          filter: "blur(10px)",
+          opacity: 0,
+          scale: 0.8,
+          willChange: "filter, transform, opacity",
+        });
+
+        // Animate blur-to-focus character reveal
+        tl.to(
+          split.chars,
+          {
+            filter: "blur(0px)",
+            opacity: 1,
+            scale: 1,
+            stagger: {
+              each: 0.03, // Reduced from 0.03 for faster animation
+              from: "start",
+            },
+            duration: 0.9, // Reduced from 0.8 for snappier feel
+            ease: "power2.out",
+            clearProps: "willChange",
+          },
+          0.3, // Start slightly after background
+        );
+      }
+
+      // ============================================================
+      // 3. SUBHEADING: Simple fade-in (to avoid visual overload)
+      // ============================================================
+      tl.fromTo(
+        ".hero-subheading",
+        {
+          opacity: 0,
+          y: 20,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+        },
+        "-=0.4", // Overlap with heading animation
+      );
+
+      // ============================================================
+      // 4. POPULAR CITIES CHIPS: Fade in smoothly using autoAlpha
+      // ============================================================
+      // autoAlpha handles visibility + opacity, preventing backdrop-filter flash
+      tl.fromTo(
+        ".hero-popular-cities",
+        {
+          autoAlpha: 0, // visibility: hidden + opacity: 0
+        },
+        {
+          autoAlpha: 1, // visibility: visible + opacity: 1
+          duration: 1.2, // Smooth transition
+          ease: "power3.inOut",
+        },
+        0.2,
+      );
+
+      // ============================================================
+      // 5. SEARCH BAR: Slide up + fade
+      // ============================================================
+      tl.fromTo(
+        ".hero-search",
+        {
+          y: 40,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+        },
+        "-=0.5",
+      );
+
+      // ============================================================
+      // 5. PARALLAX: Background moves slower on scroll
+      // ============================================================
       gsap.to(".hero-background > div", {
         yPercent: 30, // Move down 30% of its height
         ease: "none", // Linear movement for natural parallax
@@ -150,7 +217,7 @@ export function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden -mt-17"
+      className="relative h-screen min-h-[600px] flex items-start justify-center overflow-hidden -mt-17"
     >
       {/* Background Layer - Full Screen (with parallax) - Extends behind navbar */}
       <div className="hero-background absolute inset-0 z-0 -top-14">
@@ -161,25 +228,36 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/15 to-transparent pointer-events-none z-[5]" />
 
       {/* Content Layer - Centered with padding for header */}
-      <div className="relative z-10 w-full max-w-4xl px-4 text-center pt-14">
-        {/* Heading - Specific and Contextual - Initially hidden */}
-        <h1 className="hero-heading opacity-0 text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-10 drop-shadow-2xl tracking-tight">
-          Encuentra tu Hogar Ideal
-          <br />
-          {/*<span className="text-4xl md:text-5xl lg:text-6xl">*/}
-          {/*  en Azuay y Cañar*/}
-          {/*</span>*/}
+      <div className="relative z-10 w-full max-w-5xl px-4 text-center mt-40">
+        {/* Main Heading - Blur-to-Focus Animation */}
+        <h1
+          className="hero-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white drop-shadow-2xl tracking-tight leading-[1.2] mb-2 will-change-auto px-2"
+          style={{
+            transform: "translateZ(0)",
+            backfaceVisibility: "hidden",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
+            wordSpacing: "0.1em",
+            minHeight: "auto",
+          }}
+        >
+          Vive en el lugar que siempre soñaste
         </h1>
 
+        {/* Subheading - Simple Fade Animation */}
+        <p className="hero-subheading text-lg md:text-xl lg:text-3xl text-white/90 max-w-3xl mx-auto font-medium leading-snug mb-9 drop-shadow-lg">
+          Espacios diseñados para tu comodidad, rodeados de armonía y bienestar
+        </p>
+
         {/* Search Bar - THE PRIMARY ACTION - Initially hidden */}
-        <div className="hero-search opacity-0 mb-8">
+        <div className="hero-search opacity-0 ">
           <HeroSearchBar />
         </div>
 
         {/* Quick Filters - Secondary Actions - Initially hidden */}
-        <div className="hero-filters mt-6">
-          <HeroQuickFilters />
-        </div>
+        {/*<div className="hero-filters mt-6">*/}
+        {/*  <HeroQuickFilters />*/}
+        {/*</div>*/}
       </div>
     </section>
   );
