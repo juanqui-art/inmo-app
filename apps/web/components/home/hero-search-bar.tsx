@@ -353,9 +353,9 @@ export function HeroSearchBar() {
           id="search-suggestions"
           className="
             absolute top-full mt-2 w-full
-            bg-oslo-gray-900 rounded-xl sm:rounded-2xl
+            bg-white/10 backdrop-blur-2xl rounded-xl sm:rounded-2xl
             shadow-2xl
-            border border-oslo-gray-800
+            border border-white/20
             max-h-[70vh] sm:max-h-96 overflow-y-auto
             z-[100]
             animate-in fade-in slide-in-from-top-2 duration-200
@@ -364,8 +364,8 @@ export function HeroSearchBar() {
           {/* Location Suggestions (when user types) */}
           {suggestions.length > 0 && (
             <>
-              <div className="sticky top-0 px-4 sm:px-5 py-3 border-b border-oslo-gray-800 bg-oslo-gray-800/50 backdrop-blur-sm z-10">
-                <p className="text-xs sm:text-sm font-semibold text-oslo-gray-400 uppercase tracking-wide">
+              <div className="sticky top-0 px-4 sm:px-5 py-3 border-b border-white/10 bg-white/5 backdrop-blur-sm z-10">
+                <p className="text-xs sm:text-sm font-semibold text-white/70 uppercase tracking-wide">
                   📍 Ubicaciones encontradas
                 </p>
               </div>
@@ -374,16 +374,16 @@ export function HeroSearchBar() {
                   <li
                     key={city.id}
                     className={`
-                      px-4 sm:px-5 py-4
+                      px-4 sm:px-5 py-3
                       cursor-pointer
                       flex items-center gap-3 sm:gap-4
                       transition-all duration-150
-                      min-h-[60px]
+                      min-h-[56px]
                       border-l-4
                       ${
                         index === selectedIndex
-                          ? "bg-indigo-500/20 border-l-indigo-500"
-                          : "border-l-transparent hover:bg-oslo-gray-800/50 active:bg-oslo-gray-700/50"
+                          ? "bg-indigo-500/30 border-l-indigo-400 backdrop-blur-sm"
+                          : "border-l-transparent hover:bg-white/10 active:bg-white/15"
                       }
                     `}
                     onClick={() => {
@@ -402,15 +402,15 @@ export function HeroSearchBar() {
                     <div
                       className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0 ${
                         index === selectedIndex
-                          ? "bg-indigo-500/30"
-                          : "bg-oslo-gray-800"
+                          ? "bg-indigo-500/40"
+                          : "bg-white/10"
                       }`}
                     >
                       <MapPin
                         className={`w-5 h-5 sm:w-6 sm:h-6 ${
                           index === selectedIndex
-                            ? "text-indigo-400"
-                            : "text-oslo-gray-400"
+                            ? "text-indigo-300"
+                            : "text-white/60"
                         }`}
                       />
                     </div>
@@ -418,20 +418,20 @@ export function HeroSearchBar() {
                       <p
                         className={`font-semibold truncate text-base sm:text-lg ${
                           index === selectedIndex
-                            ? "text-indigo-300"
-                            : "text-oslo-gray-100"
+                            ? "text-white"
+                            : "text-white/90"
                         }`}
                       >
                         {city.name}, {city.state}
                       </p>
                       {city.propertyCount !== undefined && (
-                        <p className="text-sm sm:text-base text-oslo-gray-400 mt-0.5">
+                        <p className="text-sm sm:text-base text-white/60 mt-0.5">
                           {city.propertyCount.toLocaleString()} propiedades
                         </p>
                       )}
                     </div>
                     <svg
-                      className="w-5 h-5 sm:w-6 sm:h-6 text-oslo-gray-600 flex-shrink-0"
+                      className="w-5 h-5 sm:w-6 sm:h-6 text-white/40 flex-shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -450,27 +450,27 @@ export function HeroSearchBar() {
             </>
           )}
 
-          {/* Recent Searches (when input is empty) */}
+          {/* Recent Searches (when input is empty) - Card Structure */}
           {query.length === 0 && history.length > 0 && (
             <>
-              <div className="px-4 sm:px-5 py-3 border-b border-oslo-gray-800 bg-oslo-gray-800/50 flex items-center justify-between">
-                <p className="text-xs sm:text-sm font-semibold text-oslo-gray-400 uppercase tracking-wide flex items-center gap-2">
+              <div className="px-4 sm:px-5 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
+                <p className="text-xs sm:text-sm font-semibold text-white/70 uppercase tracking-wide flex items-center gap-2">
                   <Clock className="w-4 h-4" /> Búsquedas recientes
                 </p>
                 <button
                   type="button"
                   onClick={clearHistory}
-                  className="text-xs text-oslo-gray-500 hover:text-oslo-gray-300 transition-colors"
+                  className="text-xs text-white/50 hover:text-white/80 transition-colors"
                   aria-label="Clear search history"
                 >
                   Limpiar
                 </button>
               </div>
-              <ul className="py-2">
+              <div className="py-3 px-3 sm:px-4 space-y-2">
                 {history.map((item) => (
-                  <li
+                  <div
                     key={`${item.type}-${item.query}`}
-                    className="px-4 sm:px-5 py-3 cursor-pointer flex items-center justify-between hover:bg-oslo-gray-800/50 active:bg-oslo-gray-700/50 transition-all duration-150 min-h-[50px]"
+                    className="px-4 sm:px-5 py-3 sm:py-4 cursor-pointer rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/15 border border-white/10 hover:border-white/20 transition-all duration-150"
                     onClick={() => handleHistoryClick(item)}
                     role="button"
                     tabIndex={0}
@@ -478,35 +478,50 @@ export function HeroSearchBar() {
                       if (e.key === "Enter") handleHistoryClick(item);
                     }}
                   >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-oslo-gray-100 truncate">
-                        {item.query}
-                      </p>
-                      <p className="text-xs text-oslo-gray-500 mt-0.5">
-                        {getTimeAgo(item.timestamp)}
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-white/95 truncate text-base sm:text-lg">
+                          {item.query}
+                        </p>
+                        <p className="text-xs sm:text-sm text-white/50 mt-1">
+                          {getTimeAgo(item.timestamp)}
+                        </p>
+                      </div>
+                      <svg
+                        className="w-4 h-4 sm:w-5 sm:h-5 text-white/40 flex-shrink-0 ml-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </>
           )}
 
           {/* Quick Search Categories (always visible when dropdown is open) */}
           {(query.length === 0 || suggestions.length > 0) && (
             <>
-              <div className="px-4 sm:px-5 py-3 border-t border-oslo-gray-800 bg-oslo-gray-800/50 backdrop-blur-sm">
-                <p className="text-xs sm:text-sm font-semibold text-oslo-gray-400 uppercase tracking-wide flex items-center gap-2">
+              <div className="px-4 sm:px-5 py-3 border-t border-white/10 bg-white/5 backdrop-blur-sm">
+                <p className="text-xs sm:text-sm font-semibold text-white/70 uppercase tracking-wide flex items-center gap-2">
                   <Zap className="w-4 h-4" /> Búsquedas rápidas
                 </p>
               </div>
-              <div className="p-3 sm:p-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="p-3 sm:p-4 flex flex-wrap gap-2">
                 {QUICK_SEARCH_CATEGORIES.map((category) => (
                   <button
                     key={category.label}
                     type="button"
                     onClick={() => handleQuickSearchClick(category.query)}
-                    className="px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-oslo-gray-800 hover:bg-indigo-500/20 border border-oslo-gray-700 hover:border-indigo-500 text-oslo-gray-100 hover:text-indigo-300 text-sm sm:text-base font-medium transition-all duration-150 active:scale-95"
+                    className="px-3 sm:px-4 py-2 rounded-lg bg-white/10 hover:bg-indigo-500/30 border border-white/15 hover:border-indigo-400 text-white/80 hover:text-indigo-200 text-xs sm:text-sm font-medium transition-all duration-150 active:scale-95 whitespace-nowrap"
                   >
                     {category.label}
                   </button>
