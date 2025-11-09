@@ -353,7 +353,6 @@ export function HeroSearchBar() {
           className="
             absolute top-full mt-2 w-full
             bg-white/10 rounded-xl sm:rounded-2xl
-            backdrop-blur-2xl
             shadow-2xl
             border border-white/20
             max-h-[70vh] sm:max-h-96 overflow-y-auto
@@ -510,7 +509,7 @@ export function HeroSearchBar() {
           {/* Quick Search Categories (always visible when dropdown is open) */}
           {(query.length === 0 || suggestions.length > 0) && (
             <>
-              <div className="sticky top-0 px-4 sm:px-5 py-2 border-b border-white/10 bg-white/5 backdrop-blur-sm z-10">
+              <div className="sticky top-0 px-4 sm:px-5 py-2 border-b border-white/10 bg-white/5 z-10">
                 <p className="text-xs sm:text-sm font-semibold text-white/70 uppercase tracking-wide flex items-center gap-2">
                   <Zap className="w-4 h-4" /> Búsquedas rápidas
                 </p>
