@@ -44,10 +44,10 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             pl-12 sm:pl-14 pr-12 sm:pr-14
             py-4 sm:py-5
             text-base sm:text-lg text-white font-medium
-            bg-white/30 hover:bg-white/35 focus:bg-white/40
+            bg-oslo-gray-1000/60 hover:bg-oslo-gray-1000/70 focus:bg-oslo-gray-1000/80
             rounded-xl sm:rounded-2xl
-            border-2 border-white/40
-            focus:border-white/80
+            border border-white/30
+            focus:border-white/50
             focus:outline-none
             shadow-xl hover:shadow-2xl
             transition-colors duration-200

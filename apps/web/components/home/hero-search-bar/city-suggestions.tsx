@@ -35,15 +35,16 @@ export function CitySuggestions({
             key={city.id}
             className={`
               px-4 sm:px-5 py-3
+              bg-oslo-gray-900/45 hover:bg-indigo-500/30 active:bg-indigo-400/20 border border-white/15 hover:border-indigo-400
               cursor-pointer
               flex items-center gap-3 sm:gap-4
               transition-all duration-150
               min-h-[56px]
-              border-l-4
+              rounded-lg
               ${
                 index === selectedIndex
-                  ? "bg-indigo-500/30 border-l-indigo-400 backdrop-blur-sm"
-                  : "border-l-transparent hover:bg-white/10 active:bg-white/15"
+                  ? "bg-indigo-500/30 border-indigo-400 backdrop-blur-sm"
+                  : "hover:bg-indigo-500/20 active:bg-indigo-400/15"
               }
             `}
             onClick={() => onSelect(city)}

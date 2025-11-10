@@ -268,7 +268,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
             longitude={selectedProperty.longitude}
             onClose={() => setSelectedProperty(null)}
             closeButton={true}
-            closeOnClick={true}
+            closeOnClick={false}
             className="mapbox-popup-content"
             style={{
               padding: "0",

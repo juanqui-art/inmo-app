@@ -109,7 +109,7 @@ export function PublicFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-oslo-gray-800 hover:bg-indigo-600 text-oslo-gray-400 hover:text-white transition-all duration-200 hover:scale-110"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-oslo-gray-800 hover:bg-blue-600 text-oslo-gray-400 hover:text-white transition-all duration-200 hover:scale-110"
               >
                 <Image
                   src="/social_icons/facebook.svg"

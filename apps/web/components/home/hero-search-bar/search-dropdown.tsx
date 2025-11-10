@@ -54,7 +54,7 @@ export function SearchDropdown({
       id="search-suggestions"
       className="
         absolute top-full mt-2 w-full
-        bg-white/40 rounded-xl sm:rounded-2xl
+        bg-oslo-gray-1000/80 rounded-xl sm:rounded-2xl
         shadow-2xl
         border border-white/30
         max-h-[70vh] sm:max-h-96 overflow-y-auto

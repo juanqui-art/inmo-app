@@ -27,14 +27,14 @@ export function RecentSearches({
 }: RecentSearchesProps) {
   return (
     <>
-      <div className="px-4 sm:px-5 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
+      <div className="sticky top-0 px-4 sm:px-5 py-3 border-b border-white/10 bg-white/5 backdrop-blur-sm z-10 flex items-center justify-between">
         <p className="text-xs sm:text-sm font-semibold text-white/70 uppercase tracking-wide flex items-center gap-2">
           <Clock className="w-4 h-4" /> Búsquedas recientes
         </p>
         <button
           type="button"
           onClick={onClearHistory}
-          className="text-xs text-white/50 hover:text-white/80 transition-colors"
+          className="text-xs text-oslo-gray-200 hover:text-white/80 transition-colors"
           aria-label="Clear search history"
         >
           Limpiar
@@ -44,7 +44,7 @@ export function RecentSearches({
         {history.map((item) => (
           <div
             key={`${item.type}-${item.query}`}
-            className="px-4 sm:px-5 py-3 sm:py-4 cursor-pointer rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/15 border border-white/10 hover:border-white/20 transition-all duration-150"
+            className="px-4 sm:px-5 py-3 sm:py-4 cursor-pointer rounded-lg bg-oslo-gray-900/45 hover:bg-indigo-500/30 active:bg-indigo-400/20 border border-white/15 hover:border-indigo-400 transition-all duration-150"
             onClick={() => onSelect(item)}
             role="button"
             tabIndex={0}

@@ -2,20 +2,24 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /**
-   * Cache Components Disabled (Temporarily)
+   * Cache Components Disabled (Incompatible with ISR)
    *
    * STATUS: Experimental in Next.js 16.0.0
-   * ISSUE: cacheTag() + updateTag() require all data access to be cached
-   *        (including cookies() in getCurrentUser). This breaks routes that
-   *        need uncached data access.
+   * ISSUE: 'use cache' + cacheComponents: true is incompatible with revalidate in routes
+   *        (ERROR: Route segment config "revalidate" is not compatible with cacheComponents)
    *
-   * SOLUTION: We implement caching at the function level instead using
-   *           React.cache() without cacheTag/updateTag. This provides:
-   *           ✅ Request deduplication (same benefits)
-   *           ❌ Manual invalidation via revalidateTag() (workaround: full page revalidation)
+   * SOLUTION: Use React.cache() instead
+   *           - Stable API (React 18+)
+   *           - Request-level deduplication only (no need for cacheComponents)
+   *           - Compatible with existing ISR strategy (revalidate + revalidatePath)
    *
-   * STATUS: Next.js team is improving this for next releases
-   * WHEN TO RE-ENABLE: Next.js 16.1+ (expected improvement in experimental API)
+   * PILOT: PropertyRepository.getPropertiesList() uses React.cache() wrapper
+   *        (see packages/database/src/repositories/properties.ts)
+   *
+   * FUTURE: Revisit 'use cache' when Next.js 16.1+ improves experimental API
+   *         or when auth can be refactored to avoid cookies() in cached functions
+   *
+   * RELATED: docs/caching/CACHE_STATUS.md
    */
 
   transpilePackages: [
