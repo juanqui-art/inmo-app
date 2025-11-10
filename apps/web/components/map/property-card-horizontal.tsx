@@ -25,8 +25,8 @@
 
 import React from "react";
 import { Heart, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@repo/ui";
+import { Badge } from "@repo/ui";
 import Image from "next/image";
 import Link from "next/link";
 import type { PropertyWithRelations } from "@repo/database";
@@ -37,9 +37,14 @@ import { useFavorites } from "@/hooks/use-favorites";
 import { generateSlug } from "@/lib/utils/slug-generator";
 import { useAuthStore } from "@/stores/auth-store";
 import {
-  TRANSACTION_BADGE_STYLES,
   CATEGORY_BADGE_STYLE,
 } from "@/lib/styles/property-card-styles";
+import {
+  formatPropertyPrice,
+  getTransactionBadgeStyle,
+  getCategoryLabel,
+  TRANSACTION_TYPE_LABELS,
+} from "@/lib/utils/property-formatters";
 
 interface PropertyCardHorizontalProps {
   property: PropertyWithRelations | SerializedProperty | MapProperty;
@@ -77,40 +82,11 @@ export function PropertyCardHorizontal({
     prevLikedRef.current = liked;
   }, [liked]);
 
-  // Format price
-  const formattedPrice = new Intl.NumberFormat("es-EC", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-  }).format(Number(property.price));
+  // Format price using centralized utility
+  const formattedPrice = formatPropertyPrice(property.price);
 
-  // Transaction type labels
-  const transactionTypeLabels: Record<string, string> = {
-    SALE: "En Venta",
-    RENT: "En Alquiler",
-  };
-
-  // Category labels
-  const categoryLabels: Record<string, string> = {
-    HOUSE: "Casa",
-    APARTMENT: "Departamento",
-    SUITE: "Suite",
-    VILLA: "Villa",
-    PENTHOUSE: "Penthouse",
-    DUPLEX: "Dúplex",
-    LOFT: "Loft",
-    LAND: "Terreno",
-    COMMERCIAL: "Local Comercial",
-    OFFICE: "Oficina",
-    WAREHOUSE: "Bodega",
-    FARM: "Finca",
-  };
-
-  // Get badge style based on transaction type
-  const transactionBadgeStyle =
-    property.transactionType === "SALE"
-      ? TRANSACTION_BADGE_STYLES.SALE
-      : TRANSACTION_BADGE_STYLES.RENT;
+  // Get transaction badge style using centralized utility
+  const transactionBadgeStyle = getTransactionBadgeStyle(property.transactionType);
 
   // Get first image
   const imageUrl =
@@ -173,13 +149,13 @@ export function PropertyCardHorizontal({
           <div className="flex gap-2 flex-wrap">
             {/* Transaction Type Badge */}
             <Badge className={transactionBadgeStyle}>
-              {transactionTypeLabels[property.transactionType]}
+              {TRANSACTION_TYPE_LABELS[property.transactionType]}
             </Badge>
 
             {/* Category Badge */}
             {property.category && (
               <Badge variant="secondary" className={CATEGORY_BADGE_STYLE}>
-                {categoryLabels[property.category] || property.category}
+                {getCategoryLabel(property.category) || property.category}
               </Badge>
             )}
 

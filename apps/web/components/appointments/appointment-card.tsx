@@ -9,7 +9,7 @@ import {
   formatAppointmentDate,
   getStatusLabel,
 } from "@/lib/utils/appointment-helpers";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@repo/ui";
 import type { AppointmentDetail } from "@repo/database";
 import { MapPin, Calendar, User, Phone } from "lucide-react";
 

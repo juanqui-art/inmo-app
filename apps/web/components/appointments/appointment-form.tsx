@@ -15,17 +15,17 @@ import {
   createAppointmentAction,
   getAvailableSlotsAction,
 } from "@/app/actions/appointments";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar } from "@repo/ui";
 import { Button } from "@repo/ui";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@repo/ui";
+import { Textarea } from "@repo/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
 import {
   formatHour,
   isWorkday,

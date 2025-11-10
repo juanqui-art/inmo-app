@@ -49,7 +49,7 @@ import {
   Link as LinkIcon,
   Check,
 } from "lucide-react";
-import { SocialIcon } from "@/components/ui/social-icon";
+import { SocialIcon } from "@repo/ui";
 // No external Button component needed
 import type { Property } from "@prisma/client";
 import {

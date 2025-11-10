@@ -5,14 +5,19 @@ import { Bath, Bed, Heart, MapPin, Maximize } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@repo/ui";
 import type { SerializedProperty } from "@/lib/utils/serialize-property";
 import { PropertyImageFallback } from "@/components/map/property-image-fallback";
 import {
   CATEGORY_BADGE_STYLE,
-  TRANSACTION_BADGE_STYLES,
 } from "@/lib/styles/property-card-styles";
 import { generateSlug } from "@/lib/utils/slug-generator";
+import {
+  formatPropertyPrice,
+  getTransactionBadgeStyle,
+  getCategoryLabel,
+  TRANSACTION_TYPE_LABELS,
+} from "@/lib/utils/property-formatters";
 
 interface PropertyCardProps {
   property: PropertyWithRelations | SerializedProperty;
@@ -36,38 +41,11 @@ export function PropertyCard({
   const hasMultipleImages = images.length > 1;
   const imageUrl = images[currentImageIndex]?.url;
 
-  // Format price
-  const formattedPrice = new Intl.NumberFormat("es-EC", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-  }).format(Number(property.price));
+  // Format price using centralized utility
+  const formattedPrice = formatPropertyPrice(property.price);
 
-  // Labels
-  const transactionTypeLabels: Record<string, string> = {
-    SALE: "En Venta",
-    RENT: "En Alquiler",
-  };
-
-  const categoryLabels: Record<string, string> = {
-    HOUSE: "Casa",
-    APARTMENT: "Departamento",
-    SUITE: "Suite",
-    VILLA: "Villa",
-    PENTHOUSE: "Penthouse",
-    DUPLEX: "Dúplex",
-    LOFT: "Loft",
-    LAND: "Terreno",
-    COMMERCIAL: "Local Comercial",
-    OFFICE: "Oficina",
-    WAREHOUSE: "Bodega",
-    FARM: "Finca",
-  };
-
-  const transactionBadgeStyle =
-    property.transactionType === "SALE"
-      ? TRANSACTION_BADGE_STYLES.SALE
-      : TRANSACTION_BADGE_STYLES.RENT;
+  // Get transaction badge style using centralized utility
+  const transactionBadgeStyle = getTransactionBadgeStyle(property.transactionType);
 
   // Navigate images
   const goToNextImage = () => {
@@ -162,11 +140,11 @@ export function PropertyCard({
         <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-20">
           <div className="flex flex-col gap-2">
             <Badge className={transactionBadgeStyle}>
-              {transactionTypeLabels[property.transactionType]}
+              {TRANSACTION_TYPE_LABELS[property.transactionType]}
             </Badge>
             {property.category && (
               <Badge variant="secondary" className={CATEGORY_BADGE_STYLE}>
-                {categoryLabels[property.category] || property.category}
+                {getCategoryLabel(property.category) || property.category}
               </Badge>
             )}
           </div>

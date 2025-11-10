@@ -18,8 +18,8 @@
 import { Button } from "@repo/ui";
 import { useActionState } from "react";
 import { loginAction } from "@/app/actions/auth";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@repo/ui";
+import { Label } from "@repo/ui";
 
 export function LoginForm() {
   // useActionState maneja el estado de la Server Action

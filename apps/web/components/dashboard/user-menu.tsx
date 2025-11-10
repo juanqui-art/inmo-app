@@ -8,8 +8,8 @@
 import { LogOut, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { logoutAction } from "@/app/actions/auth";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui";
+import { Badge } from "@repo/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +17,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@repo/ui";
 
 // Type para el usuario desde DB (SafeUser del repository)
 interface User {

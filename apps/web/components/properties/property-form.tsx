@@ -8,16 +8,16 @@
 import type { SerializedProperty } from "@repo/database";
 import { Button } from "@repo/ui";
 import { useActionState } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@repo/ui";
+import { Label } from "@repo/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+} from "@repo/ui";
+import { Textarea } from "@repo/ui";
 
 interface PropertyFormState {
   error?: {

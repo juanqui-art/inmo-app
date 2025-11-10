@@ -9,7 +9,7 @@ import { Building2, Calendar, Home, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@repo/ui";
 import { cn } from "@/lib/utils";
 
 type UserRole = "CLIENT" | "AGENT" | "ADMIN";
