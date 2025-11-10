@@ -1,5 +1,11 @@
 # Estrategia de Caché: MapPage en InmoApp
 
+**Status:** 📚 REFERENCIA EDUCATIVA (NO implementado actualmente)
+
+⚠️ **IMPORTANTE:** Este documento describe una estrategia planificada pero no implementada en el código actual. Ver `docs/caching/CACHE_STATUS.md` para estado real del proyecto.
+
+---
+
 ## Visualización de Flujos
 
 ### ❌ Antes: Sin Cache Components (Ineficiente)

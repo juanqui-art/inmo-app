@@ -211,13 +211,33 @@ export function proxy() { }
 - Documented duplicate API call issue for optimization (Session 3)
 - See: `archive/sessions/AI-SEARCH-CONSOLIDATED.md` for detailed status
 
-### 💾 Map Caching (/mapa)
+### 💾 Cache System Status
 
-**Status:** ✅ Complete - Using `React.cache()` for request deduplication
-- Eliminates duplicate queries for same viewport bounds
-- Cache hits: 15ms vs 340ms uncached
-- Zero renderization loops with smart URL handling
-- See: `docs/CACHE_STRATEGY.md` for strategy details
+**Status:** ❌ NOT IMPLEMENTED (No caching currently active)
+
+**Historical Context:**
+- Oct 23, 2025: Cache Components enabled for 5 minutes
+- Oct 23, 2025: Disabled (incompatible with `cookies()` in auth)
+- Nov 4, 2025: Code completely removed (simplification)
+
+**Current State:**
+- ✅ ISR on homepage (5-minute revalidation)
+- ✅ `revalidatePath()` in Server Actions (post-mutation invalidation)
+- ❌ No request-level deduplication (no `React.cache()`)
+- ❌ No persistent cross-request caching
+
+**Why Disabled:**
+`use cache` + `cacheComponents` cannot coexist with `cookies()` which InmoApp uses for authentication. This was documented and decided pragmatically.
+
+**Recommendation:**
+- **TODAY:** Implement `React.cache()` for map deduplication (36% performance gain, 1-2 hours work)
+- **TOMORROW:** Monitor Next.js 16.1+ for `use cache: private` stabilization
+- **FUTURE:** Consider Cache Components migration when auth can be refactored
+
+**See:**
+- `docs/caching/CACHE_STATUS.md` - Full history and timeline
+- `docs/caching/NEXT_16_CACHE_DEEP_DIVE.md` - Complete guide to Next.js 16 caching
+- Other docs in `docs/caching/` - Reference documentation
 
 ---
 
