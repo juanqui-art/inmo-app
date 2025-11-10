@@ -42,14 +42,14 @@ interface PropertyMarkerDarkProps {
 function getColorScheme(transactionType: TransactionType) {
   return transactionType === "SALE"
     ? {
-        pinFrom: "from-blue-400",
-        pinTo: "to-blue-600",
-        pinHoverFrom: "group-hover:from-blue-300",
-        pinHoverTo: "group-hover:to-blue-500",
+        pinFrom: "from-indigo-400",
+        pinTo: "to-indigo-600",
+        pinHoverFrom: "group-hover:from-indigo-300",
+        pinHoverTo: "group-hover:to-indigo-500",
         pointerColor: "border-t-blue-600",
         pointerHoverColor: "group-hover:border-t-blue-500",
-        shadowColor: "shadow-blue-500/30",
-        shadowHoverColor: "group-hover:shadow-blue-500/50",
+        shadowColor: "shadow-indigo-500/30",
+        shadowHoverColor: "group-hover:shadow-indigo-500/50",
       }
     : {
         pinFrom: "from-emerald-400",

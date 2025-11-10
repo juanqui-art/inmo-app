@@ -47,7 +47,7 @@ export function PropertyCardCompact({
   // Get transaction type badge color
   const badgeColor =
     property.transactionType === "SALE"
-      ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
+      ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20"
       : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
 
   const badgeLabel = property.transactionType === "SALE" ? "Venta" : "Arriendo";

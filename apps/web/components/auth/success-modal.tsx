@@ -88,7 +88,7 @@ export function SuccessModal({
           {/* Progress indicator - auto close animation */}
           <div className="w-full h-1 bg-oslo-gray-700 rounded-full overflow-hidden mt-4">
             <div
-              className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full"
+              className="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 rounded-full"
               style={{
                 animation: `shrink ${autoCloseDuration}ms linear`,
               }}

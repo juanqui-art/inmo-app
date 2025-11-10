@@ -232,7 +232,7 @@ export default async function PropertyDetailPage(
 
                 {/* CTA Buttons */}
                 <div className="space-y-3 mt-6">
-                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
+                  <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition">
                     Contactar Agente
                   </button>
                   <AppointmentButton

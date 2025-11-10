@@ -72,7 +72,7 @@ export function PriceRangeFilter({
             onClick={() => applyPreset(preset.min, preset.max)}
             className={`px-2 py-1.5 rounded text-xs font-medium transition-all duration-200 ${
               isPresetActive(preset.min, preset.max)
-                ? "bg-indigo-600 text-white shadow-lg shadow-blue-600/30"
+                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
                 : "bg-white/50 dark:bg-oslo-gray-900/50 text-oslo-gray-700 dark:text-oslo-gray-300 border border-oslo-gray-200 dark:border-oslo-gray-800 hover:bg-white/70 dark:hover:bg-oslo-gray-900/70"
             }`}
           >

@@ -24,7 +24,7 @@ export function SocialLinks({ variant, isHomepage = false }: SocialLinksProps) {
           className={`p-2 rounded-full transition-all ${
             isHomepage
               ? "text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-              : "text-oslo-gray-400 hover:bg-blue-600 hover:text-white"
+              : "text-oslo-gray-400 hover:bg-indigo-600 hover:text-white"
           }`}
         >
           <Image
@@ -91,7 +91,7 @@ export function SocialLinks({ variant, isHomepage = false }: SocialLinksProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Facebook"
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-oslo-gray-800 hover:bg-blue-600 text-oslo-gray-400 hover:text-white transition-all duration-200 hover:scale-110"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-oslo-gray-800 hover:bg-indigo-600 text-oslo-gray-400 hover:text-white transition-all duration-200 hover:scale-110"
         >
           <Image
             src="/social_icons/facebook.svg"

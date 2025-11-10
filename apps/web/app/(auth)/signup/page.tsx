@@ -45,7 +45,7 @@ export default function SignupPage() {
           ¿Ya tienes cuenta?{" "}
           <Link
             href="/login"
-            className="font-medium text-blue-600 hover:text-blue-500"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
           >
             Inicia sesión aquí
           </Link>

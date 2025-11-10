@@ -116,7 +116,7 @@ export function MapSearchLoader({
                   ease: "easeInOut",
                   repeat: Infinity,
                 }}
-                className="h-full bg-gradient-to-r from-cyan-500 to-blue-500"
+                className="h-full bg-gradient-to-r from-cyan-500 to-indigo-500"
               />
             </div>
           </motion.div>

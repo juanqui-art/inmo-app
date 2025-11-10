@@ -20,7 +20,7 @@
  * RENT: Emerald/Green - represents rental
  */
 export const TRANSACTION_BADGE_STYLES = {
-  SALE: "bg-blue-500 text-white border-0 font-semibold px-3 py-1 rounded-full backdrop-blur-sm",
+  SALE: "bg-indigo-500 text-white border-0 font-semibold px-3 py-1 rounded-full backdrop-blur-sm",
   RENT: "bg-emerald-500 text-white border-0 font-semibold px-3 py-1 rounded-full backdrop-blur-sm",
 } as const;
 

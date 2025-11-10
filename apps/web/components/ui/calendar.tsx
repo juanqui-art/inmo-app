@@ -42,11 +42,11 @@ function Calendar({
         cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-oslo-gray-100/50 [&:has([aria-selected])]:bg-oslo-gray-100 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day: cn(
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-oslo-gray-100 rounded",
-          "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+          "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500",
         ),
         day_range_end: "day-range-end",
         day_selected:
-          "bg-blue-600 text-white hover:bg-blue-700 hover:text-white focus:bg-blue-600 focus:text-white",
+          "bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white focus:bg-indigo-600 focus:text-white",
         day_today: "bg-oslo-gray-100 text-oslo-gray-900",
         day_outside:
           "day-outside text-oslo-gray-400 opacity-50 aria-selected:bg-oslo-gray-100/50 aria-selected:text-oslo-gray-400 aria-selected:opacity-30",

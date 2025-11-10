@@ -55,7 +55,7 @@ export function AISearchInput({
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="w-full px-4 py-4 pr-14 rounded-xl border-2 border-oslo-gray-200 dark:border-oslo-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:bg-oslo-gray-800 dark:text-white resize-none transition-colors duration-200"
+          className="w-full px-4 py-4 pr-14 rounded-xl border-2 border-oslo-gray-200 dark:border-oslo-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:bg-oslo-gray-800 dark:text-white resize-none transition-colors duration-200"
           rows={3}
           maxLength={200}
           disabled={isLoading}
@@ -64,7 +64,7 @@ export function AISearchInput({
         {/* Loading Spinner */}
         {isLoading && (
           <div className="absolute right-4 top-4">
-            <Loader className="w-5 h-5 animate-spin text-blue-500" />
+            <Loader className="w-5 h-5 animate-spin text-indigo-500" />
           </div>
         )}
 
@@ -88,7 +88,7 @@ export function AISearchInput({
         <Button
           onClick={handleSearch}
           disabled={!query.trim() || isLoading}
-          className="px-6 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-semibold hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-cyan-500 text-white rounded-lg font-semibold hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           {isLoading ? "Buscando..." : "Buscar"}
         </Button>

@@ -61,7 +61,7 @@ export function ModeToggle() {
             <Sun className="h-4 w-4" />
             <span>Claro</span>
           </div>
-          {theme === "light" && <Check className="h-4 w-4 text-blue-600" />}
+          {theme === "light" && <Check className="h-4 w-4 text-indigo-600" />}
         </DropdownMenuItem>
 
         <DropdownMenuItem
@@ -72,7 +72,7 @@ export function ModeToggle() {
             <Moon className="h-4 w-4" />
             <span>Oscuro</span>
           </div>
-          {theme === "dark" && <Check className="h-4 w-4 text-blue-600" />}
+          {theme === "dark" && <Check className="h-4 w-4 text-indigo-600" />}
         </DropdownMenuItem>
 
         <DropdownMenuItem
@@ -83,7 +83,7 @@ export function ModeToggle() {
             <Monitor className="h-4 w-4" />
             <span>Sistema</span>
           </div>
-          {theme === "system" && <Check className="h-4 w-4 text-blue-600" />}
+          {theme === "system" && <Check className="h-4 w-4 text-indigo-600" />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

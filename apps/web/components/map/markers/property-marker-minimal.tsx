@@ -43,8 +43,8 @@ function getColorScheme(transactionType: TransactionType) {
     ? {
         borderColor: "#3b82f6",
         hoverBorderColor: "#2563eb",
-        shadowColor: "shadow-blue-500/20",
-        hoverShadowColor: "group-hover:shadow-blue-500/40",
+        shadowColor: "shadow-indigo-500/20",
+        hoverShadowColor: "group-hover:shadow-indigo-500/40",
       }
     : {
         borderColor: "#10b981",

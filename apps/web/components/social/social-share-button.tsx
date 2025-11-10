@@ -153,7 +153,7 @@ export function SocialShareButton({
           disabled:pointer-events-none disabled:opacity-50
           ${variant === "ghost" ? "hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-800" : ""}
           ${variant === "outline" ? "border border-oslo-gray-300 dark:border-oslo-gray-700 hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-800" : ""}
-          ${variant === "default" ? "bg-blue-600 text-white hover:bg-blue-700" : ""}
+          ${variant === "default" ? "bg-indigo-600 text-white hover:bg-indigo-700" : ""}
           ${size === "sm" ? "h-9 px-3 text-sm" : ""}
           ${size === "lg" ? "h-11 px-8 text-lg" : ""}
           ${size === "icon" ? "h-9 w-9" : ""}
@@ -198,7 +198,7 @@ export function SocialShareButton({
                 onClick={() => handlePlatformShare("FACEBOOK")}
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
               >
-                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
                   <SocialIcon name="facebook" className="h-4 w-4 text-white" />
                 </div>
                 <span className="text-sm font-medium">Facebook</span>

@@ -93,7 +93,7 @@ export default async function PerfilCitasPage() {
           </p>
           <a
             href="/mapa"
-            className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-block px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
           >
             Explorar propiedades
           </a>

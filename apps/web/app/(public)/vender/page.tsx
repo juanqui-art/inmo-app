@@ -56,7 +56,7 @@ export default async function VenderPage() {
 
           <h1 className="text-4xl lg:text-6xl font-extrabold text-white drop-shadow-2xl mb-6">
             Vende o renta tu propiedad{" "}
-            <span className="text-blue-300">más rápido</span>
+            <span className="text-indigo-300">más rápido</span>
           </h1>
 
           <p className="text-xl text-white/90 max-w-3xl mx-auto drop-shadow-lg mb-8">

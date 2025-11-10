@@ -141,7 +141,7 @@ export function PropertyShareMenu({
         </svg>
       ),
       color:
-        "hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400",
+        "hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400",
       action: (url: string) => {
         const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
         window.open(facebookUrl, "_blank", "noopener,noreferrer");

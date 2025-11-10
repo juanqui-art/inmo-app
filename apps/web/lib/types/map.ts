@@ -147,7 +147,7 @@ export const CLUSTER_SIZE_THRESHOLDS = {
   SMALL: {
     maxPoints: 5,
     size: 32,
-    colorClass: "bg-gradient-to-br from-cyan-400/40 to-blue-500/30",
+    colorClass: "bg-gradient-to-br from-cyan-400/40 to-indigo-500/30",
     textSize: "text-xs",
     ringClass: "ring-cyan-300/40",
     glassClass: "backdrop-blur-lg border border-white/40",
@@ -156,11 +156,11 @@ export const CLUSTER_SIZE_THRESHOLDS = {
   MEDIUM: {
     maxPoints: 10,
     size: 40,
-    colorClass: "bg-gradient-to-br from-blue-400/40 to-indigo-500/30",
+    colorClass: "bg-gradient-to-br from-indigo-400/40 to-indigo-500/30",
     textSize: "text-sm",
-    ringClass: "ring-blue-300/40",
+    ringClass: "ring-indigo-300/40",
     glassClass: "backdrop-blur-lg border border-white/40",
-    shadowClass: "shadow-xl shadow-blue-400/25",
+    shadowClass: "shadow-xl shadow-indigo-400/25",
   },
   LARGE: {
     maxPoints: 25,

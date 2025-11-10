@@ -109,7 +109,7 @@ export function AuthModal({ open, onOpenChange, propertyId }: AuthModalProps) {
 
           <Button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold"
             disabled={isLoading || !email}
           >
             {isLoading ? "Cargando..." : "Continuar"}

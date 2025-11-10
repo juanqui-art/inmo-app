@@ -20,7 +20,7 @@ export function MapFilters() {
       <div className="flex items-center gap-2 bg-white/95 dark:bg-oslo-gray-900/95 backdrop-blur-sm rounded-full px-3 py-2 shadow-lg border border-oslo-gray-200 dark:border-oslo-gray-800">
         <button
           type="button"
-          className="px-4 py-1.5 rounded-full bg-blue-600 text-white text-sm font-semibold transition-colors hover:bg-blue-700"
+          className="px-4 py-1.5 rounded-full bg-indigo-600 text-white text-sm font-semibold transition-colors hover:bg-indigo-700"
           disabled
         >
           Venta

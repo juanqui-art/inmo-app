@@ -27,7 +27,7 @@ export function ActiveLinkIndicator({
   containerRef,
   activeIndex,
   className = "",
-  color = "bg-blue-500",
+  color = "bg-indigo-500",
 }: ActiveLinkIndicatorProps) {
   const indicatorRef = useRef<HTMLDivElement>(null);
 

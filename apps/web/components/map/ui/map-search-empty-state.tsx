@@ -40,7 +40,7 @@ interface MapSearchEmptyStateProps {
 const EMPTY_STATE_CONFIG = {
   "no-results": {
     icon: SearchX,
-    iconColor: "text-blue-400",
+    iconColor: "text-indigo-400",
     title: "No encontramos propiedades",
     subtitle: "Intenta ajustar tu búsqueda",
   },
@@ -163,8 +163,8 @@ export function MapSearchEmptyState({
         {type === "invalid-location" &&
           availableCities &&
           availableCities.length > 0 && (
-            <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-3 mb-4">
-              <p className="text-xs font-semibold text-blue-300 mb-2 flex items-center gap-2">
+            <div className="bg-indigo-900/20 border border-indigo-700/30 rounded-lg p-3 mb-4">
+              <p className="text-xs font-semibold text-indigo-300 mb-2 flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5" />
                 Ciudades disponibles:
               </p>
@@ -172,7 +172,7 @@ export function MapSearchEmptyState({
                 {availableCities.map((city) => (
                   <span
                     key={city}
-                    className="px-2 py-1 bg-blue-800/40 text-blue-200 text-xs rounded-full"
+                    className="px-2 py-1 bg-indigo-800/40 text-indigo-200 text-xs rounded-full"
                   >
                     {city}
                   </span>

@@ -91,8 +91,8 @@ export function PublicFooter() {
           {/* Brand Column (Wider on desktop) */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-3 mb-6 group">
-              <div className="p-2 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
-                <HomeIcon className="w-5 h-5 text-blue-400" />
+              <div className="p-2 rounded-lg bg-indigo-500/10 group-hover:bg-indigo-500/20 transition-colors">
+                <HomeIcon className="w-5 h-5 text-indigo-400" />
               </div>
               <span className="font-bold text-2xl text-white">InmoApp</span>
             </Link>
@@ -109,7 +109,7 @@ export function PublicFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-oslo-gray-800 hover:bg-blue-600 text-oslo-gray-400 hover:text-white transition-all duration-200 hover:scale-110"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-oslo-gray-800 hover:bg-indigo-600 text-oslo-gray-400 hover:text-white transition-all duration-200 hover:scale-110"
               >
                 <Image
                   src="/social_icons/facebook.svg"

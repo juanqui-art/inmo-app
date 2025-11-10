@@ -43,13 +43,13 @@ interface PropertyMarkerLightProps {
 function getColorScheme(transactionType: TransactionType) {
   return transactionType === "SALE"
     ? {
-        borderColor: "border-blue-500",
-        borderHoverColor: "group-hover:border-blue-600",
-        iconBg: "bg-blue-50 dark:bg-blue-950/50",
-        iconHoverBg: "group-hover:bg-blue-100 dark:group-hover:bg-blue-900",
-        iconColor: "text-blue-600",
-        shadowColor: "shadow-blue-500/10",
-        shadowHoverColor: "group-hover:shadow-blue-500/20",
+        borderColor: "border-indigo-500",
+        borderHoverColor: "group-hover:border-indigo-600",
+        iconBg: "bg-indigo-50 dark:bg-indigo-950/50",
+        iconHoverBg: "group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900",
+        iconColor: "text-indigo-600",
+        shadowColor: "shadow-indigo-500/10",
+        shadowHoverColor: "group-hover:shadow-indigo-500/20",
       }
     : {
         borderColor: "border-emerald-500",

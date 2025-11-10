@@ -206,7 +206,7 @@ export function HeroQuickFilters() {
  * 2. Show active state if already on filtered page:
  *    const searchParams = useSearchParams()
  *    const isActive = searchParams.get('transactionType') === 'SALE'
- *    className={isActive ? 'bg-blue-500 text-white' : 'bg-white'}
+ *    className={isActive ? 'bg-indigo-500 text-white' : 'bg-white'}
  *
  * 3. Add property count badges:
  *    <span className="text-xs">

@@ -128,7 +128,7 @@ export function RecentListingsSection({
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -right-40 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -right-40 w-80 h-80 bg-indigo-500/5 rounded-full blur-3xl" />
       </div>
 
       <div className="max-w-7xl mx-auto relative">

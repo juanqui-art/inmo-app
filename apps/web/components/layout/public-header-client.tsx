@@ -31,17 +31,18 @@ export function PublicHeaderClient({
   user,
 }: PublicHeaderClientProps) {
   const pathname = usePathname();
-  const isHomepage = pathname === "/";
   const isMapPage = pathname === "/mapa";
+  // The transparent style should be used on the homepage and the vender page
+  const useTransparentStyle = pathname === "/" || pathname === "/vender";
   const mobileMenu = useMobileMenu();
 
   return (
     <header
-      data-navbar={isMapPage ? "map" : isHomepage ? "homepage" : "pages"}
+      data-navbar={isMapPage ? "map" : useTransparentStyle ? "homepage" : "pages"}
       className={
         isMapPage
           ? "sticky top-0 z-50 bg-oslo-gray-1000/80 backdrop-blur-md border-b-[0.3px] border-oslo-gray-600/60"
-          : isHomepage
+          : useTransparentStyle
             ? "sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
             : "sticky top-0 z-50 bg-oslo-gray-900/80 backdrop-blur-md border-b border-oslo-gray-700/50 shadow-lg"
       }
@@ -56,9 +57,9 @@ export function PublicHeaderClient({
             href="/"
             data-navbar-logo-text="true"
             className={`flex items-center gap-2 font-bold text-xl ${
-              isHomepage || isMapPage
+              useTransparentStyle || isMapPage
                 ? "text-white/80 hover:text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-                : "text-oslo-gray-100 hover:text-blue-400"
+                : "text-oslo-gray-100 hover:text-indigo-400"
             }`}
           >
             <HomeIcon data-navbar-logo-icon="true" className="w-6 h-6" />
@@ -69,7 +70,7 @@ export function PublicHeaderClient({
           <DesktopNav
             isAuthenticated={isAuthenticated}
             user={user}
-            isHomepage={isHomepage || isMapPage}
+            isHomepage={useTransparentStyle || isMapPage}
           />
 
           {/* Mobile Menu Button */}
@@ -77,7 +78,7 @@ export function PublicHeaderClient({
             type="button"
             onClick={mobileMenu.toggle}
             className={`md:hidden p-2 rounded-lg transition-all ${
-              isHomepage || isMapPage
+              useTransparentStyle || isMapPage
                 ? "hover:bg-white/10 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
                 : "hover:bg-oslo-gray-800 text-oslo-gray-300"
             }`}

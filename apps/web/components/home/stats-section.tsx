@@ -218,7 +218,7 @@ export function StatsSection({
 /**
  * DESIGN DECISIONS:
  *
- * 1. Background Color (bg-blue-600):
+ * 1. Background Color (bg-indigo-600):
  *    - Brand color (authority, trust)
  *    - High contrast with white text
  *    - Stands out from gray sections
@@ -234,7 +234,7 @@ export function StatsSection({
  *    - Quick scannable
  *    - Impactful
  *
- * 4. Subtle Labels (text-blue-100):
+ * 4. Subtle Labels (text-indigo-100):
  *    - Secondary information
  *    - Not competing with numbers
  *    - Still readable

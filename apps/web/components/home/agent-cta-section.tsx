@@ -99,7 +99,7 @@ export function AgentCTASection() {
 
           {/* Benefit 1 */}
           <div className="flex items-start gap-4 bg-white/10 p-5 rounded-lg backdrop-blur-sm">
-            <TrendingUp className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+            <TrendingUp className="w-6 h-6 text-indigo-400 flex-shrink-0 mt-1" />
             <div>
               <h3 className="font-semibold text-lg mb-1">Aumenta tus Ventas</h3>
               <p className="text-oslo-gray-300 text-sm">
@@ -110,7 +110,7 @@ export function AgentCTASection() {
 
           {/* Benefit 2 */}
           <div className="flex items-start gap-4 bg-white/10 p-5 rounded-lg backdrop-blur-sm">
-            <Users className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+            <Users className="w-6 h-6 text-indigo-400 flex-shrink-0 mt-1" />
             <div>
               <h3 className="font-semibold text-lg mb-1">
                 Gestión Simplificada
@@ -123,7 +123,7 @@ export function AgentCTASection() {
 
           {/* Benefit 3 */}
           <div className="flex items-start gap-4 bg-white/10 p-5 rounded-lg backdrop-blur-sm">
-            <BarChart3 className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+            <BarChart3 className="w-6 h-6 text-indigo-400 flex-shrink-0 mt-1" />
             <div>
               <h3 className="font-semibold text-lg mb-1">
                 Analíticas Detalladas
@@ -137,7 +137,7 @@ export function AgentCTASection() {
 
           {/* Benefit 4 */}
           <div className="flex items-start gap-4 bg-white/10 p-5 rounded-lg backdrop-blur-sm">
-            <Shield className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+            <Shield className="w-6 h-6 text-indigo-400 flex-shrink-0 mt-1" />
             <div>
               <h3 className="font-semibold text-lg mb-1">
                 Plataforma Confiable

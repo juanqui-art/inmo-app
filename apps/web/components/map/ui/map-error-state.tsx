@@ -38,7 +38,7 @@ export function MapErrorState() {
             href="https://account.mapbox.com/access-tokens/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 dark:text-blue-400 hover:underline"
+            className="text-indigo-600 dark:text-indigo-400 hover:underline"
           >
             account.mapbox.com
           </a>

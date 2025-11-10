@@ -78,7 +78,7 @@ export function SignupForm() {
         <select
           id="role"
           name="role"
-          className="flex h-10 w-full rounded-md border border-oslo-gray-300 dark:border-oslo-gray-700 bg-white dark:bg-oslo-gray-1000 px-3 py-2 text-sm text-oslo-gray-900 dark:text-oslo-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex h-10 w-full rounded-md border border-oslo-gray-300 dark:border-oslo-gray-700 bg-white dark:bg-oslo-gray-1000 px-3 py-2 text-sm text-oslo-gray-900 dark:text-oslo-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           required
           defaultValue="CLIENT"
         >
