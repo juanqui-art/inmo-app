@@ -436,3 +436,61 @@ export async function searchCitiesAction(
     };
   }
 }
+
+/**
+ * GET ALL CITIES ACTION
+ * Obtiene lista de TODAS las ciudades disponibles (sin filtro de búsqueda)
+ * Usado por CityFilterDropdown en el mapa
+ *
+ * @returns Lista de todas las ciudades con conteo de propiedades, ordenadas por cantidad
+ */
+export async function getCitiesAction(): Promise<{
+  cities: CitySearchResult[];
+  error?: string;
+}> {
+  try {
+    // Obtener TODAS las propiedades disponibles
+    const { properties } = await propertyRepository.list({
+      take: 10000, // Obtener todas
+    });
+
+    // Agrupar por ciudad y contar
+    const cityMap = new Map<
+      string,
+      { state: string; propertyCount: number }
+    >();
+
+    properties.forEach((property) => {
+      if (property.city) {
+        const existing = cityMap.get(property.city);
+        if (existing) {
+          existing.propertyCount += 1;
+        } else {
+          cityMap.set(property.city, {
+            state: property.state || "",
+            propertyCount: 1,
+          });
+        }
+      }
+    });
+
+    // Convertir a array ordenado por cantidad de propiedades (más propiedades primero)
+    const cities: CitySearchResult[] = Array.from(cityMap.entries())
+      .map(([name, data]) => ({
+        id: `${name.toLowerCase()}-${data.state.toLowerCase()}`,
+        name,
+        state: data.state,
+        propertyCount: data.propertyCount,
+      }))
+      .sort((a, b) => b.propertyCount - a.propertyCount);
+
+    return { cities };
+  } catch (error) {
+    console.error("Error getting cities:", error);
+    return {
+      cities: [],
+      error:
+        error instanceof Error ? error.message : "Error al obtener ciudades",
+    };
+  }
+}

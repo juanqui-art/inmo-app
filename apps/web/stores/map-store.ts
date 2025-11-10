@@ -33,6 +33,7 @@ export interface FilterState {
   bedrooms?: number;
   bathrooms?: number;
   transactionType?: string[];
+  city?: string; // City name filter (e.g., "Cuenca", "Quito")
 }
 
 interface MapStoreState {
@@ -180,6 +181,7 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
         bedrooms: filters.bedrooms,
         bathrooms: filters.bathrooms,
         transactionType: filters.transactionType,
+        city: filters.city,
       },
     }),
 
@@ -265,6 +267,8 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
             ? draft.transactionType
             : undefined
           : current.transactionType,
+      // For city: string filter
+      city: draft.city !== undefined ? draft.city || undefined : current.city,
     };
 
     set({
@@ -288,6 +292,7 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
         bedrooms: state.filters.bedrooms,
         bathrooms: state.filters.bathrooms,
         transactionType: state.filters.transactionType,
+        city: state.filters.city,
       },
     })),
 

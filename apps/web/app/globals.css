@@ -159,6 +159,36 @@
   animation: heart-pulse 0.6s ease-in-out infinite;
 }
 
+/* Filter Active Pulse Animation
+   Subtle pulsing effect for active filters
+   Combines shadow depth and opacity changes for glassmorphic glow
+   ========================================================================== */
+@keyframes filter-active-pulse {
+  0%, 100% {
+    background-color: hsl(210 2% 39% / 0.30);
+    box-shadow:
+      0 8px 16px rgba(0, 0, 0, 0.3),
+      inset 0 0 20px rgba(255, 255, 255, 0.02);
+  }
+  50% {
+    background-color: hsl(210 2% 39% / 0.42);
+    box-shadow:
+      0 10px 20px rgba(0, 0, 0, 0.35),
+      inset 0 0 30px rgba(255, 255, 255, 0.06);
+  }
+}
+
+.animate-filter-active {
+  animation: filter-active-pulse 2.8s ease-in-out infinite;
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-filter-active {
+    animation: none !important;
+  }
+}
+
 /* ============================================================================
    MapBox GL Popup Style Overrides
    Override default MapBox popup styles to allow custom card styling

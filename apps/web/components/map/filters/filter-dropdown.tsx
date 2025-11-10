@@ -114,7 +114,7 @@ export function FilterDropdown({
         onClick={handleButtonClick}
         className={`flex h-12 items-center gap-2 px-4 py-2 rounded-full font-medium text-base transition-all duration-200 whitespace-nowrap ${
           isActive
-            ? "bg-oslo-gray-600/30 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
+            ? "bg-oslo-gray-600/30 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50 animate-filter-active"
             : isOpen
               ? "bg-oslo-gray-700 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
               : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800"

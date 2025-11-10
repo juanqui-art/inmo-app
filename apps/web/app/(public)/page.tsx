@@ -162,7 +162,6 @@ export default async function HomePage() {
     <>
       {/* Hero Section (Search-First) */}
       <HeroSection />
-
       {/* Featured Properties Carousel */}
       {serializedFeatured.length > 0 && (
         <FeaturedPropertiesCarousel
@@ -170,24 +169,20 @@ export default async function HomePage() {
           isAuthenticated={!!currentUser}
         />
       )}
-
-      {/* Trending Properties (Social Commerce) */}
+      `{/* Trending Properties (Social Commerce) */}
       {serializedFeatured.length > 0 && (
         <TrendingPropertiesSection properties={serializedFeatured} />
       )}
-
       {/* Recent Listings Grid */}
       {serializedRecent.length > 0 && (
         <RecentListingsSection properties={serializedRecent} />
       )}
-
       {/* Stats Section (Social Proof) */}
       <StatsSection
         propertyCount={propertyCount}
         cityCount={cityCount}
         agentCount={agentCount}
       />
-
       {/* Agent CTA (Conversion) */}
       <AgentCTASection />
     </>

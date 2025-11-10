@@ -67,6 +67,7 @@ export function useFilterUrlSync() {
         bedrooms: urlFilters.bedrooms,
         bathrooms: urlFilters.bathrooms,
         transactionType: urlFilters.transactionType as any,
+        city: urlFilters.city,
       });
 
       isInitializedRef.current = true;
@@ -85,6 +86,7 @@ export function useFilterUrlSync() {
         bedrooms: urlFilters.bedrooms,
         bathrooms: urlFilters.bathrooms,
         transactionType: urlFilters.transactionType as any,
+        city: urlFilters.city,
       });
 
       lastUrlRef.current = currentUrl;
@@ -112,6 +114,7 @@ export function useFilterUrlSync() {
         bedrooms: filters.bedrooms,
         bathrooms: filters.bathrooms,
         transactionType: filters.transactionType as any,
+        city: filters.city,
       };
 
       const filterString = buildFilterUrl(urlParams);

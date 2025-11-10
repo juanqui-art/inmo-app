@@ -24,8 +24,10 @@
 import { AISearchInline } from "@/components/ai-search/ai-search-inline";
 import { BathroomsFilter } from "./bathrooms-filter";
 import { BedroomsFilter } from "./bedrooms-filter";
+import { CityFilterDropdown } from "./city-filter-dropdown";
 import { PriceFilterDropdown } from "./price-filter-dropdown";
 import { PropertyTypeDropdown } from "./property-type-dropdown";
+import { TransactionTypeDropdown } from "./transaction-type-dropdown";
 
 /**
  * FilterBar - Pure layout component
@@ -40,14 +42,24 @@ export function FilterBar() {
           <AISearchInline />
         </div>
 
-        {/* Price Filter - No props needed */}
+        {/* City Filter - No props needed */}
         <div className="hidden sm:block">
-          <PriceFilterDropdown />
+          <CityFilterDropdown />
+        </div>
+
+        {/* Transaction Type Filter - No props needed */}
+        <div className="hidden sm:block">
+          <TransactionTypeDropdown />
         </div>
 
         {/* Property Type Filter - No props needed */}
         <div className="hidden md:block">
           <PropertyTypeDropdown />
+        </div>
+
+        {/* Price Filter - No props needed */}
+        <div className="hidden md:block">
+          <PriceFilterDropdown />
         </div>
 
         {/* Bedrooms Filter - No props needed */}

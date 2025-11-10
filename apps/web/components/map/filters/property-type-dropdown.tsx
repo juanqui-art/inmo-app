@@ -176,10 +176,10 @@ export function PropertyTypeDropdown() {
 
   // Display value logic - Show category names with ellipsis for 3+
   const displayValue = useMemo(() => {
-    if (selected.length === 0) return "Tipo";
+    if (selected.length === 0) return "Categoría";
 
     if (selected.length === 1) {
-      return CATEGORIES.find((c) => c.value === selected[0])?.label || "Tipo";
+      return CATEGORIES.find((c) => c.value === selected[0])?.label || "Categoría";
     }
 
     if (selected.length === 2) {
@@ -197,7 +197,7 @@ export function PropertyTypeDropdown() {
 
   return (
     <FilterDropdown
-      label="Tipo"
+      label="Categoría"
       value={displayValue}
       isOpen={isOpen}
       onOpenChange={handleOpenChange}
