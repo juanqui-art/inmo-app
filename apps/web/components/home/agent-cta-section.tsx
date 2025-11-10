@@ -170,7 +170,7 @@ export function AgentCTASection() {
             className="
               inline-flex items-center gap-2
               px-8 py-4
-              bg-blue-600 hover:bg-blue-700
+              bg-indigo-600 hover:bg-indigo-700
               text-white font-bold text-lg
               rounded-lg
               shadow-xl hover:shadow-2xl

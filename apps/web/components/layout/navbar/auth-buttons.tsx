@@ -38,7 +38,7 @@ export const AuthButtons = forwardRef<HTMLDivElement, AuthButtonsProps>(
             className={`px-4 py-2 font-semibold rounded-lg transition-all ${
               isHomepage
                 ? "bg-neutral-800 text-white/80 hover:bg-neutral-800/60 hover:text-white hover:scale-105 shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
-                : "bg-blue-600 text-white hover:bg-blue-500 hover:scale-105"
+                : "bg-indigo-600 text-white hover:bg-indigo-500 hover:scale-105"
             }`}
           >
             Publicar anuncio
@@ -61,7 +61,7 @@ export const AuthButtons = forwardRef<HTMLDivElement, AuthButtonsProps>(
         <Link
           href="/vender"
           onClick={onNavigate}
-          className="block w-full px-4 py-3 text-center bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors"
+          className="block w-full px-4 py-3 text-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg transition-colors"
         >
           Publicar anuncio
         </Link>
