@@ -96,7 +96,7 @@ export function MapFilterPanel() {
       {/* Mobile Toggle Button */}
       <button
         onClick={() => setIsOpenMobile(true)}
-        className="md:hidden fixed bottom-6 left-6 z-30 p-3 rounded-lg bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-colors"
+        className="md:hidden fixed bottom-6 left-6 z-30 p-3 rounded-lg bg-indigo-600 text-white shadow-lg hover:bg-blue-700 transition-colors"
         aria-label="Abrir filtros"
       >
         <ChevronLeft className="h-5 w-5" />
