@@ -100,13 +100,36 @@ El sistema de diseño mapea automáticamente Oslo Gray a variables semánticas:
 
 ### Acciones y Estados
 
-**Primary (Azul):** Mantener `blue-600`, `blue-700`, etc. para CTAs y acciones principales
+**Primary (Indigo):** `indigo-500`, `indigo-600` para CTAs y acciones principales
+- Valores: hsl(239, 84%, 67%) / hsl(243, 75%, 59%)
+- Dark mode: indigo-500
+- Light mode: indigo-600
+- Uso: Botones primarios, links principales, acciones críticas
 
 **Success:** `green-600` para confirmaciones y éxito
 
 **Error/Destructive:** Mantener configuración existente para errores
 
 **Warning:** `yellow-600` para advertencias
+
+---
+
+## Paleta Indigo Completa
+
+Indigo es ahora la paleta de colores primaria para acciones:
+
+```css
+--indigo-50:   226 100% 97%;   /* #E0E7FF */
+--indigo-100:  226 100% 94%;   /* #C7D2FE */
+--indigo-200:  226 96% 89%;    /* #A5B4FC */
+--indigo-300:  226 94% 82%;    /* #818CF8 */
+--indigo-400:  226 91% 73%;    /* #6366F1 */
+--indigo-500:  239 84% 67%;    /* #4F46E5 - Primary (Dark Mode) */
+--indigo-600:  243 75% 59%;    /* #4338CA - Primary (Light Mode) */
+--indigo-700:  244 58% 51%;    /* #3730A3 */
+--indigo-800:  243 54% 41%;    /* #312E81 */
+--indigo-900:  242 47% 34%;    /* #1E1B4B */
+```
 
 ---
 

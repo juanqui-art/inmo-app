@@ -56,6 +56,16 @@ Documentación centralizada del sistema de diseño de InmoApp, incluyendo paleta
 | Texto principal | `oslo-gray-50` | `#EFF0F0` |
 | Texto secundario | `oslo-gray-300` | `#9BA5AC` |
 | Bordes | `oslo-gray-800` | `#353739` |
+| **Primary CTA** | **`indigo-500`** | **`#4F46E5`** |
+
+### Colores Principales (Light Mode)
+| Elemento | Color | Valor |
+|----------|-------|-------|
+| Fondo principal | `white` | `#FFFFFF` |
+| Texto principal | `oslo-gray-1100` | `#0E0F0F` |
+| Texto secundario | `oslo-gray-700` | `#494C4F` |
+| Bordes | `oslo-gray-300` | `#9BA5AC` |
+| **Primary CTA** | **`indigo-600`** | **`#4338CA`** |
 
 ### Glassmorphism Estándar
 ```tsx
