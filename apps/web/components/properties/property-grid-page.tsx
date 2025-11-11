@@ -15,6 +15,7 @@ import { PropertyCard } from "./property-card";
 import { PropertyGridPagination } from "./property-grid-pagination";
 import { PropertyViewToggle } from "./property-view-toggle";
 import { PropertyListSchema } from "./property-list-schema";
+import { PropertyGridFilterBar } from "./property-grid-filter-bar";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { useAuthStore } from "@/stores/auth-store";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -27,10 +28,8 @@ interface PropertyGridPageProps {
   currentPage: number;
   totalPages: number;
   total: number;
-  pageSize: number;
   hasNextPage: boolean;
   hasPrevPage: boolean;
-  isAuthenticated: boolean;
 }
 
 export function PropertyGridPage({
@@ -38,10 +37,8 @@ export function PropertyGridPage({
   currentPage,
   totalPages,
   total,
-  pageSize,
   hasNextPage,
   hasPrevPage,
-  isAuthenticated,
 }: PropertyGridPageProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const isAuth = useAuthStore((state) => state.isAuthenticated);
@@ -125,6 +122,9 @@ export function PropertyGridPage({
           <PropertyViewToggle currentView="list" filters={filterString} />
         </div>
       </div>
+
+      {/* Filter Bar */}
+      <PropertyGridFilterBar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Grid Layout */}

@@ -105,10 +105,8 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
       currentPage={page}
       totalPages={totalPages}
       total={total}
-      pageSize={pageSize}
       hasNextPage={hasNextPage}
       hasPrevPage={hasPrevPage}
-      isAuthenticated={!!currentUser}
     />
   );
 }
