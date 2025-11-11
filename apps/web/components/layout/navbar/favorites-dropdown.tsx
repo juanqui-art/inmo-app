@@ -145,8 +145,8 @@ export function FavoritesDropdown({ className }: FavoritesDropdownProps) {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "relative p-2 rounded-lg transition-all duration-200",
-          "hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900",
+          "relative p-1.5 rounded-full transition-all duration-200",
+          "hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-300/30",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
           isOpen && "bg-oslo-gray-100 dark:bg-oslo-gray-900",
         )}
@@ -156,9 +156,9 @@ export function FavoritesDropdown({ className }: FavoritesDropdownProps) {
       >
         <Heart
           className={cn(
-            "w-5 h-5 transition-colors",
+            "w-6 h-6 transition-colors",
             favoriteCount > 0
-              ? "fill-red-500 text-red-500"
+              ? "fill-red-500 text-red-500 "
               : "text-oslo-gray-600 dark:text-oslo-gray-400",
           )}
         />
@@ -167,10 +167,9 @@ export function FavoritesDropdown({ className }: FavoritesDropdownProps) {
         {favoriteCount > 0 && (
           <span
             className={cn(
-              "absolute top-0 right-0 w-5 h-5",
+              "absolute top-0 right-0 w-3 h-3",
               "bg-red-500 text-white text-xs font-bold",
               "rounded-full flex items-center justify-center",
-              "translate-x-1 -translate-y-1",
             )}
           >
             {favoriteCount > 9 ? "9+" : favoriteCount}

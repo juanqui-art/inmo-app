@@ -1,279 +1,101 @@
-# InmoApp - Claude Context
+# InmoApp Gemini Context
 
-> Auto-loaded context for Claude Code. For detailed docs see `docs/AI_ASSISTANTS.md`
-
----
-
-## Project Overview
-
-**Real estate platform** | Phase 1.5: Public-facing features | Next.js 16 + Supabase + Turborepo
-
-**Stack:** Next.js 16 + React 19 + TypeScript + Tailwind v4 + GSAP | Supabase Auth + Storage | Prisma + PostgreSQL | Turborepo monorepo | Bun
+This document provides essential context for the InmoApp project, tailored for the Gemini AI assistant.
 
 ---
 
-## Quick Start
+## 1. Project Overview
 
-```bash
-bun run dev          # Start development (Turborepo orchestrates, Turbopack compiles)
-bun run dev:web      # Direct: Skip Turborepo (alternative)
-bun run type-check   # TypeScript validation (run before commits!)
-bun run lint         # Biome linting
-cd packages/database && bunx prisma studio  # DB browser
+**InmoApp** is a modern, full-stack real estate platform. It's built as a monorepo using **Turborepo** and **Bun** as the package manager.
+
+The primary application is a **Next.js 16** web app located in `apps/web`. The backend is powered by **Supabase** for authentication and storage, with a **PostgreSQL** database managed by the **Prisma ORM**.
+
+### Key Technologies:
+
+- **Monorepo:** Turborepo
+- **Package Manager:** Bun
+- **Web Framework:** Next.js 16 (with App Router)
+- **UI:** React 19, Tailwind CSS v4, Radix UI, Shadcn/ui (inferred from `components.json`)
+- **Database:** PostgreSQL
+- **ORM:** Prisma
+- **Backend Services:** Supabase (Auth, Storage)
+- **Code Quality:** Biome (Linting & Formatting), TypeScript
+- **Testing:** Vitest
+
+---
+
+## 2. Project Structure
+
+The project is organized into `apps` and `packages`:
+
+```
+/
+├── apps/
+│   └── web/         # Main Next.js application
+│       ├── app/     # Next.js App Router (pages, layouts, server actions)
+│       ├── components/ # UI Components
+│       └── lib/      # Utility functions and libraries
+│
+├── packages/
+│   ├── database/    # Prisma schema, client, and repository logic
+│   ├── ui/          # Shared React UI components
+│   ├── supabase/    # Supabase client configuration
+│   ├── env/         # Environment variable validation
+│   └── typescript-config/ # Shared tsconfig files
+│
+├── docs/            # Project documentation
+└── scripts/         # Utility scripts
 ```
 
 ---
 
-## Architecture
+## 3. Getting Started & Key Commands
 
-**Data Flow:**
-```
-Component → Server Action → Repository → Prisma → Database
-```
+The project uses **Bun** for package management and script execution.
 
-**Structure:**
-```
-apps/web/
-├── app/actions/        # Server Actions (mutations)
-├── components/         # React components
-├── lib/               # Utils, validations, auth
-└── proxy.ts          # Auth + routing (Next.js 16 convention)
+### Setup:
 
-packages/
-├── env/               # Environment variables validation (@repo/env)
-├── database/          # Prisma schema + repositories
-├── supabase/          # Supabase clients
-├── ui/               # Shared UI components
-└── typescript-config/ # TS configs
-```
+1.  **Install dependencies:**
+    ```bash
+    bun install
+    ```
+2.  **Set up environment variables:**
+    - Copy `.env.example` to `.env` and fill in the required values (Supabase, Database URL, etc.).
+    - The `postinstall` script automatically runs `prisma generate`.
 
----
+### Core Commands (run from the root directory):
 
-## Critical Rules
+-   **`bun run dev`**: Starts the development server for the web app. This is the primary command for development. It automatically handles Prisma client generation.
+-   **`bun run build`**: Creates a production build of all applications and packages.
+-   **`bun run lint`**: Checks the entire codebase for linting errors using Biome.
+-   **`bun run type-check`**: Runs the TypeScript compiler to check for type errors.
+-   **`bun run test`**: Executes the test suite using Vitest.
 
-1. **Always run** `bun run type-check` before commits
-2. **New packages:** Add to `transpilePackages` in `next.config.ts` + restart server
-3. **All DB ops** in `repositories/`
-4. **Server Actions** validate auth + permissions
-5. **Forms** use Zod validation
-6. **Server Components** by default (Client only when needed)
-7. **Environment variables:** Use `import { env } from '@repo/env'` (never `process.env`)
-8. **Turborepo orchestrates:** `turbo.json` defines task dependencies (Prisma generation before dev/build)
+### Database Commands:
 
-## Build Tools Explained
+Database-related commands are typically run from the `packages/database` directory.
 
-**Three distinct tools** work together in your stack:
-- **Turborepo** (`turbo.json`): Monorepo task orchestrator - schedules and caches tasks
-- **Turbopack** (built in Next.js 16): Fast bundler - compiles TS/JSX → JS (default since Next.js 16)
-- **Bun** (`bun run`): Runtime + package manager - executes commands with Turborepo
-
-**Development Flow:**
-```
-bun run dev
-  ↓ (runs root script)
-turbo run dev
-  ↓ (Turborepo reads turbo.json)
-  ├─ @repo/database#db:generate (Prisma)
-  └─ next dev (in apps/web)
-      ↓
-      Turbopack compiles code → Server starts
-```
+-   **`cd packages/database && bunx prisma generate`**: Manually generates the Prisma client.
+-   **`cd packages/database && bunx prisma migrate dev`**: Runs database migrations.
+-   **`cd packages/database && bunx prisma studio`**: Opens the Prisma Studio to view and edit data.
 
 ---
 
-## Database
+## 4. Development Conventions
 
-**Models:** `User`, `Property`, `PropertyImage`, `Favorite`, `Appointment`
-
-**Roles:**
-- `CLIENT`: Browse + favorites + appointments
-- `AGENT`: Create properties + manage listings
-- `ADMIN`: Full access (future)
-
-**Connection:**
-- Pooler (Transaction Mode): `DATABASE_URL` → port 6543 (serverless, best for Prisma)
-- Direct Connection: `DIRECT_URL` → db.*.supabase.co:5432 (migrations only)
-- Region: US East (aws-1-us-east-2)
-
-**Environment Variables:**
-- Centralized in `@repo/env` package
-- All validated with Zod at startup
-- Type-safe across monorepo
-- Access via: `import { env } from '@repo/env'`
+-   **Code Style:** Code is formatted and linted by **Biome**. Configuration is in `biome.json`.
+-   **Monorepo Management:** **Turborepo** orchestrates tasks. The pipeline is defined in `turbo.json`.
+-   **Data Access:** The backend uses a **Repository Pattern** for database interactions, abstracting Prisma queries.
+-   **State Management:** Zustand is used for client-side state management.
+-   **Components:** The project heavily favors **React Server Components (RSCs)**. Client components (`"use client"`) are used only when necessary (e.g., for hooks and event listeners).
+-   **Environment Variables:** Type-safe environment variables are managed via the `@repo/env` package. A list of environment variables passed through by Turbo is in `turbo.json`.
 
 ---
 
-## Environment Variables
+## 5. AI Assistant Guidelines
 
-**⚠️ CRITICAL:** Turborepo monorepo has TWO `.env.local` files:
-- `root/.env.local` (build tools, Turborepo)
-- `apps/web/.env.local` (Next.js, which ONLY reads this one)
-
-**Adding new vars:** Update both files + `packages/env/src/index.ts` schema, then restart `bun run dev`
-
-**Key variables:**
-- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase
-- `DATABASE_URL` (pooler, port 6543), `DIRECT_URL` (migrations, port 5432)
-- `NEXT_PUBLIC_MAPBOX_TOKEN`, `OPENAI_API_KEY`, `RESEND_API_KEY`
-
-**See:** `docs/getting-started/ENV_QUICK_START.md` or `docs/architecture/ENVIRONMENT_VARIABLES.md` for full details
-
----
-
-## Common Issues
-
-**Prisma client not found:**
-```bash
-cd packages/database && bunx prisma generate
-# Or use Turborepo:
-turbo run @repo/database#db:generate
-```
-
-**Package not found:**
-1. Check `transpilePackages` in `next.config.ts`
-2. Restart dev server
-
-**Changes not reflected:**
-```bash
-rm -rf apps/web/.next && bun run dev
-```
-
-**Turbo cache issues:**
-```bash
-# Clear Turborepo cache if builds are stale
-rm -rf .turbo
-bun run build  # Rebuilds everything
-```
-
-**Bypass Turborepo (direct dev):**
-```bash
-# If you need to skip Turborepo orchestration
-bun run dev:web  # Goes directly to apps/web
-```
-
----
-
-## Documentation
-
-**For AI Assistants:**
-- **Auto-loaded:** `.claude/01-06` files (~27k tokens, auto-included)
-- **On-demand:** `.claude/08-11` files in `.claudeignore` (multi-tenant, debt, teaching, appointments)
-- **Guide:** `docs/AI_ASSISTANTS.md` (how Claude/Gemini interact with project)
-
-**For Humans:**
-- `QUICK_START.md`, `docs/INDEX.md` (navigation hub), `docs/setup/` (installation)
-
----
-
-## Recent Changes in Next.js 16
-
-### 📝 Middleware → Proxy (Breaking Change)
-
-**Status:** ⚠️ Important for migration
-
-In **Next.js 16.0.0**, the `middleware` file convention was officially renamed to `proxy`:
-
-**Why?** The term "middleware" caused confusion with Express patterns. "Proxy" better describes the feature—acts as a network boundary that can redirect, rewrite, or modify requests before reaching routes.
-
-**Migration:**
-```bash
-# Auto-migrate using codemod
-npx @next/codemod@canary middleware-to-proxy .
-```
-
-**Manual changes:**
-```typescript
-// Before (middleware.ts)
-export function middleware() { }
-
-// After (proxy.ts)
-export function proxy() { }
-```
-
-**In this project:** ✅ Already implemented! Using `apps/web/proxy.ts` with `export async function proxy()`. Full Next.js 16 compliance.
-
----
-
-## Recent Features
-
-### 🤖 AI Search Integration (Oct 28-29, 2025)
-
-**Status:** ✅ Functional & Production-Ready (95% complete, one optimization identified)
-
-**What's working:**
-- Natural language search bar in navbar (`ai-search-inline-bar.tsx`)
-- OpenAI GPT-4 parsing of user queries in Spanish
-- Structured filters extraction (city, address, price, bedrooms, features)
-- Map integration with viewport fitting
-- Confidence scoring for uncertain parses
-
-**To explore:**
-- Documented duplicate API call issue for optimization (Session 3)
-- See: `archive/sessions/AI-SEARCH-CONSOLIDATED.md` for detailed status
-
-### 💾 Cache System Status
-
-**Status:** ❌ NOT IMPLEMENTED (No caching currently active)
-
-**Historical Context:**
-- Oct 23, 2025: Cache Components enabled for 5 minutes
-- Oct 23, 2025: Disabled (incompatible with `cookies()` in auth)
-- Nov 4, 2025: Code completely removed (simplification)
-
-**Current State:**
-- ✅ ISR on homepage (5-minute revalidation)
-- ✅ `revalidatePath()` in Server Actions (post-mutation invalidation)
-- ❌ No request-level deduplication (no `React.cache()`)
-- ❌ No persistent cross-request caching
-
-**Why Disabled:**
-`use cache` + `cacheComponents` cannot coexist with `cookies()` which InmoApp uses for authentication. This was documented and decided pragmatically.
-
-**Recommendation:**
-- **TODAY:** Implement `React.cache()` for map deduplication (36% performance gain, 1-2 hours work)
-- **TOMORROW:** Monitor Next.js 16.1+ for `use cache: private` stabilization
-- **FUTURE:** Consider Cache Components migration when auth can be refactored
-
-**See:**
-- `docs/caching/CACHE_STATUS.md` - Full history and timeline
-- `docs/caching/NEXT_16_CACHE_DEEP_DIVE.md` - Complete guide to Next.js 16 caching
-- Other docs in `docs/caching/` - Reference documentation
-
----
-
-### 🐛 Infinite Loop in useMapViewport (RESOLVED)
-
-**The Issue:** `useMapViewport` was using `searchParams` in the dependency array, causing `router.replace()` to create a circular effect loop.
-
-**The Fix:** Removed `searchParams` from dependencies and used `useRef` to guard against unnecessary URL updates.
-
-**Key Learning:** Dependency arrays express "when should this run," not "what I use." If an effect changes its own dependencies, you have a circular dependency.
-
-**Resources:** `docs/INFINITE_LOOP_DEEP_DIVE.md`, `docs/REACT_HOOKS_ANTIPATTERNS.md`, `docs/DEBUGGING_HOOKS_GUIDE.md`
-
----
-
-## Known Issues
-
-**Email Sending (Resend):** Using testing domain (`test@resend.dev`), emails not delivered to real addresses. Need to verify domain + update sender. See `CLAUDE.md` line notes or contact for setup guidance.
-
----
-
-## Current Phase
-
-**Phase 1.5:** Public-facing features (map, AI search, authentication) - 95% complete
-
-**Next:**
-- Phase 2: Documentation reorganization (in progress)
-- Phase 3: AI Search optimization (duplicate API call fix)
-- Phase 4: Advanced features (image upload, appointments refinement)
-
----
-
-## Git Workflow
-
-**Commits:** Conventional format (`feat(scope):`, `fix(scope):`, `refactor(scope):`)
-
-**Branch:** `main` (auto-deploys to Vercel)
-
-**Parallel work:** See `docs/git-worktrees-guide.md` for multi-branch setup with `git worktree`
+-   When asked to add or modify features, first inspect the existing code in `apps/web` and `packages/*` to understand the current implementation.
+-   Adhere to the existing coding style, which is enforced by Biome.
+-   For database changes, modify the `packages/database/prisma/schema.prisma` file and remember to generate the client.
+-   When adding new dependencies, use `bun add -W <package>` for root dependencies or `bun add <package>` in the specific workspace.
+-   Consult the extensive documentation in the `/docs` directory for deeper insights into architecture, features, and decisions.

@@ -184,16 +184,7 @@ export function PropertyCard({
             )}
           </div>
 
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleShare}
-              disabled={isSharing}
-              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Share property"
-            >
-              <Share2 className="w-5 h-5 text-white" />
-            </button>
+          <div className="flex flex-col gap-2">
             {onFavoriteToggle && (
               <button
                 type="button"
@@ -213,6 +204,15 @@ export function PropertyCard({
                 />
               </button>
             )}
+            <button
+              type="button"
+              onClick={handleShare}
+              disabled={isSharing}
+              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Share property"
+            >
+              <Share2 className="w-5 h-5 text-white" />
+            </button>
           </div>
         </div>
 

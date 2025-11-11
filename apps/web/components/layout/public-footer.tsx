@@ -235,14 +235,6 @@ export function PublicFooter() {
               </li>
               <li>
                 <Link
-                  href="/carreras"
-                  className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
-                >
-                  Trabaja con Nosotros
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/contacto"
                   className="text-oslo-gray-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
                 >
