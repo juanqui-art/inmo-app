@@ -37,12 +37,7 @@ export function Spinner({
   ariaLabel = "Cargando...",
   className,
 }: SpinnerProps) {
-  const baseClasses = cn(
-    "animate-spin",
-    sizeMap[size],
-    color,
-    className,
-  );
+  const baseClasses = cn("animate-spin", sizeMap[size], color, className);
 
   const spinner = (
     <svg
@@ -81,7 +76,9 @@ export function Spinner({
 
   // Inline variant - compact inline spinner
   if (variant === "inline") {
-    return <div className="inline-flex items-center justify-center">{spinner}</div>;
+    return (
+      <div className="inline-flex items-center justify-center">{spinner}</div>
+    );
   }
 
   // Generic variant - standalone spinner

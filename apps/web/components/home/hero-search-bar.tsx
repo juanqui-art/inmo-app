@@ -37,13 +37,8 @@ export function HeroSearchBar() {
   const { history, addSearch, clearHistory, getTimeAgo } = useSearchHistory();
 
   // Hooks for search logic
-  const {
-    query,
-    suggestions,
-    isLoading,
-    handleInputChange,
-    clearSuggestions,
-  } = useSearchAutocomplete();
+  const { query, suggestions, isLoading, handleInputChange, clearSuggestions } =
+    useSearchAutocomplete();
 
   // Keyboard navigation
   const { selectedIndex, handleKeyDown: handleKeyNavigation } =
@@ -78,7 +73,7 @@ export function HeroSearchBar() {
   /**
    * Navigate to map with selected city filter
    */
-  const navigateToCity = (city: typeof suggestions[0]) => {
+  const navigateToCity = (city: (typeof suggestions)[0]) => {
     router.push(`/mapa?city=${encodeURIComponent(city.name)}`);
     clearSuggestions();
   };
@@ -105,7 +100,7 @@ export function HeroSearchBar() {
   /**
    * Handle city selection from suggestions
    */
-  const handleCitySelect = (city: typeof suggestions[0]) => {
+  const handleCitySelect = (city: (typeof suggestions)[0]) => {
     navigateToCity(city);
     addSearch(city.name, "city");
   };

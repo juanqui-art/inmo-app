@@ -60,9 +60,9 @@ export default async function VenderPage() {
           </h1>
 
           <p className="text-xl text-white/90 max-w-3xl mx-auto drop-shadow-lg mb-8">
-            Publica tu propiedad en minutos y conéctate con miles de
-            compradores y arrendatarios interesados. Sin comisiones ocultas,
-            sin letra pequeña.
+            Publica tu propiedad en minutos y conéctate con miles de compradores
+            y arrendatarios interesados. Sin comisiones ocultas, sin letra
+            pequeña.
           </p>
 
           {/* CTA Button */}

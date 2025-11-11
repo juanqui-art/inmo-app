@@ -38,7 +38,9 @@ export function PublicHeaderClient({
 
   return (
     <header
-      data-navbar={isMapPage ? "map" : useTransparentStyle ? "homepage" : "pages"}
+      data-navbar={
+        isMapPage ? "map" : useTransparentStyle ? "homepage" : "pages"
+      }
       className={
         isMapPage
           ? "sticky top-0 z-50 bg-oslo-gray-1000/80 backdrop-blur-md border-b-[0.3px] border-oslo-gray-600/60"

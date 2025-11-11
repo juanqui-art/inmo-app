@@ -182,3 +182,77 @@ export async function checkIfFavoriteAction(propertyId: string) {
     };
   }
 }
+
+/**
+ * GET FAVORITES WITH DETAILS ACTION
+ * Obtener lista completa de favoritos con detalles de propiedades
+ *
+ * Usado por el dropdown de favoritos en el navbar.
+ * Retorna datos con información resumida: imagen, precio, ubicación
+ *
+ * @param limit Número máximo de favoritos a retornar (default: 8)
+ * @returns Array de favoritos con detalles de propiedades
+ *
+ * @throws Error si usuario no está autenticado
+ *
+ * @example
+ * const { data } = await getFavoritesWithDetailsAction(8);
+ * // data = [{
+ * //   propertyId: "...",
+ * //   property: {
+ * //     id: "...",
+ * //     title: "Casa en...",
+ * //     price: 150000,
+ * //     city: "Miami",
+ * //     images: [{ url: "...", alt: "..." }]
+ * //   }
+ * // }]
+ */
+export async function getFavoritesWithDetailsAction(limit: number = 8) {
+  try {
+    // Obtener usuario actual
+    const user = await getCurrentUser();
+    if (!user) {
+      throw new Error("Authentication required");
+    }
+
+    // Obtener favoritos con detalles completos
+    const favoriteRepository = new FavoriteRepository();
+    const favorites = await favoriteRepository.getUserFavorites(user.id, {
+      skip: 0,
+      take: limit,
+    });
+
+    // Formatear datos para el dropdown (mantener serializable)
+    const formattedFavorites = favorites.map((fav) => ({
+      propertyId: fav.propertyId,
+      property: {
+        id: fav.property.id,
+        title: fav.property.title,
+        price: fav.property.price.toString(), // Convertir Decimal a string
+        city: fav.property.city,
+        image: fav.property.images[0] || null,
+      },
+    }));
+
+    return {
+      success: true,
+      data: formattedFavorites,
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("[getFavoritesWithDetailsAction]", error.message);
+      return {
+        success: false,
+        error: error.message,
+        data: [],
+      };
+    }
+
+    return {
+      success: false,
+      error: "Failed to fetch favorites with details",
+      data: [],
+    };
+  }
+}

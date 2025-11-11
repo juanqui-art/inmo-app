@@ -56,7 +56,9 @@ export function useInlineSearch(): UseInlineSearchReturn {
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchResult, setSearchResult] = useState<AISearchResult | undefined>();
+  const [searchResult, setSearchResult] = useState<
+    AISearchResult | undefined
+  >();
   const [error, setError] = useState<string | undefined>();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -130,7 +132,7 @@ export function useInlineSearch(): UseInlineSearchReturn {
               data: result,
               timestamp: Date.now(),
               ttl: 60000, // 1 minute TTL
-            })
+            }),
           );
         } catch (e) {
           // Silently fail if sessionStorage is unavailable (e.g., private browsing)

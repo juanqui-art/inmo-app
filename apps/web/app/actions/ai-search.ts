@@ -10,7 +10,11 @@
 
 "use server";
 
-import { parseSearchQuery, isConfidentParse, filtersToWhereClause } from "@/lib/ai/search-parser";
+import {
+  parseSearchQuery,
+  isConfidentParse,
+  filtersToWhereClause,
+} from "@/lib/ai/search-parser";
 import { db } from "@repo/database";
 
 export interface LocationValidation {
@@ -104,17 +108,24 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
 
     if (!isConfidentParse(parseResult, MIN_CONFIDENCE_THRESHOLD)) {
       console.error(
-        `❌ Query confidence ${parseResult.confidence}% is below minimum threshold (${MIN_CONFIDENCE_THRESHOLD}%)`
+        `❌ Query confidence ${parseResult.confidence}% is below minimum threshold (${MIN_CONFIDENCE_THRESHOLD}%)`,
       );
 
       // Generate helpful suggestions based on what's missing
       const suggestions: string[] = [];
 
       // Check if low confidence is due to invalid location
-      if (parseResult.locationValidation && !parseResult.locationValidation.isValid) {
-        suggestions.push("Especifica una ciudad válida: Cuenca, Gualaceo, Azogues o Paute");
+      if (
+        parseResult.locationValidation &&
+        !parseResult.locationValidation.isValid
+      ) {
+        suggestions.push(
+          "Especifica una ciudad válida: Cuenca, Gualaceo, Azogues o Paute",
+        );
         if (parseResult.locationValidation.suggestedCities?.length) {
-          suggestions.push(`¿Quisiste decir: ${parseResult.locationValidation.suggestedCities.join(", ")}?`);
+          suggestions.push(
+            `¿Quisiste decir: ${parseResult.locationValidation.suggestedCities.join(", ")}?`,
+          );
         }
       } else {
         // Generic ambiguity suggestions
@@ -122,7 +133,9 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
           suggestions.push("Especifica una ciudad (ej: Cuenca, Gualaceo)");
         }
         if (!parseResult.filters.category) {
-          suggestions.push("Indica el tipo de propiedad (casa, apartamento, terreno)");
+          suggestions.push(
+            "Indica el tipo de propiedad (casa, apartamento, terreno)",
+          );
         }
         if (!parseResult.filters.maxPrice && !parseResult.filters.minPrice) {
           suggestions.push("Define un rango de precio (ej: bajo $150k)");
@@ -141,14 +154,17 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
 
     if (parseResult.confidence < WARN_CONFIDENCE_THRESHOLD) {
       console.warn(
-        `⚠️ Low confidence parse (${parseResult.confidence}% < ${WARN_CONFIDENCE_THRESHOLD}%). Results may be incomplete.`
+        `⚠️ Low confidence parse (${parseResult.confidence}% < ${WARN_CONFIDENCE_THRESHOLD}%). Results may be incomplete.`,
       );
     }
 
     // Convert parsed filters to Prisma WHERE clause
     const whereClause = filtersToWhereClause(parseResult.filters);
 
-    console.log("🔧 Prisma WHERE clause:", JSON.stringify(whereClause, null, 2));
+    console.log(
+      "🔧 Prisma WHERE clause:",
+      JSON.stringify(whereClause, null, 2),
+    );
 
     // Query the database
     const properties = await db.property.findMany({
@@ -174,17 +190,28 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
     // Convert Decimal types to numbers and format the response
     const formattedProperties = properties.map((prop) => ({
       ...prop,
-      price: typeof prop.price === "number" ? prop.price : parseFloat(prop.price.toString()),
-      bathrooms: prop.bathrooms ? parseFloat(prop.bathrooms.toString()) : undefined,
-      latitude: prop.latitude ? parseFloat(prop.latitude.toString()) : undefined,
-      longitude: prop.longitude ? parseFloat(prop.longitude.toString()) : undefined,
+      price:
+        typeof prop.price === "number"
+          ? prop.price
+          : parseFloat(prop.price.toString()),
+      bathrooms: prop.bathrooms
+        ? parseFloat(prop.bathrooms.toString())
+        : undefined,
+      latitude: prop.latitude
+        ? parseFloat(prop.latitude.toString())
+        : undefined,
+      longitude: prop.longitude
+        ? parseFloat(prop.longitude.toString())
+        : undefined,
     }));
 
     // Create a human-readable summary of the filters used
     const filterSummary: AISearchResult["filterSummary"] = {};
     if (parseResult.filters.city) filterSummary.city = parseResult.filters.city;
-    if (parseResult.filters.address) filterSummary.address = parseResult.filters.address;
-    if (parseResult.filters.category) filterSummary.category = parseResult.filters.category;
+    if (parseResult.filters.address)
+      filterSummary.address = parseResult.filters.address;
+    if (parseResult.filters.category)
+      filterSummary.category = parseResult.filters.category;
     if (parseResult.filters.minPrice || parseResult.filters.maxPrice) {
       const min = parseResult.filters.minPrice
         ? `$${(parseResult.filters.minPrice / 1000).toFixed(0)}k`
@@ -194,20 +221,32 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
         : "";
       filterSummary.priceRange = `${min}${min && max ? " - " : ""}${max}`;
     }
-    if (parseResult.filters.bedrooms) filterSummary.bedrooms = parseResult.filters.bedrooms;
-    if (parseResult.filters.features) filterSummary.features = parseResult.filters.features;
+    if (parseResult.filters.bedrooms)
+      filterSummary.bedrooms = parseResult.filters.bedrooms;
+    if (parseResult.filters.features)
+      filterSummary.features = parseResult.filters.features;
 
     // Generate suggestions for no-results or low-confidence cases
     const suggestions: string[] = [];
     if (formattedProperties.length === 0) {
-      suggestions.push("Intenta ampliar tu búsqueda (ej: aumenta el presupuesto)");
-      suggestions.push("Explora otras ciudades: Cuenca, Gualaceo, Azogues, Paute");
+      suggestions.push(
+        "Intenta ampliar tu búsqueda (ej: aumenta el presupuesto)",
+      );
+      suggestions.push(
+        "Explora otras ciudades: Cuenca, Gualaceo, Azogues, Paute",
+      );
       if (parseResult.filters.bedrooms) {
-        suggestions.push("Considera propiedades con diferente número de habitaciones");
+        suggestions.push(
+          "Considera propiedades con diferente número de habitaciones",
+        );
       }
     } else if (parseResult.confidence < WARN_CONFIDENCE_THRESHOLD) {
-      suggestions.push("Tu búsqueda tiene baja confianza, intenta ser más específico");
-      suggestions.push("Agrega más detalles (precio, ubicación, tipo de propiedad)");
+      suggestions.push(
+        "Tu búsqueda tiene baja confianza, intenta ser más específico",
+      );
+      suggestions.push(
+        "Agrega más detalles (precio, ubicación, tipo de propiedad)",
+      );
     }
 
     return {

@@ -13,7 +13,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
 import { Spinner } from "@/components/common";
-import { getCitiesAction, type CitySearchResult } from "@/app/actions/properties";
+import {
+  getCitiesAction,
+  type CitySearchResult,
+} from "@/app/actions/properties";
 import { useMapStore } from "@/stores/map-store";
 import { FilterDropdown } from "./filter-dropdown";
 

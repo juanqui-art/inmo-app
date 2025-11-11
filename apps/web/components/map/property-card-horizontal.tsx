@@ -36,9 +36,7 @@ import { PropertyImageFallback } from "./property-image-fallback";
 import { useFavorites } from "@/hooks/use-favorites";
 import { generateSlug } from "@/lib/utils/slug-generator";
 import { useAuthStore } from "@/stores/auth-store";
-import {
-  CATEGORY_BADGE_STYLE,
-} from "@/lib/styles/property-card-styles";
+import { CATEGORY_BADGE_STYLE } from "@/lib/styles/property-card-styles";
 import {
   formatPropertyPrice,
   getTransactionBadgeStyle,
@@ -86,7 +84,9 @@ export function PropertyCardHorizontal({
   const formattedPrice = formatPropertyPrice(property.price);
 
   // Get transaction badge style using centralized utility
-  const transactionBadgeStyle = getTransactionBadgeStyle(property.transactionType);
+  const transactionBadgeStyle = getTransactionBadgeStyle(
+    property.transactionType,
+  );
 
   // Get first image
   const imageUrl =

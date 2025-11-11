@@ -1,16 +1,15 @@
 "use client";
 
+import { toast } from "sonner";
 import type { PropertyWithRelations } from "@repo/database";
-import { Bath, Bed, Heart, MapPin, Maximize } from "lucide-react";
+import { Bath, Bed, Heart, MapPin, Maximize, Share2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { Badge } from "@repo/ui";
 import type { SerializedProperty } from "@/lib/utils/serialize-property";
 import { PropertyImageFallback } from "@/components/map/property-image-fallback";
-import {
-  CATEGORY_BADGE_STYLE,
-} from "@/lib/styles/property-card-styles";
+import { CATEGORY_BADGE_STYLE } from "@/lib/styles/property-card-styles";
 import { generateSlug } from "@/lib/utils/slug-generator";
 import {
   formatPropertyPrice,
@@ -45,7 +44,9 @@ export function PropertyCard({
   const formattedPrice = formatPropertyPrice(property.price);
 
   // Get transaction badge style using centralized utility
-  const transactionBadgeStyle = getTransactionBadgeStyle(property.transactionType);
+  const transactionBadgeStyle = getTransactionBadgeStyle(
+    property.transactionType,
+  );
 
   // Navigate images
   const goToNextImage = () => {
@@ -94,6 +95,8 @@ export function PropertyCard({
     }
   };
 
+  const [isSharing, setIsSharing] = useState(false);
+
   // Keyboard navigation for accessibility
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -107,6 +110,38 @@ export function PropertyCard({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentImageIndex]); // Re-bind if index changes, though not strictly necessary
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isSharing) return;
+
+    const propertyUrl = `${window.location.origin}/propiedades/${property.id}-${generateSlug(property.title)}`;
+    setIsSharing(true);
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: property.title,
+          text: `Echa un vistazo a esta propiedad: ${property.title}`,
+          url: propertyUrl,
+        });
+        toast.success("Propiedad compartida con éxito!");
+      } else {
+        // Fallback for browsers that do not support Web Share API
+        await navigator.clipboard.writeText(propertyUrl);
+        toast.success("Enlace copiado al portapapeles!");
+      }
+    } catch (error) {
+      if ((error as DOMException).name === "AbortError") {
+        // Silently ignore abort errors
+      } else {
+        toast.error("Error al compartir la propiedad.");
+        console.error("Error sharing:", error);
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   return (
     <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden bg-oslo-gray-900 shadow-lg hover:shadow-xl transition-all duration-300 group border border-oslo-gray-800 hover:border-oslo-gray-700">
@@ -149,25 +184,36 @@ export function PropertyCard({
             )}
           </div>
 
-          {onFavoriteToggle && (
+          <div className="flex gap-2">
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onFavoriteToggle(property.id);
-              }}
-              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-              aria-label={
-                isFavorite ? "Remove from favorites" : "Add to favorites"
-              }
+              onClick={handleShare}
+              disabled={isSharing}
+              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Share property"
             >
-              <Heart
-                className={`w-5 h-5 transition-colors ${
-                  isFavorite ? "fill-red-500 text-red-500" : "text-white"
-                }`}
-              />
+              <Share2 className="w-5 h-5 text-white" />
             </button>
-          )}
+            {onFavoriteToggle && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onFavoriteToggle(property.id);
+                }}
+                className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                aria-label={
+                  isFavorite ? "Remove from favorites" : "Add to favorites"
+                }
+              >
+                <Heart
+                  className={`w-5 h-5 transition-colors ${
+                    isFavorite ? "fill-red-500 text-red-500" : "text-white"
+                  }`}
+                />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Image Navigation */}

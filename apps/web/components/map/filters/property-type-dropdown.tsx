@@ -179,7 +179,9 @@ export function PropertyTypeDropdown() {
     if (selected.length === 0) return "Categoría";
 
     if (selected.length === 1) {
-      return CATEGORIES.find((c) => c.value === selected[0])?.label || "Categoría";
+      return (
+        CATEGORIES.find((c) => c.value === selected[0])?.label || "Categoría"
+      );
     }
 
     if (selected.length === 2) {

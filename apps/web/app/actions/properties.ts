@@ -397,10 +397,7 @@ export async function searchCitiesAction(
     });
 
     // Agrupar por ciudad y contar
-    const cityMap = new Map<
-      string,
-      { state: string; propertyCount: number }
-    >();
+    const cityMap = new Map<string, { state: string; propertyCount: number }>();
 
     properties.forEach((property) => {
       if (property.city) {
@@ -455,10 +452,7 @@ export async function getCitiesAction(): Promise<{
     });
 
     // Agrupar por ciudad y contar
-    const cityMap = new Map<
-      string,
-      { state: string; propertyCount: number }
-    >();
+    const cityMap = new Map<string, { state: string; propertyCount: number }>();
 
     properties.forEach((property) => {
       if (property.city) {

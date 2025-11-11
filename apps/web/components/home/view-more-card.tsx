@@ -23,8 +23,12 @@ export function ViewMoreCard({
             <ArrowRight className="w-8 h-8 text-indigo-400 group-hover:text-white transition-colors duration-300" />
           </div>
         </div>
-        <h3 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors duration-300">{title}</h3>
-        <p className="text-oslo-gray-400 mt-2 group-hover:text-oslo-gray-300 transition-colors duration-300">{description}</p>
+        <h3 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors duration-300">
+          {title}
+        </h3>
+        <p className="text-oslo-gray-400 mt-2 group-hover:text-oslo-gray-300 transition-colors duration-300">
+          {description}
+        </p>
       </div>
     </Link>
   );

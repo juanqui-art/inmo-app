@@ -5,9 +5,7 @@
  * Eliminates code duplication across PropertyCard, PropertyCardHorizontal, etc.
  */
 
-import {
-  TRANSACTION_BADGE_STYLES,
-} from "@/lib/styles/property-card-styles";
+import { TRANSACTION_BADGE_STYLES } from "@/lib/styles/property-card-styles";
 import type { TransactionType } from "@repo/database";
 
 /**
@@ -54,7 +52,9 @@ export const CATEGORY_LABELS = {
  * formatPropertyPrice(200000)  // "$200,000"
  * formatPropertyPrice(75500)   // "$75,500"
  */
-export function formatPropertyPrice(price: number | { toNumber(): number }): string {
+export function formatPropertyPrice(
+  price: number | { toNumber(): number },
+): string {
   const numPrice = typeof price === "number" ? price : price.toNumber();
   return new Intl.NumberFormat("es-EC", {
     style: "currency",

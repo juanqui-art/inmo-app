@@ -29,7 +29,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     return (
       <div className="relative">
         {/* Search Icon */}
-        <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-white/80 pointer-events-none" />
+        <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-oslo-gray-300/90 pointer-events-none" />
 
         {/* Search Input - Glassmorphism Style with Focus Animation */}
         <input
@@ -46,8 +46,8 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             text-base sm:text-lg text-white font-medium
             bg-oslo-gray-1000/60 hover:bg-oslo-gray-1000/70 focus:bg-oslo-gray-1000/80
             rounded-xl sm:rounded-2xl
-            border border-white/30
-            focus:border-white/50
+            border border-oslo-gray-200/60
+            focus:border-oslo-gray-400
             focus:outline-none
             shadow-xl hover:shadow-2xl
             transition-colors duration-200

@@ -190,7 +190,6 @@ IMPORTANT:
 7. **CRITICAL**: If user requests unavailable city, set confidence to 0-20 and explain in reasoning`;
 }
 
-
 /**
  * Parse a natural language search query using OpenAI
  * @param query - User's natural language search query
