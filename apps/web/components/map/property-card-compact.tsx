@@ -22,7 +22,13 @@
 "use client";
 
 import { Bed, Bath, Maximize2, MapPin } from "lucide-react";
+import { Badge } from "@repo/ui";
 import type { MapProperty } from "./map-view";
+import {
+  formatPropertyPrice,
+  getTransactionBadgeStyle,
+  TRANSACTION_TYPE_LABELS,
+} from "@/lib/utils/property-formatters";
 
 interface PropertyCardCompactProps {
   property: MapProperty;
@@ -37,20 +43,13 @@ export function PropertyCardCompact({
   onLeave,
   onClick,
 }: PropertyCardCompactProps) {
-  // Format price with currency
-  const formattedPrice = new Intl.NumberFormat("es-EC", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-  }).format(property.price);
+  // Format price using centralized utility
+  const formattedPrice = formatPropertyPrice(property.price);
 
-  // Get transaction type badge color
-  const badgeColor =
-    property.transactionType === "SALE"
-      ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20"
-      : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
-
-  const badgeLabel = property.transactionType === "SALE" ? "Venta" : "Arriendo";
+  // Get transaction badge style using centralized utility
+  const transactionBadgeStyle = getTransactionBadgeStyle(
+    property.transactionType,
+  );
 
   return (
     <div
@@ -65,11 +64,9 @@ export function PropertyCardCompact({
           <p className="text-lg font-bold text-oslo-gray-900 dark:text-oslo-gray-50">
             {formattedPrice}
           </p>
-          <span
-            className={`inline-block text-xs font-medium px-2 py-0.5 rounded-md border ${badgeColor}`}
-          >
-            {badgeLabel}
-          </span>
+          <Badge className={transactionBadgeStyle}>
+            {TRANSACTION_TYPE_LABELS[property.transactionType]}
+          </Badge>
         </div>
       </div>
 
@@ -79,27 +76,35 @@ export function PropertyCardCompact({
       </h3>
 
       {/* Location */}
-      <div className="flex items-center gap-1 text-xs text-oslo-gray-600 dark:text-oslo-gray-300 mb-3">
-        <MapPin className="w-3 h-3" />
-        <span className="truncate">
-          {property.latitude?.toFixed(4)}, {property.longitude?.toFixed(4)}
-        </span>
-      </div>
+      {(property.city || property.state) && (
+        <div className="flex items-center gap-1 text-xs text-oslo-gray-600 dark:text-oslo-gray-300 mb-3">
+          <MapPin className="w-3 h-3" />
+          <span className="truncate">
+            {[property.city, property.state].filter(Boolean).join(", ")}
+          </span>
+        </div>
+      )}
 
       {/* Specs */}
       <div className="flex items-center gap-4 text-xs text-oslo-gray-600 dark:text-oslo-gray-300">
-        <div className="flex items-center gap-1">
-          <Bed className="w-4 h-4" />
-          <span>3</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Bath className="w-4 h-4" />
-          <span>2</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Maximize2 className="w-4 h-4" />
-          <span>180 m²</span>
-        </div>
+        {Number(property.bedrooms) > 0 && (
+          <div className="flex items-center gap-1">
+            <Bed className="w-4 h-4" />
+            <span>{property.bedrooms}</span>
+          </div>
+        )}
+        {Number(property.bathrooms) > 0 && (
+          <div className="flex items-center gap-1">
+            <Bath className="w-4 h-4" />
+            <span>{Number(property.bathrooms)}</span>
+          </div>
+        )}
+        {Number(property.area) > 0 && (
+          <div className="flex items-center gap-1">
+            <Maximize2 className="w-4 h-4" />
+            <span>{Number(property.area)}m²</span>
+          </div>
+        )}
       </div>
     </div>
   );

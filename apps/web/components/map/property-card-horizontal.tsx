@@ -46,8 +46,6 @@ import {
 
 interface PropertyCardHorizontalProps {
   property: PropertyWithRelations | SerializedProperty | MapProperty;
-  // onViewDetails is deprecated - button now navigates directly via Link to /propiedades/[id-slug]
-  onViewDetails?: () => void;
   onFavoriteClick?: (propertyId: string) => void;
 }
 

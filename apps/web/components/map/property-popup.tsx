@@ -115,7 +115,6 @@ export function PropertyPopup({
         {/* PropertyCardHorizontal */}
         <PropertyCardHorizontal
           property={property}
-          onViewDetails={onViewDetails}
           onFavoriteClick={onUnauthenticatedFavoriteClick}
         />
       </div>
