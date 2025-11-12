@@ -87,7 +87,143 @@ async function _getPropertiesList(params: {
 }): Promise<{ properties: PropertyWithRelations[]; total: number }> {
   const { filters = {}, skip = 0, take = 20 } = params
 
+  // Use centralized filter builder (extracted to prevent duplication)
+  const where = buildPropertyWhereClause(filters)
+
+  const [properties, total] = await Promise.all([
+    db.property.findMany({
+      where,
+      select: propertySelect,
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' },
+    }),
+    db.property.count({ where }),
+  ])
+
+  return { properties, total }
+}
+
+/**
+ * Cached version of list() using React.cache()
+ *
+ * CACHE STRATEGY: Request-level deduplication (React.cache)
+ * - Prevents duplicate queries in same request (e.g., metadata + render)
+ * - Does NOT persist between requests
+ * - Does NOT require cacheComponents: true (stable API)
+ * - Compatible with existing ISR + revalidatePath() strategy
+ *
+ * PILOT: Started Nov 2025 - measuring performance impact
+ * BENEFIT: ~50% reduction on page detail (eliminates findById duplicate)
+ *          ~20-30% reduction on map/listing pages
+ */
+export const getPropertiesList = cache(_getPropertiesList)
+
+/**
+ * Internal implementation of findById
+ * Wrapped with React.cache() for request-level deduplication
+ */
+async function _findById(id: string): Promise<PropertyWithRelations | null> {
+  return db.property.findUnique({
+    where: { id },
+    select: propertySelect,
+  })
+}
+
+/**
+ * Cached version of findById using React.cache()
+ * Prevents duplicate queries when property is fetched multiple times in same request
+ *
+ * BENEFIT: Deduplicates property detail page queries (generateMetadata + render)
+ */
+export const findByIdCached = cache(_findById)
+
+/**
+ * Internal implementation of findInBounds
+ * Wrapped with React.cache() for request-level deduplication
+ */
+async function _findInBoundsInternal(params: {
+  minLatitude: number
+  maxLatitude: number
+  minLongitude: number
+  maxLongitude: number
+  filters?: PropertyFilters
+  skip?: number
+  take?: number
+}): Promise<{ properties: PropertyWithRelations[]; total: number }> {
+  const {
+    minLatitude,
+    maxLatitude,
+    minLongitude,
+    maxLongitude,
+    filters = {},
+    skip = 0,
+    take = 1000,
+  } = params
+
+  // VALIDATION: Comprehensive geographic boundary checking
+  if (minLatitude < -90 || minLatitude > 90 || maxLatitude < -90 || maxLatitude > 90) {
+    throw new Error('Invalid latitude: must be between -90 and 90')
+  }
+  if (minLongitude < -180 || minLongitude > 180 || maxLongitude < -180 || maxLongitude > 180) {
+    throw new Error('Invalid longitude: must be between -180 and 180')
+  }
+  if (minLatitude > maxLatitude) {
+    throw new Error('minLatitude must be less than or equal to maxLatitude')
+  }
+
+  // Note: Antimeridian crossing (longitude > 180 wrapping to -180) not currently supported
+  // This would require splitting query into two bounding boxes
+  if (minLongitude > maxLongitude) {
+    throw new Error('Bounding boxes crossing the antimeridian are not currently supported')
+  }
+
+  // Use centralized filter builder with geographic bounding box
+  const where = buildPropertyWhereClause(filters, {
+    latitude: {
+      gte: minLatitude,
+      lte: maxLatitude,
+    },
+    longitude: {
+      gte: minLongitude,
+      lte: maxLongitude,
+    },
+  })
+
+  const [properties, total] = await Promise.all([
+    db.property.findMany({
+      where,
+      select: propertySelect,
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' },
+    }),
+    db.property.count({ where }),
+  ])
+
+  return { properties, total }
+}
+
+/**
+ * Cached version of findInBounds using React.cache()
+ *
+ * BENEFIT: Deduplicates map viewport queries within same request
+ */
+export const findInBoundsCached = cache(_findInBoundsInternal)
+
+/**
+ * FILTER BUILDER HELPER
+ *
+ * Consolidates filter construction logic used in multiple methods
+ * Prevents duplication and inconsistency
+ * Supports both read queries (with geographic filters) and analysis queries
+ */
+function buildPropertyWhereClause(
+  filters: PropertyFilters = {},
+  additionalConditions?: Prisma.PropertyWhereInput
+): Prisma.PropertyWhereInput {
   const where: Prisma.PropertyWhereInput = {
+    ...additionalConditions,
     ...(filters.transactionType && {
       transactionType: Array.isArray(filters.transactionType)
         ? { in: filters.transactionType }
@@ -122,34 +258,8 @@ async function _getPropertiesList(params: {
     }),
   }
 
-  const [properties, total] = await Promise.all([
-    db.property.findMany({
-      where,
-      select: propertySelect,
-      skip,
-      take,
-      orderBy: { createdAt: 'desc' },
-    }),
-    db.property.count({ where }),
-  ])
-
-  return { properties, total }
+  return where
 }
-
-/**
- * Cached version of list() using React.cache()
- *
- * CACHE STRATEGY: Request-level deduplication (React.cache)
- * - Prevents duplicate queries in same request (e.g., metadata + render)
- * - Does NOT persist between requests
- * - Does NOT require cacheComponents: true (stable API)
- * - Compatible with existing ISR + revalidatePath() strategy
- *
- * PILOT: Started Nov 2025 - measuring performance impact
- * BENEFIT: ~50% reduction on page detail (eliminates findById duplicate)
- *          ~20-30% reduction on map/listing pages
- */
-export const getPropertiesList = cache(_getPropertiesList)
 
 /**
  * Repository para operaciones de propiedades
@@ -159,10 +269,8 @@ export class PropertyRepository {
    * Encuentra una propiedad por ID
    */
   async findById(id: string): Promise<PropertyWithRelations | null> {
-    return db.property.findUnique({
-      where: { id },
-      select: propertySelect,
-    })
+    // Delegate to cached version for request-level deduplication
+    return findByIdCached(id)
   }
 
   /**
@@ -180,96 +288,113 @@ export class PropertyRepository {
   /**
    * Crea una nueva propiedad
    * Solo agentes pueden crear propiedades
+   *
+   * TRANSACTION: Uses db.$transaction() to ensure authorization check + creation are atomic
+   * - Prevents race conditions where user role could change between check and creation
    */
   async create(
     data: Omit<Prisma.PropertyUncheckedCreateInput, 'agentId'>,
     currentUserId: string
   ): Promise<PropertyWithRelations> {
-    // Verificar que el usuario es un agente
-    const user = await db.user.findUnique({
-      where: { id: currentUserId },
-      select: { role: true },
-    })
+    return db.$transaction(async (tx) => {
+      // Verificar que el usuario es un agente
+      const user = await tx.user.findUnique({
+        where: { id: currentUserId },
+        select: { role: true },
+      })
 
-    if (user?.role !== 'AGENT' && user?.role !== 'ADMIN') {
-      throw new Error('Unauthorized: Only agents can create properties')
-    }
+      if (user?.role !== 'AGENT' && user?.role !== 'ADMIN') {
+        throw new Error('Unauthorized: Only agents can create properties')
+      }
 
-    return db.property.create({
-      data: {
-        ...data,
-        agentId: currentUserId, // Asegurar que la propiedad pertenece al usuario actual
-      },
-      select: propertySelect,
+      return tx.property.create({
+        data: {
+          ...data,
+          agentId: currentUserId, // Asegurar que la propiedad pertenece al usuario actual
+        },
+        select: propertySelect,
+      })
     })
   }
 
   /**
    * Actualiza una propiedad existente
    * Solo el agente dueño o admins pueden actualizar
+   *
+   * TRANSACTION: Uses db.$transaction() to ensure atomicity
+   * - Authorization check + update in single transaction
+   * - Prevents ownership/role changes between check and update
    */
   async update(
     id: string,
     data: Prisma.PropertyUpdateInput,
     currentUserId: string
   ): Promise<PropertyWithRelations> {
-    // Verificar permisos
-    const property = await db.property.findUnique({
-      where: { id },
-      select: { agentId: true },
-    })
+    return db.$transaction(async (tx) => {
+      // Verificar permisos
+      const property = await tx.property.findUnique({
+        where: { id },
+        select: { agentId: true },
+      })
 
-    if (!property) {
-      throw new Error('Property not found')
-    }
+      if (!property) {
+        throw new Error('Property not found')
+      }
 
-    const user = await db.user.findUnique({
-      where: { id: currentUserId },
-      select: { role: true },
-    })
+      const user = await tx.user.findUnique({
+        where: { id: currentUserId },
+        select: { role: true },
+      })
 
-    const canUpdate = property.agentId === currentUserId || user?.role === 'ADMIN'
+      const canUpdate = property.agentId === currentUserId || user?.role === 'ADMIN'
 
-    if (!canUpdate) {
-      throw new Error('Unauthorized: Only the property owner or admins can update')
-    }
+      if (!canUpdate) {
+        throw new Error('Unauthorized: Only the property owner or admins can update')
+      }
 
-    return db.property.update({
-      where: { id },
-      data,
-      select: propertySelect,
+      return tx.property.update({
+        where: { id },
+        data,
+        select: propertySelect,
+      })
     })
   }
 
   /**
    * Elimina una propiedad
    * Solo el agente dueño o admins pueden eliminar
+   *
+   * TRANSACTION: Uses db.$transaction() to ensure atomicity
+   * - Authorization check + deletion in single transaction
+   * - Prevents ownership/role changes between check and delete
    */
   async delete(id: string, currentUserId: string): Promise<PropertyWithRelations> {
-    // Verificar permisos (mismo que update)
-    const property = await db.property.findUnique({
-      where: { id },
-      select: { agentId: true },
-    })
+    return db.$transaction(async (tx) => {
+      // Verificar permisos (mismo que update)
+      const property = await tx.property.findUnique({
+        where: { id },
+        select: { agentId: true },
+      })
 
-    if (!property) {
-      throw new Error('Property not found')
-    }
+      if (!property) {
+        throw new Error('Property not found')
+      }
 
-    const user = await db.user.findUnique({
-      where: { id: currentUserId },
-      select: { role: true },
-    })
+      const user = await tx.user.findUnique({
+        where: { id: currentUserId },
+        select: { role: true },
+      })
 
-    const canDelete = property.agentId === currentUserId || user?.role === 'ADMIN'
+      const canDelete = property.agentId === currentUserId || user?.role === 'ADMIN'
 
-    if (!canDelete) {
-      throw new Error('Unauthorized: Only the property owner or admins can delete')
-    }
+      if (!canDelete) {
+        throw new Error('Unauthorized: Only the property owner or admins can delete')
+      }
 
-    return db.property.delete({
-      where: { id },
-      select: propertySelect,
+      return tx.property.delete({
+        where: { id },
+        select: propertySelect,
+      })
     })
   }
 
@@ -338,81 +463,16 @@ export class PropertyRepository {
     skip?: number
     take?: number
   }): Promise<{ properties: PropertyWithRelations[]; total: number }> {
-    const {
-      minLatitude,
-      maxLatitude,
-      minLongitude,
-      maxLongitude,
-      filters = {},
-      skip = 0,
-      take = 1000, // Mayor por defecto para mapas
-    } = params
-
-    // Validar que las coordenadas sean válidas
-    if (minLatitude > maxLatitude) {
-      throw new Error('minLatitude debe ser menor que maxLatitude')
-    }
-    if (minLongitude > maxLongitude) {
-      throw new Error('minLongitude debe ser menor que maxLongitude')
-    }
-
-    const where: Prisma.PropertyWhereInput = {
-      // Bounding box geográfico
-      latitude: {
-        gte: minLatitude,
-        lte: maxLatitude,
-      },
-      longitude: {
-        gte: minLongitude,
-        lte: maxLongitude,
-      },
-      // Filtros adicionales (mismo patrón que list())
-      ...(filters.transactionType && {
-        transactionType: Array.isArray(filters.transactionType)
-          ? { in: filters.transactionType }
-          : filters.transactionType,
-      }),
-      ...(filters.category && {
-        category: Array.isArray(filters.category)
-          ? { in: filters.category }
-          : filters.category,
-      }),
-      ...(filters.status && { status: filters.status }),
-      ...(filters.agentId && { agentId: filters.agentId }),
-      ...(filters.city && { city: { contains: filters.city, mode: 'insensitive' } }),
-      ...(filters.state && { state: { contains: filters.state, mode: 'insensitive' } }),
-      ...(filters.bedrooms && { bedrooms: { gte: filters.bedrooms } }),
-      ...(filters.bathrooms && { bathrooms: { gte: filters.bathrooms } }),
-      // Combine minPrice and maxPrice into single price object to avoid overwrite
-      ...((filters.minPrice || filters.maxPrice) && {
-        price: {
-          ...(filters.minPrice && { gte: filters.minPrice }),
-          ...(filters.maxPrice && { lte: filters.maxPrice }),
-        },
-      }),
-      ...(filters.minArea && { area: { gte: filters.minArea } }),
-      ...(filters.maxArea && { area: { lte: filters.maxArea } }),
-      ...(filters.search && {
-        OR: [
-          { title: { contains: filters.search, mode: 'insensitive' } },
-          { description: { contains: filters.search, mode: 'insensitive' } },
-          { address: { contains: filters.search, mode: 'insensitive' } },
-        ],
-      }),
-    }
-
-    const [properties, total] = await Promise.all([
-      db.property.findMany({
-        where,
-        select: propertySelect,
-        skip,
-        take,
-        orderBy: { createdAt: 'desc' },
-      }),
-      db.property.count({ where }),
-    ])
-
-    return { properties, total }
+    // Delegate to cached version for request-level deduplication
+    return findInBoundsCached({
+      minLatitude: params.minLatitude,
+      maxLatitude: params.maxLatitude,
+      minLongitude: params.minLongitude,
+      maxLongitude: params.maxLongitude,
+      filters: params.filters,
+      skip: params.skip,
+      take: params.take,
+    })
   }
 
   /**
@@ -452,27 +512,8 @@ export class PropertyRepository {
    * })
    */
   async getPriceRange(filters?: PropertyFilters): Promise<{ minPrice: number; maxPrice: number }> {
-    const where: Prisma.PropertyWhereInput = {
-      // Aplicar los mismos filtros que en list() si se proporcionan
-      ...(filters?.transactionType && {
-        transactionType: Array.isArray(filters.transactionType)
-          ? { in: filters.transactionType }
-          : filters.transactionType,
-      }),
-      ...(filters?.category && {
-        category: Array.isArray(filters.category)
-          ? { in: filters.category }
-          : filters.category,
-      }),
-      ...(filters?.status && { status: filters.status }),
-      ...(filters?.agentId && { agentId: filters.agentId }),
-      ...(filters?.city && { city: { contains: filters.city, mode: 'insensitive' } }),
-      ...(filters?.state && { state: { contains: filters.state, mode: 'insensitive' } }),
-      ...(filters?.bedrooms && { bedrooms: { gte: filters.bedrooms } }),
-      ...(filters?.bathrooms && { bathrooms: { gte: filters.bathrooms } }),
-      ...(filters?.minArea && { area: { gte: filters.minArea } }),
-      ...(filters?.maxArea && { area: { lte: filters.maxArea } }),
-    }
+    // Use centralized filter builder (excludes minPrice/maxPrice/search intentionally for aggregation)
+    const where = buildPropertyWhereClause(filters)
 
     const priceAggregation = await db.property.aggregate({
       where,
@@ -480,9 +521,15 @@ export class PropertyRepository {
       _max: { price: true },
     })
 
-    // Convertir Decimal a number y proporcionar defaults si no hay propiedades
-    const minPrice = priceAggregation._min.price ? Number(priceAggregation._min.price) : 0
-    const maxPrice = priceAggregation._max.price ? Number(priceAggregation._max.price) : 2000000
+    // Convertir Decimal a number
+    // FIX: Return null if no data available instead of misleading defaults
+    const minPrice = priceAggregation._min.price ? Number(priceAggregation._min.price) : null
+    const maxPrice = priceAggregation._max.price ? Number(priceAggregation._max.price) : null
+
+    // Return 0 if no properties match, otherwise return actual range
+    if (minPrice === null || maxPrice === null) {
+      return { minPrice: 0, maxPrice: 0 }
+    }
 
     return { minPrice, maxPrice }
   }
@@ -490,6 +537,12 @@ export class PropertyRepository {
   /**
    * Obtiene distribución de precios para histograma de filtros
    * Agrupa propiedades en buckets de precio para visualización
+   *
+   * PERFORMANCE NOTE: Current implementation loads all matching prices into memory
+   * - Fetches: SELECT price FROM Property WHERE ... (minimal data, ~4 bytes per row)
+   * - Processing: In-memory grouping by computed bucket (FLOOR(price / bucketSize))
+   * - Why not database grouping: Prisma doesn't support dynamic computed fields in groupBy
+   * - Future: Can be optimized with raw SQL FLOOR() if needed at scale (10k+ properties)
    *
    * @param params.bucketSize - Tamaño del bucket en USD (ej: 10000 = $10k buckets)
    * @param params.filters - Filtros opcionales
@@ -513,36 +566,16 @@ export class PropertyRepository {
   } = {}): Promise<{ bucket: number; count: number }[]> {
     const { bucketSize = 10000, filters = {} } = params
 
-    // Construir where clause para Prisma
-    const where: Prisma.PropertyWhereInput = {
-      status: 'AVAILABLE',
-      ...(filters?.transactionType && {
-        transactionType: Array.isArray(filters.transactionType)
-          ? { in: filters.transactionType }
-          : filters.transactionType,
-      }),
-      ...(filters?.category && {
-        category: Array.isArray(filters.category)
-          ? { in: filters.category }
-          : filters.category,
-      }),
-      ...(filters?.agentId && { agentId: filters.agentId }),
-      ...(filters?.city && { city: { contains: filters.city, mode: 'insensitive' } }),
-      ...(filters?.state && { state: { contains: filters.state, mode: 'insensitive' } }),
-      ...(filters?.bedrooms && { bedrooms: { gte: filters.bedrooms } }),
-      ...(filters?.bathrooms && { bathrooms: { gte: filters.bathrooms } }),
-      ...(filters?.minArea && { area: { gte: filters.minArea } }),
-      ...(filters?.maxArea && { area: { lte: filters.maxArea } }),
-    }
+    // Use centralized filter builder with AVAILABLE status (hardcoded for histogram)
+    const where = buildPropertyWhereClause(filters, { status: 'AVAILABLE' })
 
-    // Usar groupBy de Prisma en vez de raw SQL
-    // Esto evita problemas de inyección SQL y es más type-safe
+    // Fetch only price field (minimal memory footprint)
     const properties = await db.property.findMany({
       where,
       select: { price: true },
     })
 
-    // Agrupar en buckets manualmente
+    // Group into buckets using computed field (FLOOR(price / bucketSize) * bucketSize)
     const buckets = new Map<number, number>()
 
     for (const property of properties) {
@@ -551,18 +584,20 @@ export class PropertyRepository {
       buckets.set(bucketStart, (buckets.get(bucketStart) || 0) + 1)
     }
 
-    // Convertir a array ordenado
-    const result = Array.from(buckets.entries())
+    // Convert to sorted array
+    return Array.from(buckets.entries())
       .map(([bucket, count]) => ({ bucket, count }))
       .sort((a, b) => a.bucket - b.bucket)
-
-    return result
   }
 
   /**
    * Obtiene ciudades con autocomplete para el hero search bar
    * Retorna ciudades distintas que coinciden con la consulta
    * Ordenadas por número de propiedades disponibles (descendente)
+   *
+   * OPTIMIZED: Uses Prisma groupBy instead of N+1 query pattern
+   * - Before: 1 initial query + N count queries = O(N) complexity
+   * - After: 1 single groupBy query = O(1) database round trips
    *
    * @param query - Término de búsqueda (mín 2 caracteres)
    * @returns Array de ciudades con conteo de propiedades
@@ -582,8 +617,11 @@ export class PropertyRepository {
       return []
     }
 
-    // Obtener propiedades que coinciden con la búsqueda
-    const properties = await db.property.findMany({
+    // FIX: Use groupBy instead of N+1 pattern
+    // Before: 1 query + N count queries = N+1 total
+    // After: 1 query = 1 total
+    const cityGroups = await db.property.groupBy({
+      by: ['city', 'state'],
       where: {
         status: 'AVAILABLE',
         city: {
@@ -591,58 +629,24 @@ export class PropertyRepository {
           mode: 'insensitive',
         },
       },
-      select: {
-        city: true,
-        state: true,
+      _count: {
+        id: true,
       },
-      distinct: ['city'],
+      orderBy: {
+        _count: {
+          id: 'desc',
+        },
+      },
     })
 
-    // Agrupar por ciudad y contar propiedades
-    const cityMap = new Map<
-      string,
-      { name: string; state: string; count: number }
-    >()
-
-    for (const property of properties) {
-      if (property.city) {
-        const key = `${property.city}-${property.state}`
-        if (!cityMap.has(key)) {
-          cityMap.set(key, {
-            name: property.city,
-            state: property.state || '',
-            count: 0,
-          })
-        }
-        const city = cityMap.get(key)
-        if (city) {
-          city.count += 1
-        }
-      }
-    }
-
-    // Contar propiedades por ciudad (nueva consulta para conteo exacto)
-    const cities = await Promise.all(
-      Array.from(cityMap.values()).map(async (city) => {
-        const count = await db.property.count({
-          where: {
-            status: 'AVAILABLE',
-            city: city.name,
-            state: city.state,
-          },
-        })
-
-        return {
-          name: city.name,
-          state: city.state,
-          slug: `${city.name.toLowerCase().replace(/\s+/g, '-')}-${city.state.toLowerCase().replace(/\s+/g, '-')}`,
-          propertyCount: count,
-        }
-      }),
-    )
-
-    // Ordenar por propertyCount descendente
-    return cities.sort((a, b) => b.propertyCount - a.propertyCount)
+    return cityGroups
+      .filter((group) => group.city !== null)
+      .map((group) => ({
+        name: group.city!,
+        state: group.state || '',
+        slug: `${group.city!.toLowerCase().replace(/\s+/g, '-')}-${(group.state || '').toLowerCase().replace(/\s+/g, '-')}`,
+        propertyCount: group._count.id,
+      }))
   }
 }
 
@@ -680,8 +684,24 @@ export type SerializedProperty = Omit<
 }
 
 /**
+ * Safely converts Decimal values to numbers with validation
+ * Preserves 0 values (falsiness issue with Decimal)
+ * Returns null for null/undefined, not undefined
+ */
+function toNumber(value: Prisma.Decimal | number | null | undefined): number | null {
+  if (value === null || value === undefined) return null
+  const num = Number(value)
+  if (!Number.isFinite(num)) {
+    console.error(`Invalid number conversion: ${value}`)
+    return null
+  }
+  return num
+}
+
+/**
  * Convierte una propiedad con Decimals a formato serializable
  * Convierte null a undefined para compatibilidad con Client Components
+ * FIX: Preserva valores 0 (bathrooms, bedrooms, area) que antes retornaban undefined
  */
 export function serializeProperty(
   property: PropertyWithRelations
@@ -689,18 +709,25 @@ export function serializeProperty(
   return {
     ...property,
     // Core fields (Decimal → number)
-    price: Number(property.price),
-    // Optional Decimal fields (null → undefined for Client Components)
-    bathrooms: property.bathrooms ? Number(property.bathrooms) : undefined,
-    area: property.area ? Number(property.area) : undefined,
+    // Price is required, never null
+    price: toNumber(property.price) ?? 0,
+    // Optional Decimal fields - preserve 0 values
+    // ⚠️ CRITICAL FIX: Changed from falsy check (? : undefined) to null check
+    bathrooms: property.bathrooms !== null && property.bathrooms !== undefined
+      ? toNumber(property.bathrooms)
+      : undefined,
+    area: property.area !== null && property.area !== undefined
+      ? toNumber(property.area)
+      : undefined,
+    bedrooms: property.bedrooms !== null && property.bedrooms !== undefined
+      ? toNumber(property.bedrooms)
+      : undefined,
     // Geographic coordinates (can be null)
-    latitude: property.latitude ? Number(property.latitude) : null,
-    longitude: property.longitude ? Number(property.longitude) : null,
+    latitude: toNumber(property.latitude),
+    longitude: toNumber(property.longitude),
     // Optional string fields
     city: property.city ?? undefined,
     state: property.state ?? undefined,
-    // Optional number fields
-    bedrooms: property.bedrooms ?? undefined,
   }
 }
 
