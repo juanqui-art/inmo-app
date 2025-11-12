@@ -5,13 +5,15 @@
  *
  * Simple dropdown to filter by city
  * Updates URL parameter directly without Zustand
+ * Uses FilterDropdown base component for consistent styling
  */
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { MapPin, ChevronDown } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { getCitiesAction, type CitySearchResult } from "@/app/actions/properties";
 import { Spinner } from "@/components/common";
+import { FilterDropdown } from "@/components/map/filters/filter-dropdown";
 
 export function GridCityFilter() {
   const router = useRouter();
@@ -62,83 +64,62 @@ export function GridCityFilter() {
   }, [searchParams, router]);
 
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 text-oslo-gray-200 hover:text-oslo-gray-50 transition-colors text-sm"
-      >
-        <MapPin className="w-4 h-4" />
-        <span>{selectedCity || "Ubicación"}</span>
-        <ChevronDown className="w-3.5 h-3.5 ml-1" />
-      </button>
+    <FilterDropdown
+      label="Ubicación"
+      value={selectedCity || undefined}
+      icon={<MapPin className="h-4 w-4" />}
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      isActive={!!selectedCity}
+      onClear={handleClear}
+    >
+      {/* Header with "Listo" button */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-oslo-gray-800">
+        <h3 className="text-sm font-semibold text-oslo-gray-50">
+          Seleccionar Ubicación
+        </h3>
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900 disabled:bg-oslo-gray-700 disabled:cursor-not-allowed whitespace-nowrap"
+        >
+          Listo
+        </button>
+      </div>
 
-      {isOpen && (
-        <div className="absolute z-50 top-full left-0 mt-2 w-72 bg-oslo-gray-900 border border-oslo-gray-700 rounded-lg shadow-lg">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-oslo-gray-800">
-            <h3 className="text-sm font-semibold text-oslo-gray-50">
-              Seleccionar Ubicación
-            </h3>
-          </div>
-
-          {/* Cities List */}
-          <div className="max-h-64 overflow-y-auto px-2 py-2">
-            {isLoadingCities ? (
-              <div className="flex justify-center py-4">
-                <Spinner size="6" color="text-oslo-gray-400" />
+      {/* Cities List */}
+      {isLoadingCities ? (
+        <div className="flex justify-center py-4">
+          <Spinner size="6" color="text-oslo-gray-400" />
+        </div>
+      ) : cities.length > 0 ? (
+        <div className="space-y-1">
+          {cities.map((city) => (
+            <button
+              key={city.id}
+              type="button"
+              onClick={() => handleSelectCity(city.name)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors text-sm ${
+                selectedCity === city.name
+                  ? "bg-indigo-600 text-white"
+                  : "text-oslo-gray-200 hover:bg-oslo-gray-800"
+              }`}
+            >
+              <MapPin className="h-4 w-4 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate">{city.name}</p>
+                <p className="text-xs opacity-75">
+                  {city.propertyCount} propiedades
+                </p>
               </div>
-            ) : cities.length > 0 ? (
-              <div className="space-y-1">
-                {cities.map((city) => (
-                  <button
-                    key={city.id}
-                    type="button"
-                    onClick={() => handleSelectCity(city.name)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors text-sm ${
-                      selectedCity === city.name
-                        ? "bg-indigo-600 text-white"
-                        : "text-oslo-gray-200 hover:bg-oslo-gray-800"
-                    }`}
-                  >
-                    <MapPin className="h-4 w-4 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{city.name}</p>
-                      <p className="text-xs opacity-75">
-                        {city.propertyCount} propiedades
-                      </p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="px-4 py-4 text-center text-oslo-gray-400 text-sm">
-                No hay ciudades disponibles
-              </div>
-            )}
-          </div>
-
-          {/* Footer */}
-          {!isLoadingCities && cities.length > 0 && selectedCity && (
-            <div className="px-4 py-3 border-t border-oslo-gray-800">
-              <button
-                type="button"
-                onClick={handleClear}
-                className="w-full px-4 py-2 rounded-lg border border-oslo-gray-700 text-oslo-gray-300 font-semibold text-sm hover:bg-oslo-gray-800 transition-colors"
-              >
-                Limpiar
-              </button>
-            </div>
-          )}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="px-4 py-4 text-center text-oslo-gray-400 text-sm">
+          No hay ciudades disponibles
         </div>
       )}
-
-      {/* Overlay to close dropdown */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-    </div>
+    </FilterDropdown>
   );
 }

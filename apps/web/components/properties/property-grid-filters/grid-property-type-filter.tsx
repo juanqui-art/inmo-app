@@ -5,11 +5,13 @@
  *
  * Simple dropdown to filter by property type (Casa/Apartamento/etc.)
  * Updates URL parameter directly
+ * Uses FilterDropdown base component for consistent styling
  */
 
 import { useCallback, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, Building2 } from "lucide-react";
+import { Building2 } from "lucide-react";
+import { FilterDropdown } from "@/components/map/filters/filter-dropdown";
 
 const PROPERTY_TYPES = [
   { label: "Casa", value: "HOUSE" },
@@ -56,66 +58,47 @@ export function GridPropertyTypeFilter() {
   }, [searchParams, router]);
 
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-oslo-gray-800 border border-oslo-gray-700 text-oslo-gray-200 hover:text-oslo-gray-50 transition-colors text-sm"
-      >
-        <Building2 className="w-4 h-4" />
-        <span>{displayLabel}</span>
-        <ChevronDown className="w-3.5 h-3.5 ml-1" />
-      </button>
-
-      {isOpen && (
-        <div className="absolute z-50 top-full left-0 mt-2 w-64 bg-oslo-gray-900 border border-oslo-gray-700 rounded-lg shadow-lg">
-          {/* Header */}
-          <div className="px-4 py-3 border-b border-oslo-gray-800">
-            <h3 className="text-sm font-semibold text-oslo-gray-50">
-              Tipo de Propiedad
-            </h3>
-          </div>
-
-          {/* Options */}
-          <div className="max-h-64 overflow-y-auto py-2 px-2 space-y-1">
-            {UNIQUE_TYPES.map((type) => (
-              <button
-                key={type.value}
-                type="button"
-                onClick={() => handleSelect(type.value)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors text-sm ${
-                  selectedType === type.value
-                    ? "bg-indigo-600 text-white"
-                    : "text-oslo-gray-200 hover:bg-oslo-gray-800"
-                }`}
-              >
-                <Building2 className="w-4 h-4 flex-shrink-0" />
-                <span className="font-medium">{type.label}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Footer */}
-          {selectedType && (
-            <div className="px-4 py-3 border-t border-oslo-gray-800">
-              <button
-                type="button"
-                onClick={handleClear}
-                className="w-full px-4 py-2 rounded-lg border border-oslo-gray-700 text-oslo-gray-300 font-semibold text-sm hover:bg-oslo-gray-800 transition-colors"
-              >
-                Limpiar
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40"
+    <FilterDropdown
+      label="Tipo"
+      value={displayLabel !== "Tipo" ? displayLabel : undefined}
+      icon={<Building2 className="h-4 w-4" />}
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      isActive={!!selectedType}
+      onClear={handleClear}
+    >
+      {/* Header with "Listo" button */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-oslo-gray-800">
+        <h3 className="text-sm font-semibold text-oslo-gray-50">
+          Tipo de Propiedad
+        </h3>
+        <button
+          type="button"
           onClick={() => setIsOpen(false)}
-        />
-      )}
-    </div>
+          className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-oslo-gray-900 disabled:bg-oslo-gray-700 disabled:cursor-not-allowed whitespace-nowrap"
+        >
+          Listo
+        </button>
+      </div>
+
+      {/* Options */}
+      <div className="space-y-1">
+        {UNIQUE_TYPES.map((type) => (
+          <button
+            key={type.value}
+            type="button"
+            onClick={() => handleSelect(type.value)}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors text-sm ${
+              selectedType === type.value
+                ? "bg-indigo-600 text-white"
+                : "text-oslo-gray-200 hover:bg-oslo-gray-800"
+            }`}
+          >
+            <Building2 className="w-4 h-4 flex-shrink-0" />
+            <span className="font-medium">{type.label}</span>
+          </button>
+        ))}
+      </div>
+    </FilterDropdown>
   );
 }
