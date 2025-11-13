@@ -18,9 +18,9 @@
     "postinstall": "turbo run @repo/database#db:generate"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.4",
+    "@biomejs/biome": "2.3.5",
     "react-scan": "^0.4.3",
-    "turbo": "2.6.0"
+    "turbo": "2.6.1"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",

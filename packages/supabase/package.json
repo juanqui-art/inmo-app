@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",
-    "@supabase/supabase-js": "^2.47.13"
+    "@supabase/supabase-js": "^2.81.1"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^24.10.1",
     "typescript": "^5"
   }
 }
