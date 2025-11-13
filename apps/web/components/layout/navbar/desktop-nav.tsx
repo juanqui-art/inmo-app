@@ -25,19 +25,17 @@ import { FavoritesDropdown } from "./favorites-dropdown";
 interface DesktopNavProps {
   isAuthenticated: boolean;
   user: SafeUser;
-  isHomepage: boolean;
 }
 
 export function DesktopNav({
   isAuthenticated,
   user,
-  isHomepage,
 }: DesktopNavProps) {
   const ctaButtonRef = useRef<HTMLDivElement>(null);
   const navLinks = getNavLinks(isAuthenticated);
 
-  // Apply magnetic effect to CTA button (only on non-homepage)
-  useMagneticEffect(ctaButtonRef, !isHomepage, 0.2);
+  // Magnetic effect disabled (using consistent homepage style)
+  useMagneticEffect(ctaButtonRef, false, 0.2);
 
   return (
     <div className="hidden md:flex items-center gap-6">
@@ -58,11 +56,7 @@ export function DesktopNav({
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-1 px-3 py-2 rounded-lg font-semibold transition-all ${
-                isHomepage
-                  ? "text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-                  : "text-oslo-gray-300 hover:text-oslo-gray-100 hover:bg-oslo-gray-800"
-              }`}
+              className="flex items-center gap-1 px-3 py-2 rounded-lg font-semibold transition-all text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
             >
               {link.icon === "heart" && <Heart className="w-4 h-4" />}
               <span>{link.label}</span>
@@ -72,23 +66,18 @@ export function DesktopNav({
       </nav>
 
       {/* Social Media Icons - Desktop */}
-      <SocialLinks variant="desktop" isHomepage={isHomepage} />
+      <SocialLinks variant="desktop" />
 
       {/* Vertical Divider */}
-      <div
-        className={`h-6 w-px ${
-          isHomepage ? "bg-white/30" : "bg-oslo-gray-700"
-        }`}
-      />
+      <div className="h-6 w-px bg-white/30" />
 
       {/* Auth Section */}
       {isAuthenticated ? (
-        <UserDropdown user={user} isHomepage={isHomepage} />
+        <UserDropdown user={user} />
       ) : (
         <AuthButtons
           ref={ctaButtonRef}
           variant="desktop"
-          isHomepage={isHomepage}
         />
       )}
     </div>

@@ -12,34 +12,25 @@ import { forwardRef } from "react";
 
 interface AuthButtonsProps {
   variant: "desktop" | "mobile";
-  isHomepage?: boolean;
   onNavigate?: () => void;
   // FIX: Added explicit type for aria attributes to improve accessibility
 }
 
 export const AuthButtons = forwardRef<HTMLDivElement, AuthButtonsProps>(
-  ({ variant, isHomepage = false, onNavigate }, ref) => {
+  ({ variant, onNavigate }, ref) => {
     if (variant === "desktop") {
       return (
         <div ref={ref} className="flex items-center gap-3">
           <Link
             href="/login"
-            className={`px-3 py-2 rounded-lg font-semibold transition-all ${
-              isHomepage
-                ? "text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-                : "text-oslo-gray-300 hover:text-oslo-gray-100 hover:bg-oslo-gray-800"
-            }`}
+            className="px-3 py-2 rounded-lg font-semibold transition-all text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
           >
             Ingresar
           </Link>
 
           <Link
             href="/vender"
-            className={`px-4 py-2 font-semibold rounded-lg transition-all ${
-              isHomepage
-                ? "bg-neutral-800 text-white/80 hover:bg-neutral-800/60 hover:text-white hover:scale-105 shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
-                : "bg-indigo-600 text-white hover:bg-indigo-500 hover:scale-105"
-            }`}
+            className="px-4 py-2 font-semibold rounded-lg transition-all bg-neutral-800 text-white/80 hover:bg-neutral-800/60 hover:text-white hover:scale-105 shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
           >
             Publicar anuncio
           </Link>

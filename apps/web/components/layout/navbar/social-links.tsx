@@ -9,10 +9,9 @@ import Image from "next/image";
 
 interface SocialLinksProps {
   variant: "desktop" | "mobile";
-  isHomepage?: boolean;
 }
 
-export function SocialLinks({ variant, isHomepage = false }: SocialLinksProps) {
+export function SocialLinks({ variant }: SocialLinksProps) {
   if (variant === "desktop") {
     return (
       <div className="flex items-center gap-2">
@@ -21,18 +20,14 @@ export function SocialLinks({ variant, isHomepage = false }: SocialLinksProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Facebook"
-          className={`p-2 rounded-full transition-all ${
-            isHomepage
-              ? "text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-              : "text-oslo-gray-400 hover:bg-indigo-600 hover:text-white"
-          }`}
+          className="p-2 rounded-full transition-all text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
         >
           <Image
             src="/social_icons/facebook.svg"
             alt="Facebook"
             width={17}
             height={17}
-            className={isHomepage ? "brightness-0 invert" : "brightness-100"}
+            className="brightness-0 invert"
           />
         </a>
 
@@ -41,18 +36,14 @@ export function SocialLinks({ variant, isHomepage = false }: SocialLinksProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Instagram"
-          className={`p-2 rounded-full transition-all ${
-            isHomepage
-              ? "text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-              : "text-oslo-gray-400 hover:bg-pink-600 hover:text-white"
-          }`}
+          className="p-2 rounded-full transition-all text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
         >
           <Image
             src="/social_icons/instagram.svg"
             alt="Instagram"
             width={16}
             height={16}
-            className={isHomepage ? "brightness-0 invert" : "brightness-100"}
+            className="brightness-0 invert"
           />
         </a>
 
@@ -61,18 +52,14 @@ export function SocialLinks({ variant, isHomepage = false }: SocialLinksProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="TikTok"
-          className={`p-2 rounded-full transition-all ${
-            isHomepage
-              ? "text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-              : "text-oslo-gray-400 hover:bg-black hover:text-white"
-          }`}
+          className="p-2 rounded-full transition-all text-white/80 hover:text-white hover:bg-white/10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
         >
           <Image
             src="/social_icons/tiktok.svg"
             alt="TikTok"
             width={16}
             height={16}
-            className={isHomepage ? "brightness-0 invert" : "brightness-100"}
+            className="brightness-0 invert"
           />
         </a>
       </div>

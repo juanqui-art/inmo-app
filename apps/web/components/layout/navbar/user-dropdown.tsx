@@ -17,10 +17,9 @@ import { useState } from "react";
 
 interface UserDropdownProps {
   user: SafeUser;
-  isHomepage?: boolean;
 }
 
-export function UserDropdown({ user, isHomepage = false }: UserDropdownProps) {
+export function UserDropdown({ user }: UserDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -28,11 +27,7 @@ export function UserDropdown({ user, isHomepage = false }: UserDropdownProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-center w-10 h-10 rounded-full transition-all overflow-hidden ${
-          isHomepage
-            ? "bg-white/20 hover:bg-white/30 hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] border border-white/40"
-            : "bg-oslo-gray-800 hover:bg-oslo-gray-700 hover:scale-110 border border-oslo-gray-700"
-        }`}
+        className="flex items-center justify-center w-10 h-10 rounded-full transition-all overflow-hidden bg-white/20 hover:bg-white/30 hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] border border-white/40"
         aria-label="Menú de usuario"
         aria-expanded={isOpen}
       >
@@ -46,9 +41,7 @@ export function UserDropdown({ user, isHomepage = false }: UserDropdownProps) {
             unoptimized
           />
         ) : (
-          <User
-            className={`w-5 h-5 ${isHomepage ? "text-white" : "text-oslo-gray-300"}`}
-          />
+          <User className="w-5 h-5 text-white" />
         )}
       </button>
 

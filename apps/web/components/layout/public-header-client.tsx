@@ -31,23 +31,13 @@ export function PublicHeaderClient({
   user,
 }: PublicHeaderClientProps) {
   const pathname = usePathname();
-  const isMapPage = pathname === "/mapa";
-  // The transparent style should be used on the homepage and the vender page
-  const useTransparentStyle = pathname === "/" || pathname === "/vender";
+  const isHomepage = pathname === "/";
   const mobileMenu = useMobileMenu();
 
   return (
     <header
-      data-navbar={
-        isMapPage ? "map" : useTransparentStyle ? "homepage" : "pages"
-      }
-      className={
-        isMapPage
-          ? "sticky top-0 z-50 bg-oslo-gray-1000/80 backdrop-blur-md border-b-[0.3px] border-oslo-gray-600/60"
-          : useTransparentStyle
-            ? "sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
-            : "sticky top-0 z-50 bg-oslo-gray-900/80 backdrop-blur-md border-b border-oslo-gray-700/50 shadow-lg"
-      }
+      data-navbar={isHomepage ? "homepage" : "pages"}
+      className="sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
     >
       <nav className=" mx-auto px-4 sm:px-6 lg:px-8">
         <div
@@ -58,32 +48,20 @@ export function PublicHeaderClient({
           <Link
             href="/"
             data-navbar-logo-text="true"
-            className={`flex items-center gap-2 font-bold text-xl ${
-              useTransparentStyle || isMapPage
-                ? "text-white/80 hover:text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-                : "text-oslo-gray-100 hover:text-indigo-400"
-            }`}
+            className="flex items-center gap-2 font-bold text-xl text-white/80 hover:text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
           >
             <HomeIcon data-navbar-logo-icon="true" className="w-6 h-6" />
             <span>InmoApp</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <DesktopNav
-            isAuthenticated={isAuthenticated}
-            user={user}
-            isHomepage={useTransparentStyle || isMapPage}
-          />
+          <DesktopNav isAuthenticated={isAuthenticated} user={user} />
 
           {/* Mobile Menu Button */}
           <button
             type="button"
             onClick={mobileMenu.toggle}
-            className={`md:hidden p-2 rounded-lg transition-all ${
-              useTransparentStyle || isMapPage
-                ? "hover:bg-white/10 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
-                : "hover:bg-oslo-gray-800 text-oslo-gray-300"
-            }`}
+            className="md:hidden p-2 rounded-lg transition-all hover:bg-white/10 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
             aria-label="Abrir menú"
             aria-expanded={mobileMenu.isOpen}
           >
