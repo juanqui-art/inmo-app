@@ -16,7 +16,7 @@
  * - https://developers.google.com/search/docs/appearance/structured-data/real-estate
  */
 
-import type { SerializedProperty } from "@/lib/utils/serialize-property";
+import type { SerializedProperty } from "@repo/database";
 
 interface PropertyListSchemaProps {
   properties: SerializedProperty[];

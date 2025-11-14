@@ -104,16 +104,17 @@ export default async function PropertyDetailPage(
   const isFavorite = favoriteResult.success && favoriteResult.isFavorite;
 
   // Format price
+  // Note: property is already serialized (Decimal → number) by findByIdCached
   const formattedPrice = new Intl.NumberFormat("es-EC", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 0,
-  }).format(Number(property.price));
+  }).format(property.price);
 
-  // Convert Decimal types to numbers for components
-  const bedrooms = property.bedrooms ? Number(property.bedrooms) : null;
-  const bathrooms = property.bathrooms ? Number(property.bathrooms) : null;
-  const area = property.area ? Number(property.area) : null;
+  // Extract numeric values (already serialized, no conversion needed)
+  const bedrooms = property.bedrooms;
+  const bathrooms = property.bathrooms;
+  const area = property.area;
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-white via-oslo-gray-50/30 to-white dark:bg-gradient-to-b dark:from-oslo-gray-1100 dark:via-oslo-gray-1000 dark:to-oslo-gray-1100">

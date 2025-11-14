@@ -9,6 +9,11 @@
  * - Pagination controls
  * - View toggle (list ↔ map)
  * - JSON-LD schema for SEO
+ *
+ * STATE MANAGEMENT:
+ * - Reads properties, pagination data from PropertyGridStore (Zustand)
+ * - No props drilling: store is hydrated by PropertyGridStoreInitializer
+ * - Child components also read from store directly
  */
 
 import { PropertyCard } from "./property-card";
@@ -18,29 +23,19 @@ import { PropertyListSchema } from "./property-list-schema";
 import { PropertyGridFilterBar } from "./property-grid-filter-bar";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { useAuthStore } from "@/stores/auth-store";
+import { usePropertyGridStore } from "@/stores/property-grid-store";
 import { useFavorites } from "@/hooks/use-favorites";
-import type { SerializedProperty } from "@/lib/utils/serialize-property";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-interface PropertyGridPageProps {
-  properties: SerializedProperty[];
-  currentPage: number;
-  totalPages: number;
-  total: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-}
+export function PropertyGridPage() {
+  // Read store data
+  const { properties, total, currentPage, totalPages } = usePropertyGridStore();
 
-export function PropertyGridPage({
-  properties,
-  currentPage,
-  totalPages,
-  total,
-  hasNextPage,
-  hasPrevPage,
-}: PropertyGridPageProps) {
+  // UI state (local, not stored globally)
   const [showAuthModal, setShowAuthModal] = useState(false);
+
+  // External dependencies
   const isAuth = useAuthStore((state) => state.isAuthenticated);
   const { isFavorite, toggleFavorite } = useFavorites();
   const searchParams = useSearchParams();
@@ -141,15 +136,7 @@ export function PropertyGridPage({
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <PropertyGridPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            hasNextPage={hasNextPage}
-            hasPrevPage={hasPrevPage}
-            filters={filterString}
-          />
-        )}
+        {totalPages > 1 && <PropertyGridPagination />}
       </div>
 
       {/* Auth Modal */}

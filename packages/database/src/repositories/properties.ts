@@ -84,7 +84,7 @@ async function _getPropertiesList(params: {
   filters?: PropertyFilters
   skip?: number
   take?: number
-}): Promise<{ properties: PropertyWithRelations[]; total: number }> {
+}): Promise<{ properties: SerializedProperty[]; total: number }> {
   const { filters = {}, skip = 0, take = 20 } = params
 
   // Use centralized filter builder (extracted to prevent duplication)
@@ -101,7 +101,10 @@ async function _getPropertiesList(params: {
     db.property.count({ where }),
   ])
 
-  return { properties, total }
+  // Serialize properties (Decimal → number) for client compatibility
+  const serialized = serializeProperties(properties)
+
+  return { properties: serialized, total }
 }
 
 /**
@@ -122,12 +125,16 @@ export const getPropertiesList = cache(_getPropertiesList)
 /**
  * Internal implementation of findById
  * Wrapped with React.cache() for request-level deduplication
+ * Automatically serializes the property (Decimal → number) for client compatibility
  */
-async function _findById(id: string): Promise<PropertyWithRelations | null> {
-  return db.property.findUnique({
+async function _findById(id: string): Promise<SerializedProperty | null> {
+  const property = await db.property.findUnique({
     where: { id },
     select: propertySelect,
   })
+
+  // Serialize property (Decimal → number) for client compatibility
+  return property ? serializeProperty(property) : null
 }
 
 /**
@@ -141,6 +148,7 @@ export const findByIdCached = cache(_findById)
 /**
  * Internal implementation of findInBounds
  * Wrapped with React.cache() for request-level deduplication
+ * Automatically serializes properties (Decimal → number) for client compatibility
  */
 async function _findInBoundsInternal(params: {
   minLatitude: number
@@ -150,7 +158,7 @@ async function _findInBoundsInternal(params: {
   filters?: PropertyFilters
   skip?: number
   take?: number
-}): Promise<{ properties: PropertyWithRelations[]; total: number }> {
+}): Promise<{ properties: SerializedProperty[]; total: number }> {
   const {
     minLatitude,
     maxLatitude,
@@ -201,7 +209,10 @@ async function _findInBoundsInternal(params: {
     db.property.count({ where }),
   ])
 
-  return { properties, total }
+  // Serialize properties (Decimal → number) for client compatibility
+  const serialized = serializeProperties(properties)
+
+  return { properties: serialized, total }
 }
 
 /**

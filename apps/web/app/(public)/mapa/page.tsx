@@ -6,7 +6,6 @@ import { parseBoundsParams, parseFilterParams } from "@/lib/utils/url-helpers";
 import {
   type PropertyFilters,
   propertyRepository,
-  serializeProperties,
 } from "@repo/database"; // NEW: Import PropertyFilters
 import type { Metadata } from "next";
 
@@ -49,14 +48,13 @@ export default async function MapPage(props: MapPageProps) {
     }),
   ]);
 
-  // Serialize properties (Decimal → number)
-  const serialized = serializeProperties(properties);
+  // Note: properties are already serialized (Decimal → number) by propertyRepository.list()
 
   return (
     <>
       <AuthStoreInitializer user={currentUser} />
       <MapStoreInitializer
-        properties={serialized}
+        properties={properties}
         priceDistribution={priceDistribution}
         priceRangeMin={priceRangeMin}
         priceRangeMax={priceRangeMax}

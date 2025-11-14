@@ -30,7 +30,7 @@ import { Badge } from "@repo/ui";
 import Image from "next/image";
 import Link from "next/link";
 import type { PropertyWithRelations } from "@repo/database";
-import type { SerializedProperty } from "@/lib/utils/serialize-property";
+import type { SerializedProperty } from "@repo/database";
 import type { MapProperty } from "./map-view";
 import { PropertyImageFallback } from "./property-image-fallback";
 import { useFavorites } from "@/hooks/use-favorites";

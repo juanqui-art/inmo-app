@@ -74,7 +74,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { PropertyCard } from "@/components/properties/property-card";
-import type { SerializedProperty } from "@/lib/utils/serialize-property";
+import type { SerializedProperty } from "@repo/database";
 import { useFavorites } from "@/hooks/use-favorites";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { ViewMoreCard } from "./view-more-card";

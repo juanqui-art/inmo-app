@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { Badge } from "@repo/ui";
-import type { SerializedProperty } from "@/lib/utils/serialize-property";
+import type { SerializedProperty } from "@repo/database";
 import { PropertyImageFallback } from "@/components/map/property-image-fallback";
 import { CATEGORY_BADGE_STYLE } from "@/lib/styles/property-card-styles";
 import { generateSlug } from "@/lib/utils/slug-generator";

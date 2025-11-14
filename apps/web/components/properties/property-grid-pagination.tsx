@@ -5,27 +5,30 @@
  *
  * Shows previous/next buttons and page numbers
  * Preserves all filter parameters when navigating pages
+ *
+ * STATE MANAGEMENT:
+ * - Reads pagination state from PropertyGridStore (Zustand)
+ * - No props needed: store is hydrated by PropertyGridStoreInitializer
  */
 
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { usePropertyGridStore } from "@/stores/property-grid-store";
 import { cn } from "@repo/ui";
 
-interface PropertyGridPaginationProps {
-  currentPage: number;
-  totalPages: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-  filters: string; // Query string (e.g., "city=Cuenca&transactionType=SALE")
-}
+export function PropertyGridPagination() {
+  // Read pagination state from store
+  const { currentPage, totalPages } = usePropertyGridStore();
 
-export function PropertyGridPagination({
-  currentPage,
-  totalPages,
-  hasNextPage,
-  hasPrevPage,
-  filters,
-}: PropertyGridPaginationProps) {
+  // Get search params to build filter query string
+  const searchParams = useSearchParams();
+  const filters = searchParams.toString();
+
+  // Compute pagination state (derived from store)
+  const hasNextPage = currentPage < totalPages;
+  const hasPrevPage = currentPage > 1;
+
   // Generate page numbers to display (always show first, last, and pages around current)
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];

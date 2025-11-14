@@ -4,7 +4,7 @@
  * Solo el owner o ADMIN pueden editar
  */
 
-import { propertyRepository, serializeProperty } from "@repo/database";
+import { propertyRepository } from "@repo/database";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -39,8 +39,7 @@ export default async function EditarPropiedadPage({
     throw new Error("No tienes permiso para editar esta propiedad");
   }
 
-  // Serializar propiedad para Client Component
-  const serializedProperty = serializeProperty(property);
+  // Note: property is already serialized (Decimal → number) by findByIdCached
 
   return (
     <div className="space-y-6">
@@ -64,7 +63,7 @@ export default async function EditarPropiedadPage({
         {/* Información de la propiedad */}
         <div className="rounded-lg border border-border bg-card p-6">
           <PropertyForm
-            property={serializedProperty}
+            property={property}
             action={updatePropertyAction}
             submitLabel="Guardar Cambios"
           />
