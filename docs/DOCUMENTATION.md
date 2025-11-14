@@ -8,7 +8,7 @@
 
 ### ¿Qué es InmoApp?
 Plataforma inmobiliaria moderna con:
-- **Frontend:** Next.js 15 + React 19
+- **Frontend:** Next.js 16 + React 19
 - **Backend:** Server Actions + Prisma
 - **Database:** PostgreSQL
 - **Auth:** Supabase
