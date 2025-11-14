@@ -1,6 +1,6 @@
 # 📚 InmoApp Documentation Index
 
-> **Navegación completa de documentación** | Última actualización: Noviembre 14, 2025 (Auth System docs added)
+> **Navegación completa de documentación** | Última actualización: Noviembre 14, 2025 (Technical Debt documentation added)
 
 ---
 
@@ -109,6 +109,15 @@ docs/
 ├── 📊 progress/                    (Estado del proyecto)
 │   └── ROADMAP.md
 │
+├── ⚠️ technical-debt/              (Deuda técnica pendiente) ⭐ NUEVO
+│   ├── README.md                   (Índice completo)
+│   ├── 01-INFRASTRUCTURE.md        (Infraestructura & Robustez - 50 tareas)
+│   ├── 02-PERFORMANCE.md           (Performance & Cache - 2 tareas)
+│   ├── 03-AI-SEARCH.md             (AI Search Optimization - 1 tarea)
+│   ├── 04-EMAIL.md                 (Email Delivery - 2 tareas)
+│   ├── 05-MAP-FILTERS.md           (Map Filters Bug - 1 tarea)
+│   └── MAP_FILTERS_URL_PRESERVATION.md (Análisis detallado)
+│
 ├── 🔌 mcp/                         (Model Context Protocol)
 │   ├── README.md
 │   ├── GUIDE.md
@@ -140,6 +149,7 @@ docs/
 | ⚙️ Configurar Biome | `tools/biome/BIOME_EXPLAINED.md` |
 | 🚀 Aprender Turborepo | `tools/turborepo/TURBOREPO_GUIDE.md` |
 | 💾 Implementar cacheo | `caching/` |
+| ⚠️ Ver deuda técnica | `technical-debt/README.md` ⭐ |
 | 🗺️ Trabajo con mapa | `features/MAP.md` |
 | 🤖 AI Search | `features/ai-search-implementation.md` |
 | 🐛 Debug React hooks | `learning/debugging/` |
