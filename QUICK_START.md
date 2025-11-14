@@ -3,7 +3,7 @@
 > Ultra-compressed guide for Claude Code (~1k tokens)
 
 ## Stack
-**Monorepo:** Turborepo + Bun | **Frontend:** Next.js 15 + React 19 + TS + Tailwind v4 + GSAP | **Backend:** Supabase + Prisma | **Deploy:** Vercel
+**Monorepo:** Turborepo + Bun | **Frontend:** Next.js 16 + React 19 + TS + Tailwind v4 + GSAP | **Backend:** Supabase + Prisma | **Deploy:** Vercel
 
 ## Commands
 ```bash
@@ -19,7 +19,7 @@ apps/web/
 ├── app/actions/        # Server Actions (mutations)
 ├── components/         # React components
 ├── lib/               # Utils, validations, clients
-└── middleware.ts      # Auth + routing
+└── proxy.ts          # Auth + routing (Next.js 16)
 
 packages/
 ├── database/          # Prisma + repositories

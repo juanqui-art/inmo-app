@@ -1,6 +1,6 @@
 # InmoApp
 
-Modern real estate platform built with Next.js 15, Supabase, and Turborepo.
+Modern real estate platform built with Next.js 16, Supabase, and Turborepo.
 
 ---
 
