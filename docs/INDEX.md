@@ -1,6 +1,6 @@
 # 📚 InmoApp Documentation Index
 
-> **Navegación completa de documentación** | Última actualización: Noviembre 5, 2025 (Mapbox docs cleanup)
+> **Navegación completa de documentación** | Última actualización: Noviembre 14, 2025 (Auth System docs added)
 
 ---
 
@@ -39,9 +39,11 @@ docs/
 │   └── project-structure.md        (Arquitectura del proyecto)
 │
 ├── 🏗️ architecture/                (Diseño de sistema)
+│   ├── AUTHENTICATION_SYSTEM.md    ⭐ Sistema de autenticación completo
 │   ├── ENVIRONMENT_VARIABLES.md    (Variables en profundidad)
 │   ├── ENV_ARCHITECTURE.md         (Configuración detallada)
 │   ├── RLS_POLICIES.md             (Políticas de acceso DB)
+│   ├── PROPERTY_CARDS.md           (Arquitectura de tarjetas)
 │   └── node-modules-explained.md   (Estructura de módulos)
 │
 ├── 🛠️ tools/                       (Herramientas de desarrollo)
@@ -134,6 +136,7 @@ docs/
 | 📋 Instalar proyecto | `getting-started/DEVELOPMENT_SETUP.md` |
 | 💻 Comandos esenciales | `getting-started/QUICK_REFERENCE.md` |
 | 🏗️ Entender arquitectura | `architecture/` |
+| 🔐 Entender autenticación | `architecture/AUTHENTICATION_SYSTEM.md` |
 | ⚙️ Configurar Biome | `tools/biome/BIOME_EXPLAINED.md` |
 | 🚀 Aprender Turborepo | `tools/turborepo/TURBOREPO_GUIDE.md` |
 | 💾 Implementar cacheo | `caching/` |
@@ -171,14 +174,19 @@ docs/
 2. `learning/hooks/INFINITE_LOOP_DEEP_DIVE.md`
 3. `learning/debugging/REACT_HOOKS_ANTIPATTERNS.md`
 
+### Seguridad y Autenticación (1-2 horas)
+1. `architecture/AUTHENTICATION_SYSTEM.md` (Sistema completo)
+2. `architecture/RLS_POLICIES.md` (Row Level Security)
+3. `getting-started/project-structure.md#autenticación-multicapa` (Arquitectura)
+
 ---
 
 ## 📊 Estadísticas de Documentación
 
 ```
 Estructura: 16 categorías principales
-Total docs:  ~55 documentos markdown
-Total texto: ~130,000+ palabras
+Total docs:  ~56 documentos markdown
+Total texto: ~140,000+ palabras
 Organización: Plana → Jerárquica (Oct 29, 2025)
 Estado: ✅ Completamente reorganizado
 ```
@@ -192,6 +200,12 @@ Estado: ✅ Completamente reorganizado
 ---
 
 ## 🔄 Cambios Recientes
+
+### Nov 14, 2025 - Authentication System Documentation
+- ✅ Agregado `architecture/AUTHENTICATION_SYSTEM.md` (documentación completa de autenticación)
+- ✅ Cubre: Signup, Login, OAuth, Proxy, Database Trigger, Cookies, Seguridad
+- ✅ Incluye diagramas de flujo detallados y ejemplos de código
+- ✅ Nuevo learning path: Seguridad y Autenticación
 
 ### Oct 29, 2025 - Phase 3: Reorganización
 - ✅ Creada estructura lógica de 16 subdirectorios
