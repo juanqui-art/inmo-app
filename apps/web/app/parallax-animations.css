@@ -1,0 +1,46 @@
+/* ========================================
+   NATIVE CSS PARALLAX ANIMATIONS (v2)
+   ======================================== */
+
+/**
+ * Keyframes para el efecto parallax del fondo del hero.
+ * Mueve la imagen hacia abajo a medida que el usuario hace scroll.
+ * El movimiento es sutil para dar una sensación de profundidad.
+ */
+@keyframes hero-parallax-effect {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    /* Mueve el fondo hacia abajo un 25% de su propia altura. */
+    /* Esto hace que parezca que se mueve más lento que el contenido. */
+    transform: translateY(25vh);
+  }
+}
+
+/**
+ * Aplicamos la animación solo si el navegador la soporta.
+ */
+@supports (animation-timeline: scroll()) {
+  .hero-parallax-bg {
+    /* Asigna la animación y la vincula al timeline del scroll principal */
+    animation: hero-parallax-effect linear both;
+    animation-timeline: scroll(root);
+    
+    /*
+     * Define el rango de la animación.
+     * Se inicia en 0px (el inicio del scroll de la página).
+     * Termina cuando el usuario ha hecho scroll 100vh (la altura de una pantalla).
+     */
+    animation-range: 0px 100vh;
+  }
+}
+
+/**
+ * Respeta las preferencias de movimiento reducido del usuario.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .hero-parallax-bg {
+    animation: none !important;
+  }
+}
