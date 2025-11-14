@@ -193,7 +193,7 @@ Guarda estas convenciones en Memory al iniciar:
 "Recuerda las convenciones de este proyecto:
 
 Arquitectura:
-- Framework: Next.js 15 (App Router)
+- Framework: Next.js 16 (App Router)
 - Base de datos: Supabase (PostgreSQL)
 - ORM: Prisma
 - Monorepo: Turborepo (apps/web, packages/database)
