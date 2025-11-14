@@ -23,7 +23,7 @@
 
 ## 🎯 Resumen Ejecutivo
 
-**InmoApp** es una plataforma inmobiliaria construida con arquitectura de **monorepo profesional** usando tecnologías modernas (Next.js 15, React 19, Turborepo).
+**InmoApp** es una plataforma inmobiliaria construida con arquitectura de **monorepo profesional** usando tecnologías modernas (Next.js 16, React 19, Turborepo).
 
 ### Calificación General: **9/10** ⭐⭐⭐⭐⭐⭐⭐⭐⭐
 
@@ -111,7 +111,7 @@ inmo-app/
 │       │   ├── 📂 images/
 │       │   └── 📂 social_icons/
 │       │
-│       ├── middleware.ts                # ✅ Auth middleware
+│       ├── proxy.ts                    # ✅ Auth + routing (Next.js 16)
 │       ├── next.config.ts               # ✅ Transpile packages
 │       ├── tailwind.config.ts
 │       ├── tsconfig.json
@@ -413,7 +413,7 @@ export default function CreatePropertyForm() {
 
 | Tecnología | Versión | Propósito |
 |-----------|---------|-----------|
-| **Next.js** | 15.5.4 | Framework React con Server Components |
+| **Next.js** | 16 | Framework React con Server Components |
 | **React** | 19.1.0 | UI Library (latest) |
 | **TypeScript** | 5 | Type safety |
 | **Tailwind** | v4 | Utility CSS |

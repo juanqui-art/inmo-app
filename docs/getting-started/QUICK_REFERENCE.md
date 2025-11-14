@@ -9,7 +9,7 @@
 ```
 inmo-app/
 │
-├── apps/web/                 # 🌐 Next.js 15 App (Frontend + Backend)
+├── apps/web/                 # 🌐 Next.js 16 App (Frontend + Backend)
 │   ├── app/                  # App Router
 │   │   ├── (auth)/           # Login, Signup
 │   │   ├── (public)/         # Public pages
@@ -37,7 +37,7 @@ inmo-app/
 ├── turbo.json                # Build configuration
 ├── biome.json                # Linter + formatter
 ├── tsconfig.json             # TypeScript config
-└── middleware.ts             # Auth middleware
+└── proxy.ts                  # Auth + routing (Next.js 16)
 ```
 
 ---
@@ -149,7 +149,7 @@ lrwxrwxrwx  typescript-config → ../../packages/typescript-config
 |-------|-----------|---------|---------|
 | **Runtime** | Node.js | Latest | JavaScript runtime |
 | **Package Mgr** | Bun | 1.2.23 | 10x faster |
-| **Framework** | Next.js | 15.5.4 | React framework |
+| **Framework** | Next.js | 16 | React framework |
 | **UI Library** | React | 19.1.0 | UI |
 | **Language** | TypeScript | 5 | Type safety |
 | **Styling** | Tailwind | v4 | Utility CSS |
