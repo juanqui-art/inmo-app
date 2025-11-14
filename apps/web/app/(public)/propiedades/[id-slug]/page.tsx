@@ -10,14 +10,22 @@
  * - Validates slug for SEO redirects
  * - Shows 404 if property not found
  * - Redirects to correct slug if user provides incorrect one (SEO best practice)
+ * - Modern minimalist design with GSAP animations
+ * - Embla carousel for image gallery with lightbox
+ * - Responsive sticky sidebar with floating CTA card
  */
 
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { PropertyRepository } from "@repo/database";
 import { parseIdSlugParam, generateSlug } from "@/lib/utils/slug-generator";
-import { AppointmentButton } from "@/components/appointments/appointment-button";
 import { getCurrentUser } from "@/lib/auth";
+import { checkIfFavoriteAction } from "@/app/actions/favorites";
+import { PropertyHeroCarouselWrapper } from "@/components/property-detail/property-hero-carousel-wrapper";
+import { PropertyStatsCard } from "@/components/property-detail/property-stats-card";
+import { PropertyDescriptionCard } from "@/components/property-detail/property-description-card";
+import { PropertyLocationCard } from "@/components/property-detail/property-location-card";
+import { PropertyFloatingActionCard } from "@/components/property-detail/property-floating-action-card";
 
 interface PropertyDetailPageProps {
   params: Promise<{
@@ -91,6 +99,10 @@ export default async function PropertyDetailPage(
   // Get current user for appointment button
   const user = await getCurrentUser();
 
+  // Check if user has favorited this property
+  const favoriteResult = await checkIfFavoriteAction(id);
+  const isFavorite = favoriteResult.success && favoriteResult.isFavorite;
+
   // Format price
   const formattedPrice = new Intl.NumberFormat("es-EC", {
     style: "currency",
@@ -98,150 +110,91 @@ export default async function PropertyDetailPage(
     minimumFractionDigits: 0,
   }).format(Number(property.price));
 
+  // Convert Decimal types to numbers for components
+  const bedrooms = property.bedrooms ? Number(property.bedrooms) : null;
+  const bathrooms = property.bathrooms ? Number(property.bathrooms) : null;
+  const area = property.area ? Number(property.area) : null;
+
   return (
-    <div className="min-h-screen bg-white dark:bg-oslo-gray-1000">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-oslo-gray-950 dark:text-white mb-2">
+    <div className="relative min-h-screen bg-gradient-to-b from-white via-oslo-gray-50/30 to-white dark:bg-gradient-to-b dark:from-oslo-gray-1100 dark:via-oslo-gray-1000 dark:to-oslo-gray-1100">
+      {/* Hero Carousel */}
+      <PropertyHeroCarouselWrapper
+        images={property.images}
+        propertyTitle={property.title}
+        propertyId={id}
+        initialIsFavorite={isFavorite}
+        isAuthenticated={!!user && user.role === "CLIENT"}
+      />
+
+      {/* Main Content Container */}
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        {/* Header Section */}
+        <div className="mb-8" data-animate-card>
+          <h1 className="text-4xl md:text-5xl font-bold text-oslo-gray-950 dark:text-white mb-2">
             {property.title}
           </h1>
-          <p className="text-xl text-oslo-gray-600 dark:text-oslo-gray-300">
-            {property.address}
+          <p className="text-lg text-oslo-gray-600 dark:text-oslo-gray-300 flex items-center gap-2">
+            📍 {property.address}
             {property.city && `, ${property.city}`}
           </p>
         </div>
 
-        {/* Images Grid */}
-        {property.images && property.images.length > 0 && (
-          <div className="mb-8 bg-oslo-gray-100 dark:bg-oslo-gray-900 rounded-lg overflow-hidden aspect-video flex items-center justify-center">
-            <p className="text-oslo-gray-500">
-              [Galería de imágenes - Implementar en próxima fase]
-            </p>
-          </div>
-        )}
-
-        {/* Main Content */}
+        {/* Main Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Property Details */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Price */}
-            <div className="bg-oslo-gray-50 dark:bg-oslo-gray-900 p-6 rounded-lg">
-              <p className="text-oslo-gray-600 dark:text-oslo-gray-400 text-sm">
+            {/* Price Card */}
+            <div
+              className="bg-white dark:bg-oslo-gray-900 rounded-2xl p-8 shadow-sm border border-oslo-gray-100 dark:border-oslo-gray-800 hover:shadow-md transition-shadow duration-300"
+              data-animate-card
+            >
+              <p className="text-sm text-oslo-gray-600 dark:text-oslo-gray-400 uppercase font-semibold mb-2">
                 Precio
               </p>
-              <p className="text-4xl font-bold text-oslo-gray-950 dark:text-white">
+              <p className="text-5xl font-bold text-oslo-gray-950 dark:text-white">
                 {formattedPrice}
               </p>
             </div>
 
-            {/* Property Specs */}
-            {(property.bedrooms || property.bathrooms || property.area) && (
-              <div className="grid grid-cols-3 gap-4">
-                {property.bedrooms && (
-                  <div className="bg-oslo-gray-50 dark:bg-oslo-gray-900 p-4 rounded-lg text-center">
-                    <p className="text-oslo-gray-600 dark:text-oslo-gray-400 text-sm">
-                      Habitaciones
-                    </p>
-                    <p className="text-3xl font-bold text-oslo-gray-950 dark:text-white">
-                      {property.bedrooms}
-                    </p>
-                  </div>
-                )}
-                {property.bathrooms && (
-                  <div className="bg-oslo-gray-50 dark:bg-oslo-gray-900 p-4 rounded-lg text-center">
-                    <p className="text-oslo-gray-600 dark:text-oslo-gray-400 text-sm">
-                      Baños
-                    </p>
-                    <p className="text-3xl font-bold text-oslo-gray-950 dark:text-white">
-                      {Number(property.bathrooms).toFixed(1)}
-                    </p>
-                  </div>
-                )}
-                {property.area && (
-                  <div className="bg-oslo-gray-50 dark:bg-oslo-gray-900 p-4 rounded-lg text-center">
-                    <p className="text-oslo-gray-600 dark:text-oslo-gray-400 text-sm">
-                      Área (m²)
-                    </p>
-                    <p className="text-3xl font-bold text-oslo-gray-950 dark:text-white">
-                      {Number(property.area).toLocaleString("es-EC")}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
+            {/* Stats Card */}
+            <div data-animate-card>
+              <PropertyStatsCard
+                bedrooms={bedrooms}
+                bathrooms={bathrooms}
+                area={area}
+              />
+            </div>
 
-            {/* Description */}
+            {/* Description Card */}
             {property.description && (
-              <div>
-                <h2 className="text-2xl font-bold text-oslo-gray-950 dark:text-white mb-4">
-                  Descripción
-                </h2>
-                <p className="text-oslo-gray-700 dark:text-oslo-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {property.description}
-                </p>
+              <div data-animate-card>
+                <PropertyDescriptionCard description={property.description} />
               </div>
             )}
 
-            {/* Location Info */}
-            <div>
-              <h2 className="text-2xl font-bold text-oslo-gray-950 dark:text-white mb-4">
-                Ubicación
-              </h2>
-              <div className="space-y-2 text-oslo-gray-700 dark:text-oslo-gray-300">
-                {property.address && <p>📍 {property.address}</p>}
-                {property.city && (
-                  <p>
-                    🏙️ {property.city}
-                    {property.state && `, ${property.state}`}
-                  </p>
-                )}
-                {property.zipCode && <p>📮 {property.zipCode}</p>}
-              </div>
+            {/* Location Card */}
+            <div data-animate-card>
+              <PropertyLocationCard
+                address={property.address}
+                city={property.city}
+                state={property.state}
+                zipCode={property.zipCode}
+              />
             </div>
           </div>
 
-          {/* Right Column - Sidebar */}
-          <div>
-            {/* Agent Card */}
-            {property.agent && (
-              <div className="bg-oslo-gray-50 dark:bg-oslo-gray-900 p-6 rounded-lg sticky top-4">
-                <h3 className="text-lg font-bold text-oslo-gray-950 dark:text-white mb-4">
-                  Agente
-                </h3>
-                <div className="space-y-4">
-                  {property.agent.avatar && (
-                    <div className="w-16 h-16 bg-oslo-gray-200 dark:bg-oslo-gray-800 rounded-full mx-auto" />
-                  )}
-                  <div className="text-center">
-                    <p className="font-semibold text-oslo-gray-950 dark:text-white">
-                      {property.agent.name || "Agente"}
-                    </p>
-                    {property.agent.email && (
-                      <p className="text-sm text-oslo-gray-600 dark:text-oslo-gray-400">
-                        {property.agent.email}
-                      </p>
-                    )}
-                    {property.agent.phone && (
-                      <p className="text-sm text-oslo-gray-600 dark:text-oslo-gray-400">
-                        {property.agent.phone}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* CTA Buttons */}
-                <div className="space-y-3 mt-6">
-                  <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition">
-                    Contactar Agente
-                  </button>
-                  <AppointmentButton
-                    propertyId={id}
-                    isAuthenticated={!!user && user.role === "CLIENT"}
-                  />
-                </div>
-              </div>
-            )}
+          {/* Right Column - Floating Action Card */}
+          <div data-animate-card>
+            <PropertyFloatingActionCard
+              price={formattedPrice}
+              agentName={property.agent?.name}
+              agentEmail={property.agent?.email}
+              agentPhone={property.agent?.phone}
+              agentAvatar={property.agent?.avatar}
+              propertyId={id}
+              isAuthenticated={!!user && user.role === "CLIENT"}
+              isSticky
+            />
           </div>
         </div>
       </div>
