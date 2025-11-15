@@ -1,19 +1,20 @@
 # Plan de Escalabilidad - InmoApp
 
-**Fecha de creación:** 2025-01-15
-**Estado:** En progreso (2/6 fases completadas)
+**Fecha de creación:** 2025-11-07
+**Estado:** En progreso (2.5/6 fases completadas)
 **Duración total estimada:** 5-6 horas
+**Última actualización:** 2025-11-15
 
 ---
 
 ## 📊 Progreso General
 
-- [x] **Fase 1:** Environment Variables Type-Safe (30 min) ✅
-- [x] **Fase 2:** Vitest Setup + Tests Básicos (1 hora) ✅
-- [ ] **Fase 3:** ADRs (Architecture Decision Records) (30 min)
-- [ ] **Fase 4:** Error Boundaries (1 hora)
-- [ ] **Fase 5:** Structured Logging (2 horas)
-- [ ] **Fase 6:** Pre-commit Hooks (30 min)
+- [x] **Fase 1:** Environment Variables Type-Safe (30 min) ✅ **COMPLETADA** (Evolucionó a @repo/env)
+- [x] **Fase 2:** Vitest Setup + Tests Básicos (1 hora) ✅ **COMPLETADA** (3 test suites)
+- [ ] **Fase 3:** ADRs (Architecture Decision Records) (30 min) ⏳ Pendiente
+- [ ] **Fase 4:** Error Boundaries (1 hora) ⏳ Pendiente
+- [~] **Fase 5:** Structured Logging (2 horas) ⚠️ **PARCIAL** (Logger básico implementado, falta Pino)
+- [ ] **Fase 6:** Pre-commit Hooks (30 min) ⏳ Pendiente
 
 ---
 
@@ -33,37 +34,48 @@ Este plan implementa las mejores prácticas para que el código escale de manera
 ## 🔐 FASE 1: Environment Variables Type-Safe
 
 **Duración:** 30 minutos
-**Estado:** ✅ Completado
+**Estado:** ✅ Completado (Evolucionado a monorepo package)
 
 ### Objetivos
 - Validar variables de entorno con Zod en startup
 - Type-safety y autocompletado para env vars
 - Documentar variables requeridas
 
-### Archivos Creados
-- `apps/web/lib/env.ts` - Schema Zod para validación
-- `apps/web/.env.example` - Template documentado
+### Implementación Final
+**Ubicación:** `packages/env/` - Package centralizado para todo el monorepo
 
-### Archivos Modificados
-- `apps/web/lib/supabase/server.ts` - Usa `env` en lugar de `process.env`
-- `apps/web/lib/supabase/client.ts` - Usa `env` en lugar de `process.env`
+**Archivos Creados:**
+- `packages/env/src/index.ts` - Schema Zod y validación
+- `packages/env/package.json` - Package @repo/env
+- `apps/web/lib/env.ts` - Re-export para retrocompatibilidad
+- `.env.example` (root) - Template documentado
+
+**Archivos Modificados:**
+- Múltiples archivos migrados de `process.env` a `import { env } from '@repo/env'`
 
 ### Beneficios
 ✅ App falla en build (no en runtime) si falta variable
 ✅ Autocompletado de env vars en VSCode
 ✅ Documentación automática de variables requeridas
 ✅ Previene bugs de configuración en producción
+✅ **Centralizado en monorepo** - Un solo schema para todos los packages
 
 ### Uso
 ```typescript
-import { env } from '@/lib/env'
+// ✅ Método moderno (desde cualquier package)
+import { env } from '@repo/env'
+const url = env.NEXT_PUBLIC_SUPABASE_URL
 
-// ✅ Type-safe, autocompleta
+// ✅ Método legacy (solo en apps/web)
+import { env } from '@/lib/env'
 const url = env.NEXT_PUBLIC_SUPABASE_URL
 
 // ❌ Ya no uses esto
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL
 ```
+
+### Evolución
+Esta fase fue completada inicialmente en `apps/web/lib/env.ts` y luego refactorizada a un package centralizado `@repo/env` para usarse en todo el monorepo. Ver `packages/env/README.md` para documentación completa.
 
 ---
 
@@ -79,11 +91,12 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL
 
 ### Archivos Creados
 - `apps/web/vitest.config.ts` - Configuración de Vitest
-- `apps/web/lib/validations/__tests__/property.test.ts` - Tests de schemas
-- `apps/web/lib/utils/__tests__/serialize-property.test.ts` - Tests de utils
+- `apps/web/lib/validations/__tests__/property.test.ts` - Tests de schemas (12KB)
+- `apps/web/lib/utils/__tests__/serialize-property.test.ts` - Tests de serialización (11KB)
+- `apps/web/lib/utils/__tests__/slug-generator.test.ts` - Tests de slug generation (4.5KB)
 
 ### Archivos Modificados
-- `apps/web/package.json` - Scripts de testing
+- `apps/web/package.json` - Scripts de testing agregados
 
 ### Comandos Agregados
 ```bash
@@ -94,14 +107,22 @@ bun run test:coverage # Genera reporte de coverage
 ```
 
 ### Tests Implementados
-1. **Validaciones de Propiedad** (3 tests)
-   - Rechaza precio negativo
-   - Rechaza título muy corto
-   - Acepta datos válidos
+1. **Validaciones de Propiedad** (`property.test.ts` - 12KB)
+   - Validación de schema de propiedades
+   - Validación de campos requeridos
+   - Casos edge de precios, títulos y descripciones
 
-2. **Serialización** (2 tests)
-   - Convierte Decimal a number correctamente
-   - Maneja arrays vacíos
+2. **Serialización de Propiedades** (`serialize-property.test.ts` - 11KB)
+   - Conversión de Prisma Decimal a number
+   - Serialización de fechas
+   - Manejo de relaciones (imágenes, favoritos)
+   - Casos edge de arrays vacíos
+
+3. **Generación de Slugs** (`slug-generator.test.ts` - 4.5KB)
+   - Normalización de caracteres especiales
+   - Manejo de acentos españoles
+   - Unicidad de slugs
+   - Casos edge de strings vacíos
 
 ### Beneficios
 ✅ Previene regresiones al cambiar validaciones
@@ -335,7 +356,9 @@ export default function NewPropertyPage() {
 ## 📊 FASE 5: Structured Logging
 
 **Duración:** 2 horas
-**Estado:** ⏳ Pendiente
+**Estado:** ⚠️ Implementación Parcial
+
+**Nota:** Existe un logger básico en `apps/web/lib/utils/logger.ts` que proporciona abstracción sobre `console.*` con control por environment. Sin embargo, NO incluye las features planeadas de structured logging con Pino (métricas, request IDs, duration tracking). La implementación completa con Pino queda pendiente.
 
 ### Objetivos
 - Logging estructurado con contexto completo
@@ -349,7 +372,7 @@ export default function NewPropertyPage() {
 
 ### Archivos a Modificar
 - `apps/web/app/actions/properties.ts` - Usar wrapper
-- `apps/web/proxy.ts` - Agregar requestId
+- `apps/web/middleware.ts` - Agregar requestId
 
 ### Dependencias
 ```bash
@@ -436,13 +459,13 @@ export const createPropertyAction = withLogging(
 )
 ```
 
-### Request ID Proxy
+### Request ID Middleware
 
 ```typescript
-// proxy.ts
+// middleware.ts
 import { v4 as uuidv4 } from 'uuid'
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const requestId = request.headers.get('x-request-id') || uuidv4()
 
   // Store in AsyncLocalStorage for access in Server Actions
@@ -650,17 +673,21 @@ Al completar todas las fases, verificar:
 
 ## 🔄 Notas de Sesiones
 
-### Sesión 1 (2025-01-15)
-- ✅ Fase 1 completada: Environment Variables
-- ✅ Fase 2 completada: Vitest Setup
+### Sesión 1 (2025-11-07)
+- ✅ Fase 1 completada: Environment Variables (inicialmente en apps/web/lib/env.ts)
+- ✅ Fase 2 completada: Vitest Setup + 3 test suites
 - 📝 Documentación creada en SCALING_PLAN.md
+
+### Refactor (Post-Sesión 1)
+- 🔄 Fase 1 evolucionada: Migrado a `@repo/env` package centralizado
+- ⚠️ Fase 5 implementación básica: Logger sin Pino creado en lib/utils/logger.ts
 
 ### Sesión 2 (Pendiente)
 - Objetivo: Fases 3 y 4 (ADRs + Error Boundaries)
 
 ### Sesión 3 (Pendiente)
-- Objetivo: Fases 5 y 6 (Logging + Hooks)
+- Objetivo: Completar Fase 5 (Pino) + Fase 6 (Husky Hooks)
 
 ---
 
-**Última actualización:** 2025-01-15
+**Última actualización:** 2025-11-15
