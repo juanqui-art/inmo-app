@@ -20,7 +20,7 @@ import { PropertyCard } from "./property-card";
 import { PropertyGridPagination } from "./property-grid-pagination";
 import { PropertyViewToggle } from "./property-view-toggle";
 import { PropertyListSchema } from "./property-list-schema";
-import { PropertyGridFilterBar } from "./property-grid-filter-bar";
+import { FilterBar } from "@/components/map/filters/filter-bar";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { useAuthStore } from "@/stores/auth-store";
 import { usePropertyGridStore } from "@/stores/property-grid-store";
@@ -122,7 +122,7 @@ export function PropertyGridPage() {
       </div>
 
       {/* Filter Bar */}
-      <PropertyGridFilterBar />
+      <FilterBar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Grid Layout */}

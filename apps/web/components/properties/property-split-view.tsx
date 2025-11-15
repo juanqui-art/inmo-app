@@ -29,7 +29,7 @@
  */
 
 import { PropertyViewToggle } from "./property-view-toggle";
-import { PropertyGridFilterBar } from "./property-grid-filter-bar";
+import { FilterBar } from "@/components/map/filters/filter-bar";
 import { PropertyCard } from "./property-card";
 import { MapView } from "@/components/map/map-view";
 import { AuthModal } from "@/components/auth/auth-modal";
@@ -116,7 +116,7 @@ export function PropertySplitView() {
       {/* ===================================================================
           FILTER BAR - Shared for both sides
           =================================================================== */}
-      <PropertyGridFilterBar />
+      <FilterBar />
 
       {/* ===================================================================
           SPLIT LAYOUT - 50/50 List + Map

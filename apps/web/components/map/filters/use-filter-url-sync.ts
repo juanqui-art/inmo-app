@@ -28,7 +28,7 @@
  * - Clean separation: components handle state, hook handles URL
  */
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { parseFilterParams, buildFilterUrl } from "@/lib/utils/url-helpers";
 import type { DynamicFilterParams } from "@/lib/utils/url-helpers";
@@ -41,6 +41,7 @@ import { useMapStore } from "@/stores/map-store";
 export function useFilterUrlSync() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   // Store access
   const filters = useMapStore((state) => state.filters);
@@ -118,11 +119,21 @@ export function useFilterUrlSync() {
       };
 
       const filterString = buildFilterUrl(urlParams);
-      const newUrl = `/mapa${filterString ? `?${filterString}` : ""}`;
+
+      // Preserve current view parameter if it exists
+      const currentView = searchParams.get("view");
+      const viewParam = currentView ? `view=${currentView}` : "";
+
+      // Combine view param with filter params
+      const allParams = [viewParam, filterString]
+        .filter(Boolean)
+        .join("&");
+
+      const newUrl = `${pathname}${allParams ? `?${allParams}` : ""}`;
 
       // Update URL
       router.replace(newUrl);
-      lastUrlRef.current = `?${filterString || ""}`;
+      lastUrlRef.current = `?${allParams || ""}`;
     }
-  }, [filters, router]);
+  }, [filters, router, pathname, searchParams]);
 }

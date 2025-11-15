@@ -184,6 +184,7 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
           priceDistribution={priceDistribution}
           priceRangeMin={priceRangeMin}
           priceRangeMax={priceRangeMax}
+          filters={filters}
         />
 
         {/* RESPONSIVE RENDERING:
@@ -210,16 +211,35 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
     const page = Math.max(1, Number(searchParams.page) || 1);
     const pageSize = 12; // Properties per page
 
-    // Fetch properties with pagination (uses React.cache() for request-level deduplication)
-    // getPropertiesList returns serialized properties (Decimal → number)
-    const { properties, total } = await getPropertiesList({
-      filters: {
+    // Fetch BOTH paginated list data AND map-related data for FilterBar
+    // (FilterBar needs price distribution for histogram slider)
+    const [
+      { properties, total },
+      { minPrice: priceRangeMin, maxPrice: priceRangeMax },
+      priceDistribution,
+    ] = await Promise.all([
+      // Paginated properties for list display
+      getPropertiesList({
+        filters: {
+          ...filters,
+          status: "AVAILABLE",
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      // Price range for filter slider
+      propertyRepository.getPriceRange({
         ...filters,
         status: "AVAILABLE",
-      },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    });
+      }),
+      // Price distribution for histogram
+      propertyRepository.getPriceDistribution({
+        filters: {
+          ...filters,
+          status: "AVAILABLE",
+        },
+      }),
+    ]);
 
     // Calculate pagination
     const totalPages = Math.ceil(total / pageSize);
@@ -236,6 +256,15 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
           currentPage={page}
           totalPages={totalPages}
           pageSize={pageSize}
+          filters={filters}
+        />
+
+        {/* Initialize map store (needed for FilterBar to work) */}
+        <MapStoreInitializer
+          properties={[]} // List view doesn't need all properties
+          priceDistribution={priceDistribution}
+          priceRangeMin={priceRangeMin}
+          priceRangeMax={priceRangeMax}
           filters={filters}
         />
 

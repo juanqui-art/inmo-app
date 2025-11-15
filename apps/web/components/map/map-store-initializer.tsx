@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useMapStore, type PriceDistribution } from "@/stores/map-store";
+import { useMapStore, type PriceDistribution, type FilterState } from "@/stores/map-store";
 import type { MapProperty } from "./map-view";
 
 interface MapStoreInitializerProps {
@@ -9,6 +9,7 @@ interface MapStoreInitializerProps {
   priceDistribution: PriceDistribution;
   priceRangeMin?: number;
   priceRangeMax?: number;
+  filters?: FilterState; // Optional: Initial filters from server
 }
 
 /**
@@ -22,6 +23,7 @@ function MapStoreInitializer({
   priceDistribution,
   priceRangeMin,
   priceRangeMax,
+  filters,
 }: MapStoreInitializerProps) {
   useEffect(() => {
     useMapStore.getState().initialize({
@@ -30,7 +32,12 @@ function MapStoreInitializer({
       priceRangeMin,
       priceRangeMax,
     });
-  }, [properties, priceDistribution, priceRangeMin, priceRangeMax]);
+
+    // Initialize filters if provided (from URL)
+    if (filters) {
+      useMapStore.getState().setFilters(filters);
+    }
+  }, [properties, priceDistribution, priceRangeMin, priceRangeMax, filters]);
 
   return null; // This component doesn't render any UI
 }
