@@ -186,7 +186,7 @@ export const propertyRepository = {
 ### Supabase Auth
 
 - Handles authentication (email/password, OAuth providers)
-- Middleware (`apps/web/middleware.ts`) protects routes and checks permissions
+- Proxy (`apps/web/proxy.ts`) protects routes and checks permissions
 - Session management via Supabase cookies (server-side)
 
 ### Authorization Levels

@@ -293,10 +293,10 @@ export async function createPropertyAction(data: FormData) {
 }
 ```
 
-#### Capa 3: Middleware (Routing - NO Seguridad)
+#### Capa 3: Proxy (Routing - NO Seguridad)
 
 ```typescript
-// middleware.ts
+// proxy.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
@@ -304,7 +304,7 @@ export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const url = req.nextUrl
   const hostname = req.headers.get('host')!
 
@@ -450,10 +450,10 @@ Total TTFB: 160-220ms (mejora: 50-80ms)
 
 **Implementación cache:**
 ```typescript
-// middleware.ts con cache
+// proxy.ts con cache
 import { kv } from '@vercel/kv'
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const hostname = req.headers.get('host')!
 
   // Cache hit: ~5ms
@@ -473,7 +473,7 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Resto del middleware...
+  // Resto del proxy...
 }
 ```
 

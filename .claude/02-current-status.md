@@ -29,7 +29,7 @@
 - 3 Supabase clients created:
   - `lib/supabase/client.ts` - Browser client (Client Components)
   - `lib/supabase/server.ts` - Server client (Server Components/Actions)
-  - `middleware.ts` - Middleware client (Route protection)
+  - `proxy.ts` - Proxy client (Route protection)
 - Zod validation schemas (`lib/validations/auth.ts`)
 - Server Actions: `signupAction`, `loginAction`, `logoutAction`
 - Auth components:
@@ -149,7 +149,7 @@ apps/web/
 │   └── validations/
 │       ├── auth.ts                             # Zod schemas (login, signup)
 │       └── property.ts                         # Zod schemas (property, image)
-└── middleware.ts                               # Route protection + session refresh
+└── proxy.ts                                    # Route protection + session refresh
 
 packages/
 ├── database/
