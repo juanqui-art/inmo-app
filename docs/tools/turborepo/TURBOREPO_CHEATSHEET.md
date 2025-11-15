@@ -257,7 +257,7 @@ apps/web/
 │   └── page.tsx              # Homepage
 ├── components/               # React components
 ├── lib/                       # Utilities
-└── middleware.ts             # Auth middleware
+└── proxy.ts                  # Auth proxy
 
 packages/ui/src/components/    # Shared components
 packages/env/src/              # Env validation

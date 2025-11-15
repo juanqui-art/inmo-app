@@ -349,7 +349,7 @@ export default function NewPropertyPage() {
 
 ### Archivos a Modificar
 - `apps/web/app/actions/properties.ts` - Usar wrapper
-- `apps/web/middleware.ts` - Agregar requestId
+- `apps/web/proxy.ts` - Agregar requestId
 
 ### Dependencias
 ```bash
@@ -436,13 +436,13 @@ export const createPropertyAction = withLogging(
 )
 ```
 
-### Request ID Middleware
+### Request ID Proxy
 
 ```typescript
-// middleware.ts
+// proxy.ts
 import { v4 as uuidv4 } from 'uuid'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const requestId = request.headers.get('x-request-id') || uuidv4()
 
   // Store in AsyncLocalStorage for access in Server Actions

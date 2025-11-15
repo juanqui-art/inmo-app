@@ -2,17 +2,17 @@
 
 > Información actualizada sobre las mejoras recientes en Next.js 15.5 y 16 (Octubre 2025)
 
-**Última actualización:** Octubre 2025
-**Versión del documento:** 1.0
-**Relevancia para InmoApp:** Tu proyecto usa Next.js 15.5.4, revisa qué mejoras aplican
+**Última actualización:** Noviembre 2025
+**Versión del documento:** 1.1
+**Relevancia para InmoApp:** Tu proyecto ahora usa Next.js 16.x (anteriormente 15.5.4)
 
 ---
 
 ## 📋 Tabla de Contenidos
 
 1. [Resumen Ejecutivo](#resumen-ejecutivo)
-2. [Next.js 16 - Última Versión](#nextjs-16---última-versión)
-3. [Next.js 15.5 - Versión Actual](#nextjs-155---versión-actual)
+2. [Next.js 16 - Versión Actual](#nextjs-16---última-versión)
+3. [Next.js 15.5 - Versión Anterior](#nextjs-155---versión-anterior)
 4. [Comparación de Versiones](#comparación-de-versiones)
 5. [Impacto para InmoApp](#impacto-para-inmoapp)
 6. [Guía de Migración](#guía-de-migración)
@@ -21,11 +21,13 @@
 
 ## 🎯 Resumen Ejecutivo
 
-**Estado actual de tu proyecto:** Next.js 15.5.4 ✅ (Actualizado)
+**Estado actual de tu proyecto:** Next.js 16.x ✅ (Actualizado)
+**Estado anterior:** Next.js 15.5.4
 
-Tienes dos opciones:
-1. **Mantener 15.5.4** → Completamente funcional y estable
-2. **Actualizar a 16** → Acceso a nuevas mejoras (en beta, estable esperada pronto)
+El proyecto ha sido actualizado a Next.js 16, incluyendo:
+- ✅ Migración de middleware.ts → proxy.ts
+- ✅ Actualización de configuraciones
+- ✅ Compatibilidad con nuevas features
 
 ### Mejoras Clave en 2025
 
@@ -202,9 +204,9 @@ next build --turbopack  # Explícito
 
 ---
 
-## 📊 Next.js 15.5 - Versión Actual de InmoApp
+## 📊 Next.js 15.5 - Versión Anterior de InmoApp
 
-**Tu versión actual:** 15.5.4 ✅
+**Versión anterior del proyecto:** 15.5.4 (ahora en 16.x)
 
 ### 1. Turbopack Builds (Beta)
 
