@@ -22,7 +22,7 @@ This is a **real estate platform** built as a modern monorepo for managing prope
 
 ### Frontend
 
-- **Next.js 15**: App Router with React Server Components
+- **Next.js 16**: App Router with React Server Components
 - **React 19**: Latest features (Server Actions, use hook, etc.)
 - **TypeScript**: Strict mode for type safety
 - **Tailwind CSS v4**: Utility-first styling
@@ -58,14 +58,14 @@ This is a **real estate platform** built as a modern monorepo for managing prope
 ```
 inmo-app/
 ├── apps/
-│   └── web/                      # Next.js 15 application
+│   └── web/                      # Next.js 16 application
 │       ├── app/                  # App Router pages
 │       │   ├── (auth)/          # Auth pages (login, signup)
 │       │   ├── dashboard/       # Protected dashboard (AGENT/ADMIN)
 │       │   └── actions/         # Server Actions
 │       ├── components/          # React components
 │       ├── lib/                 # Utilities, validations, clients
-│       └── middleware.ts        # Auth + route protection
+│       └── proxy.ts             # Auth + route protection
 │
 ├── packages/
 │   ├── database/                # Prisma + repositories
@@ -147,7 +147,7 @@ Component → Server Action → Repository → Prisma → Database
 **Why**:
 - ✅ Type safety end-to-end
 - ✅ No need for separate API layer
-- ✅ Built-in with Next.js 15
+- ✅ Built-in with Next.js 16
 - ✅ Simpler developer experience
 
 **When to use API Routes**:

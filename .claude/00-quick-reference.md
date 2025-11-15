@@ -7,7 +7,7 @@
 
 ## 📦 Tech Stack
 
-- **Frontend**: Next.js 15 + React 19 + Tailwind CSS v4 + shadcn/ui
+- **Frontend**: Next.js 16 + React 19 + Tailwind CSS v4 + shadcn/ui
 - **Backend**: Supabase (PostgreSQL + Auth + Storage) + Prisma ORM
 - **Monorepo**: Turborepo + Bun workspaces
 - **Language**: TypeScript (strict mode)

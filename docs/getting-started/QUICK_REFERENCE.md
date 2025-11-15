@@ -9,7 +9,7 @@
 ```
 inmo-app/
 │
-├── apps/web/                 # 🌐 Next.js 15 App (Frontend + Backend)
+├── apps/web/                 # 🌐 Next.js 16 App (Frontend + Backend)
 │   ├── app/                  # App Router
 │   │   ├── (auth)/           # Login, Signup
 │   │   ├── (public)/         # Public pages
@@ -37,7 +37,7 @@ inmo-app/
 ├── turbo.json                # Build configuration
 ├── biome.json                # Linter + formatter
 ├── tsconfig.json             # TypeScript config
-└── middleware.ts             # Auth middleware
+└── proxy.ts                  # Auth proxy
 ```
 
 ---
@@ -418,4 +418,4 @@ OVERALL:            8.4/10 ⭐
 
 **Print this page for quick reference!** 🖨️
 
-Última actualización: 2025-10-21
+Última actualización: 2025-11-14

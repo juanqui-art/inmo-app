@@ -385,5 +385,5 @@ git merge bugfix/...
 
 ---
 
-**Última actualización:** 2025-10-19
+**Última actualización:** 2025-11-14
 **Autor:** Claude Code + InmoApp Team

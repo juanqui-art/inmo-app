@@ -8,7 +8,7 @@ Bienvenido a la documentación completa de InmoApp. Aquí encontrarás todo lo q
 
 ### ¿Qué es InmoApp?
 **InmoApp** es una plataforma inmobiliaria moderna construida con:
-- **Frontend:** Next.js 15 + React 19
+- **Frontend:** Next.js 16 + React 19
 - **Backend:** Server Actions + Prisma ORM
 - **Database:** PostgreSQL (Supabase)
 - **Auth:** Supabase Auth
@@ -354,7 +354,7 @@ Esta documentación fue creada para:
 
 ---
 
-**Última actualización:** 2025-10-21
+**Última actualización:** 2025-11-14
 **Versión:** 1.0
 **Mantenedor:** Development Team
 

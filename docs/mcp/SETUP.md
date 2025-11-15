@@ -398,7 +398,7 @@ Ejecuta estos comandos para verificar que todo funciona:
 3. ✅ Guarda convenciones de tu proyecto en Memory:
    ```
    "Recuerda que este proyecto usa:
-   - Next.js 15 con App Router
+   - Next.js 16 con App Router
    - Prisma + Supabase
    - Server Actions en app/actions/
    - Repository pattern"

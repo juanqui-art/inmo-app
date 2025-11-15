@@ -23,7 +23,7 @@
 
 ## 🎯 Resumen Ejecutivo
 
-**InmoApp** es una plataforma inmobiliaria construida con arquitectura de **monorepo profesional** usando tecnologías modernas (Next.js 15, React 19, Turborepo).
+**InmoApp** es una plataforma inmobiliaria construida con arquitectura de **monorepo profesional** usando tecnologías modernas (Next.js 16, React 19, Turborepo).
 
 ### Calificación General: **9/10** ⭐⭐⭐⭐⭐⭐⭐⭐⭐
 
@@ -32,7 +32,7 @@
 - ✅ Seguridad multicapa (Middleware + Layouts + Server Actions)
 - ✅ TypeScript + Zod = Type-safe end-to-end
 - ✅ Performance optimizado (Server Components + Parallel Fetching)
-- ✅ Stack moderno (Next.js 15, React 19, Bun, Tailwind v4)
+- ✅ Stack moderno (Next.js 16, React 19, Bun, Tailwind v4)
 
 ### Única Debilidad Significativa:
 - ⚠️ Testing coverage bajo (~5%, debería ser 60-80%)
@@ -47,8 +47,8 @@
 inmo-app/
 │
 ├── 📂 apps/                              # Aplicaciones
-│   └── 📂 web/                           # Next.js 15 App
-│       ├── 📂 app/                       # App Router (Next.js 15)
+│   └── 📂 web/                           # Next.js 16 App
+│       ├── 📂 app/                       # App Router (Next.js 16)
 │       │   ├── 📂 (auth)/                # Route Group: Autenticación
 │       │   │   ├── 📂 login/
 │       │   │   └── 📂 signup/
@@ -111,7 +111,7 @@ inmo-app/
 │       │   ├── 📂 images/
 │       │   └── 📂 social_icons/
 │       │
-│       ├── middleware.ts                # ✅ Auth middleware
+│       ├── proxy.ts                     # ✅ Auth proxy
 │       ├── next.config.ts               # ✅ Transpile packages
 │       ├── tailwind.config.ts
 │       ├── tsconfig.json
@@ -183,7 +183,7 @@ inmo-app/
 
 | Directorio | Propósito | Contenido |
 |------------|-----------|-----------|
-| `apps/web` | Next.js 15 App | Aplicación principal (frontend + backend) |
+| `apps/web` | Next.js 16 App | Aplicación principal (frontend + backend) |
 | `packages/database` | Data Layer | Prisma + Repositories |
 | `packages/supabase` | Auth | Clientes de Supabase |
 | `packages/ui` | UI Components | Componentes reutilizables |
@@ -261,8 +261,8 @@ inmo-app/
                              │
                              ▼
 ┌─────────────────────────────────────────────────────────┐
-│  CAPA 1: MIDDLEWARE (Edge Runtime - Rápido)             │
-│         (middleware.ts)                                 │
+│  CAPA 1: PROXY (Edge Runtime - Rápido)                  │
+│         (proxy.ts)                                      │
 │  ✅ Verificar si está autenticado                      │
 │  ✅ Refrescar token expirado                           │
 │  ✅ Redirigir a /login si no auth                      │
@@ -443,7 +443,7 @@ export default function CreatePropertyForm() {
 ### Por qué estas tecnologías
 
 ```
-Next.js 15
+Next.js 16
 ├── ✅ Server Components (performance + SEO)
 ├── ✅ App Router (file-based routing)
 ├── ✅ Vercel deployment
@@ -843,7 +843,7 @@ bun test:coverage
 - [`CLAUDE.md`](../CLAUDE.md) - Guía para Claude Code
 
 ### Recursos Externos
-- [Next.js 15 Docs](https://nextjs.org/docs)
+- [Next.js Docs](https://nextjs.org/docs)
 - [React 19 Blog](https://react.dev/blog)
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [Turborepo Handbook](https://turbo.build/repo/docs)
@@ -856,9 +856,9 @@ bun test:coverage
 | Fecha | Cambio | Autor |
 |-------|--------|-------|
 | 2025-10-21 | Documentación inicial | Claude Code |
-| - | - | - |
+| 2025-11-14 | Actualización Next.js 16 y proxy.ts | Claude Code |
 
 ---
 
-**Última actualización:** 2025-10-21
-**Próxima revisión:** 2025-11-21
+**Última actualización:** 2025-11-14
+**Próxima revisión:** 2025-12-14

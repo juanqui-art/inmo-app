@@ -390,7 +390,7 @@ Claude: [Lista knowledge graph]
 📚 Memoria del Proyecto:
 
 Arquitectura:
-- Framework: Next.js 15
+- Framework: Next.js 16
 - ORM: Prisma con Supabase
 - Monorepo: Turborepo
 

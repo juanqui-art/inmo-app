@@ -9,7 +9,7 @@ This document contains context and instructions for AI assistants working on the
 **Quick Start**: See `QUICK_START.md` for ultra-compressed reference (<1k tokens)
 
 ### Project
-Real estate platform | Next.js 15 + Supabase + Turborepo | Phase 1.5
+Real estate platform | Next.js 16 + Supabase + Turborepo | Phase 1.5
 
 ### Documentation
 

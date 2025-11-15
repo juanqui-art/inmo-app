@@ -211,7 +211,7 @@ apps/web/
 │   ├── auth.ts           ← Auth utilities
 │   ├── db.ts             ← Database helpers
 │   └── validations/      ← Zod schemas
-└── middleware.ts         ← Next.js middleware
+└── proxy.ts              ← Next.js proxy
 
 packages/database/
 ├── prisma/

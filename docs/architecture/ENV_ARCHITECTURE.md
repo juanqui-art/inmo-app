@@ -126,10 +126,10 @@ Next.js busca en orden:
   2. process.env.* cargadas
 ```
 
-### 2. Middleware de Next.js
+### 2. Proxy de Next.js
 
 ```typescript
-// middleware.ts se ejecuta primero
+// proxy.ts se ejecuta primero
 // Las variables ya están en process.env
 
 import { env } from '@/lib/env'
