@@ -58,6 +58,15 @@ interface MapStoreState {
   draftFilters: Partial<FilterState>;
 
   // ========================================================================
+  // HOVER STATE (for split view synchronization)
+  // ========================================================================
+  /**
+   * ID of currently hovered property (for list ↔ map synchronization)
+   * Used in split view to highlight corresponding marker when user hovers over property card
+   */
+  hoveredPropertyId: string | null;
+
+  // ========================================================================
   // ACTIONS: Data Management
   // ========================================================================
   initialize: (data: {
@@ -124,6 +133,15 @@ interface MapStoreState {
    * Used when user clicks "Clear Filter"
    */
   clearDraftFilters: () => void;
+
+  // ========================================================================
+  // ACTIONS: Hover State (Split View Synchronization)
+  // ========================================================================
+  /**
+   * Set the currently hovered property ID
+   * Used to synchronize list hover with map marker highlighting
+   */
+  setHoveredProperty: (propertyId: string | null) => void;
 }
 
 // ============================================================================
@@ -143,6 +161,7 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
   isLoading: false,
   filters: {}, // Committed filter state
   draftFilters: {}, // Ephemeral draft state
+  hoveredPropertyId: null, // Hover state for split view
 
   // ========================================================================
   // ACTIONS: DATA MANAGEMENT
@@ -303,5 +322,18 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
   clearDraftFilters: () =>
     set({
       draftFilters: {},
+    }),
+
+  // ========================================================================
+  // ACTIONS: HOVER STATE (Split View Synchronization)
+  // ========================================================================
+
+  /**
+   * Set the currently hovered property ID
+   * Used in split view to synchronize list hover with map marker highlighting
+   */
+  setHoveredProperty: (propertyId: string | null) =>
+    set({
+      hoveredPropertyId: propertyId,
     }),
 }));

@@ -133,14 +133,14 @@ export default async function HomePage() {
   /**
    * SERIALIZATION:
    *
-   * Convert Prisma Decimal objects to plain numbers before passing to Client Components.
-   * This is required because React cannot serialize Decimal objects across the
-   * Server/Client boundary.
+   * NOTE: propertyRepository.list() now returns ALREADY SERIALIZED properties
+   * (Decimal → number conversion happens inside the repository)
+   * No need to call serializeProperties() again
    *
-   * Fields converted: price, bathrooms, area, latitude, longitude
+   * Updated: Nov 2025 - Migration to getPropertiesList() with React.cache()
    */
-  const serializedFeatured = serializeProperties(featuredResult.properties);
-  const serializedRecent = serializeProperties(recentResult.properties);
+  const serializedFeatured = featuredResult.properties;
+  const serializedRecent = recentResult.properties;
 
   /**
    * SECTION COMPOSITION:

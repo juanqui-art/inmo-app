@@ -287,12 +287,15 @@ export class PropertyRepository {
   /**
    * Lista propiedades con filtros y paginación
    * @deprecated Use getPropertiesList() instead for caching benefits
+   *
+   * NOTE: Returns SERIALIZED properties (Decimal → number)
+   * This method internally uses getPropertiesList() which serializes results
    */
   async list(params: {
     filters?: PropertyFilters
     skip?: number
     take?: number
-  }): Promise<{ properties: PropertyWithRelations[]; total: number }> {
+  }): Promise<{ properties: SerializedProperty[]; total: number }> {
     return getPropertiesList(params)
   }
 

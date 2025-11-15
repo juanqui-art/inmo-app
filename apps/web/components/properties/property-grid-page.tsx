@@ -40,6 +40,9 @@ export function PropertyGridPage() {
   const { isFavorite, toggleFavorite } = useFavorites();
   const searchParams = useSearchParams();
 
+  // Detect current view from URL (default: list)
+  const currentView = searchParams.get("view") === "map" ? "map" : "list";
+
   // Build current filter query string for view toggle
   const filterString = searchParams.toString();
 
@@ -65,7 +68,7 @@ export function PropertyGridPage() {
             <h1 className="text-3xl sm:text-4xl font-bold text-oslo-gray-50">
               Propiedades
             </h1>
-            <PropertyViewToggle currentView="list" filters={filterString} />
+            <PropertyViewToggle currentView={currentView} filters={filterString} />
           </div>
         </div>
 
@@ -114,7 +117,7 @@ export function PropertyGridPage() {
               {total !== 1 ? "s" : ""}
             </p>
           </div>
-          <PropertyViewToggle currentView="list" filters={filterString} />
+          <PropertyViewToggle currentView={currentView} filters={filterString} />
         </div>
       </div>
 

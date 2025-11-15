@@ -1,18 +1,16 @@
-import AuthStoreInitializer from "@/stores/AuthStoreInitializer";
-import { MapPageClient } from "@/components/map/map-page-client";
-import MapStoreInitializer from "@/components/map/map-store-initializer"; // NEW IMPORT
-import { getCurrentUser } from "@/lib/auth";
-import { parseBoundsParams, parseFilterParams } from "@/lib/utils/url-helpers";
-import {
-  type PropertyFilters,
-  propertyRepository,
-} from "@repo/database"; // NEW: Import PropertyFilters
-import type { Metadata } from "next";
+/**
+ * REDIRECT: /mapa → /propiedades?view=map
+ *
+ * This route now redirects to the unified properties page with map view.
+ * All existing query parameters are preserved during the redirect.
+ *
+ * Migration: Part of the split view unification (Nov 2025)
+ * - Old pattern: Separate routes (/mapa and /propiedades)
+ * - New pattern: Single route with view parameter (?view=map|list)
+ * - Rationale: Follows industry best practices (Booking.com, Hotels.com)
+ */
 
-export const metadata: Metadata = {
-  title: "Mapa de Propiedades | InmoApp",
-  description: "Explora propiedades en venta y arriendo en un mapa interactivo",
-};
+import { redirect } from "next/navigation";
 
 interface MapPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -21,45 +19,24 @@ interface MapPageProps {
 export default async function MapPage(props: MapPageProps) {
   const searchParams = await props.searchParams;
 
-  // Parse bounds from URL for initial map display
-  const displayBounds = parseBoundsParams(searchParams);
+  // Build query string from existing search params
+  const params = new URLSearchParams();
 
-  // Parse filters from URL
-  const repositoryFilters: PropertyFilters = parseFilterParams(searchParams);
+  // Preserve all existing filters
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (Array.isArray(value)) {
+      for (const v of value) {
+        params.append(key, v);
+      }
+    } else if (value !== undefined) {
+      params.set(key, value);
+    }
+  }
 
-  // Fetch user, properties, price range, and price distribution in parallel
-  const [
-    currentUser,
-    { properties },
-    { minPrice: priceRangeMin, maxPrice: priceRangeMax },
-    priceDistribution,
-  ] = await Promise.all([
-    getCurrentUser(),
-    propertyRepository.list({
-      filters: {
-        ...repositoryFilters,
-        status: "AVAILABLE",
-      },
-      take: 1000,
-    }),
-    propertyRepository.getPriceRange(repositoryFilters),
-    propertyRepository.getPriceDistribution({
-      filters: repositoryFilters,
-    }),
-  ]);
+  // Add view=map parameter
+  params.set("view", "map");
 
-  // Note: properties are already serialized (Decimal → number) by propertyRepository.list()
-
-  return (
-    <>
-      <AuthStoreInitializer user={currentUser} />
-      <MapStoreInitializer
-        properties={properties}
-        priceDistribution={priceDistribution}
-        priceRangeMin={priceRangeMin}
-        priceRangeMax={priceRangeMax}
-      />
-      <MapPageClient initialBounds={displayBounds ?? undefined} />
-    </>
-  );
+  // Redirect to unified route with all parameters preserved
+  const queryString = params.toString();
+  redirect(`/propiedades?${queryString}`);
 }

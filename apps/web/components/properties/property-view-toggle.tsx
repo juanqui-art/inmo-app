@@ -3,11 +3,14 @@
 /**
  * PropertyViewToggle - Switch between list and map views
  *
- * Allows users to toggle between:
- * - /propiedades → List view (grid)
- * - /mapa → Map view
+ * UPDATED: Uses unified route with ?view parameter (Nov 2025)
+ * - /propiedades?view=list → List view (grid)
+ * - /propiedades?view=map → Map view
  *
  * Preserves all filter parameters when switching views
+ *
+ * OLD PATTERN: Separate routes (/propiedades vs /mapa)
+ * NEW PATTERN: Single route with view parameter (industry standard)
  */
 
 import Link from "next/link";
@@ -23,8 +26,16 @@ export function PropertyViewToggle({
   currentView,
   filters,
 }: PropertyViewToggleProps) {
-  const listUrl = `/propiedades${filters ? `?${filters}` : ""}`;
-  const mapUrl = `/mapa${filters ? `?${filters}` : ""}`;
+  // Build URLs with view parameter
+  // Remove any existing "view" parameter from filters, then add our own
+  const cleanFilters = filters
+    .split("&")
+    .filter((param) => !param.startsWith("view="))
+    .join("&");
+
+  const baseQuery = cleanFilters ? `${cleanFilters}&` : "";
+  const listUrl = `/propiedades?${baseQuery}view=list`;
+  const mapUrl = `/propiedades?${baseQuery}view=map`;
 
   return (
     <div className="flex gap-1 bg-oslo-gray-800/50 rounded-lg p-1">
