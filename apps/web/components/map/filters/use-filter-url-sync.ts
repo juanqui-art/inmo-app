@@ -131,8 +131,8 @@ export function useFilterUrlSync() {
 
       const newUrl = `${pathname}${allParams ? `?${allParams}` : ""}`;
 
-      // Update URL
-      router.replace(newUrl);
+      // Update URL and trigger Server Component re-render with scroll preservation
+      router.push(newUrl, { scroll: false });
       lastUrlRef.current = `?${allParams || ""}`;
     }
   }, [filters, router, pathname, searchParams]);
