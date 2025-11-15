@@ -75,7 +75,7 @@ export function PropertySplitView() {
   // HANDLERS
   // =========================================================================
 
-  const setHoveredProperty = useMapStore.getState().setHoveredProperty;
+  const setHoveredProperty = useMapStore((state) => state.setHoveredProperty);
 
   const handleFavoriteToggle = (propertyId: string) => {
     if (!isAuth) {
