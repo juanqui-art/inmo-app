@@ -1,7 +1,7 @@
 # 📊 Deuda Técnica - InmoApp
 
 > **Análisis completo de deuda técnica pendiente**
-> Última actualización: Noviembre 14, 2025
+> Última actualización: Noviembre 16, 2025
 
 ---
 
@@ -9,9 +9,9 @@
 
 **Estado General:** ✅ Aplicación funcional y bien arquitecturada (Rating: 8.4/10)
 
-**Deuda Técnica Total:** ~54 tareas distribuidas en 4 fases
+**Deuda Técnica Total:** ~106 tareas distribuidas en 6 categorías
 
-**Progreso Actual:** 3/54 tareas completadas (~5.5%)
+**Progreso Actual:** 3/109 tareas completadas (~2.8%)
 
 ---
 
@@ -24,7 +24,6 @@
 - Validación de datos y sanitización
 - Seguridad (CSRF, headers, rate limiting)
 - Transacciones y consistencia de datos
-- Testing (unit, integration, E2E)
 - Observabilidad y monitoring
 
 **Prioridad:** ALTA - Fundamentos para escalabilidad
@@ -42,14 +41,15 @@
 
 ---
 
-### 3. [AI Search Optimization](./03-AI-SEARCH.md) ⚠️ ALTA
-**1 tarea** | Estimado: 1-2 horas
+### 3. [AI Search Optimization](./03-AI-SEARCH.md) ✅ COMPLETADO
+**Status:** ✅ Completado (Nov 16, 2025)
 
-- Llamada duplicada de API OpenAI
-- Impacto: 2x costo, 2x latencia
-- Solución: SessionStorage cache ya implementado (falta consumir)
+- ✅ Llamada duplicada RESUELTA
+- ✅ Cache READ implementado
+- ✅ MapSearchIntegration funcionando
+- ✅ 50% ahorro en costos
 
-**Prioridad:** ALTA - Ahorro de costos ($15/mes con 1000 búsquedas)
+**Resultado:** Feature 100% funcional
 
 ---
 
@@ -74,6 +74,20 @@
 
 ---
 
+### 6. [Testing & Quality Assurance](./06-TESTING.md) 🔴 CRÍTICO
+**52 tareas** | Estimado: 2-3 semanas
+
+- Coverage actual: ~5% (solo 3 archivos)
+- Unit tests (repositories, Server Actions)
+- Integration tests (auth, properties, appointments)
+- E2E tests con Playwright
+- CI/CD pipeline automatizado
+- Test infrastructure y utilities
+
+**Prioridad:** CRÍTICA - Sin tests, imposible escalar con confianza
+
+---
+
 ## 🚀 Plan de Acción Recomendado
 
 ### **Corto Plazo (Esta Semana - 5-8 horas)**
@@ -81,9 +95,10 @@
 | Tarea | Impacto | Tiempo | Archivo |
 |-------|---------|--------|---------|
 | Email Domain Verification | 🔴 CRÍTICO | 45 min | [04-EMAIL.md](./04-EMAIL.md) |
-| AI Search Duplicate Call Fix | 🟡 ALTA | 1-2h | [03-AI-SEARCH.md](./03-AI-SEARCH.md) |
+| ~~AI Search Duplicate Call Fix~~ | ✅ COMPLETADO | ~~1-2h~~ | [03-AI-SEARCH.md](./03-AI-SEARCH.md) |
 | React.cache() Implementation | 🟡 ALTA | 1-2h | [02-PERFORMANCE.md](./02-PERFORMANCE.md) |
 | Map Filters URL Fix | 🟢 MEDIA | 1-2h | [05-MAP-FILTERS.md](./05-MAP-FILTERS.md) |
+| Testing Infrastructure Setup | 🔴 CRÍTICO | 3-4h | [06-TESTING.md](./06-TESTING.md) |
 
 **ROI:** Máximo impacto con mínima inversión
 
@@ -91,16 +106,22 @@
 
 ### **Medio Plazo (2-3 Semanas)**
 
-**Semana 1-2: Error Handling & Security**
+**Semana 1: Testing Foundations** 🔴 CRÍTICO
+- Repository unit tests (6-8h)
+- Server Action tests (4-5h)
+- CI/CD pipeline setup (3-4h)
+- Coverage >25%
+
+**Semana 2: Error Handling & Security**
 - Structured logging con Pino (2h)
 - Error boundaries (2h)
 - Rate limiting básico (3h)
 - Security headers (1h)
 
-**Semana 3: Testing Foundations**
-- Tests unitarios repositorios (6h)
-- Tests Server Actions (4h)
-- CI/CD básico (4h)
+**Semana 3: Integration & E2E**
+- Integration tests (6-8h)
+- Playwright E2E setup (6-8h)
+- Coverage >40%
 
 **Ver detalles:** [01-INFRASTRUCTURE.md](./01-INFRASTRUCTURE.md)
 
@@ -122,23 +143,24 @@
 
 ## 📊 Métricas de Progreso
 
-### ✅ Completado (3 tareas)
+### ✅ Completado (4 tareas)
 
 - [x] **TypeScript Errors Fixed** - 51 errores corregidos (Oct 2025)
 - [x] **Environment Variables Type-Safe** - @repo/env con Zod
-- [x] **Vitest Setup** - 5 tests básicos implementados
+- [x] **Vitest Setup** - 3 archivos de tests básicos (Nov 2025)
+- [x] **AI Search Optimization** - Cache implementado (Nov 16, 2025)
 
 ### ⚠️ En Progreso (0 tareas)
 
 Ninguna actualmente
 
-### ❌ Pendiente (51 tareas)
+### ❌ Pendiente (105 tareas)
 
 - [ ] 50 tareas de Infraestructura ([01-INFRASTRUCTURE.md](./01-INFRASTRUCTURE.md))
 - [ ] 2 tareas de Performance ([02-PERFORMANCE.md](./02-PERFORMANCE.md))
-- [ ] 1 tarea de AI Search ([03-AI-SEARCH.md](./03-AI-SEARCH.md))
 - [ ] 2 tareas de Email ([04-EMAIL.md](./04-EMAIL.md))
 - [ ] 1 tarea de Map Filters ([05-MAP-FILTERS.md](./05-MAP-FILTERS.md))
+- [ ] 52 tareas de Testing ([06-TESTING.md](./06-TESTING.md)) - **NUEVA**
 
 ---
 
@@ -171,9 +193,10 @@ Ninguna actualmente
 **Archivos en esta carpeta:**
 - [01-INFRASTRUCTURE.md](./01-INFRASTRUCTURE.md) - Infraestructura y robustez
 - [02-PERFORMANCE.md](./02-PERFORMANCE.md) - Performance y cache
-- [03-AI-SEARCH.md](./03-AI-SEARCH.md) - Optimización AI Search
+- [03-AI-SEARCH.md](./03-AI-SEARCH.md) - ✅ Optimización AI Search (COMPLETADO)
 - [04-EMAIL.md](./04-EMAIL.md) - Email delivery
 - [05-MAP-FILTERS.md](./05-MAP-FILTERS.md) - Bug de filtros de mapa
+- [06-TESTING.md](./06-TESTING.md) - **NUEVO:** Testing & Quality Assurance
 - [MAP_FILTERS_URL_PRESERVATION.md](./MAP_FILTERS_URL_PRESERVATION.md) - Análisis detallado
 
 ---
@@ -189,23 +212,31 @@ R: Depende de tu objetivo. Para MVP: Corto plazo. Para producción: Medio plazo.
 **P: ¿Cuánto tiempo total tomará?**
 R:
 - Corto plazo: 5-8 horas
-- Medio plazo: 2-3 semanas
+- Medio plazo: 2-3 semanas (includes testing foundations)
 - Largo plazo: 2-3 meses
-- **Total completo: ~3 meses** para eliminar toda la deuda
+- **Total completo: ~3-4 meses** para eliminar toda la deuda
 
 **P: ¿Puedo ignorar alguna categoría?**
 R:
-- ❌ NO ignorar: Email (bloqueado), AI Search (costos 2x)
-- ⚠️ Diferible: Testing (hasta tener más features), Observability
+- ❌ NO ignorar: Email (bloqueado), Testing (escalabilidad), CI/CD
+- ⚠️ Diferible: Observability (hasta tener más tráfico)
 - ✅ Opcional: Multi-tenant (si no es SaaS)
 
 **P: ¿La deuda técnica está afectando a usuarios actuales?**
 R:
 - ✅ NO afecta: Infraestructura, Testing
-- ⚠️ AFECTA PARCIALMENTE: Performance (36% más lento), AI Search (latencia 2x)
+- ⚠️ AFECTA PARCIALMENTE: Performance (36% más lento)
 - 🔴 AFECTA DIRECTAMENTE: Email (no reciben confirmaciones)
+- ✅ RESUELTO: AI Search (optimizado Nov 16, 2025)
+
+**P: ¿Por qué testing es crítico si la app funciona?**
+R: Sin tests, cada cambio es peligroso. Testing permite:
+- Refactorizar sin miedo
+- Detectar bugs antes de producción
+- Onboarding 50% más rápido (tests como documentación viva)
+- Deploy con confianza (de 6/10 → 9/10)
 
 ---
 
-**Última actualización:** Noviembre 14, 2025
-**Próxima revisión:** Después de implementar tareas de corto plazo
+**Última actualización:** Noviembre 16, 2025
+**Próxima revisión:** Después de implementar testing foundations (Fase 1)
