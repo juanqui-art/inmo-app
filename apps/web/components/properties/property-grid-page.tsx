@@ -66,20 +66,25 @@ export function PropertyGridPage() {
   // Empty state
   if (total === 0) {
     return (
-      <div className="min-h-screen bg-oslo-gray-1000">
+      <div className="h-screen flex flex-col bg-oslo-gray-1000">
         {/* Header */}
-        <div className="sticky top-0 z-30 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <h1 className="text-3xl sm:text-4xl font-bold text-oslo-gray-50">
+        <div className="flex-shrink-0 sticky top-0 z-30 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
+          <div className="px-4 sm:px-6 lg:px-8 py-2.5 flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-oslo-gray-50">
               Propiedades
             </h1>
             <PropertyViewToggle currentView={currentView} filters={filterString} />
           </div>
         </div>
 
+        {/* Filter Bar */}
+        <div className="flex-shrink-0">
+          <FilterBar />
+        </div>
+
         {/* Empty State */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
+        <div className="flex-1 overflow-y-auto flex items-center justify-center">
+          <div className="max-w-md w-full px-4 sm:px-6 lg:px-8 py-16 text-center">
             <div className="mb-4 text-5xl">🔍</div>
             <h2 className="text-3xl sm:text-4xl font-bold text-oslo-gray-50 mb-2">
               No hay propiedades disponibles
@@ -103,7 +108,7 @@ export function PropertyGridPage() {
   }
 
   return (
-    <div className="min-h-screen bg-oslo-gray-1000">
+    <div className="h-screen flex flex-col bg-oslo-gray-1000">
       {/* SEO Schema */}
       <PropertyListSchema
         properties={properties}
@@ -111,13 +116,13 @@ export function PropertyGridPage() {
       />
 
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <div className="flex-shrink-0 sticky top-0 z-30 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
+        <div className="px-4 sm:px-6 lg:px-8 py-2.5 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-oslo-gray-50">
+            <h1 className="text-2xl font-bold text-oslo-gray-50">
               Propiedades
             </h1>
-            <p className="text-sm text-oslo-gray-300">
+            <p className="text-xs text-oslo-gray-400">
               {total} propiedad{total !== 1 ? "es" : ""} encontrada
               {total !== 1 ? "s" : ""}
             </p>
@@ -127,34 +132,39 @@ export function PropertyGridPage() {
       </div>
 
       {/* Filter Bar */}
-      <FilterBar />
+      <div className="flex-shrink-0">
+        <FilterBar />
+      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Grid Layout */}
-        {isLoading ? (
-          // Loading state: Show skeletons
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <PropertyCardSkeleton key={`skeleton-${i}`} />
-            ))}
-          </div>
-        ) : (
-          // Loaded state: Show properties
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {properties.map((property) => (
-              <PropertyCard
-                key={property.id}
-                property={property}
-                isFavorite={isFavorite(property.id)}
-                onFavoriteToggle={handleFavoriteToggle}
-                priority={currentPage === 1} // First page properties are prioritized for image loading
-              />
-            ))}
-          </div>
-        )}
+      {/* Content Area */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Grid Layout */}
+          {isLoading ? (
+            // Loading state: Show skeletons
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <PropertyCardSkeleton key={`skeleton-${i}`} />
+              ))}
+            </div>
+          ) : (
+            // Loaded state: Show properties
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {properties.map((property) => (
+                <PropertyCard
+                  key={property.id}
+                  property={property}
+                  isFavorite={isFavorite(property.id)}
+                  onFavoriteToggle={handleFavoriteToggle}
+                  priority={currentPage === 1} // First page properties are prioritized for image loading
+                />
+              ))}
+            </div>
+          )}
 
-        {/* Pagination */}
-        {totalPages > 1 && !isLoading && <PropertyGridPagination />}
+          {/* Pagination */}
+          {totalPages > 1 && !isLoading && <PropertyGridPagination />}
+        </div>
       </div>
 
       {/* Auth Modal */}
