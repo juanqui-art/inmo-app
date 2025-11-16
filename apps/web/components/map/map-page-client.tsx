@@ -17,7 +17,7 @@
 import { FilterBar } from "./filters/filter-bar";
 import { useFilterUrlSync } from "./filters/use-filter-url-sync";
 import { MapView } from "./map-view";
-import { PropertyViewToggle } from "@/components/properties/property-view-toggle";
+import { PropertyListTitle } from "@/components/properties/property-list-title";
 import { MapSearchIntegration } from "./map-search-integration";
 import type { MapBounds } from "@/lib/utils/url-helpers";
 import { useMapStore } from "@/stores/map-store";
@@ -52,25 +52,17 @@ export function MapPageClient({ initialBounds }: MapPageClientProps) {
       {/* AI Search Integration - detects ai_search URL param and applies cached results */}
       <MapSearchIntegration />
 
-      {/* Header with View Toggle */}
-      <div className="flex-shrink-0 sticky top-0 z-30 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-oslo-gray-50">
-              Mapa de Propiedades
-            </h1>
-            <p className="text-sm text-oslo-gray-300">
-              {properties.length} propiedad{properties.length !== 1 ? "es" : ""} en el mapa
-            </p>
-          </div>
-          <PropertyViewToggle currentView={currentView} filters={filterString} />
-        </div>
+      {/* Filter Bar (with toggle integrated) */}
+      <div className="flex-shrink-0">
+        <FilterBar
+          showViewToggle={true}
+          currentView={currentView}
+          filterString={filterString}
+        />
       </div>
 
-      {/* Filter Bar */}
-      <div className="flex-shrink-0">
-        <FilterBar />
-      </div>
+      {/* Title */}
+      <PropertyListTitle total={properties.length} />
 
       {/* Map - fills remaining space */}
       <div className="flex-1 w-full overflow-hidden">
