@@ -255,7 +255,52 @@ export function proxy() { }
 
 ## Known Issues
 
-**Email Sending (Resend):** Using testing domain (`test@resend.dev`), emails not delivered to real addresses. Need to verify domain + update sender. See `CLAUDE.md` line notes or contact for setup guidance.
+### 📧 Email Sending (Resend) - Development Mode
+
+**Status:** ⚠️ TESTING MODE - Emails NOT delivered to real users
+
+**Current Setup:**
+- Using `test@resend.dev` as sender (testing-only domain)
+- Enhanced error handling implemented (logs all Resend API responses)
+- Appointments/confirmations still create successfully even if emails fail
+
+**What Works:**
+- ✅ Server Actions complete successfully
+- ✅ All email failures are logged with details
+- ✅ Warnings included in action responses if email fails
+- ✅ No silent failures
+
+**What Doesn't Work:**
+- ❌ Emails to real addresses (Gmail, Outlook, etc.) are NOT delivered
+- ❌ Users don't receive appointment confirmations/cancellations
+
+**Testing Emails in Development:**
+
+Option 1: Use Resend test addresses (recommended)
+```typescript
+// In appointment-emails.ts, temporarily change:
+from: "test@resend.dev",
+to: "delivered@resend.dev"  // ← Use this for testing
+```
+
+Option 2: Check logs for Resend API responses
+```bash
+# When creating an appointment, check terminal for:
+[sendAppointmentCreatedEmail] Resend API results: { ... }
+# This shows exactly what Resend returned
+```
+
+**Production Solution (when ready):**
+1. Purchase/configure a domain (e.g., `inmoapp.com`)
+2. Verify domain in Resend Dashboard (add DNS records)
+3. Update code: `from: "noreply@inmoapp.com"`
+4. See: `docs/technical-debt/04-EMAIL.md` for complete guide
+
+**Related Files:**
+- `apps/web/lib/email/appointment-emails.ts` - Email service (with enhanced logging)
+- `apps/web/app/actions/appointments.ts` - Server Actions (checks email results)
+- `docs/technical-debt/04-EMAIL.md` - Complete implementation guide
+- `docs/features/EMAIL_SENDING_TODO.md` - Original analysis
 
 ---
 
