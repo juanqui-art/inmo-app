@@ -43,7 +43,7 @@ export function AISearchInlineBar({
   };
 
   return (
-    <div className="relative w-2xl max-w-md">
+    <div className="relative w-full max-w-2xl">
       <input
         type="text"
         placeholder="Buscar con IA..."

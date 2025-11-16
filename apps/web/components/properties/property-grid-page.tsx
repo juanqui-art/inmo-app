@@ -26,17 +26,20 @@ import { AuthModal } from "@/components/auth/auth-modal";
 import { useAuthStore } from "@/stores/auth-store";
 import { usePropertyGridStore } from "@/stores/property-grid-store";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useFilterUrlSync } from "@/components/map/filters/use-filter-url-sync";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { FilterUrlUpdater } from "./filter-url-updater";
 
 export function PropertyGridPage() {
+  // Sync filters between URL and store
+  useFilterUrlSync();
+
   // Read store data
   const { properties, total, currentPage, totalPages, isLoading } = usePropertyGridStore();
 
   // UI state (local, not stored globally)
   const [showAuthModal, setShowAuthModal] = useState(false);
-  
+
   // External dependencies
   const isAuth = useAuthStore((state) => state.isAuthenticated);
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -64,7 +67,6 @@ export function PropertyGridPage() {
   if (total === 0) {
     return (
       <div className="min-h-screen bg-oslo-gray-1000">
-        <FilterUrlUpdater />
         {/* Header */}
         <div className="sticky top-0 z-30 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
@@ -102,7 +104,6 @@ export function PropertyGridPage() {
 
   return (
     <div className="min-h-screen bg-oslo-gray-1000">
-      <FilterUrlUpdater />
       {/* SEO Schema */}
       <PropertyListSchema
         properties={properties}
