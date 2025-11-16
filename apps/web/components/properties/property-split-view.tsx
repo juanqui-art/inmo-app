@@ -37,10 +37,18 @@ import { usePropertyGridStore } from "@/stores/property-grid-store";
 import { useMapStore } from "@/stores/map-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useFilterUrlSync } from "@/components/map/filters/use-filter-url-sync";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export function PropertySplitView() {
+  // =========================================================================
+  // FILTER SYNCHRONIZATION
+  // =========================================================================
+  // Sync URL ↔ MapStore filters bidirectionally
+  // Without this, filter changes don't trigger Server Component re-fetches
+  useFilterUrlSync();
+
   // =========================================================================
   // STORE DATA (hydrated by server components)
   // =========================================================================
