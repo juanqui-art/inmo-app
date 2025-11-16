@@ -17,6 +17,7 @@
  */
 
 import { PropertyCard } from "./property-card";
+import { PropertyCardSkeleton } from "./property-card-skeleton";
 import { PropertyGridPagination } from "./property-grid-pagination";
 import { PropertyViewToggle } from "./property-view-toggle";
 import { PropertyListSchema } from "./property-list-schema";
@@ -30,7 +31,7 @@ import { useState } from "react";
 
 export function PropertyGridPage() {
   // Read store data
-  const { properties, total, currentPage, totalPages } = usePropertyGridStore();
+  const { properties, total, currentPage, totalPages, isLoading } = usePropertyGridStore();
 
   // UI state (local, not stored globally)
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -126,20 +127,30 @@ export function PropertyGridPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map((property) => (
-            <PropertyCard
-              key={property.id}
-              property={property}
-              isFavorite={isFavorite(property.id)}
-              onFavoriteToggle={handleFavoriteToggle}
-              priority={currentPage === 1} // First page properties are prioritized for image loading
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          // Loading state: Show skeletons
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <PropertyCardSkeleton key={`skeleton-${i}`} />
+            ))}
+          </div>
+        ) : (
+          // Loaded state: Show properties
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {properties.map((property) => (
+              <PropertyCard
+                key={property.id}
+                property={property}
+                isFavorite={isFavorite(property.id)}
+                onFavoriteToggle={handleFavoriteToggle}
+                priority={currentPage === 1} // First page properties are prioritized for image loading
+              />
+            ))}
+          </div>
+        )}
 
         {/* Pagination */}
-        {totalPages > 1 && <PropertyGridPagination />}
+        {totalPages > 1 && !isLoading && <PropertyGridPagination />}
       </div>
 
       {/* Auth Modal */}

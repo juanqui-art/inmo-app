@@ -56,6 +56,9 @@ interface PropertyGridStoreState {
   /** Whether store has been initialized */
   isInitialized: boolean;
 
+  /** Whether properties are currently loading (during filter/page changes) */
+  isLoading: boolean;
+
   // ========================================================================
   // FILTER STATE (synchronized with URL)
   // ========================================================================
@@ -100,6 +103,11 @@ interface PropertyGridStoreState {
    * Clear all filters
    */
   clearAllFilters: () => void;
+
+  /**
+   * Set loading state (used when filters change and waiting for Server Component re-fetch)
+   */
+  setLoading: (loading: boolean) => void;
 }
 
 // ============================================================================
@@ -118,6 +126,7 @@ export const usePropertyGridStore = create<PropertyGridStoreState>(
     totalPages: 0,
     pageSize: 12,
     isInitialized: false,
+    isLoading: false,
     filters: {},
 
     // ========================================================================
@@ -171,6 +180,15 @@ export const usePropertyGridStore = create<PropertyGridStoreState>(
       set({
         filters: {},
         currentPage: 1,
+      }),
+
+    /**
+     * Set loading state for skeleton display
+     * Called when filters change (before router.push) and when data arrives (after initialize)
+     */
+    setLoading: (loading) =>
+      set({
+        isLoading: loading,
       }),
   }),
 );

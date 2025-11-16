@@ -33,6 +33,7 @@ import { useEffect, useRef } from "react";
 import { parseFilterParams, buildFilterUrl } from "@/lib/utils/url-helpers";
 import type { DynamicFilterParams } from "@/lib/utils/url-helpers";
 import { useMapStore } from "@/stores/map-store";
+import { usePropertyGridStore } from "@/stores/property-grid-store";
 
 /**
  * Hook to sync filter state between URL and Zustand store
@@ -106,6 +107,9 @@ export function useFilterUrlSync() {
 
     if (filtersChanged) {
       lastFiltersRef.current = filters;
+
+      // Set loading state to show skeletons while waiting for Server Component re-fetch
+      usePropertyGridStore.getState().setLoading(true);
 
       // Build URL from filters
       const urlParams: DynamicFilterParams = {

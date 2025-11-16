@@ -47,6 +47,9 @@ function PropertyGridStoreInitializer({
       pageSize,
       filters,
     });
+
+    // Loading complete - hide skeletons when data arrives
+    usePropertyGridStore.getState().setLoading(false);
   }, [properties, total, currentPage, totalPages, pageSize, filters]);
 
   // This component renders nothing - it's purely for side effects

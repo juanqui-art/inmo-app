@@ -31,6 +31,7 @@
 import { PropertyViewToggle } from "./property-view-toggle";
 import { FilterBar } from "@/components/map/filters/filter-bar";
 import { PropertyCard } from "./property-card";
+import { PropertyCardSkeleton } from "./property-card-skeleton";
 import { MapView } from "@/components/map/map-view";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { usePropertyGridStore } from "@/stores/property-grid-store";
@@ -54,7 +55,7 @@ export function PropertySplitView() {
   // =========================================================================
 
   // List data from PropertyGridStore
-  const { properties: listProperties, total } = usePropertyGridStore();
+  const { properties: listProperties, total, isLoading } = usePropertyGridStore();
 
   // Map data from MapStore
   const mapProperties = useMapStore((state) => state.properties);
@@ -133,7 +134,14 @@ export function PropertySplitView() {
         {/* LEFT SIDE: Property List (50%) */}
         <div className="w-1/2 overflow-y-auto border-r border-oslo-gray-800">
           <div className="px-4 sm:px-6 lg:px-8 py-8">
-            {listProperties.length === 0 ? (
+            {isLoading ? (
+              // Loading State: Show skeletons
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <PropertyCardSkeleton key={`skeleton-${i}`} />
+                ))}
+              </div>
+            ) : listProperties.length === 0 ? (
               // Empty State
               <div className="text-center py-16">
                 <div className="mb-4 text-5xl">🔍</div>
