@@ -32,8 +32,10 @@
  */
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { logger } from "@/lib/utils/logger";
 import { aiSearchAction, type AISearchResult } from "@/app/actions/ai-search";
+import { cacheAISearchResult } from "@/lib/utils/ai-search-cache";
 
 interface UseInlineSearchReturn {
   isFocused: boolean;
@@ -52,6 +54,7 @@ interface UseInlineSearchReturn {
 }
 
 export function useInlineSearch(): UseInlineSearchReturn {
+  const router = useRouter();
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -122,28 +125,25 @@ export function useInlineSearch(): UseInlineSearchReturn {
       // The map will handle displaying appropriate empty states
       setSearchResult(result);
 
-      // OPTIMIZATION: Cache result in sessionStorage to prevent duplicate API calls
+      // ✅ OPTIMIZATION: Cache result in sessionStorage to prevent duplicate API calls
       // This avoids the second aiSearchAction() call in map-search-integration.tsx
-      if (typeof window !== "undefined") {
-        try {
-          sessionStorage.setItem(
-            "ai_search_result",
-            JSON.stringify({
-              data: result,
-              timestamp: Date.now(),
-              ttl: 60000, // 1 minute TTL
-            }),
-          );
-        } catch (e) {
-          // Silently fail if sessionStorage is unavailable (e.g., private browsing)
-          logger.debug("Could not save to sessionStorage:", e);
-        }
-      }
+      // Using centralized utility function (Nov 16, 2025)
+      cacheAISearchResult(result);
 
       if (result.success) {
         logger.debug("✅ Search successful:", {
           count: result.properties?.length,
           confidence: result.confidence,
+        });
+
+        // ✅ NAVIGATE TO MAP: Navigate to map view with ai_search parameter
+        // MapSearchIntegration will detect this parameter and apply cached results
+        // This completes the end-to-end flow (Nov 16, 2025)
+        const encodedQuery = encodeURIComponent(trimmedQuery);
+        router.push(`/propiedades?view=map&ai_search=${encodedQuery}`);
+
+        logger.debug("[useInlineSearch] Navigating to map with query:", {
+          query: trimmedQuery,
         });
       } else {
         // Log info but don't treat as error - map will show empty state

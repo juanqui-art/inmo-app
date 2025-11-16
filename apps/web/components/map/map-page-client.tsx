@@ -18,6 +18,7 @@ import { FilterBar } from "./filters/filter-bar";
 import { useFilterUrlSync } from "./filters/use-filter-url-sync";
 import { MapView } from "./map-view";
 import { PropertyViewToggle } from "@/components/properties/property-view-toggle";
+import { MapSearchIntegration } from "./map-search-integration";
 import type { MapBounds } from "@/lib/utils/url-helpers";
 import { useMapStore } from "@/stores/map-store";
 import { useSearchParams } from "next/navigation";
@@ -48,6 +49,9 @@ export function MapPageClient({ initialBounds }: MapPageClientProps) {
 
   return (
     <div className="flex flex-col w-full h-screen">
+      {/* AI Search Integration - detects ai_search URL param and applies cached results */}
+      <MapSearchIntegration />
+
       {/* Header with View Toggle */}
       <div className="flex-shrink-0 sticky top-0 z-30 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
