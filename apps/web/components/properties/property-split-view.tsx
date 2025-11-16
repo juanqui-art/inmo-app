@@ -36,6 +36,7 @@ import { PropertyCard } from "./property-card";
 import { PropertyCardSkeleton } from "./property-card-skeleton";
 import { MapView } from "@/components/map/map-view";
 import { AuthModal } from "@/components/auth/auth-modal";
+import { PublicFooter } from "@/components/layout/public-footer";
 import { usePropertyGridStore } from "@/stores/property-grid-store";
 import { useMapStore } from "@/stores/map-store";
 import { useAuthStore } from "@/stores/auth-store";
@@ -112,7 +113,7 @@ export function PropertySplitView() {
       <FilterBar
         showViewToggle={true}
         currentView={currentView}
-        filters={filterString}
+        filterString={filterString}
       />
 
       {/* ===================================================================
@@ -174,6 +175,9 @@ export function PropertySplitView() {
               </div>
             )}
           </div>
+
+          {/* Footer - Rendered at end of scrollable list column */}
+          <PublicFooter />
         </div>
 
         {/* RIGHT SIDE: Map (50%) */}

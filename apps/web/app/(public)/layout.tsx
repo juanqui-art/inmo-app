@@ -70,7 +70,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex flex-col min-h-screen">
+    <div className="relative flex flex-col h-screen">
       {/*
         HEADER (floating)
         - Positioned absolutely over hero
@@ -82,14 +82,16 @@ export default function PublicLayout({
       {/*
         MAIN CONTENT
         flex-1 para que crezca y llene el espacio disponible
-        WHY? Permite que el mapa ocupe el viewport completo sin scroll
+        overflow-hidden para bloquear scroll general en este contenedor
+        WHY? Implementar patrón Zillow/Realtor: scroll solo en split view lista
       */}
-      <main className="w-full flex-1">{children}</main>
+      <main className="w-full flex-1 overflow-hidden">{children}</main>
 
       {/*
         FOOTER
         - Links, social, copyright
-        - Conditional: Hidden on /mapa route
+        - Conditional: Hidden on split view (renderizado dentro de PropertySplitView)
+        - Shown on list view normal
       */}
       <ConditionalFooter />
 
