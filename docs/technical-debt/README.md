@@ -9,9 +9,9 @@
 
 **Estado General:** ✅ Aplicación funcional y bien arquitecturada (Rating: 8.4/10)
 
-**Deuda Técnica Total:** ~106 tareas distribuidas en 6 categorías
+**Deuda Técnica Total:** ~106 tareas distribuidas en 7 categorías
 
-**Progreso Actual:** 3/109 tareas completadas (~2.8%)
+**Progreso Actual:** 4/109 tareas completadas (~3.7%)
 
 ---
 
@@ -74,7 +74,29 @@
 
 ---
 
-### 6. [Testing & Quality Assurance](./06-TESTING.md) 🔴 CRÍTICO
+### 6. [Logging y Monitoreo](./06-LOGGING-MONITORING.md) ⚠️ CRÍTICO
+**Plan detallado de implementación** | Estimado: 22 horas (4 semanas)
+
+- Structured logging con Pino
+- Error tracking con Sentry
+- Rate limiting con Upstash Redis
+- Performance monitoring con Vercel Analytics
+- Audit logging y security headers
+- Dashboards y alertas
+
+**Prioridad:** CRÍTICA - Fundamento para debugging en producción
+
+**Contenido:**
+- ✅ Arquitectura completa de observabilidad
+- ✅ Plan de implementación paso a paso (4 fases)
+- ✅ Análisis de costos ($0-56/mes según escenario)
+- ✅ ROI calculado (payback <1 mes)
+- ✅ Ejemplos de código completos
+- ✅ Checklist de verificación
+
+---
+
+### 7. [Testing & Quality Assurance](./07-TESTING.md) 🔴 CRÍTICO
 **52 tareas** | Estimado: 2-3 semanas
 
 - Coverage actual: ~5% (solo 3 archivos)
@@ -98,7 +120,7 @@
 | ~~AI Search Duplicate Call Fix~~ | ✅ COMPLETADO | ~~1-2h~~ | [03-AI-SEARCH.md](./03-AI-SEARCH.md) |
 | React.cache() Implementation | 🟡 ALTA | 1-2h | [02-PERFORMANCE.md](./02-PERFORMANCE.md) |
 | Map Filters URL Fix | 🟢 MEDIA | 1-2h | [05-MAP-FILTERS.md](./05-MAP-FILTERS.md) |
-| Testing Infrastructure Setup | 🔴 CRÍTICO | 3-4h | [06-TESTING.md](./06-TESTING.md) |
+| Testing Infrastructure Setup | 🔴 CRÍTICO | 3-4h | [07-TESTING.md](./07-TESTING.md) |
 
 **ROI:** Máximo impacto con mínima inversión
 
@@ -112,10 +134,10 @@
 - CI/CD pipeline setup (3-4h)
 - Coverage >25%
 
-**Semana 2: Error Handling & Security**
+**Semana 2: Logging & Monitoring**
 - Structured logging con Pino (2h)
 - Error boundaries (2h)
-- Rate limiting básico (3h)
+- Sentry integration (3h)
 - Security headers (1h)
 
 **Semana 3: Integration & E2E**
@@ -123,7 +145,7 @@
 - Playwright E2E setup (6-8h)
 - Coverage >40%
 
-**Ver detalles:** [01-INFRASTRUCTURE.md](./01-INFRASTRUCTURE.md)
+**Ver detalles:** [01-INFRASTRUCTURE.md](./01-INFRASTRUCTURE.md), [06-LOGGING-MONITORING.md](./06-LOGGING-MONITORING.md), [07-TESTING.md](./07-TESTING.md)
 
 ---
 
@@ -160,7 +182,7 @@ Ninguna actualmente
 - [ ] 2 tareas de Performance ([02-PERFORMANCE.md](./02-PERFORMANCE.md))
 - [ ] 2 tareas de Email ([04-EMAIL.md](./04-EMAIL.md))
 - [ ] 1 tarea de Map Filters ([05-MAP-FILTERS.md](./05-MAP-FILTERS.md))
-- [ ] 52 tareas de Testing ([06-TESTING.md](./06-TESTING.md)) - **NUEVA**
+- [ ] 52 tareas de Testing ([07-TESTING.md](./07-TESTING.md)) - **NUEVA**
 
 ---
 
@@ -168,12 +190,12 @@ Ninguna actualmente
 
 ### Si tu objetivo es **Lanzar/Validar MVP:**
 → **Foco:** Corto plazo (5-8 horas)
-→ **Prioridad:** Email + AI Search + Performance
+→ **Prioridad:** Email + Performance
 → **Resultado:** App funcional con costos optimizados
 
 ### Si tu objetivo es **Escalar y Producción:**
 → **Foco:** Medio plazo (2-3 semanas)
-→ **Prioridad:** Error Handling + Testing + Security
+→ **Prioridad:** Testing + Logging + Security
 → **Resultado:** Base sólida para crecimiento
 
 ### Si tu objetivo es **SaaS Multi-Tenant:**
@@ -196,7 +218,8 @@ Ninguna actualmente
 - [03-AI-SEARCH.md](./03-AI-SEARCH.md) - ✅ Optimización AI Search (COMPLETADO)
 - [04-EMAIL.md](./04-EMAIL.md) - Email delivery
 - [05-MAP-FILTERS.md](./05-MAP-FILTERS.md) - Bug de filtros de mapa
-- [06-TESTING.md](./06-TESTING.md) - **NUEVO:** Testing & Quality Assurance
+- [06-LOGGING-MONITORING.md](./06-LOGGING-MONITORING.md) - **Plan detallado de logging y monitoreo**
+- [07-TESTING.md](./07-TESTING.md) - **NUEVO:** Testing & Quality Assurance
 - [MAP_FILTERS_URL_PRESERVATION.md](./MAP_FILTERS_URL_PRESERVATION.md) - Análisis detallado
 
 ---
@@ -212,19 +235,19 @@ R: Depende de tu objetivo. Para MVP: Corto plazo. Para producción: Medio plazo.
 **P: ¿Cuánto tiempo total tomará?**
 R:
 - Corto plazo: 5-8 horas
-- Medio plazo: 2-3 semanas (includes testing foundations)
+- Medio plazo: 2-3 semanas (includes testing foundations + logging)
 - Largo plazo: 2-3 meses
 - **Total completo: ~3-4 meses** para eliminar toda la deuda
 
 **P: ¿Puedo ignorar alguna categoría?**
 R:
-- ❌ NO ignorar: Email (bloqueado), Testing (escalabilidad), CI/CD
-- ⚠️ Diferible: Observability (hasta tener más tráfico)
+- ❌ NO ignorar: Email (bloqueado), Testing (escalabilidad), CI/CD, Logging
+- ⚠️ Diferible: Observability avanzada (hasta tener más tráfico)
 - ✅ Opcional: Multi-tenant (si no es SaaS)
 
 **P: ¿La deuda técnica está afectando a usuarios actuales?**
 R:
-- ✅ NO afecta: Infraestructura, Testing
+- ✅ NO afecta: Infraestructura, Testing, Logging
 - ⚠️ AFECTA PARCIALMENTE: Performance (36% más lento)
 - 🔴 AFECTA DIRECTAMENTE: Email (no reciben confirmaciones)
 - ✅ RESUELTO: AI Search (optimizado Nov 16, 2025)
@@ -235,6 +258,13 @@ R: Sin tests, cada cambio es peligroso. Testing permite:
 - Detectar bugs antes de producción
 - Onboarding 50% más rápido (tests como documentación viva)
 - Deploy con confianza (de 6/10 → 9/10)
+
+**P: ¿Por qué logging/monitoring es crítico?**
+R: Sin logging estructurado, debugging en producción es prácticamente imposible:
+- Reduce Mean Time to Debug de 2h → 15 min
+- Permite detectar problemas antes que los usuarios
+- Provee datos para optimización
+- Cumple con compliance/audit requirements
 
 ---
 
