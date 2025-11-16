@@ -679,6 +679,13 @@ const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL
 - ✅ Removed duplicate embla-carousel-react from root
 - ✅ Clean `bun install` (405 packages installed)
 
+#### Phase 3: React Version Alignment ✅
+- ✅ Removed direct React dependencies from `packages/ui`
+- ✅ Kept only peerDependencies: react@^19.0.0, react-dom@^19.0.0
+- ✅ apps/web provides React 19.2.0 (satisfies peer ^19.0.0)
+- ✅ Zero peer dependency warnings after install
+- ✅ UI components still render correctly in apps/web
+
 ### Validation Results
 
 **Import Resolution:** ✅ PASS
@@ -736,6 +743,23 @@ const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL
 }
 ```
 
+**packages/ui `package.json`:**
+```json
+{
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0"
+    // React removed - now only in peerDependencies
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",        // Consuming app provides
+    "react-dom": "^19.0.0"     // Consuming app provides
+  }
+}
+```
+
 ### Impact Summary
 
 | Category | Before | After | Change |
@@ -745,18 +769,46 @@ const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL
 | Phantom deps | 14 | 0 | -14 ✅ |
 | Missing declarations | 1 (@repo/env) | 0 | Fixed ✅ |
 | Zod incompatibility | YES (v3 vs v4) | NO | Fixed ✅ |
+| React version drift | v19.1.0 vs v19.2.0 | Single source (19.2.0) | Fixed ✅ |
+| Peer dep warnings | Unknown | 0 | Clean ✅ |
 | Type-check errors | Pre-existing | Pre-existing | No new errors ✅ |
 
-### Next Steps
+### Completion Status
 
-**Optional Phase 3 (React Version):**
-- Remove React v19.1.0 pinning from `packages/ui`
-- Keep only peerDependencies
-- Benefit: Eliminates version drift risk
-- Effort: 5 minutes
-- Risk: Very low (backward compatible)
+**All 3 Phases Completed:** ✅ 100%
 
-**Recommended:** Skip Phase 3 for now since v19.1.0 is backward-compatible with v19.2.0
+**Commits:**
+1. `d184465` - refactor(monorepo): clean up package.json dependencies
+2. `41ccf03` - docs: update PACKAGE_JSON_ANALYSIS.md with post-cleanup state
+3. `0df0c0d` - refactor(ui): remove direct React dependency, use only peerDependencies
+
+### Future Improvements (Optional)
+
+**Long-term enhancements:**
+1. **Add engines field to root package.json:**
+   ```json
+   "engines": {
+     "node": ">=20",
+     "bun": ">=1.2.23"
+   }
+   ```
+
+2. **Consider adding resolutions for strict version management:**
+   ```json
+   "resolutions": {
+     "react": "^19.2.0",
+     "react-dom": "^19.2.0"
+   }
+   ```
+
+3. **Monitor Next.js 16.1+ for improved cache management:**
+   - `use cache: private` stabilization
+   - Potential Cache Components re-enablement with auth refactor
+
+**Not recommended at this time:**
+- Further dependency consolidation (current structure is clean)
+- Migration away from Turborepo (mature and stable)
+- Workspace restructuring (well-organized)
 
 ---
 
@@ -771,4 +823,4 @@ const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL
 
 **Last Updated:** November 16, 2025
 **Maintainer:** Project team
-**Status:** ✅ Cleanup complete (commit d184465)
+**Status:** ✅ Cleanup complete (3 phases, commits d184465 + 41ccf03 + 0df0c0d)
