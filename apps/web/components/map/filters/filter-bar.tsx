@@ -40,14 +40,14 @@ import { X } from "lucide-react";
  * Child components handle their own state via Zustand
  *
  * UPDATED: Nov 2025
- * - Added optional PropertyViewToggle for split view integration
- * - showViewToggle prop: only display toggle in PropertySplitView
+ * - PropertyViewToggle integrated (shows in all views)
+ * - Toggle positioned on right side of filter bar
+ * - Consistent across list, map, and split views
  */
 interface FilterBarProps {
   /**
-   * Show PropertyViewToggle (Lista/Mapa)
-   * Only enabled in split view to avoid duplicate toggles
-   * @default false
+   * Show PropertyViewToggle (Lista/Mapa) on the right side
+   * @default true
    */
   showViewToggle?: boolean;
 
@@ -59,14 +59,14 @@ interface FilterBarProps {
   currentView?: "list" | "map";
 
   /**
-   * Current filter query string
+   * Current filter query string (for building toggle URLs)
    * Required if showViewToggle is true
    */
   filterString?: string;
 }
 
 export function FilterBar({
-  showViewToggle = false,
+  showViewToggle = true,
   currentView = "list",
   filterString = "",
 }: FilterBarProps = {}) {

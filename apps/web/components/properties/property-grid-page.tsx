@@ -19,7 +19,7 @@
 import { PropertyCard } from "./property-card";
 import { PropertyCardSkeleton } from "./property-card-skeleton";
 import { PropertyGridPagination } from "./property-grid-pagination";
-import { PropertyViewToggle } from "./property-view-toggle";
+import { PropertyListTitle } from "./property-list-title";
 import { PropertyListSchema } from "./property-list-schema";
 import { FilterBar } from "@/components/map/filters/filter-bar";
 import { AuthModal } from "@/components/auth/auth-modal";
@@ -67,20 +67,17 @@ export function PropertyGridPage() {
   if (total === 0) {
     return (
       <div className="h-screen flex flex-col bg-oslo-gray-1000">
-        {/* Header */}
-        <div className="flex-shrink-0 sticky top-0 z-30 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
-          <div className="px-4 sm:px-6 lg:px-8 py-2.5 flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-oslo-gray-50">
-              Propiedades
-            </h1>
-            <PropertyViewToggle currentView={currentView} filters={filterString} />
-          </div>
+        {/* Filter Bar (with toggle integrated) */}
+        <div className="flex-shrink-0">
+          <FilterBar
+            showViewToggle={true}
+            currentView={currentView}
+            filterString={filterString}
+          />
         </div>
 
-        {/* Filter Bar */}
-        <div className="flex-shrink-0">
-          <FilterBar />
-        </div>
+        {/* Title */}
+        <PropertyListTitle total={total} />
 
         {/* Empty State */}
         <div className="flex-1 overflow-y-auto flex items-center justify-center">
@@ -115,26 +112,17 @@ export function PropertyGridPage() {
         city={Array.isArray(searchParams.get("city")) ? undefined : searchParams.get("city") || undefined}
       />
 
-      {/* Header */}
-      <div className="flex-shrink-0 sticky top-0 z-30 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
-        <div className="px-4 sm:px-6 lg:px-8 py-2.5 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-oslo-gray-50">
-              Propiedades
-            </h1>
-            <p className="text-xs text-oslo-gray-400">
-              {total} propiedad{total !== 1 ? "es" : ""} encontrada
-              {total !== 1 ? "s" : ""}
-            </p>
-          </div>
-          <PropertyViewToggle currentView={currentView} filters={filterString} />
-        </div>
+      {/* Filter Bar (with toggle integrated) */}
+      <div className="flex-shrink-0">
+        <FilterBar
+          showViewToggle={true}
+          currentView={currentView}
+          filterString={filterString}
+        />
       </div>
 
-      {/* Filter Bar */}
-      <div className="flex-shrink-0">
-        <FilterBar />
-      </div>
+      {/* Title */}
+      <PropertyListTitle total={total} />
 
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto">
