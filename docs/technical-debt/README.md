@@ -74,6 +74,28 @@
 
 ---
 
+### 6. [Logging y Monitoreo](./06-LOGGING-MONITORING.md) ⚠️ CRÍTICO
+**Plan detallado de implementación** | Estimado: 22 horas (4 semanas)
+
+- Structured logging con Pino
+- Error tracking con Sentry
+- Rate limiting con Upstash Redis
+- Performance monitoring con Vercel Analytics
+- Audit logging y security headers
+- Dashboards y alertas
+
+**Prioridad:** CRÍTICA - Fundamento para debugging en producción
+
+**Contenido:**
+- ✅ Arquitectura completa de observabilidad
+- ✅ Plan de implementación paso a paso (4 fases)
+- ✅ Análisis de costos ($0-56/mes según escenario)
+- ✅ ROI calculado (payback <1 mes)
+- ✅ Ejemplos de código completos
+- ✅ Checklist de verificación
+
+---
+
 ## 🚀 Plan de Acción Recomendado
 
 ### **Corto Plazo (Esta Semana - 5-8 horas)**
@@ -174,6 +196,7 @@ Ninguna actualmente
 - [03-AI-SEARCH.md](./03-AI-SEARCH.md) - Optimización AI Search
 - [04-EMAIL.md](./04-EMAIL.md) - Email delivery
 - [05-MAP-FILTERS.md](./05-MAP-FILTERS.md) - Bug de filtros de mapa
+- [06-LOGGING-MONITORING.md](./06-LOGGING-MONITORING.md) - **Plan detallado de logging y monitoreo**
 - [MAP_FILTERS_URL_PRESERVATION.md](./MAP_FILTERS_URL_PRESERVATION.md) - Análisis detallado
 
 ---
