@@ -10,12 +10,13 @@
  * - Responsive (hides filters on smaller screens)
  * - Filter count badge + Clear all button
  *
- * REFACTORING NOTES:
+ * REFACTORING NOTES (Nov 2025):
  * - ✅ Removed `useMapFilters` hook (no longer needed)
  * - ✅ Removed props drilling (child components access Zustand directly)
  * - ✅ Simplified to layout component only
  * - ✅ URL sync handled by middleware/hook at page level
- * - ✅ Added filter count badge + clear all button (from PropertyGridFilterBar)
+ * - ✅ Unified filter badge + clear button (merged from legacy PropertyGridFilterBar)
+ * - ✅ Single shared FilterBar for all views (list, map, split)
  *
  * BENEFITS:
  * - Clean separation of concerns
