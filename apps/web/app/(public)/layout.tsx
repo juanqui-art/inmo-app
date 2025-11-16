@@ -63,6 +63,7 @@
 import { PublicHeader } from "@/components/layout/public-header";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { Toaster } from "sonner";
+import { BodyStyleManager } from "@/components/layout/body-style-manager";
 
 export default function PublicLayout({
   children,
@@ -70,7 +71,8 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col min-h-screen">
+      <BodyStyleManager />
       {/*
         HEADER (floating)
         - Positioned absolutely over hero
@@ -82,10 +84,9 @@ export default function PublicLayout({
       {/*
         MAIN CONTENT
         flex-1 para que crezca y llene el espacio disponible
-        overflow-hidden para bloquear scroll general en este contenedor
-        WHY? Implementar patrón Zillow/Realtor: scroll solo en split view lista
+        WHY? Permite que el mapa ocupe el viewport completo sin scroll
       */}
-      <main className="w-full flex-1 overflow-hidden">{children}</main>
+      <main className="w-full flex-1">{children}</main>
 
       {/*
         FOOTER

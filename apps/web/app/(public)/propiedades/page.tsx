@@ -211,14 +211,14 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
     const page = Math.max(1, Number(searchParams.page) || 1);
     const pageSize = 12; // Properties per page
 
-    // Fetch BOTH paginated list data AND map-related data for FilterBar
-    // (FilterBar needs price distribution for histogram slider)
+    // Fetch paginated list data, full data for filters, and price stats in parallel
     const [
       { properties, total },
+      { properties: allPropertiesForFilters },
       { minPrice: priceRangeMin, maxPrice: priceRangeMax },
       priceDistribution,
     ] = await Promise.all([
-      // Paginated properties for list display
+      // 1. Paginated properties for the current page view
       getPropertiesList({
         filters: {
           ...filters,
@@ -227,12 +227,20 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),
-      // Price range for filter slider
+      // 2. All properties matching filters (for client-side filter controls)
+      propertyRepository.list({
+        filters: {
+          ...filters,
+          status: "AVAILABLE",
+        },
+        take: 1000, // Capped at 1000 for performance
+      }),
+      // 3. Price range for the filter slider
       propertyRepository.getPriceRange({
         ...filters,
         status: "AVAILABLE",
       }),
-      // Price distribution for histogram
+      // 4. Price distribution for the histogram in filters
       propertyRepository.getPriceDistribution({
         filters: {
           ...filters,
@@ -243,6 +251,9 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
 
     // Calculate pagination
     const totalPages = Math.ceil(total / pageSize);
+
+    // Type assertion for map properties
+    const mapProperties = allPropertiesForFilters as unknown as import("@/components/map/map-view").MapProperty[];
 
     return (
       <>
@@ -261,7 +272,7 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
 
         {/* Initialize map store (needed for FilterBar to work) */}
         <MapStoreInitializer
-          properties={[]} // List view doesn't need all properties
+          properties={mapProperties} // Pass all properties for filter controls
           priceDistribution={priceDistribution}
           priceRangeMin={priceRangeMin}
           priceRangeMax={priceRangeMax}
