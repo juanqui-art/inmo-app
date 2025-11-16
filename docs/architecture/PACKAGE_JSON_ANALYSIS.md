@@ -658,6 +658,108 @@ const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL
 
 ---
 
+## Post-Cleanup State (November 16, 2025)
+
+**Cleanup Status:** ✅ COMPLETE
+
+### Changes Executed
+
+#### Phase 1: Critical Fixes ✅
+- ✅ Upgraded Zod in `packages/env` from v3.24.1 → v4.1.12
+- ✅ Added `@repo/env` to `apps/web/package.json` dependencies
+- ✅ Verified with `bun install` (no errors)
+
+#### Phase 2: Move Phantom Dependencies ✅
+- ✅ Removed 14 dependencies from root `package.json`
+- ✅ Added 13 dependencies to `apps/web/package.json`:
+  - Animation: @gsap/react@2.1.2, gsap@3.13.0, framer-motion@^12.23.24, motion@^12.23.24
+  - Radix: @radix-ui/react-checkbox@^1.3.3, @radix-ui/react-slider@^1.3.6
+  - Services: openai@^6.7.0, resend@^6.3.0
+  - Utilities: date-fns@^4.1.0, react-day-picker@^9.11.1, sonner@2.0.7, supercluster@8.0.1, zustand@^5.0.8
+- ✅ Removed duplicate embla-carousel-react from root
+- ✅ Clean `bun install` (405 packages installed)
+
+### Validation Results
+
+**Import Resolution:** ✅ PASS
+- GSAP imports verified: 5+ components
+- Sonner imports verified: 2 layouts
+- OpenAI, Resend, Zustand: Available for import
+- No "Cannot find module" errors
+
+**Build System:** ✅ PASS
+- Prisma generation: Success
+- Dependency resolution: Success (no peer warnings)
+- Lint script: Running (pre-existing warnings unrelated)
+- `packages/env` type-check: Success with Zod v4
+
+**Git:** ✅ PASS
+- Commit: d184465 `refactor(monorepo): clean up package.json dependencies`
+- Changes: 4 files, 32 insertions, 39 deletions
+- Branch: up-to-date with origin/main
+
+### Final Package State
+
+**Root `package.json`:**
+```json
+{
+  "devDependencies": {
+    "@biomejs/biome": "2.3.5",
+    "react-scan": "^0.4.3",
+    "turbo": "2.6.1"
+  }
+  // NO dependencies object (removed)
+}
+```
+
+**apps/web `package.json`:**
+```json
+{
+  "dependencies": {
+    // 27 original deps
+    // + 13 moved deps
+    // = 40 total (excluding internal @repo/* packages)
+    "@repo/database": "workspace:*",
+    "@repo/env": "workspace:*",        // NEW: Added
+    "@repo/supabase": "workspace:*",
+    "@repo/ui": "workspace:*"
+  }
+}
+```
+
+**packages/env `package.json`:**
+```json
+{
+  "dependencies": {
+    "zod": "^4.1.12"  // UPGRADED from ^3.24.1
+  }
+}
+```
+
+### Impact Summary
+
+| Category | Before | After | Change |
+|----------|--------|-------|--------|
+| Root dependencies | 14 | 0 | -14 ✅ |
+| apps/web dependencies | 27 | 40 | +13 ✅ |
+| Phantom deps | 14 | 0 | -14 ✅ |
+| Missing declarations | 1 (@repo/env) | 0 | Fixed ✅ |
+| Zod incompatibility | YES (v3 vs v4) | NO | Fixed ✅ |
+| Type-check errors | Pre-existing | Pre-existing | No new errors ✅ |
+
+### Next Steps
+
+**Optional Phase 3 (React Version):**
+- Remove React v19.1.0 pinning from `packages/ui`
+- Keep only peerDependencies
+- Benefit: Eliminates version drift risk
+- Effort: 5 minutes
+- Risk: Very low (backward compatible)
+
+**Recommended:** Skip Phase 3 for now since v19.1.0 is backward-compatible with v19.2.0
+
+---
+
 ## Related Documentation
 
 - `TURBOREPO_DEEP_DIVE.md` - Monorepo architecture
@@ -667,6 +769,6 @@ const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL
 
 ---
 
-**Last Updated:** November 15, 2025
+**Last Updated:** November 16, 2025
 **Maintainer:** Project team
-**Status:** 🔴 Cleanup pending
+**Status:** ✅ Cleanup complete (commit d184465)
