@@ -38,35 +38,35 @@ export function PropertyViewToggle({
   const mapUrl = `/propiedades?${baseQuery}view=map`;
 
   return (
-    <div className="flex gap-1 bg-oslo-gray-800/50 rounded-lg p-1">
+    <div className="flex items-center gap-2">
       {/* List View Button */}
       <Link
         href={listUrl}
         className={cn(
-          "flex items-center gap-2 px-4 py-2 rounded-md transition-colors",
+          "flex h-12 items-center gap-2 px-4 py-2 rounded-full font-medium text-base transition-all duration-200 whitespace-nowrap",
           currentView === "list"
-            ? "bg-oslo-gray-900 text-indigo-400 shadow-sm"
-            : "text-oslo-gray-400 hover:text-oslo-gray-200",
+            ? "bg-oslo-gray-600/30 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
+            : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800",
         )}
         title="Ver como lista"
       >
         <Grid3x3 className="w-4 h-4" />
-        <span className="hidden sm:inline text-sm font-medium">Lista</span>
+        <span className="hidden sm:inline">Lista</span>
       </Link>
 
       {/* Map View Button */}
       <Link
         href={mapUrl}
         className={cn(
-          "flex items-center gap-2 px-4 py-2 rounded-md transition-colors",
+          "flex h-12 items-center gap-2 px-4 py-2 rounded-full font-medium text-base transition-all duration-200 whitespace-nowrap",
           currentView === "map"
-            ? "bg-oslo-gray-900 text-indigo-400 shadow-sm"
-            : "text-oslo-gray-400 hover:text-oslo-gray-200",
+            ? "bg-oslo-gray-600/30 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
+            : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800",
         )}
         title="Ver como mapa"
       >
         <Map className="w-4 h-4" />
-        <span className="hidden sm:inline text-sm font-medium">Mapa</span>
+        <span className="hidden sm:inline">Mapa</span>
       </Link>
     </div>
   );

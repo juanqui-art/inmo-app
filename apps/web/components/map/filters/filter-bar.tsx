@@ -85,7 +85,7 @@ export function FilterBar({
   ].filter(Boolean).length;
 
   return (
-    <div className="flex justify-center bg-oslo-gray-1000">
+    <div className="flex justify-center bg-oslo-gray-1000 border-b border-oslo-gray-200 dark:border-oslo-gray-800">
       <div className="flex items-center gap-2 px-4 py-2.5 bg-oslo-gray-950/90 flex-wrap justify-start w-full">
         {/* AI Search Bar */}
         <div className="min-w-fit">
@@ -127,13 +127,13 @@ export function FilterBar({
           {/* Active Filters Badge + Clear Button */}
           {activeFilterCount > 0 && (
             <>
-              <div className="px-2.5 py-1 rounded-md bg-indigo-600/20 text-indigo-400 text-xs font-medium">
+              <div className="flex h-12 items-center gap-2 px-4 py-2 rounded-full bg-oslo-gray-900/50 text-oslo-gray-50 font-medium text-base border border-oslo-gray-800">
                 {activeFilterCount} filtro{activeFilterCount !== 1 ? "s" : ""}
               </div>
               <button
                 onClick={clearAllFilters}
                 title="Limpiar todos los filtros"
-                className="p-1.5 rounded-md hover:bg-oslo-gray-800 transition-colors text-oslo-gray-400 hover:text-oslo-gray-200"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800 transition-all duration-200"
                 aria-label="Limpiar todos los filtros"
               >
                 <X className="w-4 h-4" />
@@ -143,7 +143,10 @@ export function FilterBar({
 
           {/* View Toggle (Solo en split view) */}
           {showViewToggle && (
-            <PropertyViewToggle currentView={currentView} filters={filterString} />
+            <PropertyViewToggle
+              currentView={currentView}
+              filters={filterString}
+            />
           )}
         </div>
       </div>
