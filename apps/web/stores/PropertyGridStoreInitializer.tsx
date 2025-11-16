@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect } from "react";
 import { usePropertyGridStore } from "./property-grid-store";
 import type { SerializedProperty, PropertyFilters } from "@repo/database";
 
@@ -25,9 +25,8 @@ interface PropertyGridStoreInitializerProps {
  * - Initializer runs client-side and hydrates the store
  * - All child components can then read from the store directly (no props drilling)
  *
- * WHY useRef?
- * - Ensures hydration runs only once, even with React Strict Mode double-rendering
- * - Prevents multiple hydration attempts that could cause race conditions
+ * Re-initializes when props change (e.g., when router.push updates URL and Server Component re-fetches).
+ * This enables synchronization between filter changes and the store.
  */
 function PropertyGridStoreInitializer({
   properties,
@@ -37,10 +36,9 @@ function PropertyGridStoreInitializer({
   pageSize,
   filters,
 }: PropertyGridStoreInitializerProps) {
-  const initialized = useRef(false);
-
-  // Run only once: hydrate the store with fetched data
-  if (!initialized.current) {
+  // Re-initialize store whenever props change from Server Component re-fetches
+  // This allows filters to update the store in real-time when URL changes via router.push()
+  useEffect(() => {
     usePropertyGridStore.getState().initialize({
       properties,
       total,
@@ -49,8 +47,7 @@ function PropertyGridStoreInitializer({
       pageSize,
       filters,
     });
-    initialized.current = true;
-  }
+  }, [properties, total, currentPage, totalPages, pageSize, filters]);
 
   // This component renders nothing - it's purely for side effects
   return null;
