@@ -6,16 +6,19 @@
  * PATTERN: Industry standard from Booking.com, Hotels.com
  * RESEARCH: 95% user engagement with maps in split view (Baymard Institute)
  *
- * LAYOUT:
+ * LAYOUT (UPDATED Nov 2025):
+ * - FilterBar with integrated View Toggle (sticky top, z-30)
  * - Desktop (≥1024px): Lista izquierda 50%, Mapa derecha 50%
- * - Lista scrollable, Mapa sticky (fixed while scrolling)
- * - Unified header with view toggle and property count
+ * - Lista scrollable with local header (sticky, z-20)
+ * - Mapa sticky (fixed while scrolling)
  *
  * FEATURES:
  * - Both views visible simultaneously
  * - Hover synchronization (list ↔ map highlighting)
  * - Filter/sort parity across both sides
  * - Shared state via Zustand stores
+ * - View toggle integrated in FilterBar (Nov 2025)
+ * - Local header sticky within list column (Nov 2025)
  *
  * USAGE:
  * ```tsx
@@ -28,7 +31,6 @@
  * - Both stores hydrated by server components
  */
 
-import { PropertyViewToggle } from "./property-view-toggle";
 import { FilterBar } from "@/components/map/filters/filter-bar";
 import { PropertyCard } from "./property-card";
 import { PropertyCardSkeleton } from "./property-card-skeleton";
@@ -105,27 +107,13 @@ export function PropertySplitView() {
   return (
     <div className="h-screen flex flex-col bg-oslo-gray-1000">
       {/* ===================================================================
-          HEADER - Unified for both list and map
+          FILTER BAR - Shared for both sides + View Toggle integrated
           =================================================================== */}
-      <div className="flex-shrink-0 sticky top-0 z-30 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
-        <div className="max-w-full px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-oslo-gray-50">
-              Propiedades
-            </h1>
-            <p className="text-sm text-oslo-gray-300">
-              {total} propiedad{total !== 1 ? "es" : ""} encontrada
-              {total !== 1 ? "s" : ""}
-            </p>
-          </div>
-          <PropertyViewToggle currentView={currentView} filters={filterString} />
-        </div>
-      </div>
-
-      {/* ===================================================================
-          FILTER BAR - Shared for both sides
-          =================================================================== */}
-      <FilterBar />
+      <FilterBar
+        showViewToggle={true}
+        currentView={currentView}
+        filters={filterString}
+      />
 
       {/* ===================================================================
           SPLIT LAYOUT - 50/50 List + Map
@@ -133,6 +121,20 @@ export function PropertySplitView() {
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT SIDE: Property List (50%) */}
         <div className="w-1/2 overflow-y-auto border-r border-oslo-gray-800">
+          {/* Local Header - Sticky within list column */}
+          <div className="sticky top-0 z-20 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
+            <div className="px-4 sm:px-6 lg:px-8 py-4">
+              <h2 className="text-2xl font-bold text-oslo-gray-50">
+                Propiedades
+              </h2>
+              <p className="text-sm text-oslo-gray-300">
+                {total} propiedad{total !== 1 ? "es" : ""} encontrada
+                {total !== 1 ? "s" : ""}
+              </p>
+            </div>
+          </div>
+
+          {/* Property Grid Container */}
           <div className="px-4 sm:px-6 lg:px-8 py-8">
             {isLoading ? (
               // Loading State: Show skeletons

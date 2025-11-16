@@ -30,14 +30,45 @@ import { CityFilterDropdown } from "./city-filter-dropdown";
 import { PriceFilterDropdown } from "./price-filter-dropdown";
 import { PropertyTypeDropdown } from "./property-type-dropdown";
 import { TransactionTypeDropdown } from "./transaction-type-dropdown";
+import { PropertyViewToggle } from "@/components/properties/property-view-toggle";
 import { useMapStore } from "@/stores/map-store";
 import { X } from "lucide-react";
 
 /**
  * FilterBar - Layout component with filter count badge + clear all button
  * Child components handle their own state via Zustand
+ *
+ * UPDATED: Nov 2025
+ * - Added optional PropertyViewToggle for split view integration
+ * - showViewToggle prop: only display toggle in PropertySplitView
  */
-export function FilterBar() {
+interface FilterBarProps {
+  /**
+   * Show PropertyViewToggle (Lista/Mapa)
+   * Only enabled in split view to avoid duplicate toggles
+   * @default false
+   */
+  showViewToggle?: boolean;
+
+  /**
+   * Current active view (list or map)
+   * Required if showViewToggle is true
+   * @default "list"
+   */
+  currentView?: "list" | "map";
+
+  /**
+   * Current filter query string
+   * Required if showViewToggle is true
+   */
+  filterString?: string;
+}
+
+export function FilterBar({
+  showViewToggle = false,
+  currentView = "list",
+  filterString = "",
+}: FilterBarProps = {}) {
   // Get filters from store to count active filters
   const filters = useMapStore((state) => state.filters);
   const clearAllFilters = useMapStore((state) => state.clearAllFilters);
@@ -91,22 +122,30 @@ export function FilterBar() {
           <BathroomsFilter />
         </div>
 
-        {/* Active Filters Badge + Clear Button */}
-        {activeFilterCount > 0 && (
-          <div className="ml-auto flex items-center gap-2">
-            <div className="px-2.5 py-1 rounded-md bg-indigo-600/20 text-indigo-400 text-xs font-medium">
-              {activeFilterCount} filtro{activeFilterCount !== 1 ? "s" : ""}
-            </div>
-            <button
-              onClick={clearAllFilters}
-              title="Limpiar todos los filtros"
-              className="p-1.5 rounded-md hover:bg-oslo-gray-800 transition-colors text-oslo-gray-400 hover:text-oslo-gray-200"
-              aria-label="Limpiar todos los filtros"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
+        {/* Right Side: Active Filters Badge + Clear + View Toggle */}
+        <div className="ml-auto flex items-center gap-2">
+          {/* Active Filters Badge + Clear Button */}
+          {activeFilterCount > 0 && (
+            <>
+              <div className="px-2.5 py-1 rounded-md bg-indigo-600/20 text-indigo-400 text-xs font-medium">
+                {activeFilterCount} filtro{activeFilterCount !== 1 ? "s" : ""}
+              </div>
+              <button
+                onClick={clearAllFilters}
+                title="Limpiar todos los filtros"
+                className="p-1.5 rounded-md hover:bg-oslo-gray-800 transition-colors text-oslo-gray-400 hover:text-oslo-gray-200"
+                aria-label="Limpiar todos los filtros"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </>
+          )}
+
+          {/* View Toggle (Solo en split view) */}
+          {showViewToggle && (
+            <PropertyViewToggle currentView={currentView} filters={filterString} />
+          )}
+        </div>
       </div>
     </div>
   );
