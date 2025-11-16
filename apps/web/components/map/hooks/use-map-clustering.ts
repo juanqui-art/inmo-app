@@ -67,6 +67,21 @@ const SUPERCLUSTER_OPTIONS = {
 };
 
 /**
+ * Padding factor for fallback bounds calculation
+ * Adds 20% extra area to ensure edge markers are included
+ */
+const FALLBACK_BOUNDS_PADDING = 1.2;
+
+/**
+ * Type predicate to check if property has valid coordinates
+ */
+function hasValidCoordinates(
+  property: MapProperty,
+): property is MapProperty & { latitude: number; longitude: number } {
+  return property.latitude !== null && property.longitude !== null;
+}
+
+/**
  * Custom hook for map clustering
  */
 export function useMapClustering({
@@ -88,13 +103,13 @@ export function useMapClustering({
      * Filter out properties without coordinates
      */
     const points: Supercluster.PointFeature<MapProperty>[] = properties
-      .filter((p) => p.latitude !== null && p.longitude !== null)
+      .filter(hasValidCoordinates)
       .map((property) => ({
         type: "Feature" as const,
         properties: property,
         geometry: {
           type: "Point" as const,
-          coordinates: [property.longitude!, property.latitude!],
+          coordinates: [property.longitude, property.latitude],
         },
       }));
 
@@ -178,10 +193,10 @@ function calculateFallbackBounds(viewState: {
    * - Zoom 12: ±0.044° (city view)
    * - Zoom 16: ±0.0027° (neighborhood view)
    *
-   * We add 20% padding to ensure markers at edges are included
+   * We add padding to ensure markers at edges are included
    */
-  const latitudeDelta = (180 / Math.pow(2, viewState.zoom)) * 1.2;
-  const longitudeDelta = (360 / Math.pow(2, viewState.zoom)) * 1.2;
+  const latitudeDelta = (180 / Math.pow(2, viewState.zoom)) * FALLBACK_BOUNDS_PADDING;
+  const longitudeDelta = (360 / Math.pow(2, viewState.zoom)) * FALLBACK_BOUNDS_PADDING;
 
   return [
     viewState.longitude - longitudeDelta, // west
@@ -195,7 +210,7 @@ function calculateFallbackBounds(viewState: {
  * Type guard to check if cluster is a cluster (vs individual point)
  */
 export function isCluster(cluster: ClusterOrPoint): cluster is ClusterPoint {
-  return "cluster" in cluster.properties && cluster.properties.cluster === true;
+  return "cluster" in cluster.properties && cluster.properties.cluster;
 }
 
 /**
@@ -208,8 +223,11 @@ export function getClusterExpansionZoom(
 ): number {
   try {
     return supercluster.getClusterExpansionZoom(clusterId);
-  } catch {
-    return 16; // Fallback to max zoom
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(`Failed to get expansion zoom for cluster ${clusterId}`, error);
+    }
+    return CLUSTER_CONFIG.MAX_ZOOM;
   }
 }
 
@@ -225,7 +243,10 @@ export function getClusterLeaves(
 ): Supercluster.PointFeature<Supercluster.AnyProps>[] {
   try {
     return supercluster.getLeaves(clusterId, limit, offset);
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(`Failed to get leaves for cluster ${clusterId}`, error);
+    }
     return [];
   }
 }
