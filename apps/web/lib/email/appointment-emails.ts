@@ -64,6 +64,14 @@ export async function sendAppointmentCreatedEmail(data: AppointmentEmailData) {
   const appointmentDateFormatted = formatAppointmentDate(data.appointmentDate);
   const subject = getAppointmentEmailSubject("created", data.propertyTitle);
 
+  // Log email attempt
+  console.log("[sendAppointmentCreatedEmail] Attempting to send emails:", {
+    clientEmail: data.clientEmail,
+    agentEmail: data.agentEmail,
+    from: "test@resend.dev",
+    propertyTitle: data.propertyTitle,
+  });
+
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
     from: "test@resend.dev",
@@ -103,13 +111,47 @@ export async function sendAppointmentCreatedEmail(data: AppointmentEmailData) {
     const clientSuccess = clientResult.error === null;
     const agentSuccess = agentResult.error === null;
 
+    // Log detailed results
+    console.log("[sendAppointmentCreatedEmail] Resend API results:", {
+      client: {
+        success: clientSuccess,
+        emailId: clientSuccess ? (clientResult.data as any)?.id : null,
+        error: clientResult.error || null,
+      },
+      agent: {
+        success: agentSuccess,
+        emailId: agentSuccess ? (agentResult.data as any)?.id : null,
+        error: agentResult.error || null,
+      },
+    });
+
+    // If any email failed, log warning
+    if (!clientSuccess || !agentSuccess) {
+      console.warn("[sendAppointmentCreatedEmail] Some emails failed:", {
+        clientFailed: !clientSuccess,
+        agentFailed: !agentSuccess,
+        clientError: clientResult.error,
+        agentError: agentResult.error,
+      });
+    }
+
     return {
       success: clientSuccess && agentSuccess,
       clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
       agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
+      error: !clientSuccess || !agentSuccess
+        ? `Email delivery failed: ${[
+            !clientSuccess ? "client" : null,
+            !agentSuccess ? "agent" : null,
+          ].filter(Boolean).join(", ")}`
+        : undefined,
     };
   } catch (error) {
-    console.error("[sendAppointmentCreatedEmail] Error:", error);
+    console.error("[sendAppointmentCreatedEmail] Exception:", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      fullError: error,
+    });
     return {
       success: false,
       error: "Failed to send appointment emails",
@@ -126,6 +168,12 @@ export async function sendAppointmentConfirmedEmail(
   const resend = getResendClient();
   const appointmentDateFormatted = formatAppointmentDate(data.appointmentDate);
   const subject = getAppointmentEmailSubject("confirmed", data.propertyTitle);
+
+  console.log("[sendAppointmentConfirmedEmail] Attempting to send emails:", {
+    clientEmail: data.clientEmail,
+    agentEmail: data.agentEmail,
+    from: "test@resend.dev",
+  });
 
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
@@ -162,13 +210,45 @@ export async function sendAppointmentConfirmedEmail(
     const clientSuccess = clientResult.error === null;
     const agentSuccess = agentResult.error === null;
 
+    console.log("[sendAppointmentConfirmedEmail] Resend API results:", {
+      client: {
+        success: clientSuccess,
+        emailId: clientSuccess ? (clientResult.data as any)?.id : null,
+        error: clientResult.error || null,
+      },
+      agent: {
+        success: agentSuccess,
+        emailId: agentSuccess ? (agentResult.data as any)?.id : null,
+        error: agentResult.error || null,
+      },
+    });
+
+    if (!clientSuccess || !agentSuccess) {
+      console.warn("[sendAppointmentConfirmedEmail] Some emails failed:", {
+        clientFailed: !clientSuccess,
+        agentFailed: !agentSuccess,
+        clientError: clientResult.error,
+        agentError: agentResult.error,
+      });
+    }
+
     return {
       success: clientSuccess && agentSuccess,
       clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
       agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
+      error: !clientSuccess || !agentSuccess
+        ? `Email delivery failed: ${[
+            !clientSuccess ? "client" : null,
+            !agentSuccess ? "agent" : null,
+          ].filter(Boolean).join(", ")}`
+        : undefined,
     };
   } catch (error) {
-    console.error("[sendAppointmentConfirmedEmail] Error:", error);
+    console.error("[sendAppointmentConfirmedEmail] Exception:", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      fullError: error,
+    });
     return {
       success: false,
       error: "Failed to send confirmation emails",
@@ -186,6 +266,13 @@ export async function sendAppointmentCancelledEmail(
   const resend = getResendClient();
   const appointmentDateFormatted = formatAppointmentDate(data.appointmentDate);
   const subject = getAppointmentEmailSubject("cancelled", data.propertyTitle);
+
+  console.log("[sendAppointmentCancelledEmail] Attempting to send emails:", {
+    clientEmail: data.clientEmail,
+    agentEmail: data.agentEmail,
+    from: "test@resend.dev",
+    cancelledBy,
+  });
 
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
@@ -222,13 +309,45 @@ export async function sendAppointmentCancelledEmail(
     const clientSuccess = clientResult.error === null;
     const agentSuccess = agentResult.error === null;
 
+    console.log("[sendAppointmentCancelledEmail] Resend API results:", {
+      client: {
+        success: clientSuccess,
+        emailId: clientSuccess ? (clientResult.data as any)?.id : null,
+        error: clientResult.error || null,
+      },
+      agent: {
+        success: agentSuccess,
+        emailId: agentSuccess ? (agentResult.data as any)?.id : null,
+        error: agentResult.error || null,
+      },
+    });
+
+    if (!clientSuccess || !agentSuccess) {
+      console.warn("[sendAppointmentCancelledEmail] Some emails failed:", {
+        clientFailed: !clientSuccess,
+        agentFailed: !agentSuccess,
+        clientError: clientResult.error,
+        agentError: agentResult.error,
+      });
+    }
+
     return {
       success: clientSuccess && agentSuccess,
       clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
       agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
+      error: !clientSuccess || !agentSuccess
+        ? `Email delivery failed: ${[
+            !clientSuccess ? "client" : null,
+            !agentSuccess ? "agent" : null,
+          ].filter(Boolean).join(", ")}`
+        : undefined,
     };
   } catch (error) {
-    console.error("[sendAppointmentCancelledEmail] Error:", error);
+    console.error("[sendAppointmentCancelledEmail] Exception:", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      fullError: error,
+    });
     return {
       success: false,
       error: "Failed to send cancellation emails",

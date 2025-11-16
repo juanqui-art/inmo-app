@@ -124,7 +124,7 @@ export async function createAppointmentAction(formData: {
     });
 
     // 7. Enviar emails de notificación
-    await sendAppointmentCreatedEmail({
+    const emailResult = await sendAppointmentCreatedEmail({
       clientName: user.name || "Cliente",
       clientEmail: user.email,
       agentName: property.agent.name || "Agente",
@@ -135,6 +135,14 @@ export async function createAppointmentAction(formData: {
       notes: validatedData.notes,
     });
 
+    // Log if email failed (but don't fail the appointment creation)
+    if (!emailResult.success) {
+      console.warn("[createAppointmentAction] Email notification failed:", {
+        appointmentId: appointment.id,
+        error: emailResult.error,
+      });
+    }
+
     // 8. Revalidar rutas
     revalidatePath("/perfil/citas");
     revalidatePath("/dashboard/citas");
@@ -143,6 +151,10 @@ export async function createAppointmentAction(formData: {
     return {
       success: true,
       appointmentId: appointment.id,
+      // Include warning if email failed
+      warning: !emailResult.success
+        ? "Appointment created but email notification failed"
+        : undefined,
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -228,8 +240,9 @@ export async function updateAppointmentStatusAction(data: {
     );
 
     // 7. Enviar email de notificación
+    let emailResult;
     if (validatedData.status === "CONFIRMED") {
-      await sendAppointmentConfirmedEmail({
+      emailResult = await sendAppointmentConfirmedEmail({
         clientName: appointment.user.name || "Cliente",
         clientEmail: appointment.user.email,
         agentName: appointment.agent.name || "Agente",
@@ -240,7 +253,7 @@ export async function updateAppointmentStatusAction(data: {
         appointmentDate: appointment.scheduledAt,
       });
     } else {
-      await sendAppointmentCancelledEmail(
+      emailResult = await sendAppointmentCancelledEmail(
         {
           clientName: appointment.user.name || "Cliente",
           clientEmail: appointment.user.email,
@@ -255,12 +268,25 @@ export async function updateAppointmentStatusAction(data: {
       );
     }
 
+    // Log if email failed (but don't fail the status update)
+    if (!emailResult.success) {
+      console.warn("[updateAppointmentStatusAction] Email notification failed:", {
+        appointmentId: validatedData.id,
+        status: validatedData.status,
+        error: emailResult.error,
+      });
+    }
+
     // 8. Revalidar rutas
     revalidatePath("/dashboard/citas");
     revalidatePath("/perfil/citas");
 
     return {
       success: true,
+      // Include warning if email failed
+      warning: !emailResult.success
+        ? "Status updated but email notification failed"
+        : undefined,
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
