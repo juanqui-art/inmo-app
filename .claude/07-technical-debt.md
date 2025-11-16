@@ -1,6 +1,24 @@
 # Technical Debt & Robustness Audit
 
-**Última revisión**: 2025-01-05
+**Última revisión**: 2025-01-05 (Documento estratégico)
+**Documentación detallada**: `docs/technical-debt/` (Actualizado: Noviembre 14, 2025)
+
+---
+
+## 📁 Documentación Relacionada
+
+Este documento proporciona la **visión estratégica** de la deuda técnica. Para **detalles de implementación**, ver:
+
+- **📊 [docs/technical-debt/README.md](../docs/technical-debt/README.md)** - Resumen ejecutivo, progreso, plan de acción
+- **🏗️ [docs/technical-debt/01-INFRASTRUCTURE.md](../docs/technical-debt/01-INFRASTRUCTURE.md)** - 50 tareas de infraestructura (Phase 1)
+- **⚡ [docs/technical-debt/02-PERFORMANCE.md](../docs/technical-debt/02-PERFORMANCE.md)** - Cache y performance (2 tareas)
+- **🤖 [docs/technical-debt/03-AI-SEARCH.md](../docs/technical-debt/03-AI-SEARCH.md)** - Optimización AI Search (1 tarea)
+- **📧 [docs/technical-debt/04-EMAIL.md](../docs/technical-debt/04-EMAIL.md)** - Email delivery (2 tareas, CRÍTICO)
+- **🗺️ [docs/technical-debt/05-MAP-FILTERS.md](../docs/technical-debt/05-MAP-FILTERS.md)** - Bug de filtros (1 tarea)
+
+**Estado consolidado**: 3/54 tareas completadas (~5.5%)
+
+---
 
 ## 📋 Executive Summary
 
@@ -11,8 +29,11 @@
 **Critical path for AI/Chatbot**:
 1. ✅ **Phase 0**: Fix TypeScript ~~(30-60 min)~~ **COMPLETED** (commit: f0f69d7)
 2. **Phase 1**: Critical Foundations - Error handling, validation, security, transactions (1-2 weeks)
+   → Ver [01-INFRASTRUCTURE.md](../docs/technical-debt/01-INFRASTRUCTURE.md)
 3. **Phase 2**: Strategic Testing - Unit, integration, E2E, CI/CD (1 week)
+   → Ver [01-INFRASTRUCTURE.md](../docs/technical-debt/01-INFRASTRUCTURE.md#fase-2-testing-estrategico)
 4. **Phase 3**: Observability - Logging, metrics, monitoring (3-5 days)
+   → Ver [01-INFRASTRUCTURE.md](../docs/technical-debt/01-INFRASTRUCTURE.md#fase-3-observabilidad)
 5. **Phase 4**: AI Optimization - Embeddings, webhooks, REST API (future)
 
 **Total estimated Phases 1-3**: 2.5-3.5 weeks of work before integrating AI.
@@ -36,6 +57,8 @@ This project is designed to be the **foundation for future AI services** (chatbo
 
 ## Critical Gaps Identified ❌
 
+> **📖 Documentación detallada**: Ver [docs/technical-debt/](../docs/technical-debt/) para análisis completo y ejemplos de código
+
 ### 1. Inconsistent Error Handling
 
 **Issues detected:**
@@ -46,6 +69,8 @@ This project is designed to be the **foundation for future AI services** (chatbo
 - ❌ Server Action errors are not user-friendly
 
 **Impact**: Production debugging will be extremely difficult when you integrate AI/chatbot.
+
+→ **Ver detalles**: [01-INFRASTRUCTURE.md - Section 1.1](../docs/technical-debt/01-INFRASTRUCTURE.md#11-error-handling--structured-logging)
 
 ---
 
@@ -60,6 +85,8 @@ This project is designed to be the **foundation for future AI services** (chatbo
 
 **Impact**: Security vulnerabilities and resource abuse.
 
+→ **Ver detalles**: [01-INFRASTRUCTURE.md - Section 1.2](../docs/technical-debt/01-INFRASTRUCTURE.md#12-validacion-de-datos-completa)
+
 ---
 
 ### 3. Security
@@ -72,6 +99,8 @@ This project is designed to be the **foundation for future AI services** (chatbo
 - ❌ No secret rotation (keys in .env.local forever)
 
 **Impact**: Wide attack surface, especially for public APIs that chatbot will consume.
+
+→ **Ver detalles**: [01-INFRASTRUCTURE.md - Section 1.3](../docs/technical-debt/01-INFRASTRUCTURE.md#13-seguridad-esencial)
 
 ---
 
@@ -88,6 +117,8 @@ This project is designed to be the **foundation for future AI services** (chatbo
 
 **Impact**: Data inconsistency, especially when multiple services (AI, chatbot) access DB.
 
+→ **Ver detalles**: [01-INFRASTRUCTURE.md - Section 1.4](../docs/technical-debt/01-INFRASTRUCTURE.md#14-transacciones-y-consistencia)
+
 ---
 
 ### 5. Testing (CRITICAL)
@@ -100,6 +131,8 @@ This project is designed to be the **foundation for future AI services** (chatbo
 
 **Impact**: Impossible to scale reliably. Each change can break existing features.
 
+→ **Ver detalles**: [01-INFRASTRUCTURE.md - Fase 2](../docs/technical-debt/01-INFRASTRUCTURE.md#fase-2-testing-estrategico)
+
 ---
 
 ### 6. Observability
@@ -111,6 +144,8 @@ This project is designed to be the **foundation for future AI services** (chatbo
 - ❌ Impossible to debug production without logs
 
 **Impact**: When chatbot starts generating traffic, diagnosing problems will be impossible.
+
+→ **Ver detalles**: [01-INFRASTRUCTURE.md - Fase 3](../docs/technical-debt/01-INFRASTRUCTURE.md#fase-3-observabilidad)
 
 ---
 
@@ -131,6 +166,44 @@ This project is designed to be the **foundation for future AI services** (chatbo
 - ⚠️ Could add stricter linting rules for better type narrowing - **Optional enhancement**
 
 **Current Status**: ✅ `bun run type-check` passes without errors
+
+---
+
+---
+
+## 🆕 Categorías Adicionales (Noviembre 2025)
+
+Además de las 4 fases originales, se identificaron estas categorías específicas:
+
+### ⚡ Performance & Cache
+**Status**: ❌ Sin cache implementado
+**Impacto**: 36% mejora posible en performance del mapa
+
+→ **Ver detalles**: [02-PERFORMANCE.md](../docs/technical-debt/02-PERFORMANCE.md)
+
+---
+
+### 🤖 AI Search Optimization
+**Status**: ⚠️ 95% funcional, llamada API duplicada
+**Impacto**: 50% costos OpenAI, 46% latencia
+
+→ **Ver detalles**: [03-AI-SEARCH.md](../docs/technical-debt/03-AI-SEARCH.md)
+
+---
+
+### 📧 Email Delivery
+**Status**: 🔴 BLOQUEADO - Emails no llegan a usuarios
+**Impacto**: Funcionalidad de negocio crítica
+
+→ **Ver detalles**: [04-EMAIL.md](../docs/technical-debt/04-EMAIL.md)
+
+---
+
+### 🗺️ Map Filters Bug
+**Status**: 🐛 Bug documentado
+**Impacto**: Pérdida de contexto UX (viewport, AI search)
+
+→ **Ver detalles**: [05-MAP-FILTERS.md](../docs/technical-debt/05-MAP-FILTERS.md)
 
 ---
 
@@ -440,14 +513,25 @@ Focus on **Public Property Listings** to get user feedback quickly:
 
 ## 📊 Progress Metrics
 
-**Current plan status:**
+**Current plan status** (Actualizado: Noviembre 14, 2025):
+
+### Fases Originales:
 - [x] **Phase 0: Quick Wins** ✅ **COMPLETED** (commit: f0f69d7, ~30 min)
   - Fixed 51 TypeScript errors
   - Type system now fully operational
-- [ ] Phase 1: Critical Foundations (0/4 completed)
-- [ ] Phase 2: Strategic Testing (0/3 completed)
-- [ ] Phase 3: Observability (0/2 completed)
-- [ ] Phase 4: AI Optimization (0/2 completed)
+  - Environment variables type-safe con Zod
+  - Vitest setup (5 tests básicos)
+- [ ] Phase 1: Critical Foundations (0/50 tareas) → Ver [01-INFRASTRUCTURE.md](../docs/technical-debt/01-INFRASTRUCTURE.md)
+- [ ] Phase 2: Strategic Testing (0/19 tareas) → Ver [01-INFRASTRUCTURE.md](../docs/technical-debt/01-INFRASTRUCTURE.md#fase-2-testing-estrategico)
+- [ ] Phase 3: Observability (0/14 tareas) → Ver [01-INFRASTRUCTURE.md](../docs/technical-debt/01-INFRASTRUCTURE.md#fase-3-observabilidad)
+- [ ] Phase 4: AI Optimization (0/2 tareas) - No documentado en detalle aún
 
-**Total tasks**: ~50 tasks identified
-**Completed**: Phase 0 (9 files modified, 55 insertions, 27 deletions)
+### Categorías Adicionales:
+- [ ] Performance & Cache (0/2 tareas) → Ver [02-PERFORMANCE.md](../docs/technical-debt/02-PERFORMANCE.md)
+- [ ] AI Search Optimization (0/1 tarea) → Ver [03-AI-SEARCH.md](../docs/technical-debt/03-AI-SEARCH.md)
+- [ ] Email Delivery (0/2 tareas) 🔴 CRÍTICO → Ver [04-EMAIL.md](../docs/technical-debt/04-EMAIL.md)
+- [ ] Map Filters Bug (0/1 tarea) → Ver [05-MAP-FILTERS.md](../docs/technical-debt/05-MAP-FILTERS.md)
+
+**Total consolidado**: 3/54 tareas completadas (~5.5%)
+
+**Documentación completa**: Ver [docs/technical-debt/README.md](../docs/technical-debt/README.md) para el índice maestro y plan de acción recomendado.
