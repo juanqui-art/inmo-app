@@ -123,23 +123,20 @@ export function FilterBar({
           <BathroomsFilter />
         </div>
 
-        {/* Right Side: Active Filters Badge + Clear + View Toggle */}
+        {/* Right Side: Active Filters Badge + View Toggle */}
         <div className="ml-auto flex items-center gap-2">
-          {/* Active Filters Badge + Clear Button */}
+          {/* Active Filters Chip (Unified - with X inside) */}
           {activeFilterCount > 0 && (
-            <>
-              <div className="flex h-12 items-center gap-2 px-4 py-2 rounded-full bg-oslo-gray-900/50 text-oslo-gray-50 font-medium text-base border border-oslo-gray-800">
-                {activeFilterCount} filtro{activeFilterCount !== 1 ? "s" : ""}
-              </div>
-              <button
-                onClick={clearAllFilters}
-                title="Limpiar todos los filtros"
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800 transition-all duration-200"
-                aria-label="Limpiar todos los filtros"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </>
+            <button
+              type="button"
+              onClick={clearAllFilters}
+              title="Limpiar todos los filtros"
+              className="flex h-10 items-center gap-2 px-3 py-2 rounded-full bg-amber-600/30 text-amber-50 font-medium text-sm border border-amber-700/50 hover:bg-amber-600/40 hover:border-amber-600 transition-all duration-200 cursor-pointer"
+              aria-label="Limpiar todos los filtros"
+            >
+              <span>{activeFilterCount} filtro{activeFilterCount !== 1 ? "s" : ""}</span>
+              <X className="w-4 h-4" />
+            </button>
           )}
 
           {/* View Toggle (Solo en split view) */}
