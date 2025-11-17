@@ -60,22 +60,21 @@ export function animateCounter(
 
   const { duration = 1.5, ease = "power1.out", decimals = 0 } = options || {};
 
-  gsap.fromTo(
-    { count: 0 },
-    {
-      count: targetValue,
-      duration,
-      ease,
-      onUpdate: function () {
-        const current = this.targets()[0].count;
-        const value =
-          decimals > 0
-            ? current.toFixed(decimals)
-            : Math.round(current).toString();
-        element.textContent = value;
-      },
-    }
-  );
+  const counterObj = { count: 0 };
+
+  gsap.to(counterObj, {
+    count: targetValue,
+    duration,
+    ease,
+    onUpdate: function () {
+      const current = counterObj.count;
+      const value =
+        decimals > 0
+          ? current.toFixed(decimals)
+          : Math.round(current).toString();
+      element.textContent = value;
+    },
+  });
 }
 
 /**

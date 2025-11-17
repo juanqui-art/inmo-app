@@ -479,7 +479,7 @@ export class PropertyRepository {
     filters?: PropertyFilters
     skip?: number
     take?: number
-  }): Promise<{ properties: PropertyWithRelations[]; total: number }> {
+  }): Promise<{ properties: SerializedProperty[]; total: number }> {
     // Delegate to cached version for request-level deduplication
     return findInBoundsCached({
       minLatitude: params.minLatitude,

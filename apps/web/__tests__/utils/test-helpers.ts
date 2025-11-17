@@ -4,12 +4,17 @@
  * Utility functions for testing Server Actions and components
  */
 
-// Define minimal User type locally to avoid importing Prisma
-type User = {
+/**
+ * SafeUser type - matches @repo/database SafeUser
+ * Excludes sensitive fields like password
+ */
+type SafeUser = {
   id: string;
   email: string;
   name: string | null;
   role: "CLIENT" | "AGENT" | "ADMIN";
+  phone: string | null;
+  avatar: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -17,12 +22,14 @@ type User = {
 /**
  * Create a mock user for testing
  */
-export function createMockUser(overrides?: Partial<User>): User {
+export function createMockUser(overrides?: Partial<SafeUser>): SafeUser {
   return {
     id: "test-user-id",
     email: "test@example.com",
     name: "Test User",
     role: "AGENT",
+    phone: null,
+    avatar: null,
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
     ...overrides,

@@ -42,6 +42,8 @@ export function MapSearchIntegration({
 }: MapSearchIntegrationProps) {
   const searchParams = useSearchParams();
   const aiSearchQuery = searchParams.get("ai_search");
+  const [_isLoading, setIsLoading] = useState(false);
+  const [_searchResult, setSearchResult] = useState<AISearchResult | null>(null);
 
   // Get map store actions
   const setFilters = useMapStore((state) => state.setFilters);

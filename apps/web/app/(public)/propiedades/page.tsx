@@ -109,6 +109,25 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
   // Parse filters from URL (used by both views)
   const filters: PropertyFilters = parseFilterParams(searchParams);
 
+  // Convert PropertyFilters to FilterState (for map store)
+  const filterState: import("@/stores/map-store").FilterState = {
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
+    category: Array.isArray(filters.category)
+      ? (filters.category as string[])
+      : filters.category
+      ? [filters.category]
+      : undefined,
+    bedrooms: filters.bedrooms,
+    bathrooms: filters.bathrooms,
+    transactionType: Array.isArray(filters.transactionType)
+      ? (filters.transactionType as string[])
+      : filters.transactionType
+      ? [filters.transactionType]
+      : undefined,
+    city: filters.city,
+  };
+
   // Fetch current user (needed for auth state)
   const currentUser = await getCurrentUser();
 
@@ -184,7 +203,7 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
           priceDistribution={priceDistribution}
           priceRangeMin={priceRangeMin}
           priceRangeMax={priceRangeMax}
-          filters={filters}
+          filters={filterState}
         />
 
         {/* RESPONSIVE RENDERING:
@@ -280,7 +299,7 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
           priceDistribution={priceDistribution}
           priceRangeMin={priceRangeMin}
           priceRangeMax={priceRangeMax}
-          filters={filters}
+          filters={filterState}
         />
 
         {/* Render list view */}
