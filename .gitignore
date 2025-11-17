@@ -61,3 +61,6 @@ next-env.d.ts
 MCP_CONFIG.json
 **/playwright-report/
 **/test-results/
+
+# GitHub workflows (requires manual push due to GitHub App permissions)
+.github/workflows/ci.yml
