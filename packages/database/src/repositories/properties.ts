@@ -278,8 +278,11 @@ function buildPropertyWhereClause(
 export class PropertyRepository {
   /**
    * Encuentra una propiedad por ID
+   *
+   * NOTE: Returns SERIALIZED property (Decimal → number)
+   * This method uses findByIdCached which internally calls _findById()
    */
-  async findById(id: string): Promise<PropertyWithRelations | null> {
+  async findById(id: string): Promise<SerializedProperty | null> {
     // Delegate to cached version for request-level deduplication
     return findByIdCached(id)
   }

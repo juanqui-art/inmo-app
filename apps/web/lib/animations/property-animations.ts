@@ -110,7 +110,7 @@ export function animateHeightToggle(
  */
 export function animateHeroParallax(
   element: HTMLElement | null,
-  strength: number = 0.5
+  _strength: number = 0.5
 ) {
   if (!element) return;
 

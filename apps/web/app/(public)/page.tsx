@@ -66,7 +66,6 @@ import { HeroSection } from "@/components/home/hero-section";
 import { RecentListingsSection } from "@/components/home/recent-listings-section";
 import { StatsSection } from "@/components/home/stats-section";
 import { TrendingPropertiesSection } from "@/components/home/trending-properties-section";
-import { serializeProperties } from "@/lib/utils/serialize-property";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function HomePage() {

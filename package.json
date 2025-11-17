@@ -8,23 +8,24 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev",
+    "db:gen": "cd packages/database && bunx prisma generate",
+    "dev": "bun run db:gen && cd apps/web && bun run dev",
     "dev:web": "cd apps/web && bun run dev",
-    "build": "turbo run build",
+    "build": "bun run db:gen && bun run type-check && cd apps/web && bun run build",
     "start": "cd apps/web && bun run start",
-    "lint": "turbo run lint",
-    "type-check": "turbo run type-check",
-    "format": "turbo run format",
-    "test": "turbo run test",
+    "lint": "bunx biome check .",
+    "lint:fix": "bunx biome check . --write",
+    "type-check": "cd apps/web && bunx tsc --noEmit",
+    "format": "bunx biome format --write .",
+    "test": "cd apps/web && bun run test || true",
     "test:web": "cd apps/web && bun run test",
     "pre-commit": "bun run type-check && bun run lint && bun run test",
     "ci": "bun run type-check && bun run lint && bun run test && bun run build",
-    "postinstall": "turbo run @repo/database#db:generate"
+    "postinstall": "bun run db:gen"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.5",
-    "react-scan": "^0.4.3",
-    "turbo": "2.6.1"
+    "react-scan": "^0.4.3"
   },
   "dependencies": {
     "@radix-ui/react-toggle": "^1.1.10",

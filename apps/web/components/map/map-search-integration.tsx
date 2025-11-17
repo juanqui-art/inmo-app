@@ -42,10 +42,6 @@ export function MapSearchIntegration({
 }: MapSearchIntegrationProps) {
   const searchParams = useSearchParams();
   const aiSearchQuery = searchParams.get("ai_search");
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchResult, setSearchResult] = useState<AISearchResult | null>(
-    null,
-  );
 
   // Get map store actions
   const setFilters = useMapStore((state) => state.setFilters);
@@ -53,7 +49,6 @@ export function MapSearchIntegration({
   useEffect(() => {
     // Only run if there's an AI search query
     if (!aiSearchQuery) {
-      setSearchResult(null);
       return;
     }
 
