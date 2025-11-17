@@ -14,15 +14,32 @@
  * - "Propiedades en Cuenca (50 propiedades)"
  */
 
+import type { PropertyFilters } from "@repo/database";
 import { useMapStore } from "@/stores/map-store";
 import { transactionTypeLabels, categoryLabels } from "@/lib/constants";
 
 interface PropertyListTitleProps {
-  total: number;
+  /**
+   * Total number of properties
+   * If not provided, will use properties count from MapStore
+   */
+  total?: number;
+  /**
+   * Current filters to display in title
+   * If not provided, will read from MapStore
+   */
+  filters?: PropertyFilters;
 }
 
-export function PropertyListTitle({ total }: PropertyListTitleProps) {
-  const filters = useMapStore((state) => state.filters);
+export function PropertyListTitle({ total: totalProp, filters: filtersProp }: PropertyListTitleProps) {
+  const storeFilters = useMapStore((state) => state.filters);
+  const properties = useMapStore((state) => state.properties);
+
+  // Use prop if provided, otherwise read from store
+  const filters = filtersProp || storeFilters;
+
+  // Use prop if provided, otherwise use properties count from store
+  const total = totalProp !== undefined ? totalProp : properties.length;
 
   // Build descriptive title from active filters
   const buildTitle = () => {

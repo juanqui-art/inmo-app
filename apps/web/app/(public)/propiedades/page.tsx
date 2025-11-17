@@ -198,7 +198,11 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
 
         {/* Mobile: Full-screen map */}
         <div className="lg:hidden">
-          <MapPageClient initialBounds={displayBounds ?? undefined} />
+          <MapPageClient
+            initialBounds={displayBounds ?? undefined}
+            totalProperties={total}
+            filters={filters}
+          />
         </div>
       </>
     );
