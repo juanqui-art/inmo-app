@@ -34,6 +34,7 @@
 import { FilterBar } from "@/components/map/filters/filter-bar";
 import { PropertyCard } from "./property-card";
 import { PropertyCardSkeleton } from "./property-card-skeleton";
+import { PropertyListTitle } from "./property-list-title";
 import { MapView } from "@/components/map/map-view";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { PublicFooter } from "@/components/layout/public-footer";
@@ -121,19 +122,9 @@ export function PropertySplitView() {
           =================================================================== */}
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT SIDE: Property List (50%) */}
-        <div className="w-1/2 overflow-y-auto border-r border-oslo-gray-800">
-          {/* Local Header - Sticky within list column */}
-          <div className="sticky top-0 z-20 bg-oslo-gray-950/90 backdrop-blur-md border-b border-oslo-gray-800">
-            <div className="px-4 sm:px-6 lg:px-8 py-4">
-              <h2 className="text-2xl font-bold text-oslo-gray-50">
-                Propiedades
-              </h2>
-              <p className="text-sm text-oslo-gray-300">
-                {total} propiedad{total !== 1 ? "es" : ""} encontrada
-                {total !== 1 ? "s" : ""}
-              </p>
-            </div>
-          </div>
+        <div className="w-1/2 overflow-y-auto border-r border-oslo-gray-800 flex flex-col">
+          {/* Dynamic Title - Shows current filters and count */}
+          <PropertyListTitle total={total} />
 
           {/* Property Grid Container */}
           <div className="px-4 sm:px-6 lg:px-8 py-8">
