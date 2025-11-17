@@ -92,7 +92,7 @@ export function PropertyListTitle({ total: totalProp, filters: filtersProp }: Pr
     filters.bathrooms;
 
   return (
-    <div className="flex-shrink-0 px-4 sm:px-6 lg:px-8 py-3 border-b border-oslo-gray-800">
+    <div className="px-4 sm:px-6 lg:px-8 py-3 border-b border-oslo-gray-800">
       <div>
         <h2 className="text-lg font-semibold text-oslo-gray-50">
           {title} <span className="font-normal text-oslo-gray-400">({countText})</span>

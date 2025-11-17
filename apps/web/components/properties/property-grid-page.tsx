@@ -77,7 +77,9 @@ export function PropertyGridPage() {
         </div>
 
         {/* Title */}
-        <PropertyListTitle total={total} />
+        <div className="flex-shrink-0">
+          <PropertyListTitle total={total} />
+        </div>
 
         {/* Empty State */}
         <div className="flex-1 overflow-y-auto flex items-center justify-center">
@@ -122,7 +124,9 @@ export function PropertyGridPage() {
       </div>
 
       {/* Title */}
-      <PropertyListTitle total={total} />
+      <div className="flex-shrink-0">
+        <PropertyListTitle total={total} />
+      </div>
 
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto">
