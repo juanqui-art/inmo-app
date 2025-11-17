@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { Phone, Mail } from "lucide-react";
 import { cn } from "@repo/ui";
 import gsap from "gsap";
-import { AppointmentButton } from "@/components/appointments/appointment-button";
+// DISABLED: AppointmentButton temporarily disabled to fix Turbopack build
+// import { AppointmentButton } from "@/components/appointments/appointment-button";
 
 interface PropertyFloatingActionCardProps {
   price: string;
@@ -23,8 +24,9 @@ export function PropertyFloatingActionCard({
   agentEmail,
   agentPhone,
   agentAvatar,
-  propertyId,
-  isAuthenticated,
+  // DISABLED: propertyId and isAuthenticated temporarily unused due to disabled AppointmentButton
+  // propertyId,
+  // isAuthenticated,
   isSticky = true,
 }: PropertyFloatingActionCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -70,10 +72,12 @@ export function PropertyFloatingActionCard({
           Contactar Agente
         </a>
 
+        {/* DISABLED: AppointmentButton temporarily disabled to fix Turbopack build
         <AppointmentButton
           propertyId={propertyId}
           isAuthenticated={isAuthenticated}
         />
+        */}
       </div>
 
       {/* Agent Card */}

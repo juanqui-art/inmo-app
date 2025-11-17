@@ -5,7 +5,9 @@
  * Muestra links según el rol del usuario
  */
 
-import { Building2, Calendar, Home, Settings, Users } from "lucide-react";
+import { Building2, Home, Settings, Users } from "lucide-react";
+// DISABLED: Calendar icon import temporarily unused due to disabled Citas nav
+// import { Calendar } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -38,12 +40,15 @@ const navItems: NavItem[] = [
     icon: Building2,
     roles: ["AGENT", "ADMIN"],
   },
+  // DISABLED: Citas nav item temporarily disabled to fix Turbopack build
+  /*
   {
     title: "Citas",
     href: "/dashboard/citas",
     icon: Calendar,
     roles: ["AGENT", "ADMIN"],
   },
+  */
   {
     title: "Clientes",
     href: "/dashboard/clientes",
