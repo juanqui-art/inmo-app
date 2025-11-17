@@ -41,6 +41,7 @@ import { PropertySplitView } from "@/components/properties/property-split-view";
 import PropertyGridStoreInitializer from "@/stores/PropertyGridStoreInitializer";
 import AuthStoreInitializer from "@/stores/AuthStoreInitializer";
 import MapStoreInitializer from "@/components/map/map-store-initializer";
+import { type FilterState } from "@/stores/map-store";
 import { MapPageClient } from "@/components/map/map-page-client";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -184,7 +185,7 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
           priceDistribution={priceDistribution}
           priceRangeMin={priceRangeMin}
           priceRangeMax={priceRangeMax}
-          filters={filters}
+          filters={filters as FilterState}
         />
 
         {/* RESPONSIVE RENDERING:
@@ -280,7 +281,7 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
           priceDistribution={priceDistribution}
           priceRangeMin={priceRangeMin}
           priceRangeMax={priceRangeMax}
-          filters={filters}
+          filters={filters as FilterState}
         />
 
         {/* Render list view */}

@@ -18,12 +18,6 @@ export function propertyFiltersAreEqual(
   const aKeys = Object.keys(a).filter(
     (key) => a[key as keyof typeof a] !== undefined && a[key as keyof typeof a] !== null && a[key as keyof typeof a] !== "",
   );
-  const bKeys = Object.keys(b).filter(
-    (key) => b[key] !== undefined && b[key] !== null && b[key] !== "",
-  );
-
-  // Basic check for number of keys
-  // if (aKeys.length !== bKeys.length) return false;
 
   for (const key of aKeys) {
     const keyA = key as keyof PropertyFilters;

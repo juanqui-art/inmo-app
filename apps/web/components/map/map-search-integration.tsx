@@ -21,7 +21,7 @@
  * Part of: AI Search Cache READ implementation
  */
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { getCachedAISearchResult } from "@/lib/utils/ai-search-cache";
 import { aiSearchAction } from "@/app/actions/ai-search";
@@ -42,10 +42,9 @@ export function MapSearchIntegration({
 }: MapSearchIntegrationProps) {
   const searchParams = useSearchParams();
   const aiSearchQuery = searchParams.get("ai_search");
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchResult, setSearchResult] = useState<AISearchResult | null>(
-    null,
-  );
+  // Reserved for future use in offline/loading states
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [searchResult, setSearchResult] = useState<AISearchResult | null>(null);
 
   // Get map store actions
   const setFilters = useMapStore((state) => state.setFilters);
@@ -53,7 +52,7 @@ export function MapSearchIntegration({
   useEffect(() => {
     // Only run if there's an AI search query
     if (!aiSearchQuery) {
-      setSearchResult(null);
+      // setSearchResult(null);
       return;
     }
 
@@ -77,7 +76,7 @@ export function MapSearchIntegration({
       logger.debug(
         "[MapSearchIntegration] Cache miss, calling aiSearchAction()...",
       );
-      setIsLoading(true);
+      // setIsLoading(true);
 
       try {
         const result = await aiSearchAction(aiSearchQuery);
@@ -90,7 +89,7 @@ export function MapSearchIntegration({
         logger.error("[MapSearchIntegration] AI search failed:", error);
         // Don't update map if search failed
       } finally {
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     };
 
@@ -99,7 +98,7 @@ export function MapSearchIntegration({
      * Converts AISearchResult.filterSummary to MapStore.FilterState
      */
     function applySearchResultToMap(result: AISearchResult) {
-      setSearchResult(result);
+      // setSearchResult(result);
 
       if (!result.success || !result.filterSummary) {
         logger.warn(

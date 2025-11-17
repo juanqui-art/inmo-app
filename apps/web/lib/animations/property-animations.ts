@@ -60,14 +60,13 @@ export function animateCounter(
 
   const { duration = 1.5, ease = "power1.out", decimals = 0 } = options || {};
 
-  gsap.fromTo(
-    { count: 0 },
-    {
-      count: targetValue,
-      duration,
-      ease,
-      onUpdate: function () {
-        const current = this.targets()[0].count;
+  const counterObj = { count: 0 };
+  gsap.to(counterObj, {
+    count: targetValue,
+    duration,
+    ease,
+    onUpdate: function () {
+      const current = (this.targets()[0] as any).count;
         const value =
           decimals > 0
             ? current.toFixed(decimals)
@@ -110,7 +109,8 @@ export function animateHeightToggle(
  */
 export function animateHeroParallax(
   element: HTMLElement | null,
-  strength: number = 0.5
+  // Reserved for future parallax strength configuration
+  // strength: number = 0.5
 ) {
   if (!element) return;
 

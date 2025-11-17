@@ -67,7 +67,7 @@ export function PropertyHeroCarousel({
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
   const [isAutoplay, setIsAutoplay] = useState(true);
   const [showLightbox, setShowLightbox] = useState(false);
-  const autoplayTimerRef = useRef<NodeJS.Timeout>();
+  const autoplayTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Initialize carousel
   useEffect(() => {
