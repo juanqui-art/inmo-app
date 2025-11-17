@@ -17,6 +17,8 @@
     "format": "turbo run format",
     "test": "turbo run test",
     "test:web": "cd apps/web && bun run test",
+    "pre-commit": "bun run type-check && bun run lint && bun run test",
+    "ci": "bun run type-check && bun run lint && bun run test && bun run build",
     "postinstall": "turbo run @repo/database#db:generate"
   },
   "devDependencies": {
