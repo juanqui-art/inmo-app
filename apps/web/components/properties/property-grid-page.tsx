@@ -128,9 +128,10 @@ export function PropertyGridPage() {
         <PropertyListTitle total={total} />
       </div>
 
-      {/* Content Area */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Content Area - Scrollable container */}
+      <div className="flex-1 overflow-y-auto flex flex-col">
+        {/* Inner container with padding and max-width */}
+        <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
           {/* Grid Layout */}
           {isLoading ? (
             // Loading state: Show skeletons
@@ -153,10 +154,14 @@ export function PropertyGridPage() {
               ))}
             </div>
           )}
-
-          {/* Pagination */}
-          {totalPages > 1 && !isLoading && <PropertyGridPagination />}
         </div>
+
+        {/* Pagination - Sticky at bottom */}
+        {totalPages > 1 && !isLoading && (
+          <div className="flex-shrink-0 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-8">
+            <PropertyGridPagination />
+          </div>
+        )}
       </div>
 
       {/* Auth Modal */}
