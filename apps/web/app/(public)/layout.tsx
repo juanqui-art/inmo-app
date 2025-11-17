@@ -60,6 +60,7 @@
  * - https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts
  */
 
+import { Suspense } from "react";
 import { PublicHeader } from "@/components/layout/public-header";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { Toaster } from "sonner";
@@ -72,7 +73,9 @@ export default function PublicLayout({
 }) {
   return (
     <div className="relative flex flex-col min-h-screen">
-      <BodyStyleManager />
+      <Suspense fallback={null}>
+        <BodyStyleManager />
+      </Suspense>
       {/*
         HEADER (floating)
         - Positioned absolutely over hero
@@ -94,7 +97,9 @@ export default function PublicLayout({
         - Conditional: Hidden on split view (renderizado dentro de PropertySplitView)
         - Shown on list view normal
       */}
-      <ConditionalFooter />
+      <Suspense fallback={<div className="h-16" />}>
+        <ConditionalFooter />
+      </Suspense>
 
       {/*
         TOAST NOTIFICATIONS
