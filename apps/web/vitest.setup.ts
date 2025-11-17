@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom";
+import { vi } from "vitest";
 
 // Mock environment variables for tests
 process.env.NEXT_PUBLIC_SUPABASE_URL = "https://test.supabase.co";
@@ -6,3 +7,72 @@ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
 process.env.NEXT_PUBLIC_SITE_URL = "http://localhost:3000";
 process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/test";
 // NOTE: NODE_ENV is automatically set to "test" by vitest
+
+// Mock database repositories BEFORE they're imported
+vi.mock("@repo/database", () => {
+  return {
+    propertyRepository: {
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      findById: vi.fn(),
+      list: vi.fn(),
+    },
+    propertyImageRepository: {
+      countByProperty: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+      findById: vi.fn(),
+      updateManyOrders: vi.fn(),
+    },
+    userRepository: {
+      findById: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+    FavoriteRepository: vi.fn(function() {
+      return {
+        toggleFavorite: vi.fn(),
+        getUserFavorites: vi.fn(),
+        isFavorite: vi.fn(),
+      };
+    }),
+  };
+});
+
+// Mock auth functions
+vi.mock("@/lib/auth", () => ({
+  getCurrentUser: vi.fn(),
+  requireAuth: vi.fn(),
+  requireRole: vi.fn(),
+  checkPermission: vi.fn(),
+  requireOwnership: vi.fn(),
+}));
+
+// Mock Next.js cache functions
+vi.mock("next/cache", () => ({
+  revalidatePath: vi.fn(),
+}));
+
+// Mock Next.js navigation functions
+vi.mock("next/navigation", () => ({
+  redirect: vi.fn((path: string) => {
+    throw new Error(`NEXT_REDIRECT: ${path}`);
+  }),
+}));
+
+// Mock Supabase client creation
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn(() => ({
+    auth: {
+      getUser: vi.fn(),
+      signOut: vi.fn(),
+    },
+  })),
+}));
+
+// Mock storage functions
+vi.mock("@/lib/storage/client", () => ({
+  uploadPropertyImage: vi.fn(),
+  deletePropertyImage: vi.fn(),
+}));
