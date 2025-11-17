@@ -3,17 +3,21 @@
 /**
  * PropertyViewToggle - Switch between list and map views
  *
- * UPDATED: Uses unified route with ?view parameter (Nov 2025)
- * - /propiedades?view=list → List view (grid)
- * - /propiedades?view=map → Map view
+ * UPDATED: Radix UI Toggle Group (Nov 2025)
+ * - Uses @radix-ui/react-toggle-group for better UX and accessibility
+ * - Unified design with glassmorphism styling (matches FilterBar)
+ * - Single route with ?view parameter (/propiedades?view=list|map)
+ * - Preserves all filter parameters when switching views
  *
- * Preserves all filter parameters when switching views
- *
- * OLD PATTERN: Separate routes (/propiedades vs /mapa)
- * NEW PATTERN: Single route with view parameter (industry standard)
+ * Benefits:
+ * - Better keyboard navigation (Tab, Arrow keys)
+ * - Proper ARIA attributes and semantics
+ * - Unified visual appearance
+ * - Smoother transitions
  */
 
 import Link from "next/link";
+import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import { Grid3x3, Map } from "lucide-react";
 import { cn } from "@repo/ui";
 
@@ -38,36 +42,51 @@ export function PropertyViewToggle({
   const mapUrl = `/propiedades?${baseQuery}view=map`;
 
   return (
-    <div className="flex items-center gap-2">
-      {/* List View Button */}
-      <Link
-        href={listUrl}
+    <ToggleGroup.Root
+      type="single"
+      value={currentView}
+      className="flex items-center gap-1 px-1.5 py-1.5 rounded-full bg-oslo-gray-900/50 border border-oslo-gray-800 backdrop-blur-md"
+      aria-label="Vista de propiedades"
+    >
+      {/* List View Toggle */}
+      <ToggleGroup.Item
+        value="list"
+        asChild
         className={cn(
-          "flex h-12 items-center gap-2 px-4 py-2 rounded-full font-medium text-base transition-all duration-200 whitespace-nowrap",
-          currentView === "list"
-            ? "bg-oslo-gray-600/30 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
-            : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800",
+          "flex h-10 items-center gap-2 px-3 py-2 rounded-full font-medium text-sm transition-all duration-200 whitespace-nowrap cursor-pointer",
+          "data-[state=on]:bg-oslo-gray-600/40 data-[state=on]:text-oslo-gray-50 data-[state=on]:shadow-lg data-[state=on]:shadow-oslo-gray-900/50",
+          "data-[state=off]:text-oslo-gray-300 hover:text-oslo-gray-100 hover:bg-oslo-gray-800/30"
         )}
-        title="Ver como lista"
       >
-        <Grid3x3 className="w-4 h-4" />
-        <span className="hidden sm:inline">Lista</span>
-      </Link>
+        <Link
+          href={listUrl}
+          className="flex h-full items-center gap-2"
+          title="Ver como lista"
+        >
+          <Grid3x3 className="w-4 h-4" />
+          <span className="hidden sm:inline">Lista</span>
+        </Link>
+      </ToggleGroup.Item>
 
-      {/* Map View Button */}
-      <Link
-        href={mapUrl}
+      {/* Map View Toggle */}
+      <ToggleGroup.Item
+        value="map"
+        asChild
         className={cn(
-          "flex h-12 items-center gap-2 px-4 py-2 rounded-full font-medium text-base transition-all duration-200 whitespace-nowrap",
-          currentView === "map"
-            ? "bg-oslo-gray-600/30 text-oslo-gray-50 shadow-lg shadow-oslo-gray-900/50"
-            : "bg-oslo-gray-900/50 text-oslo-gray-300 border border-oslo-gray-800 hover:bg-oslo-gray-800",
+          "flex h-10 items-center gap-2 px-3 py-2 rounded-full font-medium text-sm transition-all duration-200 whitespace-nowrap cursor-pointer",
+          "data-[state=on]:bg-oslo-gray-600/40 data-[state=on]:text-oslo-gray-50 data-[state=on]:shadow-lg data-[state=on]:shadow-oslo-gray-900/50",
+          "data-[state=off]:text-oslo-gray-300 hover:text-oslo-gray-100 hover:bg-oslo-gray-800/30"
         )}
-        title="Ver como mapa"
       >
-        <Map className="w-4 h-4" />
-        <span className="hidden sm:inline">Mapa</span>
-      </Link>
-    </div>
+        <Link
+          href={mapUrl}
+          className="flex h-full items-center gap-2"
+          title="Ver como mapa"
+        >
+          <Map className="w-4 h-4" />
+          <span className="hidden sm:inline">Mapa</span>
+        </Link>
+      </ToggleGroup.Item>
+    </ToggleGroup.Root>
   );
 }
