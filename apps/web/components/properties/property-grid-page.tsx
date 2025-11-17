@@ -66,7 +66,7 @@ export function PropertyGridPage() {
   // Empty state
   if (total === 0) {
     return (
-      <div className="h-screen flex flex-col bg-oslo-gray-1000">
+      <div className="flex flex-col min-h-screen bg-oslo-gray-1000">
         {/* Filter Bar (with toggle integrated) */}
         <div className="flex-shrink-0">
           <FilterBar
@@ -82,7 +82,7 @@ export function PropertyGridPage() {
         </div>
 
         {/* Empty State */}
-        <div className="flex-1 overflow-y-auto flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center">
           <div className="max-w-md w-full px-4 sm:px-6 lg:px-8 py-16 text-center">
             <div className="mb-4 text-5xl">🔍</div>
             <h2 className="text-3xl sm:text-4xl font-bold text-oslo-gray-50 mb-2">
@@ -107,7 +107,7 @@ export function PropertyGridPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-oslo-gray-1000">
+    <div className="flex flex-col min-h-screen bg-oslo-gray-1000">
       {/* SEO Schema */}
       <PropertyListSchema
         properties={properties}
@@ -128,8 +128,8 @@ export function PropertyGridPage() {
         <PropertyListTitle total={total} />
       </div>
 
-      {/* Content Area - Scrollable container */}
-      <div className="flex-1 overflow-y-auto flex flex-col">
+      {/* Content Area - No overflow, scrolls at body level */}
+      <div className="flex-1 flex flex-col">
         {/* Inner container with padding and max-width */}
         <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
           {/* Grid Layout */}
