@@ -100,10 +100,12 @@ export function findBucketIndex(
   if (!distribution || distribution.length === 0) return 0;
 
   let nearestIndex = 0;
-  let minDistance = Math.abs(distribution[0]?.bucket - price);
+  const firstBucket = distribution[0]?.bucket ?? 0;
+  let minDistance = Math.abs(firstBucket - price);
 
   for (let i = 1; i < distribution.length; i++) {
-    const distance = Math.abs(distribution[i]?.bucket - price);
+    const bucket = distribution[i]?.bucket ?? 0;
+    const distance = Math.abs(bucket - price);
     if (distance < minDistance) {
       minDistance = distance;
       nearestIndex = i;

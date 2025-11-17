@@ -24,7 +24,8 @@ interface AISearchInputProps {
 
 export function AISearchInput({
   placeholder = "Ej: Casa moderna con 3 habitaciones cerca del centro",
-  autoFocus = true,
+  // autoFocus reserved for future use
+  // autoFocus = true,
   onSearch,
   isLoading = false,
 }: AISearchInputProps) {

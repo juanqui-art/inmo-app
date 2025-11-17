@@ -249,6 +249,8 @@ export function shareProperty(
       return shareViaEmail(shareData);
     case "COPY_LINK":
       return copyLinkToClipboard(shareData.url);
+    default:
+      return undefined;
   }
 }
 

@@ -81,8 +81,8 @@ export function PriceHistogramSlider({
         const newMin = visibleDistribution[minIdx]?.bucket;
         const newMax = visibleDistribution[maxIdx]?.bucket;
 
-        // Validar que min <= max
-        if (newMin <= newMax) {
+        // Validar que min y max están definidos y que min <= max
+        if (newMin !== undefined && newMax !== undefined && newMin <= newMax) {
           onRangeChange(newMin, newMax);
         }
       }
