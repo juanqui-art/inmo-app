@@ -31,11 +31,11 @@
  * See AI-SEARCH-CONSOLIDATED.md section 3 for detailed comparison.
  */
 
-import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { logger } from "@/lib/utils/logger";
-import { aiSearchAction, type AISearchResult } from "@/app/actions/ai-search";
+import { useEffect, useRef, useState } from "react";
+import { type AISearchResult, aiSearchAction } from "@/app/actions/ai-search";
 import { cacheAISearchResult } from "@/lib/utils/ai-search-cache";
+import { logger } from "@/lib/utils/logger";
 
 interface UseInlineSearchReturn {
   isFocused: boolean;

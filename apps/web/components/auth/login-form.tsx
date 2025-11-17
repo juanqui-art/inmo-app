@@ -15,11 +15,9 @@
  * 5. Si es exitoso, loginAction redirige automáticamente
  */
 
-import { Button } from "@repo/ui";
+import { Button, Input, Label } from "@repo/ui";
 import { useActionState } from "react";
 import { loginAction } from "@/app/actions/auth";
-import { Input } from "@repo/ui";
-import { Label } from "@repo/ui";
 
 export function LoginForm() {
   // useActionState maneja el estado de la Server Action

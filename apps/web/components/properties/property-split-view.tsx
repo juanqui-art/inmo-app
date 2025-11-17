@@ -31,20 +31,20 @@
  * - Both stores hydrated by server components
  */
 
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { AuthModal } from "@/components/auth/auth-modal";
+import { PublicFooter } from "@/components/layout/public-footer";
 import { FilterBar } from "@/components/map/filters/filter-bar";
+import { useFilterUrlSync } from "@/components/map/filters/use-filter-url-sync";
+import { MapView } from "@/components/map/map-view";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useAuthStore } from "@/stores/auth-store";
+import { useMapStore } from "@/stores/map-store";
+import { usePropertyGridStore } from "@/stores/property-grid-store";
 import { PropertyCard } from "./property-card";
 import { PropertyCardSkeleton } from "./property-card-skeleton";
 import { PropertyListTitle } from "./property-list-title";
-import { MapView } from "@/components/map/map-view";
-import { AuthModal } from "@/components/auth/auth-modal";
-import { PublicFooter } from "@/components/layout/public-footer";
-import { usePropertyGridStore } from "@/stores/property-grid-store";
-import { useMapStore } from "@/stores/map-store";
-import { useAuthStore } from "@/stores/auth-store";
-import { useFavorites } from "@/hooks/use-favorites";
-import { useFilterUrlSync } from "@/components/map/filters/use-filter-url-sync";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 
 export function PropertySplitView() {
   // =========================================================================
@@ -59,7 +59,11 @@ export function PropertySplitView() {
   // =========================================================================
 
   // List data from PropertyGridStore
-  const { properties: listProperties, total, isLoading } = usePropertyGridStore();
+  const {
+    properties: listProperties,
+    total,
+    isLoading,
+  } = usePropertyGridStore();
 
   // Map data from MapStore
   const mapProperties = useMapStore((state) => state.properties);

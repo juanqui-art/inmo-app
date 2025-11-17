@@ -5,13 +5,13 @@
  * Usado en listas del dashboard y perfil de usuario
  */
 
+import type { AppointmentDetail } from "@repo/database";
+import { Badge } from "@repo/ui";
+import { Calendar, MapPin, Phone, User } from "lucide-react";
 import {
   formatAppointmentDate,
   getStatusLabel,
 } from "@/lib/utils/appointment-helpers";
-import { Badge } from "@repo/ui";
-import type { AppointmentDetail } from "@repo/database";
-import { MapPin, Calendar, User, Phone } from "lucide-react";
 
 interface AppointmentCardProps {
   appointment: AppointmentDetail;

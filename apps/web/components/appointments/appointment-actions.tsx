@@ -7,10 +7,10 @@
  * Solo visible para agentes en sus citas
  */
 
-import { useTransition, useState } from "react";
-import { updateAppointmentStatusAction } from "@/app/actions/appointments";
 import { Button } from "@repo/ui";
 import { Check, X } from "lucide-react";
+import { useState, useTransition } from "react";
+import { updateAppointmentStatusAction } from "@/app/actions/appointments";
 
 interface AppointmentActionsProps {
   appointmentId: string;

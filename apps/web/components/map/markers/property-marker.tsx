@@ -37,10 +37,10 @@
 
 "use client";
 
+import type { TransactionType } from "@repo/database";
 import { PropertyMarkerDark } from "./property-marker-dark";
 import { PropertyMarkerLight } from "./property-marker-light";
 import { PropertyMarkerMinimal } from "./property-marker-minimal";
-import type { TransactionType } from "@repo/database";
 
 export type PropertyMarkerVariant = "dark" | "light" | "minimal";
 
@@ -70,7 +70,6 @@ export function PropertyMarker({
       return <PropertyMarkerLight {...props} />;
     case "minimal":
       return <PropertyMarkerMinimal {...props} />;
-    case "dark":
     default:
       return <PropertyMarkerDark {...props} />;
   }

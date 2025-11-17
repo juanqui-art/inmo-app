@@ -76,7 +76,7 @@ window.addEventListener('scroll', () => {
         const scrollYEl = document.getElementById('scrollY');
         const isScrolledEl = document.getElementById('isScrolled');
         const statusEl = document.getElementById('status');
-        let lastScrollY = 0;
+        let _lastScrollY = 0;
 
         function updateScroll() {
             const currentScrollY = window.scrollY;
@@ -94,7 +94,7 @@ window.addEventListener('scroll', () => {
                 statusEl.style.color = '#888';
             }
 
-            lastScrollY = currentScrollY;
+            _lastScrollY = currentScrollY;
         }
 
         window.addEventListener('scroll', () => {

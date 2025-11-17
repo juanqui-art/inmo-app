@@ -5,11 +5,11 @@
  * Muestra links según el rol del usuario
  */
 
+import { Separator } from "@repo/ui";
 import { Building2, Calendar, Home, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Separator } from "@repo/ui";
 import { cn } from "@/lib/utils";
 
 type UserRole = "CLIENT" | "AGENT" | "ADMIN";

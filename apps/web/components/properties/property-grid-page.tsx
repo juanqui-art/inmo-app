@@ -16,26 +16,27 @@
  * - Child components also read from store directly
  */
 
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { AuthModal } from "@/components/auth/auth-modal";
+import { FilterBar } from "@/components/map/filters/filter-bar";
+import { useFilterUrlSync } from "@/components/map/filters/use-filter-url-sync";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useAuthStore } from "@/stores/auth-store";
+import { usePropertyGridStore } from "@/stores/property-grid-store";
 import { PropertyCard } from "./property-card";
 import { PropertyCardSkeleton } from "./property-card-skeleton";
 import { PropertyGridPagination } from "./property-grid-pagination";
-import { PropertyListTitle } from "./property-list-title";
 import { PropertyListSchema } from "./property-list-schema";
-import { FilterBar } from "@/components/map/filters/filter-bar";
-import { AuthModal } from "@/components/auth/auth-modal";
-import { useAuthStore } from "@/stores/auth-store";
-import { usePropertyGridStore } from "@/stores/property-grid-store";
-import { useFavorites } from "@/hooks/use-favorites";
-import { useFilterUrlSync } from "@/components/map/filters/use-filter-url-sync";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { PropertyListTitle } from "./property-list-title";
 
 export function PropertyGridPage() {
   // Sync filters between URL and store
   useFilterUrlSync();
 
   // Read store data
-  const { properties, total, currentPage, totalPages, isLoading } = usePropertyGridStore();
+  const { properties, total, currentPage, totalPages, isLoading } =
+    usePropertyGridStore();
 
   // UI state (local, not stored globally)
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -111,7 +112,11 @@ export function PropertyGridPage() {
       {/* SEO Schema */}
       <PropertyListSchema
         properties={properties}
-        city={Array.isArray(searchParams.get("city")) ? undefined : searchParams.get("city") || undefined}
+        city={
+          Array.isArray(searchParams.get("city"))
+            ? undefined
+            : searchParams.get("city") || undefined
+        }
       />
 
       {/* Filter Bar (with toggle integrated) */}

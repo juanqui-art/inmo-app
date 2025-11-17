@@ -11,26 +11,23 @@
 
 "use client";
 
-import type { SafeUser } from "@/lib/auth";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
+import type { SafeUser } from "@/lib/auth";
 import { AuthButtons } from "./auth-buttons";
 import { getNavLinks } from "./constants/nav-links";
+import { FavoritesDropdown } from "./favorites-dropdown";
 import { useMagneticEffect } from "./hooks/use-navbar-animations";
 import { SocialLinks } from "./social-links";
 import { UserDropdown } from "./user-dropdown";
-import { FavoritesDropdown } from "./favorites-dropdown";
 
 interface DesktopNavProps {
   isAuthenticated: boolean;
   user: SafeUser;
 }
 
-export function DesktopNav({
-  isAuthenticated,
-  user,
-}: DesktopNavProps) {
+export function DesktopNav({ isAuthenticated, user }: DesktopNavProps) {
   const ctaButtonRef = useRef<HTMLDivElement>(null);
   const navLinks = getNavLinks(isAuthenticated);
 
@@ -75,10 +72,7 @@ export function DesktopNav({
       {isAuthenticated ? (
         <UserDropdown user={user} />
       ) : (
-        <AuthButtons
-          ref={ctaButtonRef}
-          variant="desktop"
-        />
+        <AuthButtons ref={ctaButtonRef} variant="desktop" />
       )}
     </div>
   );

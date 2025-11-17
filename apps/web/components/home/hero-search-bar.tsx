@@ -22,15 +22,15 @@
 
 "use client";
 
-import { type FormEvent, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { QUICK_SEARCH_CATEGORIES } from "./hero-search-bar/constants";
-import { SearchDropdown } from "./hero-search-bar/search-dropdown";
-import { SearchInput } from "./hero-search-bar/search-input";
+import { type FormEvent, useRef } from "react";
 import { useKeyboardNavigation } from "@/hooks/use-keyboard-navigation";
 import { useSearchAutocomplete } from "@/hooks/use-search-autocomplete";
 import { useSearchHistory } from "@/hooks/use-search-history";
 import { useSearchInputAnimation } from "@/hooks/use-search-input-animation";
+import { QUICK_SEARCH_CATEGORIES } from "./hero-search-bar/constants";
+import { SearchDropdown } from "./hero-search-bar/search-dropdown";
+import { SearchInput } from "./hero-search-bar/search-input";
 
 export function HeroSearchBar() {
   const router = useRouter();

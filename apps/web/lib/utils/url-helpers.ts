@@ -302,8 +302,8 @@ export function viewportToBounds(viewState: {
 }): MapBounds {
   // Dynamic delta calculation (matches clustering formula)
   // This ensures bounds match what's actually visible on screen
-  const latitudeDelta = (180 / Math.pow(2, viewState.zoom)) * 1.2;
-  const longitudeDelta = (360 / Math.pow(2, viewState.zoom)) * 1.2;
+  const latitudeDelta = (180 / 2 ** viewState.zoom) * 1.2;
+  const longitudeDelta = (360 / 2 ** viewState.zoom) * 1.2;
 
   return {
     ne_lat: viewState.latitude + latitudeDelta,
@@ -572,7 +572,7 @@ export function parseFilterParams(
   searchParams: URLSearchParams | Record<string, string | string[] | undefined>,
 ): DynamicFilterParams {
   // Convert to plain object that Zod can handle
-  let rawParams: Record<string, string | string[]> = {};
+  const rawParams: Record<string, string | string[]> = {};
 
   if (searchParams instanceof URLSearchParams) {
     // If it's URLSearchParams, convert to object with array support

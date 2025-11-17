@@ -11,18 +11,18 @@
  * 2. Google OAuth
  */
 
-import { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
   Input,
-  Button,
 } from "@repo/ui";
-import { GoogleButton } from "./google-button";
 import { Users } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { GoogleButton } from "./google-button";
 
 interface AuthModalProps {
   open: boolean;

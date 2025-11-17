@@ -12,11 +12,11 @@
 
 "use client";
 
-import type { SafeUser } from "@/lib/auth";
 import { Heart, LogOut, Search, Settings, User, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
+import type { SafeUser } from "@/lib/auth";
 import { AuthButtons } from "./auth-buttons";
 import { getNavLinks } from "./constants/nav-links";
 import { useStaggerAnimation } from "./hooks/use-navbar-animations";

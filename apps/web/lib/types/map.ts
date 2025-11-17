@@ -4,7 +4,7 @@
  * Type definitions for MapBox integration
  */
 
-import type { TransactionType, PropertyCategory } from "@repo/database";
+import type { PropertyCategory, TransactionType } from "@repo/database";
 
 /**
  * Map viewport configuration

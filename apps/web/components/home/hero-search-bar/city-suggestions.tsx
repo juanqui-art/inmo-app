@@ -53,7 +53,6 @@ export function CitySuggestions({
                 onSelect(city);
               }
             }}
-            role="option"
             aria-selected={index === selectedIndex}
           >
             <div

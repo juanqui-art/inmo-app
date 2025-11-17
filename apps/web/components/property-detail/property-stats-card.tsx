@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { cn } from "@repo/ui";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect, useRef, useState } from "react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -59,7 +59,7 @@ function StatItem({
                   : Math.round(current).toString();
               }
             },
-          }
+          },
         );
       },
     });
@@ -79,7 +79,8 @@ function StatItem({
         "bg-oslo-gray-50 dark:bg-oslo-gray-900 p-4 rounded-lg text-center transition-all duration-300",
         "border border-oslo-gray-100 dark:border-oslo-gray-800",
         "cursor-pointer",
-        isHovered && "scale-102 shadow-md border-oslo-gray-200 dark:border-oslo-gray-700"
+        isHovered &&
+          "scale-102 shadow-md border-oslo-gray-200 dark:border-oslo-gray-700",
       )}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
@@ -132,7 +133,7 @@ export function PropertyStatsCard({
           start: "top 80%",
           toggleActions: "play none none none",
         },
-      }
+      },
     );
 
     return () => {
@@ -165,9 +166,7 @@ export function PropertyStatsCard({
             label="Habitaciones"
             value={bedrooms}
             isHovered={hoveredIndex === 0}
-            onHover={(isHovered) =>
-              setHoveredIndex(isHovered ? 0 : null)
-            }
+            onHover={(isHovered) => setHoveredIndex(isHovered ? 0 : null)}
           />
         )}
 
@@ -178,9 +177,7 @@ export function PropertyStatsCard({
             value={bathrooms}
             unit={bathrooms % 1 !== 0 ? "" : ""}
             isHovered={hoveredIndex === 1}
-            onHover={(isHovered) =>
-              setHoveredIndex(isHovered ? 1 : null)
-            }
+            onHover={(isHovered) => setHoveredIndex(isHovered ? 1 : null)}
           />
         )}
 
@@ -191,9 +188,7 @@ export function PropertyStatsCard({
             value={area}
             unit="m²"
             isHovered={hoveredIndex === 2}
-            onHover={(isHovered) =>
-              setHoveredIndex(isHovered ? 2 : null)
-            }
+            onHover={(isHovered) => setHoveredIndex(isHovered ? 2 : null)}
           />
         )}
       </div>

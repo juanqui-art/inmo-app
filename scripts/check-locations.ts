@@ -4,12 +4,12 @@
  * Run: bun run scripts/check-locations.ts
  */
 
-import { PrismaClient } from '@repo/database';
+import { PrismaClient } from "@repo/database";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🔍 Checking available locations in database...\n');
+  console.log("🔍 Checking available locations in database...\n");
 
   // Get distinct cities
   const cities = await prisma.property.findMany({
@@ -21,9 +21,9 @@ async function main() {
     select: {
       city: true,
     },
-    distinct: ['city'],
+    distinct: ["city"],
     orderBy: {
-      city: 'asc',
+      city: "asc",
     },
   });
 
@@ -43,7 +43,7 @@ async function main() {
     },
     take: 20, // Limit to 20 for readability
     orderBy: {
-      address: 'asc',
+      address: "asc",
     },
   });
 
@@ -52,19 +52,21 @@ async function main() {
 
   // Get statistics
   const stats = await prisma.property.groupBy({
-    by: ['city'],
+    by: ["city"],
     _count: {
       city: true,
     },
     orderBy: {
       _count: {
-        city: 'desc',
+        city: "desc",
       },
     },
   });
 
   console.log(`\n📊 Properties per city:`);
-  stats.forEach((s) => console.log(`   - ${s.city}: ${s._count.city} properties`));
+  stats.forEach((s) =>
+    console.log(`   - ${s.city}: ${s._count.city} properties`),
+  );
 }
 
 main()

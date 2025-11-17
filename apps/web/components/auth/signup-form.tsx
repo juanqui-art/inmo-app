@@ -10,11 +10,9 @@
  * - Rol (CLIENT, AGENT, ADMIN)
  */
 
-import { Button } from "@repo/ui";
+import { Button, Input, Label } from "@repo/ui";
 import { useActionState } from "react";
 import { signupAction } from "@/app/actions/auth";
-import { Input } from "@repo/ui";
-import { Label } from "@repo/ui";
 
 export function SignupForm() {
   const [state, formAction, isPending] = useActionState(

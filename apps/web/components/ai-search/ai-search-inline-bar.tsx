@@ -10,7 +10,7 @@
  * - Sparkle icon indicates AI
  */
 
-import { Sparkles, X, Loader } from "lucide-react";
+import { Loader, Sparkles, X } from "lucide-react";
 import { motion } from "motion/react";
 
 interface AISearchInlineBarProps {

@@ -11,11 +11,11 @@
  * - No props needed: store is hydrated by PropertyGridStoreInitializer
  */
 
-import Link from "next/link";
+import { cn } from "@repo/ui";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePropertyGridStore } from "@/stores/property-grid-store";
-import { cn } from "@repo/ui";
 
 export function PropertyGridPagination() {
   // Read pagination state from store

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 
 const AyudaPage: FC = () => {
   return (
@@ -8,8 +8,8 @@ const AyudaPage: FC = () => {
       </h1>
       <p className="mt-4 text-lg text-oslo-gray-700 dark:text-oslo-gray-300">
         Bienvenido a nuestro Centro de Ayuda. Aquí encontrarás respuestas a las
-        preguntas más frecuentes y recursos para asistirte en tu experiencia
-        con InmoApp.
+        preguntas más frecuentes y recursos para asistirte en tu experiencia con
+        InmoApp.
       </p>
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>

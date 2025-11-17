@@ -60,10 +60,10 @@
  * - https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts
  */
 
-import { PublicHeader } from "@/components/layout/public-header";
-import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { Toaster } from "sonner";
 import { BodyStyleManager } from "@/components/layout/body-style-manager";
+import { ConditionalFooter } from "@/components/layout/conditional-footer";
+import { PublicHeader } from "@/components/layout/public-header";
 
 export default function PublicLayout({
   children,

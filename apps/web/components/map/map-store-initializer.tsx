@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { useMapStore, type PriceDistribution, type FilterState } from "@/stores/map-store";
+import {
+  type FilterState,
+  type PriceDistribution,
+  useMapStore,
+} from "@/stores/map-store";
 import type { MapProperty } from "./map-view";
 
 interface MapStoreInitializerProps {

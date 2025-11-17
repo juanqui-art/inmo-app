@@ -5,12 +5,11 @@
  * Dropdown con opciones: Perfil, Logout
  */
 
-import { LogOut, User as UserIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { logoutAction } from "@/app/actions/auth";
-import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui";
-import { Badge } from "@repo/ui";
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Badge,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -18,6 +17,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui";
+import { LogOut, User as UserIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { logoutAction } from "@/app/actions/auth";
 
 // Type para el usuario desde DB (SafeUser del repository)
 interface User {

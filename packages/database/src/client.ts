@@ -5,13 +5,13 @@
  * para acceso a la base de datos de forma type-safe
  */
 
-import { PrismaClient } from '@prisma/client'
-import { env } from '@repo/env'
+import { PrismaClient } from "@prisma/client";
+import { env } from "@repo/env";
 
 // Prisma Client Singleton
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
+  prisma: PrismaClient | undefined;
+};
 
 /**
  * Instancia global de Prisma Client
@@ -26,14 +26,17 @@ const globalForPrisma = globalThis as unknown as {
  * const users = await db.user.findMany()
  * ```
  */
-export const db = globalForPrisma.prisma ?? new PrismaClient({
-  log: env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  // Configuración para Supabase Pooler (PgBouncer)
-  // Referencia: https://www.prisma.io/docs/guides/performance-and-optimization/connection-management#pgbouncer
-  datasourceUrl: env.DATABASE_URL,
-})
+export const db =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log:
+      env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    // Configuración para Supabase Pooler (PgBouncer)
+    // Referencia: https://www.prisma.io/docs/guides/performance-and-optimization/connection-management#pgbouncer
+    datasourceUrl: env.DATABASE_URL,
+  });
 
 // En desarrollo, guardar la instancia globalmente para hot reload
-if (env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = db
+if (env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = db;
 }

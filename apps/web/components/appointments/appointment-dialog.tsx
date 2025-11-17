@@ -9,8 +9,8 @@
  * - Se cierra al completar o cancelar
  */
 
-import { AppointmentForm } from "./appointment-form";
 import { X } from "lucide-react";
+import { AppointmentForm } from "./appointment-form";
 
 interface AppointmentDialogProps {
   propertyId: string;

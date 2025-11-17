@@ -44,10 +44,10 @@ export function formatNumberEcuador(num: number): string {
  */
 export function formatPriceCompact(num: number): string {
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(0) + "M";
+    return `${(num / 1000000).toFixed(0)}M`;
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(0) + "K";
+    return `${(num / 1000).toFixed(0)}K`;
   }
   return num.toString();
 }
@@ -100,10 +100,10 @@ export function findBucketIndex(
   if (!distribution || distribution.length === 0) return 0;
 
   let nearestIndex = 0;
-  let minDistance = Math.abs(distribution[0]!.bucket - price);
+  let minDistance = Math.abs(distribution[0]?.bucket - price);
 
   for (let i = 1; i < distribution.length; i++) {
-    const distance = Math.abs(distribution[i]!.bucket - price);
+    const distance = Math.abs(distribution[i]?.bucket - price);
     if (distance < minDistance) {
       minDistance = distance;
       nearestIndex = i;

@@ -6,12 +6,12 @@
  * Permite confirmar o cancelar citas
  */
 
-import { requireRole } from "@/lib/auth";
 import { AppointmentRepository } from "@repo/database";
-import { AppointmentCard } from "@/components/appointments/appointment-card";
-import { AppointmentActions } from "@/components/appointments/appointment-actions";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { AppointmentActions } from "@/components/appointments/appointment-actions";
+import { AppointmentCard } from "@/components/appointments/appointment-card";
+import { requireRole } from "@/lib/auth";
 
 export default async function DashboardCitasPage() {
   // Requerir que sea agente

@@ -32,7 +32,9 @@ export function createMockUser(overrides?: Partial<User>): User {
 /**
  * Create a mock FormData object for testing
  */
-export function createMockFormData(data: Record<string, string | number | null | undefined>): FormData {
+export function createMockFormData(
+  data: Record<string, string | number | null | undefined>,
+): FormData {
   const formData = new FormData();
 
   Object.entries(data).forEach(([key, value]) => {
@@ -50,7 +52,8 @@ export function createMockFormData(data: Record<string, string | number | null |
 export function createValidPropertyData(overrides?: Record<string, unknown>) {
   return {
     title: "Casa en venta con jardín",
-    description: "Una hermosa casa con amplio jardín y excelente ubicación en zona residencial",
+    description:
+      "Una hermosa casa con amplio jardín y excelente ubicación en zona residencial",
     price: 250000,
     transactionType: "SALE",
     category: "HOUSE",

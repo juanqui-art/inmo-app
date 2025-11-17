@@ -29,21 +29,21 @@
  * - Rationale: Industry best practices (Booking.com, Hotels.com pattern)
  */
 
-import { parseFilterParams, parseBoundsParams } from "@/lib/utils/url-helpers";
 import {
-  type PropertyFilters,
   getPropertiesList,
+  type PropertyFilters,
   propertyRepository,
 } from "@repo/database";
 import type { Metadata } from "next";
+import { MapPageClient } from "@/components/map/map-page-client";
+import MapStoreInitializer from "@/components/map/map-store-initializer";
 import { PropertyGridPage } from "@/components/properties/property-grid-page";
 import { PropertySplitView } from "@/components/properties/property-split-view";
-import PropertyGridStoreInitializer from "@/stores/PropertyGridStoreInitializer";
-import AuthStoreInitializer from "@/stores/AuthStoreInitializer";
-import MapStoreInitializer from "@/components/map/map-store-initializer";
-import { type FilterState } from "@/stores/map-store";
-import { MapPageClient } from "@/components/map/map-page-client";
 import { getCurrentUser } from "@/lib/auth";
+import { parseBoundsParams, parseFilterParams } from "@/lib/utils/url-helpers";
+import AuthStoreInitializer from "@/stores/AuthStoreInitializer";
+import type { FilterState } from "@/stores/map-store";
+import PropertyGridStoreInitializer from "@/stores/PropertyGridStoreInitializer";
 
 interface PropiedadesPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -74,7 +74,11 @@ export async function generateMetadata(
   const isMapView = view === "map";
   const cityText = city ? ` en ${city}` : "";
   const typeText =
-    transactionType === "SALE" ? "Comprar" : transactionType === "RENT" ? "Rentar" : "";
+    transactionType === "SALE"
+      ? "Comprar"
+      : transactionType === "RENT"
+        ? "Rentar"
+        : "";
 
   const titleText = isMapView
     ? `Mapa de Propiedades${cityText}`
@@ -162,7 +166,8 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
     const totalPages = Math.ceil(total / pageSize);
 
     // Type assertion: SerializedProperty[] → MapProperty[]
-    const mapProperties = allProperties as unknown as import("@/components/map/map-view").MapProperty[];
+    const mapProperties =
+      allProperties as unknown as import("@/components/map/map-view").MapProperty[];
 
     return (
       <>
@@ -258,7 +263,8 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
     const totalPages = Math.ceil(total / pageSize);
 
     // Type assertion for map properties
-    const mapProperties = allPropertiesForFilters as unknown as import("@/components/map/map-view").MapProperty[];
+    const mapProperties =
+      allPropertiesForFilters as unknown as import("@/components/map/map-view").MapProperty[];
 
     return (
       <>

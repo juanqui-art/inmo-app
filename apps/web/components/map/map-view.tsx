@@ -1,16 +1,15 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
-import Map, { Source, Layer, Popup } from "react-map-gl/mapbox";
-import type { MapRef } from "react-map-gl/mapbox";
-import type { MapMouseEvent } from "react-map-gl/mapbox";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { MapMouseEvent, MapRef } from "react-map-gl/mapbox";
+import Map, { Layer, Popup, Source } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { env } from "@repo/env";
 import type { TransactionType } from "@repo/database";
+import { env } from "@repo/env";
+import { CLUSTER_CONFIG } from "@/lib/types/map";
 import { formatPriceCompact } from "@/lib/utils/price-helpers";
 import { MapSpinner } from "./map-spinner";
 import { PropertyCardHorizontal } from "./property-card-horizontal";
-import { CLUSTER_CONFIG } from "@/lib/types/map";
 
 // Property interface
 export interface MapProperty {
@@ -64,7 +63,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
     if (!map) return;
 
     const image = new Image(48, 24);
-    image.src = "data:image/svg+xml;base64," + btoa(badgeSvg);
+    image.src = `data:image/svg+xml;base64,${btoa(badgeSvg)}`;
     image.onload = () => {
       if (!map.hasImage("badge-background")) {
         map.addImage("badge-background", image, { sdf: true });
@@ -102,7 +101,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
       // Handle individual property click
       else if (feature.properties?.id) {
         const property = properties.find(
-          (p) => p.id === (feature.properties!.id as string),
+          (p) => p.id === (feature.properties?.id as string),
         );
         if (property) {
           setSelectedProperty(property);

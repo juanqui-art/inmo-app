@@ -11,9 +11,9 @@
  * - Búsqueda con Enter (Shift+Enter para newline)
  */
 
-import { useState } from "react";
-import { Loader, X } from "lucide-react";
 import { Button } from "@repo/ui";
+import { Loader, X } from "lucide-react";
+import { useState } from "react";
 
 interface AISearchInputProps {
   placeholder?: string;
@@ -50,7 +50,6 @@ export function AISearchInput({
       {/* Input */}
       <div className="relative">
         <textarea
-          autoFocus={autoFocus}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}

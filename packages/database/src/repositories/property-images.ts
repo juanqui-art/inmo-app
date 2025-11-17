@@ -4,16 +4,16 @@
  * Operaciones de base de datos para las imágenes de propiedades
  */
 
-import { db } from '../client'
+import { db } from "../client";
 
 /**
  * Tipo para crear una imagen
  */
 export interface CreatePropertyImageInput {
-  url: string
-  alt?: string
-  order: number
-  propertyId: string
+  url: string;
+  alt?: string;
+  order: number;
+  propertyId: string;
 }
 
 /**
@@ -26,7 +26,7 @@ export class PropertyImageRepository {
   async create(data: CreatePropertyImageInput) {
     return db.propertyImage.create({
       data,
-    })
+    });
   }
 
   /**
@@ -35,7 +35,7 @@ export class PropertyImageRepository {
   async createMany(images: CreatePropertyImageInput[]) {
     return db.propertyImage.createMany({
       data: images,
-    })
+    });
   }
 
   /**
@@ -44,8 +44,8 @@ export class PropertyImageRepository {
   async findByProperty(propertyId: string) {
     return db.propertyImage.findMany({
       where: { propertyId },
-      orderBy: { order: 'asc' },
-    })
+      orderBy: { order: "asc" },
+    });
   }
 
   /**
@@ -54,7 +54,7 @@ export class PropertyImageRepository {
   async findById(id: string) {
     return db.propertyImage.findUnique({
       where: { id },
-    })
+    });
   }
 
   /**
@@ -63,7 +63,7 @@ export class PropertyImageRepository {
   async delete(id: string) {
     return db.propertyImage.delete({
       where: { id },
-    })
+    });
   }
 
   /**
@@ -73,7 +73,7 @@ export class PropertyImageRepository {
     return db.propertyImage.update({
       where: { id },
       data: { order },
-    })
+    });
   }
 
   /**
@@ -86,9 +86,9 @@ export class PropertyImageRepository {
         db.propertyImage.update({
           where: { id },
           data: { order },
-        })
-      )
-    )
+        }),
+      ),
+    );
   }
 
   /**
@@ -97,7 +97,7 @@ export class PropertyImageRepository {
   async deleteByProperty(propertyId: string) {
     return db.propertyImage.deleteMany({
       where: { propertyId },
-    })
+    });
   }
 
   /**
@@ -106,11 +106,11 @@ export class PropertyImageRepository {
   async countByProperty(propertyId: string) {
     return db.propertyImage.count({
       where: { propertyId },
-    })
+    });
   }
 }
 
 /**
  * Singleton del repositorio
  */
-export const propertyImageRepository = new PropertyImageRepository()
+export const propertyImageRepository = new PropertyImageRepository();

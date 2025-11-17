@@ -5,8 +5,8 @@
  * Reutilizable para dashboard de agentes y perfil de usuarios
  */
 
-import { AppointmentCard } from "./appointment-card";
 import type { AppointmentDetail } from "@repo/database";
+import { AppointmentCard } from "./appointment-card";
 
 interface AppointmentListProps {
   appointments: AppointmentDetail[];

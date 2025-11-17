@@ -43,7 +43,7 @@ const testQueries = [
 
 async function runTests() {
   console.log("🧪 Testing AI Search with Location Validation\n");
-  console.log("=" + "=".repeat(70) + "\n");
+  console.log(`=${"=".repeat(70)}\n`);
 
   for (const [index, query] of testQueries.entries()) {
     console.log(`📝 Test ${index + 1}/${testQueries.length}: "${query}"`);
@@ -60,7 +60,9 @@ async function runTests() {
       console.log(`   - Address: ${result.filters.address || "null"}`);
       console.log(`   - Category: ${result.filters.category || "null"}`);
       console.log(`   - Bedrooms: ${result.filters.bedrooms || "null"}`);
-      console.log(`   - Price: ${result.filters.minPrice || "null"} - ${result.filters.maxPrice || "null"}`);
+      console.log(
+        `   - Price: ${result.filters.minPrice || "null"} - ${result.filters.maxPrice || "null"}`,
+      );
 
       if (result.locationValidation) {
         console.log(`\n🗺️  Location Validation:`);
@@ -71,9 +73,7 @@ async function runTests() {
           `   - Requested: ${result.locationValidation.requestedLocation}`,
         );
         if (result.locationValidation.matchedCity) {
-          console.log(
-            `   - Matched: ${result.locationValidation.matchedCity}`,
-          );
+          console.log(`   - Matched: ${result.locationValidation.matchedCity}`);
         }
         if (result.locationValidation.suggestedCities) {
           console.log(
@@ -107,7 +107,7 @@ async function runTests() {
       console.error(error);
     }
 
-    console.log("\n" + "=".repeat(72) + "\n");
+    console.log(`\n${"=".repeat(72)}\n`);
 
     // Small delay to avoid rate limiting
     await new Promise((resolve) => setTimeout(resolve, 1000));

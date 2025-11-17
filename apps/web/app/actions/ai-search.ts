@@ -10,12 +10,12 @@
 
 "use server";
 
-import {
-  parseSearchQuery,
-  isConfidentParse,
-  filtersToWhereClause,
-} from "@/lib/ai/search-parser";
 import { db } from "@repo/database";
+import {
+  filtersToWhereClause,
+  isConfidentParse,
+  parseSearchQuery,
+} from "@/lib/ai/search-parser";
 
 export interface LocationValidation {
   isValid: boolean;

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
-import useEmblaCarousel from "embla-carousel-react";
-import Image from "next/image";
 import { cn } from "@repo/ui";
+import useEmblaCarousel from "embla-carousel-react";
+import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PropertyImageFallback } from "@/components/map/property-image-fallback";
-import { PropertyLightboxGallery } from "./property-lightbox-gallery";
 import { PropertyShareMenu } from "@/components/shared/property-share-menu";
+import { PropertyLightboxGallery } from "./property-lightbox-gallery";
 
 interface PropertyHeroCarouselProps {
   images?: Array<{
@@ -199,7 +199,9 @@ export function PropertyHeroCarousel({
                 onFavoriteToggle();
               }}
               className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              aria-label={
+                isFavorite ? "Remove from favorites" : "Add to favorites"
+              }
             >
               <Heart
                 className={`w-5 h-5 transition-colors ${

@@ -8,11 +8,11 @@
 
 "use client";
 
+import { useEffect } from "react";
 import {
   createMagneticEffect,
   staggerFadeIn,
 } from "@/lib/animations/navbar-animations";
-import { useEffect } from "react";
 
 /**
  * Hook for magnetic hover effect

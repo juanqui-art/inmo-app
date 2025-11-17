@@ -13,7 +13,7 @@ export function animatePropertySections(
     staggerDelay?: number;
     duration?: number;
     ease?: string;
-  }
+  },
 ) {
   if (!container) return;
 
@@ -39,7 +39,7 @@ export function animatePropertySections(
         start: "top 80%",
         toggleActions: "play none none none",
       },
-    }
+    },
   );
 }
 
@@ -54,7 +54,7 @@ export function animateCounter(
     duration?: number;
     ease?: string;
     decimals?: number;
-  }
+  },
 ) {
   if (!element) return;
 
@@ -67,14 +67,13 @@ export function animateCounter(
     ease,
     onUpdate: function () {
       const current = (this.targets()[0] as any).count;
-        const value =
-          decimals > 0
-            ? current.toFixed(decimals)
-            : Math.round(current).toString();
-        element.textContent = value;
-      },
-    }
-  );
+      const value =
+        decimals > 0
+          ? current.toFixed(decimals)
+          : Math.round(current).toString();
+      element.textContent = value;
+    },
+  });
 }
 
 /**
@@ -86,14 +85,13 @@ export function animateHeightToggle(
   options?: {
     duration?: number;
     ease?: string;
-  }
+  },
 ) {
   if (!element) return;
 
   const { duration = 0.4, ease = "power2.inOut" } = options || {};
 
-  const height =
-    targetHeight === "auto" ? element.scrollHeight : targetHeight;
+  const height = targetHeight === "auto" ? element.scrollHeight : targetHeight;
 
   gsap.to(element, {
     height,
@@ -146,7 +144,7 @@ export function animateImageZoom(
   options?: {
     duration?: number;
     scale?: number;
-  }
+  },
 ) {
   if (!element) return;
 
@@ -167,7 +165,7 @@ export function animateThumbnailStrip(
   options?: {
     staggerDelay?: number;
     duration?: number;
-  }
+  },
 ) {
   if (!container) return;
 
@@ -183,7 +181,7 @@ export function animateThumbnailStrip(
       duration,
       stagger: staggerDelay,
       ease: "power1.inOut",
-    }
+    },
   );
 }
 
@@ -201,7 +199,7 @@ export function prefersReducedMotion(): boolean {
  */
 export function safeAnimate(
   target: gsap.TweenTarget,
-  vars: gsap.TweenVars
+  vars: gsap.TweenVars,
 ): gsap.core.Tween {
   if (prefersReducedMotion()) {
     // Apply final state instantly
@@ -220,7 +218,7 @@ export function cleanupScrollTriggers(element: HTMLElement | null) {
   if (!element) return;
 
   const triggers = ScrollTrigger.getAll().filter(
-    (trigger) => trigger.trigger === element
+    (trigger) => trigger.trigger === element,
   );
 
   triggers.forEach((trigger) => trigger.kill());

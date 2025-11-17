@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { parseFilterParams } from "@/lib/utils/url-helpers";
+import { useMemo } from "react";
 import type { DynamicFilterParams } from "@/lib/utils/url-helpers";
+import { parseFilterParams } from "@/lib/utils/url-helpers";
 
 /**
  * useMemorizedFilterParams Hook
@@ -43,5 +43,5 @@ export function useMemoizedFilterParams(): DynamicFilterParams {
    */
   return useMemo(() => {
     return parseFilterParams(searchParams);
-  }, [searchParams.toString()]);
+  }, [searchParams]);
 }

@@ -11,9 +11,9 @@
  * - Dark mode styling
  */
 
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 
 interface FilterDropdownProps {
   label: string;
@@ -63,7 +63,7 @@ export function FilterDropdown({
         document.removeEventListener("mousedown", handleClickOutside);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
 
   // Handle keyboard
   useEffect(() => {
@@ -80,7 +80,7 @@ export function FilterDropdown({
         document.removeEventListener("keydown", handleKeyDown);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
 
   // ✅ Handle button click: check if clicking on clear icon or main area
   const handleButtonClick = (e: React.MouseEvent) => {

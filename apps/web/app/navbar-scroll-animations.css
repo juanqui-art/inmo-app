@@ -207,7 +207,7 @@
   [data-navbar-container],
   [data-navbar-logo-text],
   [data-navbar-logo-icon] {
-    animation: none !important;
+    animation: none;
   }
 
   /* Apply final scrolled state immediately */

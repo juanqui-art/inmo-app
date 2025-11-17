@@ -13,8 +13,8 @@
  * Part of: AI Search Cache READ implementation
  */
 
-import { logger } from "@/lib/utils/logger";
 import type { AISearchResult } from "@/app/actions/ai-search";
+import { logger } from "@/lib/utils/logger";
 
 interface CachedResult {
   data: AISearchResult;
@@ -72,9 +72,7 @@ export function cacheAISearchResult(
  *   const result = await aiSearchAction(query);
  * }
  */
-export function getCachedAISearchResult(
-  query: string,
-): AISearchResult | null {
+export function getCachedAISearchResult(query: string): AISearchResult | null {
   if (typeof window === "undefined") return null;
 
   try {

@@ -30,13 +30,11 @@ vi.mock("@repo/database", () => {
       create: vi.fn(),
       update: vi.fn(),
     },
-    FavoriteRepository: vi.fn(function() {
-      return {
-        toggleFavorite: vi.fn(),
-        getUserFavorites: vi.fn(),
-        isFavorite: vi.fn(),
-      };
-    }),
+    FavoriteRepository: vi.fn(() => ({
+      toggleFavorite: vi.fn(),
+      getUserFavorites: vi.fn(),
+      isFavorite: vi.fn(),
+    })),
   };
 });
 

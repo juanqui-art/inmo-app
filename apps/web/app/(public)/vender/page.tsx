@@ -29,8 +29,8 @@
 
 import { ArrowRight, CheckCircle, Home, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/auth";
 import { HeroBackground } from "@/components/home/hero-background";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function VenderPage() {
   const user = await getCurrentUser();

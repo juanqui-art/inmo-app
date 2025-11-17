@@ -25,10 +25,10 @@
 
 "use client";
 
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
-import { PropertyCardCompact } from "./property-card-compact";
 import type { MapProperty } from "./map-view";
+import { PropertyCardCompact } from "./property-card-compact";
 
 interface PropertyListDrawerProps {
   properties: MapProperty[];

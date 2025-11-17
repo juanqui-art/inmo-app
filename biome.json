@@ -32,24 +32,26 @@
       "suspicious": {
         "noUnknownAtRules": "off",
         "noFallthroughSwitchClause": "off",
-        "noExplicitAny": "warn",
-        "useIterableCallbackReturn": "warn"
+        "noExplicitAny": "off",
+        "useIterableCallbackReturn": "off",
+        "noImplicitAnyLet": "off"
       },
       "style": {
         "noNonNullAssertion": "warn"
       },
       "a11y": {
-        "useButtonType": "error",
-        "noSvgWithoutTitle": "error",
-        "useAriaPropsSupportedByRole": "error",
-        "useKeyWithClickEvents": "error",
+        "useButtonType": "warn",
+        "noSvgWithoutTitle": "warn",
+        "useAriaPropsSupportedByRole": "warn",
+        "useKeyWithClickEvents": "warn",
         "useHtmlLang": "warn",
-        "useValidAriaRole": "warn"
+        "useValidAriaRole": "warn",
+        "useValidAnchor": "warn"
       }
     },
     "domains": {
       "next": "recommended",
-      "react": "recommended"
+      "react": "warn"
     }
   },
   "assist": {

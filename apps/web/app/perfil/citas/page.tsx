@@ -6,9 +6,9 @@
  * Permite cancelar citas pendientes
  */
 
-import { requireRole } from "@/lib/auth";
 import { AppointmentRepository } from "@repo/database";
 import { AppointmentList } from "@/components/appointments/appointment-list";
+import { requireRole } from "@/lib/auth";
 
 export default async function PerfilCitasPage() {
   // Requerir que esté autenticado

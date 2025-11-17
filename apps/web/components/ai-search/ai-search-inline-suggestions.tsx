@@ -12,8 +12,8 @@
  * Uses Motion for fade-in animations
  */
 
+import { Clock, Lightbulb, Zap } from "lucide-react";
 import { motion } from "motion/react";
-import { Zap, Clock, Lightbulb } from "lucide-react";
 
 // Example searches contextualized for Ecuador/Cuenca
 // Based on real inventory: Cuenca (32), Gualaceo (8), Azogues (6), Paute (4)

@@ -5,8 +5,8 @@
  * Usa Resend como servicio de email
  */
 
-import { Resend } from "resend";
 import { env } from "@repo/env";
+import { Resend } from "resend";
 import {
   formatAppointmentDate,
   getAppointmentEmailSubject,
@@ -139,12 +139,15 @@ export async function sendAppointmentCreatedEmail(data: AppointmentEmailData) {
       success: clientSuccess && agentSuccess,
       clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
       agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
-      error: !clientSuccess || !agentSuccess
-        ? `Email delivery failed: ${[
-            !clientSuccess ? "client" : null,
-            !agentSuccess ? "agent" : null,
-          ].filter(Boolean).join(", ")}`
-        : undefined,
+      error:
+        !clientSuccess || !agentSuccess
+          ? `Email delivery failed: ${[
+              !clientSuccess ? "client" : null,
+              !agentSuccess ? "agent" : null,
+            ]
+              .filter(Boolean)
+              .join(", ")}`
+          : undefined,
     };
   } catch (error) {
     console.error("[sendAppointmentCreatedEmail] Exception:", {
@@ -236,12 +239,15 @@ export async function sendAppointmentConfirmedEmail(
       success: clientSuccess && agentSuccess,
       clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
       agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
-      error: !clientSuccess || !agentSuccess
-        ? `Email delivery failed: ${[
-            !clientSuccess ? "client" : null,
-            !agentSuccess ? "agent" : null,
-          ].filter(Boolean).join(", ")}`
-        : undefined,
+      error:
+        !clientSuccess || !agentSuccess
+          ? `Email delivery failed: ${[
+              !clientSuccess ? "client" : null,
+              !agentSuccess ? "agent" : null,
+            ]
+              .filter(Boolean)
+              .join(", ")}`
+          : undefined,
     };
   } catch (error) {
     console.error("[sendAppointmentConfirmedEmail] Exception:", {
@@ -335,12 +341,15 @@ export async function sendAppointmentCancelledEmail(
       success: clientSuccess && agentSuccess,
       clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
       agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
-      error: !clientSuccess || !agentSuccess
-        ? `Email delivery failed: ${[
-            !clientSuccess ? "client" : null,
-            !agentSuccess ? "agent" : null,
-          ].filter(Boolean).join(", ")}`
-        : undefined,
+      error:
+        !clientSuccess || !agentSuccess
+          ? `Email delivery failed: ${[
+              !clientSuccess ? "client" : null,
+              !agentSuccess ? "agent" : null,
+            ]
+              .filter(Boolean)
+              .join(", ")}`
+          : undefined,
     };
   } catch (error) {
     console.error("[sendAppointmentCancelledEmail] Exception:", {

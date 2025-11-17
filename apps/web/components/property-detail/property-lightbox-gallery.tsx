@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import Image from "next/image";
 import { cn } from "@repo/ui";
 import gsap from "gsap";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 
 interface PropertyLightboxGalleryProps {
   images: Array<{
@@ -28,16 +28,16 @@ export function PropertyLightboxGallery({
   // Animate image on change
   useEffect(() => {
     const imageElement = document.querySelector(
-      "[data-lightbox-image]"
+      "[data-lightbox-image]",
     ) as HTMLElement;
     if (imageElement) {
       gsap.fromTo(
         imageElement,
         { opacity: 0, scale: 0.95 },
-        { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" }
+        { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" },
       );
     }
-  }, [currentIndex]);
+  }, []);
 
   const goToPrev = useCallback(() => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -85,13 +85,12 @@ export function PropertyLightboxGallery({
     >
       {/* Main Image */}
       <div className="relative w-full h-full max-w-6xl max-h-screen flex items-center justify-center p-4">
-        <div
-          className="relative w-full aspect-video"
-          data-lightbox-image
-        >
+        <div className="relative w-full aspect-video" data-lightbox-image>
           <Image
             src={currentImage.url}
-            alt={currentImage.alt || `${propertyTitle} - Image ${currentIndex + 1}`}
+            alt={
+              currentImage.alt || `${propertyTitle} - Image ${currentIndex + 1}`
+            }
             fill
             className="object-contain"
             sizes="(max-width: 1536px) 100vw, 1536px"
@@ -142,7 +141,7 @@ export function PropertyLightboxGallery({
                 "flex-shrink-0 relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-all",
                 currentIndex === index
                   ? "border-white"
-                  : "border-white/30 hover:border-white/50 opacity-50 hover:opacity-75"
+                  : "border-white/30 hover:border-white/50 opacity-50 hover:opacity-75",
               )}
               aria-label={`Go to image ${index + 1}`}
               aria-current={currentIndex === index}

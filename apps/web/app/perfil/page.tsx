@@ -8,8 +8,8 @@
 
 import { Building2, Calendar, Heart } from "lucide-react";
 import Link from "next/link";
-import { requireAuth } from "@/lib/auth";
 import { AuthSuccessHandler } from "@/components/auth/auth-success-handler";
+import { requireAuth } from "@/lib/auth";
 
 export default async function PerfilPage() {
   const user = await requireAuth();

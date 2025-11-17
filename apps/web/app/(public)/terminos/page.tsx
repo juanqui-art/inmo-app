@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 
 const TerminosPage: FC = () => {
   return (
@@ -51,8 +51,12 @@ const TerminosPage: FC = () => {
             de manera lícita y de acuerdo con estos Términos de Uso.
           </p>
           <ul className="list-disc list-inside text-oslo-gray-700 dark:text-oslo-gray-300 space-y-1 mt-2">
-            <li>No utilizar la plataforma para fines ilegales o no autorizados.</li>
-            <li>No interferir con la seguridad o el funcionamiento de InmoApp.</li>
+            <li>
+              No utilizar la plataforma para fines ilegales o no autorizados.
+            </li>
+            <li>
+              No interferir con la seguridad o el funcionamiento de InmoApp.
+            </li>
             <li>No publicar contenido falso, engañoso o difamatorio.</li>
           </ul>
         </div>
@@ -91,8 +95,8 @@ const TerminosPage: FC = () => {
           </h2>
           <p className="text-oslo-gray-700 dark:text-oslo-gray-300">
             Estos Términos de Uso se regirán e interpretarán de acuerdo con las
-            leyes del país donde InmoApp tiene su sede principal, sin dar
-            efecto a sus principios de conflicto de leyes.
+            leyes del país donde InmoApp tiene su sede principal, sin dar efecto
+            a sus principios de conflicto de leyes.
           </p>
         </div>
       </div>

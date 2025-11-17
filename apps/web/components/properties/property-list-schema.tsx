@@ -36,7 +36,10 @@ export function PropertyListSchema({
       name: property.title,
       description: `${property.bedrooms || 0} recámaras, ${property.bathrooms || 0} baños, ${property.area || 0}m²`,
       url: `https://inmoapp.com/propiedades/${property.id}`,
-      image: property.images && property.images.length > 0 ? property.images[0]?.url : undefined,
+      image:
+        property.images && property.images.length > 0
+          ? property.images[0]?.url
+          : undefined,
       priceCurrency: "USD",
       price: property.price.toString(),
       priceSpecification: {

@@ -11,9 +11,9 @@
  * - Responsive grid layout
  */
 
+import { db } from "@repo/database/src/client";
 import { Building2, Calendar, TrendingUp, Users } from "lucide-react";
 import { requireRole } from "@/lib/auth";
-import { db } from "@repo/database/src/client";
 
 export default async function DashboardPage() {
   const user = await requireRole(["AGENT", "ADMIN"]);

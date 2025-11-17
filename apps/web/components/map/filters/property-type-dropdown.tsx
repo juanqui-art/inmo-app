@@ -16,7 +16,7 @@
  * - ✅ Follows same pattern as PriceFilterDropdown
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { PropertyCategory } from "@repo/database";
 import {
   Building,
   Building2,
@@ -30,11 +30,11 @@ import {
   Warehouse,
   Zap,
 } from "lucide-react";
-import type { PropertyCategory } from "@repo/database";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Spinner } from "@/components/common";
-import { FilterDropdown } from "./filter-dropdown";
 import { useMapStore } from "@/stores/map-store";
+import { FilterDropdown } from "./filter-dropdown";
 
 const CATEGORIES = [
   // Residential

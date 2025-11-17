@@ -22,34 +22,22 @@
     },
     "github": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@github/github-mcp-server"
-      ]
+      "args": ["-y", "@github/github-mcp-server"]
     },
     "memory": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-memory"
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
       "env": {
         "MEMORY_FILE_PATH": "/Users/juanquizhpi/Desktop/projects/inmo-app/.mcp-memory.json"
       }
     },
     "playwright": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@executeautomation/playwright-mcp-server"
-      ]
+      "args": ["-y", "@executeautomation/playwright-mcp-server"]
     },
     "fetch": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-fetch"
-      ]
+      "args": ["-y", "@modelcontextprotocol/server-fetch"]
     }
   }
 }

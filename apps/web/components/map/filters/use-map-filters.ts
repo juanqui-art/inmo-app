@@ -10,12 +10,12 @@
  * - Handles clearing all filters
  */
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import {
-  parseFilterParams,
   buildFilterUrl,
   type DynamicFilterParams,
+  parseFilterParams,
 } from "@/lib/utils/url-helpers";
 
 /**

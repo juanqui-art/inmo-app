@@ -195,8 +195,8 @@ function calculateFallbackBounds(viewState: {
    *
    * We add padding to ensure markers at edges are included
    */
-  const latitudeDelta = (180 / Math.pow(2, viewState.zoom)) * FALLBACK_BOUNDS_PADDING;
-  const longitudeDelta = (360 / Math.pow(2, viewState.zoom)) * FALLBACK_BOUNDS_PADDING;
+  const latitudeDelta = (180 / 2 ** viewState.zoom) * FALLBACK_BOUNDS_PADDING;
+  const longitudeDelta = (360 / 2 ** viewState.zoom) * FALLBACK_BOUNDS_PADDING;
 
   return [
     viewState.longitude - longitudeDelta, // west
@@ -225,7 +225,10 @@ export function getClusterExpansionZoom(
     return supercluster.getClusterExpansionZoom(clusterId);
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
-      console.warn(`Failed to get expansion zoom for cluster ${clusterId}`, error);
+      console.warn(
+        `Failed to get expansion zoom for cluster ${clusterId}`,
+        error,
+      );
     }
     return CLUSTER_CONFIG.MAX_ZOOM;
   }

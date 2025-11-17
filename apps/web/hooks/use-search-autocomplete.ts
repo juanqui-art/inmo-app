@@ -10,12 +10,12 @@
  * - Performant: Debounce prevents API spam
  */
 
-import { useState, useEffect, useMemo, useRef } from "react";
-import { debounce } from "@/lib/utils/debounce";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  searchCitiesAction,
   type CitySearchResult,
+  searchCitiesAction,
 } from "@/app/actions/properties";
+import { debounce } from "@/lib/utils/debounce";
 
 interface City extends CitySearchResult {
   slug?: string;

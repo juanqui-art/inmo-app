@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 
 const CookiesPage: FC = () => {
   return (
@@ -20,11 +20,11 @@ const CookiesPage: FC = () => {
           <p className="text-oslo-gray-700 dark:text-oslo-gray-300">
             Las cookies son pequeños archivos de texto que se almacenan en tu
             dispositivo (ordenador, tablet, móvil) cuando visitas un sitio web.
-            Permiten que el sitio web recuerde tus acciones y preferencias
-            (como inicio de sesión, idioma, tamaño de fuente y otras
-            preferencias de visualización) durante un período de tiempo, para
-            que no tengas que volver a introducirlas cada vez que regreses al
-            sitio o navegues de una página a otra.
+            Permiten que el sitio web recuerde tus acciones y preferencias (como
+            inicio de sesión, idioma, tamaño de fuente y otras preferencias de
+            visualización) durante un período de tiempo, para que no tengas que
+            volver a introducirlas cada vez que regreses al sitio o navegues de
+            una página a otra.
           </p>
         </div>
 
@@ -45,9 +45,8 @@ const CookiesPage: FC = () => {
             <li>
               <strong>Cookies de Rendimiento:</strong> Nos ayudan a entender
               cómo los visitantes interactúan con InmoApp, proporcionando
-              información sobre las áreas visitadas, el tiempo de permanencia
-              en el sitio y cualquier problema encontrado, como mensajes de
-              error.
+              información sobre las áreas visitadas, el tiempo de permanencia en
+              el sitio y cualquier problema encontrado, como mensajes de error.
             </li>
             <li>
               <strong>Cookies de Funcionalidad:</strong> Permiten que InmoApp

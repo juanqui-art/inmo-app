@@ -24,8 +24,8 @@
 
 "use client";
 
-import { Marker } from "react-map-gl/mapbox";
 import type { TransactionType } from "@repo/database";
+import { Marker } from "react-map-gl/mapbox";
 
 interface PropertyMarkerDarkProps {
   latitude: number;

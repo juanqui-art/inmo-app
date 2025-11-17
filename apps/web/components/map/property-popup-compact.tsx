@@ -15,12 +15,12 @@
 
 "use client";
 
-import { Bed, Bath, Maximize2, MapPin, Heart } from "lucide-react";
-import type { MapProperty } from "./map-view";
+import { Bath, Bed, Heart, MapPin, Maximize2 } from "lucide-react";
 import {
-  TRANSACTION_BADGE_STYLES,
   CTA_BUTTON_STYLES,
+  TRANSACTION_BADGE_STYLES,
 } from "@/lib/styles/property-card-styles";
+import type { MapProperty } from "./map-view";
 
 interface PropertyPopupCompactProps {
   property: MapProperty;

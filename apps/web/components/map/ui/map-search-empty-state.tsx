@@ -18,8 +18,8 @@
 
 "use client";
 
+import { AlertTriangle, Lightbulb, MapPin, SearchX, X } from "lucide-react";
 import { motion } from "motion/react";
-import { SearchX, AlertTriangle, MapPin, Lightbulb, X } from "lucide-react";
 
 type EmptyStateType =
   | "no-results" // 0 propiedades encontradas

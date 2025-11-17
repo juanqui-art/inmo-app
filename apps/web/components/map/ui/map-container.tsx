@@ -26,23 +26,23 @@
 
 "use client";
 
-import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import Map, {
-  type ViewStateChangeEvent,
   type MapRef,
+  type ViewStateChangeEvent,
 } from "react-map-gl/mapbox";
-import { DEFAULT_MAP_CONFIG, CLUSTER_CONFIG } from "@/lib/types/map";
-import { PropertyMarker } from "../property-marker";
-import { PropertyPopup } from "../property-popup";
-import { ClusterMarker } from "../cluster-marker";
 import { AuthModal } from "@/components/auth/auth-modal";
+import { CLUSTER_CONFIG, DEFAULT_MAP_CONFIG } from "@/lib/types/map";
+import { ClusterMarker } from "../cluster-marker";
 import {
-  useMapClustering,
   isCluster,
   type PropertyPoint,
+  useMapClustering,
 } from "../hooks/use-map-clustering";
 import type { MapProperty } from "../map-view";
+import { PropertyMarker } from "../property-marker";
+import { PropertyPopup } from "../property-popup";
 
 // Import MapBox GL CSS
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -229,23 +229,19 @@ export function MapContainer({
         })}
 
         {/* Property Popup on Marker Click */}
-        {selectedProperty &&
-          selectedProperty.latitude &&
-          selectedProperty.longitude && (
-            <PropertyPopup
-              property={selectedProperty}
-              onClose={() => setSelectedPropertyId(null)}
-              onViewDetails={() => {
-                setSelectedPropertyId(null);
-                handleDrawerPropertyClick(selectedProperty.id);
-              }}
-              onUnauthenticatedFavoriteClick={
-                !isAuthenticated
-                  ? handleUnauthenticatedFavoriteClick
-                  : undefined
-              }
-            />
-          )}
+        {selectedProperty?.latitude && selectedProperty.longitude && (
+          <PropertyPopup
+            property={selectedProperty}
+            onClose={() => setSelectedPropertyId(null)}
+            onViewDetails={() => {
+              setSelectedPropertyId(null);
+              handleDrawerPropertyClick(selectedProperty.id);
+            }}
+            onUnauthenticatedFavoriteClick={
+              !isAuthenticated ? handleUnauthenticatedFavoriteClick : undefined
+            }
+          />
+        )}
       </Map>
 
       {/* Property List Drawer */}

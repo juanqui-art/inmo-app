@@ -5,8 +5,8 @@
  * Eliminates code duplication across PropertyCard, PropertyCardHorizontal, etc.
  */
 
-import { TRANSACTION_BADGE_STYLES } from "@/lib/styles/property-card-styles";
 import type { TransactionType } from "@repo/database";
+import { TRANSACTION_BADGE_STYLES } from "@/lib/styles/property-card-styles";
 
 /**
  * Localized labels for transaction types

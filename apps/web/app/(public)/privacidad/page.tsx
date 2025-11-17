@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 
 const PrivacidadPage: FC = () => {
   return (
@@ -65,8 +65,8 @@ const PrivacidadPage: FC = () => {
           </h2>
           <p className="text-oslo-gray-700 dark:text-oslo-gray-300">
             Implementamos medidas de seguridad técnicas y organizativas para
-            proteger tu información personal contra el acceso no autorizado,
-            la divulgación, alteración o destrucción.
+            proteger tu información personal contra el acceso no autorizado, la
+            divulgación, alteración o destrucción.
           </p>
         </div>
 
@@ -78,8 +78,8 @@ const PrivacidadPage: FC = () => {
           <p className="text-oslo-gray-700 dark:text-oslo-gray-300">
             Tienes derecho a acceder, corregir o eliminar tu información
             personal. También puedes oponerte al procesamiento de tus datos o
-            solicitar la limitación de su uso. Para ejercer estos derechos,
-            por favor, contáctanos.
+            solicitar la limitación de su uso. Para ejercer estos derechos, por
+            favor, contáctanos.
           </p>
         </div>
 

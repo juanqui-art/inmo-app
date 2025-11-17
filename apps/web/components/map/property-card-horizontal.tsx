@@ -23,26 +23,24 @@
 
 "use client";
 
-import React from "react";
-import { Heart, ChevronRight } from "lucide-react";
-import { Button } from "@repo/ui";
-import { Badge } from "@repo/ui";
+import type { PropertyWithRelations, SerializedProperty } from "@repo/database";
+import { Badge, Button } from "@repo/ui";
+import { ChevronRight, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { PropertyWithRelations } from "@repo/database";
-import type { SerializedProperty } from "@repo/database";
-import type { MapProperty } from "./map-view";
-import { PropertyImageFallback } from "./property-image-fallback";
+import React from "react";
 import { useFavorites } from "@/hooks/use-favorites";
-import { generateSlug } from "@/lib/utils/slug-generator";
-import { useAuthStore } from "@/stores/auth-store";
 import { CATEGORY_BADGE_STYLE } from "@/lib/styles/property-card-styles";
 import {
   formatPropertyPrice,
-  getTransactionBadgeStyle,
   getCategoryLabel,
+  getTransactionBadgeStyle,
   TRANSACTION_TYPE_LABELS,
 } from "@/lib/utils/property-formatters";
+import { generateSlug } from "@/lib/utils/slug-generator";
+import { useAuthStore } from "@/stores/auth-store";
+import type { MapProperty } from "./map-view";
+import { PropertyImageFallback } from "./property-image-fallback";
 
 interface PropertyCardHorizontalProps {
   property: PropertyWithRelations | SerializedProperty | MapProperty;
@@ -89,7 +87,7 @@ export function PropertyCardHorizontal({
   // Get first image
   const imageUrl =
     property.images && property.images.length > 0
-      ? property.images[0]!.url
+      ? property.images[0]?.url
       : null;
 
   /**

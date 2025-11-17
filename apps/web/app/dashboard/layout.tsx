@@ -7,10 +7,10 @@
  * - Solo accesible para AGENT y ADMIN
  */
 
+import { Toaster } from "sonner";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { UserMenu } from "@/components/dashboard/user-menu";
 import { requireRole } from "@/lib/auth";
-import { Toaster } from "sonner";
 
 export default async function DashboardLayout({
   children,

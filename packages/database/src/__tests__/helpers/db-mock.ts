@@ -5,8 +5,8 @@
  * Supports transaction mocking and common database operations
  */
 
-import { vi } from 'vitest'
-import type { PrismaClient } from '@prisma/client'
+import type { PrismaClient } from "@prisma/client";
+import { vi } from "vitest";
 
 /**
  * Creates a mock Prisma transaction context
@@ -45,14 +45,14 @@ export function createMockTransaction() {
       create: vi.fn(),
       update: vi.fn(),
     },
-  }
+  };
 }
 
 /**
  * Creates a mock database client with transaction support
  */
 export function createMockDb() {
-  const mockTransaction = createMockTransaction()
+  const mockTransaction = createMockTransaction();
 
   return {
     user: {
@@ -88,9 +88,9 @@ export function createMockDb() {
     },
     $transaction: vi.fn((callback) => {
       // Execute callback with mock transaction context
-      return callback(mockTransaction)
+      return callback(mockTransaction);
     }),
-  } as unknown as PrismaClient
+  } as unknown as PrismaClient;
 }
 
 /**
@@ -98,16 +98,16 @@ export function createMockDb() {
  */
 export function resetDbMocks(db: any) {
   Object.values(db).forEach((model: any) => {
-    if (typeof model === 'object' && model !== null) {
+    if (typeof model === "object" && model !== null) {
       Object.values(model).forEach((method: any) => {
-        if (typeof method?.mockReset === 'function') {
-          method.mockReset()
+        if (typeof method?.mockReset === "function") {
+          method.mockReset();
         }
-      })
+      });
     }
-  })
+  });
 
-  if (typeof db.$transaction?.mockReset === 'function') {
-    db.$transaction.mockReset()
+  if (typeof db.$transaction?.mockReset === "function") {
+    db.$transaction.mockReset();
   }
 }

@@ -15,9 +15,8 @@
  * - Patrón profesional: igual a Realtor.com, Zillow, etc.
  */
 
-import { useCallback, useMemo } from "react";
-
 import * as Slider from "@radix-ui/react-slider";
+import { useCallback, useMemo } from "react";
 
 import { findBucketIndex, isBucketInRange } from "@/lib/utils/price-helpers";
 
@@ -79,8 +78,8 @@ export function PriceHistogramSlider({
         const maxIdx = Math.min(visibleDistribution.length - 1, indices[1]!);
 
         // Convertir índices a precios usando buckets
-        const newMin = visibleDistribution[minIdx]!.bucket;
-        const newMax = visibleDistribution[maxIdx]!.bucket;
+        const newMin = visibleDistribution[minIdx]?.bucket;
+        const newMax = visibleDistribution[maxIdx]?.bucket;
 
         // Validar que min <= max
         if (newMin <= newMax) {

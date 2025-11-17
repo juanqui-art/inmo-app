@@ -11,8 +11,8 @@
  * - Optimizado para queries frecuentes
  */
 
-import { db } from "../client";
 import type { Prisma } from "@prisma/client";
+import { db } from "../client";
 
 /**
  * Favorite select con relaciones básicas
@@ -70,7 +70,10 @@ export class FavoriteRepository {
    * // Retorna: { isFavorite: true } si se agregó
    * // Retorna: { isFavorite: false } si se quitó
    */
-  async toggleFavorite(userId: string, propertyId: string): Promise<{
+  async toggleFavorite(
+    userId: string,
+    propertyId: string,
+  ): Promise<{
     isFavorite: boolean;
   }> {
     // Verificar si ya existe

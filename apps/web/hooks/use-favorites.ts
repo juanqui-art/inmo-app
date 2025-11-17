@@ -17,8 +17,8 @@
 
 "use client";
 
-import { useFavoritesStore } from "@/stores/favorites-store";
 import { useEffect } from "react";
+import { useFavoritesStore } from "@/stores/favorites-store";
 
 /**
  * Hook para gestionar favoritos del usuario
@@ -49,7 +49,10 @@ export function useFavorites() {
       // Non-blocking - UI shows localStorage state immediately
       store.loadFavorites();
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    store.isInitialized, // Non-blocking - UI shows localStorage state immediately
+    store.loadFavorites,
+  ]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     // State - comes from localStorage immediately (via persist middleware)

@@ -14,9 +14,9 @@
  * - Need to handle redirect after logout
  */
 
-import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { env } from "@/lib/env";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST() {
   try {

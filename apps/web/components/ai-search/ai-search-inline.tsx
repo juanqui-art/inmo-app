@@ -10,10 +10,10 @@
  * - Mobile responsive layout
  */
 
-import React, { useEffect } from "react";
-import { useInlineSearch } from "./use-inline-search";
+import { useEffect } from "react";
 import { AISearchInlineBar } from "./ai-search-inline-bar";
 import { AISearchInlineSuggestions } from "./ai-search-inline-suggestions";
+import { useInlineSearch } from "./use-inline-search";
 
 interface AISearchInlineProps {
   onSearch?: (query: string) => void;

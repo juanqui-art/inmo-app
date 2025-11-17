@@ -28,13 +28,13 @@
 
 "use client";
 
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import {
-  toggleFavoriteAction,
-  getUserFavoritesAction,
-} from "@/app/actions/favorites";
 import { toast } from "sonner";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import {
+  getUserFavoritesAction,
+  toggleFavoriteAction,
+} from "@/app/actions/favorites";
 
 // ============================================================================
 // TYPES
@@ -79,7 +79,7 @@ const favoritesStorage = {
       const parsed = JSON.parse(str);
 
       // Convert arrays back to Sets
-      if (parsed.state && parsed.state.favorites) {
+      if (parsed.state?.favorites) {
         parsed.state.favorites = Array.from(parsed.state.favorites);
       }
 

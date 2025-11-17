@@ -28,10 +28,10 @@
  * - Clean separation: components handle state, hook handles URL
  */
 
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { parseFilterParams, buildFilterUrl } from "@/lib/utils/url-helpers";
 import type { DynamicFilterParams } from "@/lib/utils/url-helpers";
+import { buildFilterUrl, parseFilterParams } from "@/lib/utils/url-helpers";
 import { useMapStore } from "@/stores/map-store";
 import { usePropertyGridStore } from "@/stores/property-grid-store";
 
@@ -129,9 +129,7 @@ export function useFilterUrlSync() {
       const viewParam = currentView ? `view=${currentView}` : "";
 
       // Combine view param with filter params
-      const allParams = [viewParam, filterString]
-        .filter(Boolean)
-        .join("&");
+      const allParams = [viewParam, filterString].filter(Boolean).join("&");
 
       const newUrl = `${pathname}${allParams ? `?${allParams}` : ""}`;
 

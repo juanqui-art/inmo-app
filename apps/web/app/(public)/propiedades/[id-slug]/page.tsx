@@ -15,17 +15,17 @@
  * - Responsive sticky sidebar with floating CTA card
  */
 
-import { notFound, redirect } from "next/navigation";
-import type { Metadata } from "next";
 import { PropertyRepository } from "@repo/database";
-import { parseIdSlugParam, generateSlug } from "@/lib/utils/slug-generator";
-import { getCurrentUser } from "@/lib/auth";
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
 import { checkIfFavoriteAction } from "@/app/actions/favorites";
-import { PropertyHeroCarouselWrapper } from "@/components/property-detail/property-hero-carousel-wrapper";
-import { PropertyStatsCard } from "@/components/property-detail/property-stats-card";
 import { PropertyDescriptionCard } from "@/components/property-detail/property-description-card";
-import { PropertyLocationCard } from "@/components/property-detail/property-location-card";
 import { PropertyFloatingActionCard } from "@/components/property-detail/property-floating-action-card";
+import { PropertyHeroCarouselWrapper } from "@/components/property-detail/property-hero-carousel-wrapper";
+import { PropertyLocationCard } from "@/components/property-detail/property-location-card";
+import { PropertyStatsCard } from "@/components/property-detail/property-stats-card";
+import { getCurrentUser } from "@/lib/auth";
+import { generateSlug, parseIdSlugParam } from "@/lib/utils/slug-generator";
 
 interface PropertyDetailPageProps {
   params: Promise<{
