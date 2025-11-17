@@ -279,7 +279,7 @@ export class PropertyRepository {
   /**
    * Encuentra una propiedad por ID
    */
-  async findById(id: string): Promise<PropertyWithRelations | null> {
+  async findById(id: string): Promise<SerializedProperty | null> {
     // Delegate to cached version for request-level deduplication
     return findByIdCached(id)
   }
@@ -476,7 +476,7 @@ export class PropertyRepository {
     filters?: PropertyFilters
     skip?: number
     take?: number
-  }): Promise<{ properties: PropertyWithRelations[]; total: number }> {
+  }): Promise<{ properties: SerializedProperty[]; total: number }> {
     // Delegate to cached version for request-level deduplication
     return findInBoundsCached({
       minLatitude: params.minLatitude,
