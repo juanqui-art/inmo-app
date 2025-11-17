@@ -24,7 +24,7 @@
     "postinstall": "bun run db:gen"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.5",
+    "@biomejs/biome": "2.3.6",
     "react-scan": "^0.4.3"
   },
   "dependencies": {
