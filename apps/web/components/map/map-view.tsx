@@ -86,9 +86,12 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
         const mapboxSource = mapRef.current?.getMap().getSource("properties");
 
         if (mapboxSource && "getClusterExpansionZoom" in mapboxSource) {
+          // Type assertion needed: Mapbox's Callback type signature is overly strict
+          // Runtime behavior accepts (err: Error | null, zoom?: number)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (mapboxSource as GeoJSONSource).getClusterExpansionZoom(
             clusterId,
-            (err: Error | null | undefined, zoom?: number) => {
+            ((err: Error | null, zoom?: number) => {
               if (err || zoom === undefined) return;
 
               const geometry = feature.geometry as { coordinates: number[] };
@@ -97,7 +100,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
                 zoom: zoom + CLUSTER_CONFIG.ZOOM_INCREMENT,
                 duration: 600,
               });
-            },
+            }) as any,
           );
         }
       }

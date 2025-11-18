@@ -67,7 +67,10 @@ export function useMapFilters() {
       const current = (filters.transactionType as TransactionTypeFilter) || [];
 
       // Validate that type is a valid transaction type
-      const validType = TRANSACTION_TYPES.includes(type as any) ? type : null;
+      // Type assertion is safe here because TRANSACTION_TYPES.includes validates the enum value
+      const validType = TRANSACTION_TYPES.includes(type as any)
+        ? (type as (typeof TRANSACTION_TYPES)[number])
+        : null;
       if (!validType) return;
 
       const updated: (typeof TRANSACTION_TYPES)[number][] = current.includes(validType)
@@ -90,7 +93,10 @@ export function useMapFilters() {
       const current = (filters.category as CategoryFilter) || [];
 
       // Validate that category is a valid property category
-      const validCategory = PROPERTY_CATEGORIES.includes(category as any) ? category : null;
+      // Type assertion is safe here because PROPERTY_CATEGORIES.includes validates the enum value
+      const validCategory = PROPERTY_CATEGORIES.includes(category as any)
+        ? (category as (typeof PROPERTY_CATEGORIES)[number])
+        : null;
       if (!validCategory) return;
 
       // Toggle: if already selected, deselect; otherwise select
