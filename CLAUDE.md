@@ -253,6 +253,43 @@ export function proxy() { }
 
 ---
 
+### 🧪 Testing Infrastructure (Nov 18, 2025)
+
+**Status:** ✅ Auth Flow Complete - 113/129 tests passing (87.6%)
+
+**What's working:**
+- Comprehensive auth integration tests (48 tests - 100% coverage)
+- Server Actions tests: `signupAction`, `loginAction`, `logoutAction`
+- Auth helpers tests: `getCurrentUser`, `requireAuth`, `requireRole`, `checkPermission`, `requireOwnership`
+- Properties and favorites server actions tests
+- Validation and utility tests
+- Test helpers and mocking infrastructure
+
+**Coverage breakdown:**
+- Auth flow: 48/48 tests (100%) ✨
+- Server Actions: 22 auth + 34 properties/favorites
+- Validations: 23 tests
+- Utils: 14 tests
+- Overall: 113/129 tests (87.6%)
+
+**Test infrastructure:**
+- Vitest + React Testing Library
+- Auth test helpers (`createMockSupabaseUser`, `createMockDbUser`, `createSignupFormData`)
+- Global mocks in `vitest.setup.ts`
+- Co-located test pattern (`__tests__` directories)
+
+**Next steps:**
+- CI/CD pipeline setup (GitHub Actions)
+- E2E tests with Playwright
+- Repository layer tests
+
+**See:**
+- `apps/web/__tests__/README.md` - Testing guide
+- `docs/technical-debt/07-TESTING.md` - Complete testing roadmap
+- Test files in `apps/web/app/actions/__tests__/` and `apps/web/lib/__tests__/`
+
+---
+
 ## Known Issues
 
 ### 📧 Email Sending (Resend) - Development Mode
@@ -306,12 +343,22 @@ Option 2: Check logs for Resend API responses
 
 ## Current Phase
 
-**Phase 1.5:** Public-facing features (map, AI search, authentication) - 95% complete
+**Phase 1.5:** Public-facing features - 98% complete
+- ✅ Map integration with clustering
+- ✅ AI search (natural language)
+- ✅ Authentication (Supabase + roles)
+- ✅ **Testing infrastructure (auth flow 100% covered)**
+
+**Phase 2:** Quality & Infrastructure - In Progress
+- ✅ Auth flow integration tests (48 tests - 100%)
+- 🔄 Documentation reorganization (ongoing)
+- ⏳ CI/CD pipeline setup (next)
+- ⏳ E2E tests with Playwright
 
 **Next:**
-- Phase 2: Documentation reorganization (in progress)
-- Phase 3: AI Search optimization (duplicate API call fix)
-- Phase 4: Advanced features (image upload, appointments refinement)
+- Phase 3: CI/CD automation + E2E testing
+- Phase 4: AI Search optimization (duplicate API call fix)
+- Phase 5: Advanced features (image upload, appointments refinement)
 
 ---
 
