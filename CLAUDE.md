@@ -159,6 +159,7 @@ bun run dev:web  # Goes directly to apps/web
 - **Auto-loaded:** `.claude/01-06` files (~27k tokens, auto-included)
 - **On-demand:** `.claude/08-11` files in `.claudeignore` (multi-tenant, debt, teaching, appointments)
 - **Guide:** `docs/AI_ASSISTANTS.md` (how Claude/Gemini interact with project)
+- **⭐ NEW:** `docs/technical-debt/00-DEEP-ANALYSIS.md` (análisis profundo de deuda técnica)
 
 **For Humans:**
 - `QUICK_START.md`, `docs/INDEX.md` (navigation hub), `docs/setup/` (installation)
