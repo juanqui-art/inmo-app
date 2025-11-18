@@ -12,7 +12,7 @@
 
 import { AppointmentRepository, PropertyRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, requireOwnership } from "@/lib/auth";
 import { validateAppointmentDateTime } from "@/lib/constants/availability";
 import {
   sendAppointmentCreatedEmail,
@@ -88,8 +88,16 @@ export async function createAppointmentAction(formData: {
       throw new Error("Authentication required to book an appointment");
     }
 
-    // 3. Verificar que usuario sea CLIENT
+    // 3. Verificar que usuario sea CLIENT (solo clientes pueden agendar citas)
     if (user.role !== "CLIENT") {
+      // Logging de seguridad
+      console.warn("[SECURITY] Role restriction - only CLIENT can book", {
+        userId: user.id,
+        userRole: user.role,
+        requiredRole: "CLIENT",
+        timestamp: new Date().toISOString(),
+        layer: "server-action",
+      });
       throw new Error("Only clients can book appointments");
     }
 
@@ -221,10 +229,11 @@ export async function updateAppointmentStatusAction(data: {
       throw new Error("Appointment not found");
     }
 
-    // 4. Verificar que usuario sea el agente de la cita
-    if (appointment.agentId !== user.id) {
-      throw new Error("You are not authorized to manage this appointment");
-    }
+    // 4. Verificar que usuario sea el agente de la cita (ownership)
+    await requireOwnership(
+      appointment.agentId,
+      "You are not authorized to manage this appointment",
+    );
 
     // 5. Verificar que cita esté en estado PENDING (solo se puede confirmar/cancelar si está pendiente)
     if (appointment.status !== "PENDING") {
@@ -393,8 +402,16 @@ export async function getAgentAppointmentsAction(filters?: {
       throw new Error("Authentication required");
     }
 
-    // 2. Verificar que sea agente
+    // 2. Verificar que sea agente (solo AGENT/ADMIN pueden ver sus citas)
     if (user.role !== "AGENT" && user.role !== "ADMIN") {
+      // Logging de seguridad
+      console.warn("[SECURITY] Role restriction - only AGENT/ADMIN", {
+        userId: user.id,
+        userRole: user.role,
+        requiredRoles: ["AGENT", "ADMIN"],
+        timestamp: new Date().toISOString(),
+        layer: "server-action",
+      });
       throw new Error("Only agents can view their appointments");
     }
 

@@ -67,6 +67,15 @@ export async function requireRole(allowedRoles: string[]) {
   const user = await requireAuth();
 
   if (!allowedRoles.includes(user.role)) {
+    // Logging de seguridad (segunda capa - después del proxy)
+    console.warn("[SECURITY] Role mismatch in Server Component", {
+      userId: user.id,
+      userRole: user.role,
+      requiredRoles: allowedRoles,
+      timestamp: new Date().toISOString(),
+      layer: "server-component",
+    });
+
     // Redirigir a ruta por defecto según rol
     switch (user.role) {
       case "ADMIN":
@@ -121,6 +130,17 @@ export async function requireOwnership(
   const hasPermission = await checkPermission(resourceOwnerId);
 
   if (!hasPermission) {
+    const user = await getCurrentUser();
+
+    // Logging de seguridad para intentos de acceso no autorizado
+    console.warn("[SECURITY] Ownership check failed", {
+      userId: user?.id,
+      userRole: user?.role,
+      resourceOwnerId,
+      timestamp: new Date().toISOString(),
+      layer: "server-action",
+    });
+
     throw new Error(errorMessage);
   }
 }
