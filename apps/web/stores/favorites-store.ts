@@ -59,6 +59,14 @@ interface FavoritesState {
   _setInitialized: (value: boolean) => void;
 }
 
+/**
+ * Type for persisted state from localStorage
+ * Zustand stores arrays instead of Sets for JSON serialization
+ */
+interface PersistedFavoritesState {
+  favorites?: string[];
+}
+
 // ============================================================================
 // CUSTOM STORAGE (para serializar Set correctamente)
 // ============================================================================
@@ -312,13 +320,13 @@ export const useFavoritesStore = create<FavoritesState>()(
 
       // Merge function to restore Sets from persisted arrays
       merge: (persistedState, currentState) => {
+        const persisted = persistedState as PersistedFavoritesState | undefined;
         return {
           ...currentState,
-          ...(persistedState as Partial<FavoritesState>),
           // Convert arrays back to Sets
           favorites:
-            persistedState && (persistedState as any).favorites
-              ? new Set((persistedState as any).favorites)
+            persisted?.favorites && Array.isArray(persisted.favorites)
+              ? new Set(persisted.favorites)
               : currentState.favorites,
           // pendingIds should always start empty (never persist loading state)
           pendingIds: new Set<string>(),

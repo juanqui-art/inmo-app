@@ -13,6 +13,14 @@ import {
 } from "@/lib/utils/appointment-helpers";
 
 /**
+ * Resend email response data structure
+ * Used for type-safe extraction of email IDs from Resend API responses
+ */
+interface ResendEmailData {
+  id: string;
+}
+
+/**
  * LAZY INITIALIZATION
  *
  * The Resend client is created on-demand when functions execute,
@@ -115,12 +123,12 @@ export async function sendAppointmentCreatedEmail(data: AppointmentEmailData) {
     console.log("[sendAppointmentCreatedEmail] Resend API results:", {
       client: {
         success: clientSuccess,
-        emailId: clientSuccess ? (clientResult.data as any)?.id : null,
+        emailId: clientSuccess ? (clientResult.data as ResendEmailData)?.id : null,
         error: clientResult.error || null,
       },
       agent: {
         success: agentSuccess,
-        emailId: agentSuccess ? (agentResult.data as any)?.id : null,
+        emailId: agentSuccess ? (agentResult.data as ResendEmailData)?.id : null,
         error: agentResult.error || null,
       },
     });
@@ -137,8 +145,8 @@ export async function sendAppointmentCreatedEmail(data: AppointmentEmailData) {
 
     return {
       success: clientSuccess && agentSuccess,
-      clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
-      agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
+      clientEmailId: clientSuccess ? (clientResult.data as ResendEmailData).id : undefined,
+      agentEmailId: agentSuccess ? (agentResult.data as ResendEmailData).id : undefined,
       error: !clientSuccess || !agentSuccess
         ? `Email delivery failed: ${[
             !clientSuccess ? "client" : null,
@@ -213,12 +221,12 @@ export async function sendAppointmentConfirmedEmail(
     console.log("[sendAppointmentConfirmedEmail] Resend API results:", {
       client: {
         success: clientSuccess,
-        emailId: clientSuccess ? (clientResult.data as any)?.id : null,
+        emailId: clientSuccess ? (clientResult.data as ResendEmailData)?.id : null,
         error: clientResult.error || null,
       },
       agent: {
         success: agentSuccess,
-        emailId: agentSuccess ? (agentResult.data as any)?.id : null,
+        emailId: agentSuccess ? (agentResult.data as ResendEmailData)?.id : null,
         error: agentResult.error || null,
       },
     });
@@ -234,8 +242,8 @@ export async function sendAppointmentConfirmedEmail(
 
     return {
       success: clientSuccess && agentSuccess,
-      clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
-      agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
+      clientEmailId: clientSuccess ? (clientResult.data as ResendEmailData).id : undefined,
+      agentEmailId: agentSuccess ? (agentResult.data as ResendEmailData).id : undefined,
       error: !clientSuccess || !agentSuccess
         ? `Email delivery failed: ${[
             !clientSuccess ? "client" : null,
@@ -312,12 +320,12 @@ export async function sendAppointmentCancelledEmail(
     console.log("[sendAppointmentCancelledEmail] Resend API results:", {
       client: {
         success: clientSuccess,
-        emailId: clientSuccess ? (clientResult.data as any)?.id : null,
+        emailId: clientSuccess ? (clientResult.data as ResendEmailData)?.id : null,
         error: clientResult.error || null,
       },
       agent: {
         success: agentSuccess,
-        emailId: agentSuccess ? (agentResult.data as any)?.id : null,
+        emailId: agentSuccess ? (agentResult.data as ResendEmailData)?.id : null,
         error: agentResult.error || null,
       },
     });
@@ -333,8 +341,8 @@ export async function sendAppointmentCancelledEmail(
 
     return {
       success: clientSuccess && agentSuccess,
-      clientEmailId: clientSuccess ? (clientResult.data as any).id : undefined,
-      agentEmailId: agentSuccess ? (agentResult.data as any).id : undefined,
+      clientEmailId: clientSuccess ? (clientResult.data as ResendEmailData).id : undefined,
+      agentEmailId: agentSuccess ? (agentResult.data as ResendEmailData).id : undefined,
       error: !clientSuccess || !agentSuccess
         ? `Email delivery failed: ${[
             !clientSuccess ? "client" : null,

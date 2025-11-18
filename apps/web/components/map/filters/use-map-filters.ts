@@ -19,6 +19,13 @@ import {
 } from "@/lib/utils/url-helpers";
 
 /**
+ * Type aliases for filter arrays parsed from URL
+ * These are guaranteed to be arrays or undefined by the FilterSchema
+ */
+type TransactionTypeFilter = string[] | undefined;
+type CategoryFilter = string[] | undefined;
+
+/**
  * Hook to manage map filter state synced with URL
  * @returns Object with current filters and update functions
  */
@@ -54,19 +61,15 @@ export function useMapFilters() {
   // Toggle transaction type
   const toggleTransactionType = useCallback(
     (type: string) => {
-      // Type guard: ensure transactionType is an array
-      const current = Array.isArray(filters.transactionType)
-        ? filters.transactionType
-        : filters.transactionType
-          ? [filters.transactionType]
-          : [];
+      // Type guard: ensure transactionType is an array (FilterSchema always parses to array)
+      const current = (filters.transactionType as TransactionTypeFilter) || [];
 
-      const updated = current.includes(type as any)
+      const updated: string[] = current.includes(type)
         ? current.filter((t) => t !== type)
-        : [...current, type as any];
+        : [...current, type];
 
       updateFilters({
-        transactionType: updated.length > 0 ? (updated as any) : undefined,
+        transactionType: updated.length > 0 ? updated : undefined,
       });
     },
     [filters.transactionType, updateFilters],
@@ -77,20 +80,14 @@ export function useMapFilters() {
    */
   const setCategory = useCallback(
     (category: string) => {
-      // Type guard: ensure category is an array
-      const current = Array.isArray(filters.category)
-        ? filters.category
-        : filters.category
-          ? [filters.category]
-          : [];
+      // Type guard: ensure category is an array (FilterSchema always parses to array)
+      const current = (filters.category as CategoryFilter) || [];
 
       // Toggle: if already selected, deselect; otherwise select
-      const updated = current.includes(category as any)
-        ? []
-        : [category as any];
+      const updated: string[] = current.includes(category) ? [] : [category];
 
       updateFilters({
-        category: updated.length > 0 ? (updated as any) : undefined,
+        category: updated.length > 0 ? updated : undefined,
       });
     },
     [filters.category, updateFilters],
@@ -100,7 +97,7 @@ export function useMapFilters() {
   const setCategories = useCallback(
     (categories: string[]) => {
       updateFilters({
-        category: categories.length > 0 ? (categories as any) : undefined,
+        category: categories.length > 0 ? categories : undefined,
       });
     },
     [updateFilters],

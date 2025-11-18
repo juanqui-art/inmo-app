@@ -4,6 +4,8 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Map, { Source, Layer, Popup } from "react-map-gl/mapbox";
 import type { MapRef } from "react-map-gl/mapbox";
 import type { MapMouseEvent } from "react-map-gl/mapbox";
+import type { GeoJSONSource } from "mapbox-gl";
+import type { Feature, FeatureCollection, Point, GeoJSON } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { env } from "@repo/env";
 import type { TransactionType } from "@repo/database";
@@ -84,7 +86,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
         const mapboxSource = mapRef.current?.getMap().getSource("properties");
 
         if (mapboxSource && "getClusterExpansionZoom" in mapboxSource) {
-          (mapboxSource as any).getClusterExpansionZoom(
+          (mapboxSource as GeoJSONSource).getClusterExpansionZoom(
             clusterId,
             (err: Error | null, zoom: number) => {
               if (err) return;
@@ -184,7 +186,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
         <Source
           id="properties"
           type="geojson"
-          data={geojsonData as any}
+          data={geojsonData as FeatureCollection}
           cluster={true}
           clusterMaxZoom={CLUSTER_CONFIG.MAX_ZOOM}
           clusterRadius={CLUSTER_CONFIG.RADIUS}

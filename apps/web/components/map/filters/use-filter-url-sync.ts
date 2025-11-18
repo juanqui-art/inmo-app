@@ -65,10 +65,10 @@ export function useFilterUrlSync() {
       setFilters({
         minPrice: urlFilters.minPrice,
         maxPrice: urlFilters.maxPrice,
-        category: urlFilters.category as any,
+        category: urlFilters.category,
         bedrooms: urlFilters.bedrooms,
         bathrooms: urlFilters.bathrooms,
-        transactionType: urlFilters.transactionType as any,
+        transactionType: urlFilters.transactionType,
         city: urlFilters.city,
       });
 
@@ -84,10 +84,10 @@ export function useFilterUrlSync() {
       setFilters({
         minPrice: urlFilters.minPrice,
         maxPrice: urlFilters.maxPrice,
-        category: urlFilters.category as any,
+        category: urlFilters.category,
         bedrooms: urlFilters.bedrooms,
         bathrooms: urlFilters.bathrooms,
-        transactionType: urlFilters.transactionType as any,
+        transactionType: urlFilters.transactionType,
         city: urlFilters.city,
       });
 
@@ -115,10 +115,10 @@ export function useFilterUrlSync() {
       const urlParams: DynamicFilterParams = {
         minPrice: filters.minPrice,
         maxPrice: filters.maxPrice,
-        category: filters.category as any,
+        category: filters.category,
         bedrooms: filters.bedrooms,
         bathrooms: filters.bathrooms,
-        transactionType: filters.transactionType as any,
+        transactionType: filters.transactionType,
         city: filters.city,
       };
 
