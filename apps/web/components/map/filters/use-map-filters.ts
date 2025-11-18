@@ -15,6 +15,8 @@ import { useCallback } from "react";
 import {
   parseFilterParams,
   buildFilterUrl,
+  TRANSACTION_TYPES,
+  PROPERTY_CATEGORIES,
   type DynamicFilterParams,
 } from "@/lib/utils/url-helpers";
 
@@ -22,8 +24,8 @@ import {
  * Type aliases for filter arrays parsed from URL
  * These are guaranteed to be arrays or undefined by the FilterSchema
  */
-type TransactionTypeFilter = string[] | undefined;
-type CategoryFilter = string[] | undefined;
+type TransactionTypeFilter = (typeof TRANSACTION_TYPES)[number][] | undefined;
+type CategoryFilter = (typeof PROPERTY_CATEGORIES)[number][] | undefined;
 
 /**
  * Hook to manage map filter state synced with URL
@@ -64,9 +66,13 @@ export function useMapFilters() {
       // Type guard: ensure transactionType is an array (FilterSchema always parses to array)
       const current = (filters.transactionType as TransactionTypeFilter) || [];
 
-      const updated: string[] = current.includes(type)
-        ? current.filter((t) => t !== type)
-        : [...current, type];
+      // Validate that type is a valid transaction type
+      const validType = TRANSACTION_TYPES.includes(type as any) ? type : null;
+      if (!validType) return;
+
+      const updated: (typeof TRANSACTION_TYPES)[number][] = current.includes(validType)
+        ? current.filter((t) => t !== validType)
+        : [...current, validType];
 
       updateFilters({
         transactionType: updated.length > 0 ? updated : undefined,
@@ -83,8 +89,12 @@ export function useMapFilters() {
       // Type guard: ensure category is an array (FilterSchema always parses to array)
       const current = (filters.category as CategoryFilter) || [];
 
+      // Validate that category is a valid property category
+      const validCategory = PROPERTY_CATEGORIES.includes(category as any) ? category : null;
+      if (!validCategory) return;
+
       // Toggle: if already selected, deselect; otherwise select
-      const updated: string[] = current.includes(category) ? [] : [category];
+      const updated: (typeof PROPERTY_CATEGORIES)[number][] = current.includes(validCategory) ? [] : [validCategory];
 
       updateFilters({
         category: updated.length > 0 ? updated : undefined,
@@ -96,8 +106,13 @@ export function useMapFilters() {
   // Set multiple categories (for multi-select dropdowns)
   const setCategories = useCallback(
     (categories: string[]) => {
+      // Validate all categories
+      const validCategories = categories.filter((cat) =>
+        PROPERTY_CATEGORIES.includes(cat as any),
+      ) as (typeof PROPERTY_CATEGORIES)[number][];
+
       updateFilters({
-        category: categories.length > 0 ? categories : undefined,
+        category: validCategories.length > 0 ? validCategories : undefined,
       });
     },
     [updateFilters],

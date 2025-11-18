@@ -5,7 +5,7 @@ import Map, { Source, Layer, Popup } from "react-map-gl/mapbox";
 import type { MapRef } from "react-map-gl/mapbox";
 import type { MapMouseEvent } from "react-map-gl/mapbox";
 import type { GeoJSONSource } from "mapbox-gl";
-import type { Feature, FeatureCollection, Point, GeoJSON } from "geojson";
+import type { FeatureCollection } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { env } from "@repo/env";
 import type { TransactionType } from "@repo/database";
@@ -88,8 +88,8 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
         if (mapboxSource && "getClusterExpansionZoom" in mapboxSource) {
           (mapboxSource as GeoJSONSource).getClusterExpansionZoom(
             clusterId,
-            (err: Error | null, zoom: number) => {
-              if (err) return;
+            (err: Error | null | undefined, zoom?: number) => {
+              if (err || zoom === undefined) return;
 
               const geometry = feature.geometry as { coordinates: number[] };
               mapRef.current?.flyTo({

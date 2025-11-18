@@ -30,7 +30,12 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { parseFilterParams, buildFilterUrl } from "@/lib/utils/url-helpers";
+import {
+  parseFilterParams,
+  buildFilterUrl,
+  PROPERTY_CATEGORIES,
+  TRANSACTION_TYPES,
+} from "@/lib/utils/url-helpers";
 import type { DynamicFilterParams } from "@/lib/utils/url-helpers";
 import { useMapStore } from "@/stores/map-store";
 import { usePropertyGridStore } from "@/stores/property-grid-store";
@@ -62,13 +67,19 @@ export function useFilterUrlSync() {
       const urlFilters = parseFilterParams(searchParams);
 
       // Convert to store format
+      // Type assertions are safe because urlFilters comes from parseFilterParams
+      // which validates enum values through Zod FilterSchema
       setFilters({
         minPrice: urlFilters.minPrice,
         maxPrice: urlFilters.maxPrice,
-        category: urlFilters.category,
+        category: urlFilters.category as
+          | (typeof PROPERTY_CATEGORIES)[number][]
+          | undefined,
         bedrooms: urlFilters.bedrooms,
         bathrooms: urlFilters.bathrooms,
-        transactionType: urlFilters.transactionType,
+        transactionType: urlFilters.transactionType as
+          | (typeof TRANSACTION_TYPES)[number][]
+          | undefined,
         city: urlFilters.city,
       });
 
@@ -112,13 +123,19 @@ export function useFilterUrlSync() {
       usePropertyGridStore.getState().setLoading(true);
 
       // Build URL from filters
+      // Type assertions are safe here because filters come from parseFilterParams
+      // which validates with FilterSchema (Zod) that ensures correct enum values
       const urlParams: DynamicFilterParams = {
         minPrice: filters.minPrice,
         maxPrice: filters.maxPrice,
-        category: filters.category,
+        category: filters.category as
+          | (typeof PROPERTY_CATEGORIES)[number][]
+          | undefined,
         bedrooms: filters.bedrooms,
         bathrooms: filters.bathrooms,
-        transactionType: filters.transactionType,
+        transactionType: filters.transactionType as
+          | (typeof TRANSACTION_TYPES)[number][]
+          | undefined,
         city: filters.city,
       };
 
