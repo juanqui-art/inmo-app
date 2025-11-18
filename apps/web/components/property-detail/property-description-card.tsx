@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { ChevronDown } from "lucide-react";
 import { cn } from "@repo/ui";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -43,7 +43,7 @@ export function PropertyDescriptionCard({
           start: "top 80%",
           toggleActions: "play none none none",
         },
-      }
+      },
     );
 
     return () => {
@@ -83,7 +83,7 @@ export function PropertyDescriptionCard({
           ref={contentRef}
           className={cn(
             "overflow-hidden transition-all",
-            isLong && !isExpanded && "relative"
+            isLong && !isExpanded && "relative",
           )}
           style={{ height: isLong ? "200px" : "auto" }}
         >
@@ -104,7 +104,7 @@ export function PropertyDescriptionCard({
           onClick={() => setIsExpanded(!isExpanded)}
           className={cn(
             "mt-4 inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium transition-all duration-300",
-            isExpanded && "flex-row-reverse"
+            isExpanded && "flex-row-reverse",
           )}
           aria-expanded={isExpanded}
           aria-controls="description-content"
@@ -113,7 +113,7 @@ export function PropertyDescriptionCard({
           <ChevronDown
             className={cn(
               "w-4 h-4 transition-transform duration-300",
-              isExpanded && "rotate-180"
+              isExpanded && "rotate-180",
             )}
           />
         </button>

@@ -15,8 +15,8 @@
  */
 
 import type { PropertyFilters } from "@repo/database";
+import { categoryLabels, transactionTypeLabels } from "@/lib/constants";
 import { useMapStore } from "@/stores/map-store";
-import { transactionTypeLabels, categoryLabels } from "@/lib/constants";
 
 interface PropertyListTitleProps {
   /**
@@ -31,7 +31,10 @@ interface PropertyListTitleProps {
   filters?: PropertyFilters;
 }
 
-export function PropertyListTitle({ total: totalProp, filters: filtersProp }: PropertyListTitleProps) {
+export function PropertyListTitle({
+  total: totalProp,
+  filters: filtersProp,
+}: PropertyListTitleProps) {
   const storeFilters = useMapStore((state) => state.filters);
   const properties = useMapStore((state) => state.properties);
 
@@ -95,7 +98,8 @@ export function PropertyListTitle({ total: totalProp, filters: filtersProp }: Pr
     <div className="px-4 sm:px-6 lg:px-8 py-3 border-b border-oslo-gray-800">
       <div>
         <h2 className="text-lg font-semibold text-oslo-gray-50">
-          {title} <span className="font-normal text-oslo-gray-400">({countText})</span>
+          {title}{" "}
+          <span className="font-normal text-oslo-gray-400">({countText})</span>
         </h2>
         {hasActiveFilters && (
           <p className="text-xs text-oslo-gray-400 mt-1">

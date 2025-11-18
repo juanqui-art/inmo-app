@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 
 const NosotrosPage: FC = () => {
   return (
@@ -9,8 +9,8 @@ const NosotrosPage: FC = () => {
       <p className="mt-4 text-lg text-oslo-gray-700 dark:text-oslo-gray-300">
         En InmoApp, nuestra misión es simplificar la búsqueda de propiedades y
         conectar a las personas con su hogar ideal. Creemos que encontrar el
-        lugar perfecto para vivir o invertir debe ser una experiencia emocionante
-        y sin estrés.
+        lugar perfecto para vivir o invertir debe ser una experiencia
+        emocionante y sin estrés.
       </p>
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>

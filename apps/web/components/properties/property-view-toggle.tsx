@@ -16,10 +16,10 @@
  * - Smoother transitions
  */
 
-import Link from "next/link";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
-import { Grid3x3, Map } from "lucide-react";
 import { cn } from "@repo/ui";
+import { Grid3x3, Map } from "lucide-react";
+import Link from "next/link";
 
 interface PropertyViewToggleProps {
   currentView: "list" | "map";
@@ -55,7 +55,7 @@ export function PropertyViewToggle({
         className={cn(
           "flex h-10 items-center gap-2 px-3 py-2 rounded-full font-medium text-sm transition-all duration-200 whitespace-nowrap cursor-pointer",
           "data-[state=on]:bg-oslo-gray-600/40 data-[state=on]:text-oslo-gray-50 data-[state=on]:shadow-lg data-[state=on]:shadow-oslo-gray-900/50",
-          "data-[state=off]:text-oslo-gray-300 hover:text-oslo-gray-100 hover:bg-oslo-gray-800/30"
+          "data-[state=off]:text-oslo-gray-300 hover:text-oslo-gray-100 hover:bg-oslo-gray-800/30",
         )}
       >
         <Link
@@ -75,7 +75,7 @@ export function PropertyViewToggle({
         className={cn(
           "flex h-10 items-center gap-2 px-3 py-2 rounded-full font-medium text-sm transition-all duration-200 whitespace-nowrap cursor-pointer",
           "data-[state=on]:bg-oslo-gray-600/40 data-[state=on]:text-oslo-gray-50 data-[state=on]:shadow-lg data-[state=on]:shadow-oslo-gray-900/50",
-          "data-[state=off]:text-oslo-gray-300 hover:text-oslo-gray-100 hover:bg-oslo-gray-800/30"
+          "data-[state=off]:text-oslo-gray-300 hover:text-oslo-gray-100 hover:bg-oslo-gray-800/30",
         )}
       >
         <Link

@@ -8,7 +8,15 @@
   },
   "homepage": "https://github.com/juanquizhpi/inmo-app",
   "license": "MIT",
-  "keywords": ["agents", "assistant-modes", "debugging", "education", "efficiency", "concise", "detailed"],
+  "keywords": [
+    "agents",
+    "assistant-modes",
+    "debugging",
+    "education",
+    "efficiency",
+    "concise",
+    "detailed"
+  ],
   "agents": [
     "./agents/efficiency.md",
     "./agents/educator.md",

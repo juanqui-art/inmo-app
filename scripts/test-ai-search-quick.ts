@@ -12,7 +12,8 @@ const criticalTests = [
   {
     name: "Invalid Location (Quito - User's reported issue)",
     query: "Casa 3 habitaciones Quito Norte",
-    expectedBehavior: "Should reject with low confidence and suggest available cities",
+    expectedBehavior:
+      "Should reject with low confidence and suggest available cities",
   },
   {
     name: "Valid Location (Cuenca)",
@@ -22,13 +23,14 @@ const criticalTests = [
   {
     name: "Typo in City (Cueca → Cuenca)",
     query: "Apartamento en Cueca",
-    expectedBehavior: "Should fuzzy-match to Cuenca with medium-high confidence",
+    expectedBehavior:
+      "Should fuzzy-match to Cuenca with medium-high confidence",
   },
 ];
 
 async function runQuickTests() {
   console.log("🧪 Quick AI Search Test - Critical Cases\n");
-  console.log("=" + "=".repeat(70) + "\n");
+  console.log(`=${"=".repeat(70)}\n`);
 
   for (const [index, test] of criticalTests.entries()) {
     console.log(`📝 Test ${index + 1}/${criticalTests.length}: ${test.name}`);
@@ -52,7 +54,9 @@ async function runQuickTests() {
         console.log(`   - Is Valid: ${v.isValid ? "✓ YES" : "✗ NO"}`);
         console.log(`   - Requested: "${v.requestedLocation}"`);
         if (v.matchedCity)
-          console.log(`   - Matched: "${v.matchedCity}" (${v.confidence}% confidence)`);
+          console.log(
+            `   - Matched: "${v.matchedCity}" (${v.confidence}% confidence)`,
+          );
         if (v.suggestedCities && v.suggestedCities.length > 0)
           console.log(`   - Suggestions: ${v.suggestedCities.join(", ")}`);
         if (v.message) console.log(`   - Message: ${v.message}`);
@@ -65,9 +69,9 @@ async function runQuickTests() {
           `   ✅ PASS - System correctly rejected unavailable location`,
         );
       } else if (
-        result.locationValidation &&
-        result.locationValidation.matchedCity &&
-        result.locationValidation.matchedCity !== result.locationValidation.requestedLocation
+        result.locationValidation?.matchedCity &&
+        result.locationValidation.matchedCity !==
+          result.locationValidation.requestedLocation
       ) {
         console.log(`   ✅ PASS - System fuzzy-matched location successfully`);
       } else if (result.confidence >= 70) {
@@ -82,7 +86,7 @@ async function runQuickTests() {
       console.error(error);
     }
 
-    console.log("\n" + "=".repeat(72) + "\n");
+    console.log(`\n${"=".repeat(72)}\n`);
 
     // Small delay to avoid rate limiting
     await new Promise((resolve) => setTimeout(resolve, 1500));

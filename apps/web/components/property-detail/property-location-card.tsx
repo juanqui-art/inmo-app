@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect, useRef } from "react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -38,7 +38,7 @@ export function PropertyLocationCard({
           start: "top 80%",
           toggleActions: "play none none none",
         },
-      }
+      },
     );
 
     return () => {

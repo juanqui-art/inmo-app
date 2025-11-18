@@ -17,12 +17,19 @@
  * - Assertions: When failure indicates programmer error
  */
 
-import { PropertyCategory, PropertyStatus, TransactionType } from '@prisma/client'
-import { z } from 'zod'
-import type { SerializedProperty, PropertyFilters } from '../repositories/properties'
+import type {
+  PropertyCategory,
+  PropertyStatus,
+  TransactionType,
+} from "@prisma/client";
+import { z } from "zod";
+import type {
+  PropertyFilters,
+  SerializedProperty,
+} from "../repositories/properties";
 
 // Re-export SerializedProperty type for consumers of this module
-export type { SerializedProperty }
+export type { SerializedProperty };
 
 /**
  * Guard: Check if object is a SerializedProperty
@@ -37,70 +44,80 @@ export type { SerializedProperty }
  * }
  * ```
  */
-export function isSerializedProperty(value: unknown): value is SerializedProperty {
-  if (typeof value !== 'object' || value === null) {
-    return false
+export function isSerializedProperty(
+  value: unknown,
+): value is SerializedProperty {
+  if (typeof value !== "object" || value === null) {
+    return false;
   }
 
-  const obj = value as Record<string, unknown>
+  const obj = value as Record<string, unknown>;
 
   // Check required fields
-  if (typeof obj.id !== 'string') return false
-  if (typeof obj.title !== 'string') return false
-  if (typeof obj.price !== 'number') return false
-  if (!Number.isFinite(obj.price)) return false
-  if (obj.price < 0) return false
+  if (typeof obj.id !== "string") return false;
+  if (typeof obj.title !== "string") return false;
+  if (typeof obj.price !== "number") return false;
+  if (!Number.isFinite(obj.price)) return false;
+  if (obj.price < 0) return false;
 
   // Check transaction type
-  if (!isTransactionType(obj.transactionType)) return false
+  if (!isTransactionType(obj.transactionType)) return false;
 
   // Check category
-  if (!isPropertyCategory(obj.category)) return false
+  if (!isPropertyCategory(obj.category)) return false;
 
   // Check status
-  if (!isPropertyStatus(obj.status)) return false
+  if (!isPropertyStatus(obj.status)) return false;
 
   // Check optional numeric fields (must be non-negative)
   if (obj.bathrooms !== null && obj.bathrooms !== undefined) {
-    if (typeof obj.bathrooms !== 'number' || !Number.isFinite(obj.bathrooms) || obj.bathrooms < 0) {
-      return false
+    if (
+      typeof obj.bathrooms !== "number" ||
+      !Number.isFinite(obj.bathrooms) ||
+      obj.bathrooms < 0
+    ) {
+      return false;
     }
   }
 
   if (obj.area !== null && obj.area !== undefined) {
-    if (typeof obj.area !== 'number' || !Number.isFinite(obj.area) || obj.area < 0) {
-      return false
+    if (
+      typeof obj.area !== "number" ||
+      !Number.isFinite(obj.area) ||
+      obj.area < 0
+    ) {
+      return false;
     }
   }
 
   if (obj.bedrooms !== null && obj.bedrooms !== undefined) {
     if (
-      typeof obj.bedrooms !== 'number' ||
+      typeof obj.bedrooms !== "number" ||
       !Number.isInteger(obj.bedrooms) ||
       obj.bedrooms < 0
     ) {
-      return false
+      return false;
     }
   }
 
   // Check geographic coordinates
   if (obj.latitude !== null && obj.latitude !== undefined) {
-    if (typeof obj.latitude !== 'number' || !Number.isFinite(obj.latitude)) {
-      return false
+    if (typeof obj.latitude !== "number" || !Number.isFinite(obj.latitude)) {
+      return false;
     }
   }
 
   if (obj.longitude !== null && obj.longitude !== undefined) {
-    if (typeof obj.longitude !== 'number' || !Number.isFinite(obj.longitude)) {
-      return false
+    if (typeof obj.longitude !== "number" || !Number.isFinite(obj.longitude)) {
+      return false;
     }
   }
 
   // Check dates
-  if (!(obj.createdAt instanceof Date)) return false
-  if (!(obj.updatedAt instanceof Date)) return false
+  if (!(obj.createdAt instanceof Date)) return false;
+  if (!(obj.updatedAt instanceof Date)) return false;
 
-  return true
+  return true;
 }
 
 /**
@@ -118,7 +135,9 @@ export function assertIsSerializedProperty(
   value: unknown,
 ): asserts value is SerializedProperty {
   if (!isSerializedProperty(value)) {
-    throw new TypeError(`Value is not a valid SerializedProperty: ${JSON.stringify(value)}`)
+    throw new TypeError(
+      `Value is not a valid SerializedProperty: ${JSON.stringify(value)}`,
+    );
   }
 }
 
@@ -135,11 +154,11 @@ export function assertIsSerializedProperty(
  */
 export function isPropertyCategory(value: unknown): value is PropertyCategory {
   return (
-    value === 'HOUSE' ||
-    value === 'APARTMENT' ||
-    value === 'LAND' ||
-    value === 'COMMERCIAL'
-  )
+    value === "HOUSE" ||
+    value === "APARTMENT" ||
+    value === "LAND" ||
+    value === "COMMERCIAL"
+  );
 }
 
 /**
@@ -147,18 +166,18 @@ export function isPropertyCategory(value: unknown): value is PropertyCategory {
  */
 export function isPropertyStatus(value: unknown): value is PropertyStatus {
   return (
-    value === 'AVAILABLE' ||
-    value === 'PENDING' ||
-    value === 'SOLD' ||
-    value === 'RENTED'
-  )
+    value === "AVAILABLE" ||
+    value === "PENDING" ||
+    value === "SOLD" ||
+    value === "RENTED"
+  );
 }
 
 /**
  * Guard: Check if value is valid TransactionType
  */
 export function isTransactionType(value: unknown): value is TransactionType {
-  return value === 'SALE' || value === 'RENT'
+  return value === "SALE" || value === "RENT";
 }
 
 /**
@@ -181,53 +200,55 @@ export function isTransactionType(value: unknown): value is TransactionType {
  * }
  * ```
  */
-export const PropertyFiltersSchema = z.object({
-  transactionType: z
-    .union([
-      z.literal('SALE'),
-      z.literal('RENT'),
-      z.array(z.union([z.literal('SALE'), z.literal('RENT')])),
-    ])
-    .optional(),
+export const PropertyFiltersSchema = z
+  .object({
+    transactionType: z
+      .union([
+        z.literal("SALE"),
+        z.literal("RENT"),
+        z.array(z.union([z.literal("SALE"), z.literal("RENT")])),
+      ])
+      .optional(),
 
-  category: z
-    .union([
-      z.literal('HOUSE'),
-      z.literal('APARTMENT'),
-      z.literal('LAND'),
-      z.literal('COMMERCIAL'),
-      z.array(
-        z.union([
-          z.literal('HOUSE'),
-          z.literal('APARTMENT'),
-          z.literal('LAND'),
-          z.literal('COMMERCIAL'),
-        ]),
-      ),
-    ])
-    .optional(),
+    category: z
+      .union([
+        z.literal("HOUSE"),
+        z.literal("APARTMENT"),
+        z.literal("LAND"),
+        z.literal("COMMERCIAL"),
+        z.array(
+          z.union([
+            z.literal("HOUSE"),
+            z.literal("APARTMENT"),
+            z.literal("LAND"),
+            z.literal("COMMERCIAL"),
+          ]),
+        ),
+      ])
+      .optional(),
 
-  status: z
-    .union([
-      z.literal('AVAILABLE'),
-      z.literal('PENDING'),
-      z.literal('SOLD'),
-      z.literal('RENTED'),
-    ])
-    .optional(),
+    status: z
+      .union([
+        z.literal("AVAILABLE"),
+        z.literal("PENDING"),
+        z.literal("SOLD"),
+        z.literal("RENTED"),
+      ])
+      .optional(),
 
-  minPrice: z.number().positive().optional(),
-  maxPrice: z.number().positive().optional(),
-  bedrooms: z.number().nonnegative().int().optional(),
-  bathrooms: z.number().nonnegative().optional(),
-  minArea: z.number().positive().optional(),
-  maxArea: z.number().positive().optional(),
+    minPrice: z.number().positive().optional(),
+    maxPrice: z.number().positive().optional(),
+    bedrooms: z.number().nonnegative().int().optional(),
+    bathrooms: z.number().nonnegative().optional(),
+    minArea: z.number().positive().optional(),
+    maxArea: z.number().positive().optional(),
 
-  city: z.string().min(1).optional(),
-  state: z.string().min(1).optional(),
-  agentId: z.string().min(1).optional(),
-  search: z.string().optional(),
-}).strict()
+    city: z.string().min(1).optional(),
+    state: z.string().min(1).optional(),
+    agentId: z.string().min(1).optional(),
+    search: z.string().optional(),
+  })
+  .strict();
 
 /**
  * Safe parse PropertyFilters with Zod
@@ -249,7 +270,7 @@ export const PropertyFiltersSchema = z.object({
 export function parsePropertyFilters(
   data: unknown,
 ): ReturnType<typeof PropertyFiltersSchema.safeParse> {
-  return PropertyFiltersSchema.safeParse(data)
+  return PropertyFiltersSchema.safeParse(data);
 }
 
 /**
@@ -257,13 +278,13 @@ export function parsePropertyFilters(
  * USE WITH CAUTION - only when you're sure data is valid
  */
 export function assertPropertyFilters(data: unknown): PropertyFilters {
-  const result = PropertyFiltersSchema.safeParse(data)
+  const result = PropertyFiltersSchema.safeParse(data);
   if (!result.success) {
     throw new TypeError(
       `Invalid PropertyFilters: ${JSON.stringify(result.error.flatten())}`,
-    )
+    );
   }
-  return result.data
+  return result.data;
 }
 
 /**

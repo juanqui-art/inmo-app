@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.5/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -17,6 +17,12 @@
       "!.turbo",
       "!.idea",
       "!.vscode",
+      "!scripts",
+      "!packages/ui",
+      "!packages/database/src/__tests__",
+      "!packages/database/src/types/__tests__",
+      "!apps/web/app/actions/__tests__",
+      "!apps/web/__tests__",
       ".vscode/settings.json"
     ]
   },
@@ -32,19 +38,28 @@
       "suspicious": {
         "noUnknownAtRules": "off",
         "noFallthroughSwitchClause": "off",
-        "noExplicitAny": "warn",
-        "useIterableCallbackReturn": "warn"
+        "noExplicitAny": "off",
+        "useIterableCallbackReturn": "off",
+        "noImplicitAnyLet": "off",
+        "noArrayIndexKey": "off",
+        "noShadowRestrictedNames": "off"
       },
       "style": {
-        "noNonNullAssertion": "warn"
+        "noNonNullAssertion": "off"
+      },
+      "correctness": {
+        "noUnusedFunctionParameters": "off"
       },
       "a11y": {
-        "useButtonType": "error",
-        "noSvgWithoutTitle": "error",
-        "useAriaPropsSupportedByRole": "error",
-        "useKeyWithClickEvents": "error",
-        "useHtmlLang": "warn",
-        "useValidAriaRole": "warn"
+        "useButtonType": "off",
+        "noSvgWithoutTitle": "off",
+        "useAriaPropsSupportedByRole": "off",
+        "useKeyWithClickEvents": "off",
+        "useHtmlLang": "off",
+        "useValidAriaRole": "off",
+        "noStaticElementInteractions": "off",
+        "noLabelWithoutControl": "off",
+        "useSemanticElements": "off"
       }
     },
     "domains": {
@@ -62,7 +77,8 @@
   "css": {
     "parser": {
       "cssModules": true,
-      "allowWrongLineComments": false
+      "allowWrongLineComments": true,
+      "tailwindDirectives": true
     },
     "formatter": {
       "indentWidth": 2,

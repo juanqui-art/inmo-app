@@ -32,9 +32,9 @@
 
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import { Check, Copy, Mail, Share2, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Share2, X, Mail, Copy, Check } from "lucide-react";
 
 interface PropertyShareMenuProps {
   propertyId: string;

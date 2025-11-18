@@ -17,7 +17,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { env } from "@/lib/env";
 
 interface UseMapInitializationReturn {

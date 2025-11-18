@@ -35,7 +35,7 @@ type SupabaseUser = {
  * Create a mock Supabase Auth user
  */
 export function createMockSupabaseUser(
-  overrides?: Partial<SupabaseUser>
+  overrides?: Partial<SupabaseUser>,
 ): SupabaseUser {
   return {
     id: "supabase-user-id",

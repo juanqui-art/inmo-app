@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 
 const FAQPage: FC = () => {
   return (
@@ -54,9 +54,9 @@ const FAQPage: FC = () => {
             ¿Cómo puedo publicar mi propiedad en InmoApp?
           </h2>
           <p className="text-oslo-gray-700 dark:text-oslo-gray-300">
-            Si eres un agente o propietario y deseas publicar tu propiedad,
-            por favor, contáctanos a través de nuestra página de "Contacto"
-            para más información.
+            Si eres un agente o propietario y deseas publicar tu propiedad, por
+            favor, contáctanos a través de nuestra página de "Contacto" para más
+            información.
           </p>
         </div>
       </div>

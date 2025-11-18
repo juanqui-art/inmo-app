@@ -10,30 +10,30 @@
  * - Validación en tiempo real
  */
 
-import { useTransition, useEffect, useState } from "react";
 import {
-  createAppointmentAction,
-  getAvailableSlotsAction,
-} from "@/app/actions/appointments";
-import { Calendar } from "@repo/ui";
-import { Button } from "@repo/ui";
-import { Label } from "@repo/ui";
-import { Textarea } from "@repo/ui";
-import {
+  Button,
+  Calendar,
+  Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Textarea,
 } from "@repo/ui";
-import {
-  formatHour,
-  isWorkday,
-  getValidDateRange,
-  validateAppointmentDateTime,
-} from "@/lib/constants/availability";
 import { format, isBefore, startOfDay } from "date-fns";
 import { es } from "date-fns/locale";
+import { useEffect, useState, useTransition } from "react";
+import {
+  createAppointmentAction,
+  getAvailableSlotsAction,
+} from "@/app/actions/appointments";
+import {
+  formatHour,
+  getValidDateRange,
+  isWorkday,
+  validateAppointmentDateTime,
+} from "@/lib/constants/availability";
 
 interface AppointmentFormProps {
   propertyId: string;

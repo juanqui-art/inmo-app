@@ -18,8 +18,11 @@
  * - Consistency: Same conversion logic everywhere
  */
 
-import type { Prisma } from '@prisma/client'
-import type { PropertyWithRelations, SerializedProperty } from '../repositories/properties'
+import type { Prisma } from "@prisma/client";
+import type {
+  PropertyWithRelations,
+  SerializedProperty,
+} from "../repositories/properties";
 
 /**
  * Convert a single Prisma Decimal to number with validation
@@ -35,24 +38,26 @@ import type { PropertyWithRelations, SerializedProperty } from '../repositories/
  *
  * @internal Use within mapPropertyToSerialized, not directly
  */
-function toNumber(value: Prisma.Decimal | number | null | undefined): number | null {
+function toNumber(
+  value: Prisma.Decimal | number | null | undefined,
+): number | null {
   // Handle null/undefined
   if (value === null || value === undefined) {
-    return null
+    return null;
   }
 
   // Convert to number
-  const num = Number(value)
+  const num = Number(value);
 
   // Validate conversion result
   if (!Number.isFinite(num)) {
     console.error(
       `[PropertyMapper] Invalid number conversion for value: ${value}. Got: ${num}`,
-    )
-    return null
+    );
+    return null;
   }
 
-  return num
+  return num;
 }
 
 /**
@@ -111,12 +116,12 @@ export function mapPropertyToSerialized(
     // - Invalid conversion → undefined (with logging)
     bathrooms:
       property.bathrooms !== null && property.bathrooms !== undefined
-        ? toNumber(property.bathrooms) ?? undefined
+        ? (toNumber(property.bathrooms) ?? undefined)
         : undefined,
 
     area:
       property.area !== null && property.area !== undefined
-        ? toNumber(property.area) ?? undefined
+        ? (toNumber(property.area) ?? undefined)
         : undefined,
 
     // Address and location strings (no conversion needed)
@@ -138,7 +143,7 @@ export function mapPropertyToSerialized(
     // Relations (already serializable)
     agent: property.agent,
     images: property.images,
-  }
+  };
 }
 
 /**
@@ -160,7 +165,7 @@ export function mapPropertyToSerialized(
 export function mapPropertiesToSerialized(
   properties: PropertyWithRelations[],
 ): SerializedProperty[] {
-  return properties.map(mapPropertyToSerialized)
+  return properties.map(mapPropertyToSerialized);
 }
 
 /**

@@ -9,7 +9,7 @@
  * - Accessible: Full keyboard support
  */
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 export function useKeyboardNavigation(itemCount: number) {
   const [selectedIndex, setSelectedIndex] = useState(-1);

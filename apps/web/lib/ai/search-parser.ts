@@ -10,8 +10,8 @@
 
 import OpenAI from "openai";
 import {
-  validateLocation,
   getAvailableCitiesForPrompt,
+  validateLocation,
 } from "./location-validator";
 
 interface SearchFilters {

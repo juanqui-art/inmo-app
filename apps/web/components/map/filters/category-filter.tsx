@@ -9,8 +9,8 @@
  * - Syncs with URL
  */
 
-import { Building2, Home, Warehouse, Zap, MapPin } from "lucide-react";
 import type { PropertyCategory } from "@repo/database";
+import { Building2, Home, MapPin, Warehouse, Zap } from "lucide-react";
 
 interface CategoryFilterProps {
   selected?: PropertyCategory[];

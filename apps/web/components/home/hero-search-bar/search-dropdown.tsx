@@ -6,8 +6,8 @@
 
 import type { CitySearchResult } from "@/app/actions/properties";
 import { CitySuggestions } from "./city-suggestions";
-import { RecentSearches } from "./recent-searches";
 import { QuickCategories } from "./quick-categories";
+import { RecentSearches } from "./recent-searches";
 
 interface City extends CitySearchResult {
   slug?: string;

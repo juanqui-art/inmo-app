@@ -16,8 +16,8 @@
  */
 
 import { useEffect } from "react";
-import { toggleFavoriteAction } from "@/app/actions/favorites";
 import { toast } from "sonner";
+import { toggleFavoriteAction } from "@/app/actions/favorites";
 
 interface AuthIntent {
   action: "favorite";

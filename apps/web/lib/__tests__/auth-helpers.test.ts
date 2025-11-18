@@ -9,27 +9,26 @@
  * - requireOwnership: Require ownership of a resource
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Unmock auth functions for this test file since we're testing them
 vi.unmock("@/lib/auth");
 
-import {
-  getCurrentUser,
-  requireAuth,
-  requireRole,
-  checkPermission,
-  requireOwnership,
-} from "../auth";
+// Import mocked modules
+import { userRepository } from "@repo/database";
+import { redirect } from "next/navigation";
 import {
   createMockDbUser,
   createMockSupabaseUser,
 } from "@/__tests__/utils/auth-test-helpers";
-
-// Import mocked modules
-import { userRepository } from "@repo/database";
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import {
+  checkPermission,
+  getCurrentUser,
+  requireAuth,
+  requireOwnership,
+  requireRole,
+} from "../auth";
 
 // Get mocked functions
 const mockUserRepositoryFindById = vi.mocked(userRepository.findById);
@@ -450,7 +449,7 @@ describe("Auth Helpers", () => {
       mockUserRepositoryFindById.mockResolvedValue(mockDbUser);
 
       await expect(requireOwnership("different-user-id")).rejects.toThrow(
-        "No tienes permiso para realizar esta acción"
+        "No tienes permiso para realizar esta acción",
       );
     });
 
@@ -485,7 +484,7 @@ describe("Auth Helpers", () => {
       const customMessage = "No puedes editar esta propiedad";
 
       await expect(
-        requireOwnership("different-user-id", customMessage)
+        requireOwnership("different-user-id", customMessage),
       ).rejects.toThrow(customMessage);
     });
 
@@ -496,7 +495,7 @@ describe("Auth Helpers", () => {
       });
 
       await expect(requireOwnership("any-user-id")).rejects.toThrow(
-        "No tienes permiso para realizar esta acción"
+        "No tienes permiso para realizar esta acción",
       );
     });
 

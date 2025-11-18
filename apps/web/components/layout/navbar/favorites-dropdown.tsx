@@ -26,14 +26,14 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Heart } from "lucide-react";
 import { cn } from "@repo/ui";
+import { Heart } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { getFavoritesWithDetailsAction } from "@/app/actions/favorites";
 import { FavoriteItemCompact } from "@/components/favorites/favorite-item-compact";
 import { useFavorites } from "@/hooks/use-favorites";
-import { getFavoritesWithDetailsAction } from "@/app/actions/favorites";
-import { toast } from "sonner";
-import Link from "next/link";
 
 interface FavoriteItem {
   propertyId: string;

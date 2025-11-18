@@ -1,10 +1,6 @@
 "use client";
 
-import { Button } from "@repo/ui";
-import { Checkbox } from "@repo/ui";
-import { Label } from "@repo/ui";
-import { PasswordInput } from "@repo/ui";
-import { Input } from "@repo/ui";
+import { Button, Checkbox, Input, Label, PasswordInput } from "@repo/ui";
 import { useActionState, useState } from "react";
 import { loginAction } from "@/app/actions/auth";
 import { GoogleButton } from "./google-button";

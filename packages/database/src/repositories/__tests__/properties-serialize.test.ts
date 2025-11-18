@@ -7,11 +7,13 @@
 
 import { Decimal } from "@prisma/client/runtime/library";
 import { describe, expect, it } from "vitest";
-import { serializeProperty, serializeProperties } from "../properties";
 import type { PropertyWithRelations } from "../properties";
+import { serializeProperties, serializeProperty } from "../properties";
 
 describe("serializeProperty", () => {
-  const createMockProperty = (overrides?: Partial<PropertyWithRelations>): PropertyWithRelations => ({
+  const createMockProperty = (
+    overrides?: Partial<PropertyWithRelations>,
+  ): PropertyWithRelations => ({
     id: "test-123",
     title: "Test Property",
     description: "A test property",
@@ -182,7 +184,10 @@ describe("serializeProperty", () => {
 });
 
 describe("serializeProperties", () => {
-  const createMockProperty = (id: string, overrides?: Partial<PropertyWithRelations>): PropertyWithRelations => ({
+  const createMockProperty = (
+    id: string,
+    overrides?: Partial<PropertyWithRelations>,
+  ): PropertyWithRelations => ({
     id,
     title: `Property ${id}`,
     description: "Test property",

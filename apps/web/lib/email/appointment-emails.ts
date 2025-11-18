@@ -5,8 +5,8 @@
  * Usa Resend como servicio de email
  */
 
-import { Resend } from "resend";
 import { env } from "@repo/env";
+import { Resend } from "resend";
 import {
   formatAppointmentDate,
   getAppointmentEmailSubject,
@@ -123,12 +123,16 @@ export async function sendAppointmentCreatedEmail(data: AppointmentEmailData) {
     console.log("[sendAppointmentCreatedEmail] Resend API results:", {
       client: {
         success: clientSuccess,
-        emailId: clientSuccess ? (clientResult.data as ResendEmailData)?.id : null,
+        emailId: clientSuccess
+          ? (clientResult.data as ResendEmailData)?.id
+          : null,
         error: clientResult.error || null,
       },
       agent: {
         success: agentSuccess,
-        emailId: agentSuccess ? (agentResult.data as ResendEmailData)?.id : null,
+        emailId: agentSuccess
+          ? (agentResult.data as ResendEmailData)?.id
+          : null,
         error: agentResult.error || null,
       },
     });
@@ -145,14 +149,21 @@ export async function sendAppointmentCreatedEmail(data: AppointmentEmailData) {
 
     return {
       success: clientSuccess && agentSuccess,
-      clientEmailId: clientSuccess ? (clientResult.data as ResendEmailData).id : undefined,
-      agentEmailId: agentSuccess ? (agentResult.data as ResendEmailData).id : undefined,
-      error: !clientSuccess || !agentSuccess
-        ? `Email delivery failed: ${[
-            !clientSuccess ? "client" : null,
-            !agentSuccess ? "agent" : null,
-          ].filter(Boolean).join(", ")}`
+      clientEmailId: clientSuccess
+        ? (clientResult.data as ResendEmailData).id
         : undefined,
+      agentEmailId: agentSuccess
+        ? (agentResult.data as ResendEmailData).id
+        : undefined,
+      error:
+        !clientSuccess || !agentSuccess
+          ? `Email delivery failed: ${[
+              !clientSuccess ? "client" : null,
+              !agentSuccess ? "agent" : null,
+            ]
+              .filter(Boolean)
+              .join(", ")}`
+          : undefined,
     };
   } catch (error) {
     console.error("[sendAppointmentCreatedEmail] Exception:", {
@@ -221,12 +232,16 @@ export async function sendAppointmentConfirmedEmail(
     console.log("[sendAppointmentConfirmedEmail] Resend API results:", {
       client: {
         success: clientSuccess,
-        emailId: clientSuccess ? (clientResult.data as ResendEmailData)?.id : null,
+        emailId: clientSuccess
+          ? (clientResult.data as ResendEmailData)?.id
+          : null,
         error: clientResult.error || null,
       },
       agent: {
         success: agentSuccess,
-        emailId: agentSuccess ? (agentResult.data as ResendEmailData)?.id : null,
+        emailId: agentSuccess
+          ? (agentResult.data as ResendEmailData)?.id
+          : null,
         error: agentResult.error || null,
       },
     });
@@ -242,14 +257,21 @@ export async function sendAppointmentConfirmedEmail(
 
     return {
       success: clientSuccess && agentSuccess,
-      clientEmailId: clientSuccess ? (clientResult.data as ResendEmailData).id : undefined,
-      agentEmailId: agentSuccess ? (agentResult.data as ResendEmailData).id : undefined,
-      error: !clientSuccess || !agentSuccess
-        ? `Email delivery failed: ${[
-            !clientSuccess ? "client" : null,
-            !agentSuccess ? "agent" : null,
-          ].filter(Boolean).join(", ")}`
+      clientEmailId: clientSuccess
+        ? (clientResult.data as ResendEmailData).id
         : undefined,
+      agentEmailId: agentSuccess
+        ? (agentResult.data as ResendEmailData).id
+        : undefined,
+      error:
+        !clientSuccess || !agentSuccess
+          ? `Email delivery failed: ${[
+              !clientSuccess ? "client" : null,
+              !agentSuccess ? "agent" : null,
+            ]
+              .filter(Boolean)
+              .join(", ")}`
+          : undefined,
     };
   } catch (error) {
     console.error("[sendAppointmentConfirmedEmail] Exception:", {
@@ -320,12 +342,16 @@ export async function sendAppointmentCancelledEmail(
     console.log("[sendAppointmentCancelledEmail] Resend API results:", {
       client: {
         success: clientSuccess,
-        emailId: clientSuccess ? (clientResult.data as ResendEmailData)?.id : null,
+        emailId: clientSuccess
+          ? (clientResult.data as ResendEmailData)?.id
+          : null,
         error: clientResult.error || null,
       },
       agent: {
         success: agentSuccess,
-        emailId: agentSuccess ? (agentResult.data as ResendEmailData)?.id : null,
+        emailId: agentSuccess
+          ? (agentResult.data as ResendEmailData)?.id
+          : null,
         error: agentResult.error || null,
       },
     });
@@ -341,14 +367,21 @@ export async function sendAppointmentCancelledEmail(
 
     return {
       success: clientSuccess && agentSuccess,
-      clientEmailId: clientSuccess ? (clientResult.data as ResendEmailData).id : undefined,
-      agentEmailId: agentSuccess ? (agentResult.data as ResendEmailData).id : undefined,
-      error: !clientSuccess || !agentSuccess
-        ? `Email delivery failed: ${[
-            !clientSuccess ? "client" : null,
-            !agentSuccess ? "agent" : null,
-          ].filter(Boolean).join(", ")}`
+      clientEmailId: clientSuccess
+        ? (clientResult.data as ResendEmailData).id
         : undefined,
+      agentEmailId: agentSuccess
+        ? (agentResult.data as ResendEmailData).id
+        : undefined,
+      error:
+        !clientSuccess || !agentSuccess
+          ? `Email delivery failed: ${[
+              !clientSuccess ? "client" : null,
+              !agentSuccess ? "agent" : null,
+            ]
+              .filter(Boolean)
+              .join(", ")}`
+          : undefined,
     };
   } catch (error) {
     console.error("[sendAppointmentCancelledEmail] Exception:", {

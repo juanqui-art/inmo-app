@@ -5,13 +5,14 @@
  * Usado en listas del dashboard y perfil de usuario
  */
 
+import type { AppointmentDetail } from "@repo/database";
+import { Badge } from "@repo/ui";
+import { Calendar, MapPin, Phone, User } from "lucide-react";
+import Image from "next/image";
 import {
   formatAppointmentDate,
   getStatusLabel,
 } from "@/lib/utils/appointment-helpers";
-import { Badge } from "@repo/ui";
-import type { AppointmentDetail } from "@repo/database";
-import { MapPin, Calendar, User, Phone } from "lucide-react";
 
 interface AppointmentCardProps {
   appointment: AppointmentDetail;
@@ -39,13 +40,14 @@ export function AppointmentCard({
     <div className="bg-white dark:bg-oslo-gray-900 rounded-lg border border-oslo-gray-200 dark:border-oslo-gray-800 overflow-hidden hover:shadow-md transition-shadow">
       {/* Property Image */}
       {appointment.property.images[0] && (
-        <div className="h-32 bg-oslo-gray-100 dark:bg-oslo-gray-800 overflow-hidden">
-          <img
+        <div className="relative h-32 bg-oslo-gray-100 dark:bg-oslo-gray-800 overflow-hidden">
+          <Image
             src={appointment.property.images[0].url}
             alt={
               appointment.property.images[0].alt || appointment.property.title
             }
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         </div>
       )}

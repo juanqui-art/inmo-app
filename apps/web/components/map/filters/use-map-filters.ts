@@ -10,14 +10,14 @@
  * - Handles clearing all filters
  */
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import {
-  parseFilterParams,
   buildFilterUrl,
-  TRANSACTION_TYPES,
-  PROPERTY_CATEGORIES,
   type DynamicFilterParams,
+  PROPERTY_CATEGORIES,
+  parseFilterParams,
+  TRANSACTION_TYPES,
 } from "@/lib/utils/url-helpers";
 
 /**
@@ -73,7 +73,9 @@ export function useMapFilters() {
         : null;
       if (!validType) return;
 
-      const updated: (typeof TRANSACTION_TYPES)[number][] = current.includes(validType)
+      const updated: (typeof TRANSACTION_TYPES)[number][] = current.includes(
+        validType,
+      )
         ? current.filter((t) => t !== validType)
         : [...current, validType];
 
@@ -100,7 +102,11 @@ export function useMapFilters() {
       if (!validCategory) return;
 
       // Toggle: if already selected, deselect; otherwise select
-      const updated: (typeof PROPERTY_CATEGORIES)[number][] = current.includes(validCategory) ? [] : [validCategory];
+      const updated: (typeof PROPERTY_CATEGORIES)[number][] = current.includes(
+        validCategory,
+      )
+        ? []
+        : [validCategory];
 
       updateFilters({
         category: updated.length > 0 ? updated : undefined,

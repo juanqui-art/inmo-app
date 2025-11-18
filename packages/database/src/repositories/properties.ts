@@ -5,9 +5,14 @@
  * Centraliza lógica de negocio y validaciones
  */
 
-import { cache } from 'react'
-import { db } from '../client'
-import type { TransactionType, PropertyCategory, PropertyStatus, Prisma } from '@prisma/client'
+import type {
+  Prisma,
+  PropertyCategory,
+  PropertyStatus,
+  TransactionType,
+} from "@prisma/client";
+import { cache } from "react";
+import { db } from "../client";
 
 /**
  * Property select con relaciones incluidas
@@ -39,7 +44,7 @@ export const propertySelect = {
       alt: true,
       order: true,
     },
-    orderBy: { order: 'asc' as const },
+    orderBy: { order: "asc" as const },
   },
   agent: {
     select: {
@@ -50,30 +55,30 @@ export const propertySelect = {
       avatar: true,
     },
   },
-} satisfies Prisma.PropertySelect
+} satisfies Prisma.PropertySelect;
 
 export type PropertyWithRelations = Prisma.PropertyGetPayload<{
-  select: typeof propertySelect
-}>
+  select: typeof propertySelect;
+}>;
 
 /**
  * Filtros para búsqueda de propiedades
  * transactionType y category pueden ser arrays para multi-select
  */
 export interface PropertyFilters {
-  transactionType?: TransactionType | TransactionType[]
-  category?: PropertyCategory | PropertyCategory[]
-  status?: PropertyStatus
-  minPrice?: number
-  maxPrice?: number
-  bedrooms?: number
-  bathrooms?: number
-  minArea?: number
-  maxArea?: number
-  city?: string
-  state?: string
-  agentId?: string
-  search?: string
+  transactionType?: TransactionType | TransactionType[];
+  category?: PropertyCategory | PropertyCategory[];
+  status?: PropertyStatus;
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  minArea?: number;
+  maxArea?: number;
+  city?: string;
+  state?: string;
+  agentId?: string;
+  search?: string;
 }
 
 /**
@@ -81,14 +86,14 @@ export interface PropertyFilters {
  * Wrapped with React.cache() for request-level deduplication
  */
 async function _getPropertiesList(params: {
-  filters?: PropertyFilters
-  skip?: number
-  take?: number
+  filters?: PropertyFilters;
+  skip?: number;
+  take?: number;
 }): Promise<{ properties: SerializedProperty[]; total: number }> {
-  const { filters = {}, skip = 0, take = 20 } = params
+  const { filters = {}, skip = 0, take = 20 } = params;
 
   // Use centralized filter builder (extracted to prevent duplication)
-  const where = buildPropertyWhereClause(filters)
+  const where = buildPropertyWhereClause(filters);
 
   const [properties, total] = await Promise.all([
     db.property.findMany({
@@ -96,15 +101,15 @@ async function _getPropertiesList(params: {
       select: propertySelect,
       skip,
       take,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     }),
     db.property.count({ where }),
-  ])
+  ]);
 
   // Serialize properties (Decimal → number) for client compatibility
-  const serialized = serializeProperties(properties)
+  const serialized = serializeProperties(properties);
 
-  return { properties: serialized, total }
+  return { properties: serialized, total };
 }
 
 /**
@@ -120,7 +125,7 @@ async function _getPropertiesList(params: {
  * BENEFIT: ~50% reduction on page detail (eliminates findById duplicate)
  *          ~20-30% reduction on map/listing pages
  */
-export const getPropertiesList = cache(_getPropertiesList)
+export const getPropertiesList = cache(_getPropertiesList);
 
 /**
  * Internal implementation of findById
@@ -131,10 +136,10 @@ async function _findById(id: string): Promise<SerializedProperty | null> {
   const property = await db.property.findUnique({
     where: { id },
     select: propertySelect,
-  })
+  });
 
   // Serialize property (Decimal → number) for client compatibility
-  return property ? serializeProperty(property) : null
+  return property ? serializeProperty(property) : null;
 }
 
 /**
@@ -143,7 +148,7 @@ async function _findById(id: string): Promise<SerializedProperty | null> {
  *
  * BENEFIT: Deduplicates property detail page queries (generateMetadata + render)
  */
-export const findByIdCached = cache(_findById)
+export const findByIdCached = cache(_findById);
 
 /**
  * Internal implementation of findInBounds
@@ -151,13 +156,13 @@ export const findByIdCached = cache(_findById)
  * Automatically serializes properties (Decimal → number) for client compatibility
  */
 async function _findInBoundsInternal(params: {
-  minLatitude: number
-  maxLatitude: number
-  minLongitude: number
-  maxLongitude: number
-  filters?: PropertyFilters
-  skip?: number
-  take?: number
+  minLatitude: number;
+  maxLatitude: number;
+  minLongitude: number;
+  maxLongitude: number;
+  filters?: PropertyFilters;
+  skip?: number;
+  take?: number;
 }): Promise<{ properties: SerializedProperty[]; total: number }> {
   const {
     minLatitude,
@@ -167,23 +172,35 @@ async function _findInBoundsInternal(params: {
     filters = {},
     skip = 0,
     take = 1000,
-  } = params
+  } = params;
 
   // VALIDATION: Comprehensive geographic boundary checking
-  if (minLatitude < -90 || minLatitude > 90 || maxLatitude < -90 || maxLatitude > 90) {
-    throw new Error('Invalid latitude: must be between -90 and 90')
+  if (
+    minLatitude < -90 ||
+    minLatitude > 90 ||
+    maxLatitude < -90 ||
+    maxLatitude > 90
+  ) {
+    throw new Error("Invalid latitude: must be between -90 and 90");
   }
-  if (minLongitude < -180 || minLongitude > 180 || maxLongitude < -180 || maxLongitude > 180) {
-    throw new Error('Invalid longitude: must be between -180 and 180')
+  if (
+    minLongitude < -180 ||
+    minLongitude > 180 ||
+    maxLongitude < -180 ||
+    maxLongitude > 180
+  ) {
+    throw new Error("Invalid longitude: must be between -180 and 180");
   }
   if (minLatitude > maxLatitude) {
-    throw new Error('minLatitude must be less than or equal to maxLatitude')
+    throw new Error("minLatitude must be less than or equal to maxLatitude");
   }
 
   // Note: Antimeridian crossing (longitude > 180 wrapping to -180) not currently supported
   // This would require splitting query into two bounding boxes
   if (minLongitude > maxLongitude) {
-    throw new Error('Bounding boxes crossing the antimeridian are not currently supported')
+    throw new Error(
+      "Bounding boxes crossing the antimeridian are not currently supported",
+    );
   }
 
   // Use centralized filter builder with geographic bounding box
@@ -196,7 +213,7 @@ async function _findInBoundsInternal(params: {
       gte: minLongitude,
       lte: maxLongitude,
     },
-  })
+  });
 
   const [properties, total] = await Promise.all([
     db.property.findMany({
@@ -204,15 +221,15 @@ async function _findInBoundsInternal(params: {
       select: propertySelect,
       skip,
       take,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     }),
     db.property.count({ where }),
-  ])
+  ]);
 
   // Serialize properties (Decimal → number) for client compatibility
-  const serialized = serializeProperties(properties)
+  const serialized = serializeProperties(properties);
 
-  return { properties: serialized, total }
+  return { properties: serialized, total };
 }
 
 /**
@@ -220,7 +237,7 @@ async function _findInBoundsInternal(params: {
  *
  * BENEFIT: Deduplicates map viewport queries within same request
  */
-export const findInBoundsCached = cache(_findInBoundsInternal)
+export const findInBoundsCached = cache(_findInBoundsInternal);
 
 /**
  * FILTER BUILDER HELPER
@@ -231,7 +248,7 @@ export const findInBoundsCached = cache(_findInBoundsInternal)
  */
 function buildPropertyWhereClause(
   filters: PropertyFilters = {},
-  additionalConditions?: Prisma.PropertyWhereInput
+  additionalConditions?: Prisma.PropertyWhereInput,
 ): Prisma.PropertyWhereInput {
   const where: Prisma.PropertyWhereInput = {
     ...additionalConditions,
@@ -247,8 +264,12 @@ function buildPropertyWhereClause(
     }),
     ...(filters.status && { status: filters.status }),
     ...(filters.agentId && { agentId: filters.agentId }),
-    ...(filters.city && { city: { contains: filters.city, mode: 'insensitive' } }),
-    ...(filters.state && { state: { contains: filters.state, mode: 'insensitive' } }),
+    ...(filters.city && {
+      city: { contains: filters.city, mode: "insensitive" },
+    }),
+    ...(filters.state && {
+      state: { contains: filters.state, mode: "insensitive" },
+    }),
     ...(filters.bedrooms && { bedrooms: { gte: filters.bedrooms } }),
     ...(filters.bathrooms && { bathrooms: { gte: filters.bathrooms } }),
     // Combine minPrice and maxPrice into single price object to avoid overwrite
@@ -262,14 +283,14 @@ function buildPropertyWhereClause(
     ...(filters.maxArea && { area: { lte: filters.maxArea } }),
     ...(filters.search && {
       OR: [
-        { title: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } },
-        { address: { contains: filters.search, mode: 'insensitive' } },
+        { title: { contains: filters.search, mode: "insensitive" } },
+        { description: { contains: filters.search, mode: "insensitive" } },
+        { address: { contains: filters.search, mode: "insensitive" } },
       ],
     }),
-  }
+  };
 
-  return where
+  return where;
 }
 
 /**
@@ -284,7 +305,7 @@ export class PropertyRepository {
    */
   async findById(id: string): Promise<SerializedProperty | null> {
     // Delegate to cached version for request-level deduplication
-    return findByIdCached(id)
+    return findByIdCached(id);
   }
 
   /**
@@ -295,11 +316,11 @@ export class PropertyRepository {
    * This method internally uses getPropertiesList() which serializes results
    */
   async list(params: {
-    filters?: PropertyFilters
-    skip?: number
-    take?: number
+    filters?: PropertyFilters;
+    skip?: number;
+    take?: number;
   }): Promise<{ properties: SerializedProperty[]; total: number }> {
-    return getPropertiesList(params)
+    return getPropertiesList(params);
   }
 
   /**
@@ -310,18 +331,18 @@ export class PropertyRepository {
    * - Prevents race conditions where user role could change between check and creation
    */
   async create(
-    data: Omit<Prisma.PropertyUncheckedCreateInput, 'agentId'>,
-    currentUserId: string
+    data: Omit<Prisma.PropertyUncheckedCreateInput, "agentId">,
+    currentUserId: string,
   ): Promise<PropertyWithRelations> {
     return db.$transaction(async (tx) => {
       // Verificar que el usuario es un agente
       const user = await tx.user.findUnique({
         where: { id: currentUserId },
         select: { role: true },
-      })
+      });
 
-      if (user?.role !== 'AGENT' && user?.role !== 'ADMIN') {
-        throw new Error('Unauthorized: Only agents can create properties')
+      if (user?.role !== "AGENT" && user?.role !== "ADMIN") {
+        throw new Error("Unauthorized: Only agents can create properties");
       }
 
       return tx.property.create({
@@ -330,8 +351,8 @@ export class PropertyRepository {
           agentId: currentUserId, // Asegurar que la propiedad pertenece al usuario actual
         },
         select: propertySelect,
-      })
-    })
+      });
+    });
   }
 
   /**
@@ -345,36 +366,39 @@ export class PropertyRepository {
   async update(
     id: string,
     data: Prisma.PropertyUpdateInput,
-    currentUserId: string
+    currentUserId: string,
   ): Promise<PropertyWithRelations> {
     return db.$transaction(async (tx) => {
       // Verificar permisos
       const property = await tx.property.findUnique({
         where: { id },
         select: { agentId: true },
-      })
+      });
 
       if (!property) {
-        throw new Error('Property not found')
+        throw new Error("Property not found");
       }
 
       const user = await tx.user.findUnique({
         where: { id: currentUserId },
         select: { role: true },
-      })
+      });
 
-      const canUpdate = property.agentId === currentUserId || user?.role === 'ADMIN'
+      const canUpdate =
+        property.agentId === currentUserId || user?.role === "ADMIN";
 
       if (!canUpdate) {
-        throw new Error('Unauthorized: Only the property owner or admins can update')
+        throw new Error(
+          "Unauthorized: Only the property owner or admins can update",
+        );
       }
 
       return tx.property.update({
         where: { id },
         data,
         select: propertySelect,
-      })
-    })
+      });
+    });
   }
 
   /**
@@ -385,34 +409,40 @@ export class PropertyRepository {
    * - Authorization check + deletion in single transaction
    * - Prevents ownership/role changes between check and delete
    */
-  async delete(id: string, currentUserId: string): Promise<PropertyWithRelations> {
+  async delete(
+    id: string,
+    currentUserId: string,
+  ): Promise<PropertyWithRelations> {
     return db.$transaction(async (tx) => {
       // Verificar permisos (mismo que update)
       const property = await tx.property.findUnique({
         where: { id },
         select: { agentId: true },
-      })
+      });
 
       if (!property) {
-        throw new Error('Property not found')
+        throw new Error("Property not found");
       }
 
       const user = await tx.user.findUnique({
         where: { id: currentUserId },
         select: { role: true },
-      })
+      });
 
-      const canDelete = property.agentId === currentUserId || user?.role === 'ADMIN'
+      const canDelete =
+        property.agentId === currentUserId || user?.role === "ADMIN";
 
       if (!canDelete) {
-        throw new Error('Unauthorized: Only the property owner or admins can delete')
+        throw new Error(
+          "Unauthorized: Only the property owner or admins can delete",
+        );
       }
 
       return tx.property.delete({
         where: { id },
         select: propertySelect,
-      })
-    })
+      });
+    });
   }
 
   /**
@@ -420,20 +450,20 @@ export class PropertyRepository {
    * Usando aproximación simple de lat/lng
    */
   async findNearby(params: {
-    latitude: number
-    longitude: number
-    radiusKm?: number
-    take?: number
+    latitude: number;
+    longitude: number;
+    radiusKm?: number;
+    take?: number;
   }): Promise<PropertyWithRelations[]> {
-    const { latitude, longitude, radiusKm = 10, take = 20 } = params
+    const { latitude, longitude, radiusKm = 10, take = 20 } = params;
 
     // Aproximación simple: 1 grado ≈ 111km
-    const latDelta = radiusKm / 111
-    const lngDelta = radiusKm / (111 * Math.cos((latitude * Math.PI) / 180))
+    const latDelta = radiusKm / 111;
+    const lngDelta = radiusKm / (111 * Math.cos((latitude * Math.PI) / 180));
 
     return db.property.findMany({
       where: {
-        status: 'AVAILABLE',
+        status: "AVAILABLE",
         latitude: {
           gte: latitude - latDelta,
           lte: latitude + latDelta,
@@ -445,8 +475,8 @@ export class PropertyRepository {
       },
       select: propertySelect,
       take,
-      orderBy: { createdAt: 'desc' },
-    })
+      orderBy: { createdAt: "desc" },
+    });
   }
 
   /**
@@ -472,13 +502,13 @@ export class PropertyRepository {
    * })
    */
   async findInBounds(params: {
-    minLatitude: number
-    maxLatitude: number
-    minLongitude: number
-    maxLongitude: number
-    filters?: PropertyFilters
-    skip?: number
-    take?: number
+    minLatitude: number;
+    maxLatitude: number;
+    minLongitude: number;
+    maxLongitude: number;
+    filters?: PropertyFilters;
+    skip?: number;
+    take?: number;
   }): Promise<{ properties: SerializedProperty[]; total: number }> {
     // Delegate to cached version for request-level deduplication
     return findInBoundsCached({
@@ -489,14 +519,14 @@ export class PropertyRepository {
       filters: params.filters,
       skip: params.skip,
       take: params.take,
-    })
+    });
   }
 
   /**
    * Obtiene propiedades de un agente específico
    */
   async getByAgent(agentId: string, params?: { skip?: number; take?: number }) {
-    const { skip = 0, take = 20 } = params || {}
+    const { skip = 0, take = 20 } = params || {};
 
     const [properties, total] = await Promise.all([
       db.property.findMany({
@@ -504,12 +534,12 @@ export class PropertyRepository {
         select: propertySelect,
         skip,
         take,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       }),
       db.property.count({ where: { agentId } }),
-    ])
+    ]);
 
-    return { properties, total }
+    return { properties, total };
   }
 
   /**
@@ -528,27 +558,33 @@ export class PropertyRepository {
    *   city: 'Cuenca'
    * })
    */
-  async getPriceRange(filters?: PropertyFilters): Promise<{ minPrice: number; maxPrice: number }> {
+  async getPriceRange(
+    filters?: PropertyFilters,
+  ): Promise<{ minPrice: number; maxPrice: number }> {
     // Use centralized filter builder (excludes minPrice/maxPrice/search intentionally for aggregation)
-    const where = buildPropertyWhereClause(filters)
+    const where = buildPropertyWhereClause(filters);
 
     const priceAggregation = await db.property.aggregate({
       where,
       _min: { price: true },
       _max: { price: true },
-    })
+    });
 
     // Convertir Decimal a number
     // FIX: Return null if no data available instead of misleading defaults
-    const minPrice = priceAggregation._min.price ? Number(priceAggregation._min.price) : null
-    const maxPrice = priceAggregation._max.price ? Number(priceAggregation._max.price) : null
+    const minPrice = priceAggregation._min.price
+      ? Number(priceAggregation._min.price)
+      : null;
+    const maxPrice = priceAggregation._max.price
+      ? Number(priceAggregation._max.price)
+      : null;
 
     // Return 0 if no properties match, otherwise return actual range
     if (minPrice === null || maxPrice === null) {
-      return { minPrice: 0, maxPrice: 0 }
+      return { minPrice: 0, maxPrice: 0 };
     }
 
-    return { minPrice, maxPrice }
+    return { minPrice, maxPrice };
   }
 
   /**
@@ -577,34 +613,33 @@ export class PropertyRepository {
    * // ]
    * ```
    */
-  async getPriceDistribution(params: {
-    bucketSize?: number
-    filters?: PropertyFilters
-  } = {}): Promise<{ bucket: number; count: number }[]> {
-    const { bucketSize = 10000, filters = {} } = params
+  async getPriceDistribution(
+    params: { bucketSize?: number; filters?: PropertyFilters } = {},
+  ): Promise<{ bucket: number; count: number }[]> {
+    const { bucketSize = 10000, filters = {} } = params;
 
     // Use centralized filter builder with AVAILABLE status (hardcoded for histogram)
-    const where = buildPropertyWhereClause(filters, { status: 'AVAILABLE' })
+    const where = buildPropertyWhereClause(filters, { status: "AVAILABLE" });
 
     // Fetch only price field (minimal memory footprint)
     const properties = await db.property.findMany({
       where,
       select: { price: true },
-    })
+    });
 
     // Group into buckets using computed field (FLOOR(price / bucketSize) * bucketSize)
-    const buckets = new Map<number, number>()
+    const buckets = new Map<number, number>();
 
     for (const property of properties) {
-      const price = Number(property.price)
-      const bucketStart = Math.floor(price / bucketSize) * bucketSize
-      buckets.set(bucketStart, (buckets.get(bucketStart) || 0) + 1)
+      const price = Number(property.price);
+      const bucketStart = Math.floor(price / bucketSize) * bucketSize;
+      buckets.set(bucketStart, (buckets.get(bucketStart) || 0) + 1);
     }
 
     // Convert to sorted array
     return Array.from(buckets.entries())
       .map(([bucket, count]) => ({ bucket, count }))
-      .sort((a, b) => a.bucket - b.bucket)
+      .sort((a, b) => a.bucket - b.bucket);
   }
 
   /**
@@ -626,24 +661,26 @@ export class PropertyRepository {
    * //   { name: "Cuenca", state: "Azuay", propertyCount: 45, slug: "cuenca-azuay" }
    * // ]
    */
-  async getCitiesAutocomplete(query: string): Promise<
+  async getCitiesAutocomplete(
+    query: string,
+  ): Promise<
     Array<{ name: string; state: string; slug: string; propertyCount: number }>
   > {
     // Validar longitud mínima
     if (query.length < 2) {
-      return []
+      return [];
     }
 
     // FIX: Use groupBy instead of N+1 pattern
     // Before: 1 query + N count queries = N+1 total
     // After: 1 query = 1 total
     const cityGroups = await db.property.groupBy({
-      by: ['city', 'state'],
+      by: ["city", "state"],
       where: {
-        status: 'AVAILABLE',
+        status: "AVAILABLE",
         city: {
           contains: query,
-          mode: 'insensitive',
+          mode: "insensitive",
         },
       },
       _count: {
@@ -651,19 +688,19 @@ export class PropertyRepository {
       },
       orderBy: {
         _count: {
-          id: 'desc',
+          id: "desc",
         },
       },
-    })
+    });
 
     return cityGroups
       .filter((group) => group.city !== null)
       .map((group) => ({
         name: group.city!,
-        state: group.state || '',
-        slug: `${group.city!.toLowerCase().replace(/\s+/g, '-')}-${(group.state || '').toLowerCase().replace(/\s+/g, '-')}`,
+        state: group.state || "",
+        slug: `${group.city?.toLowerCase().replace(/\s+/g, "-")}-${(group.state || "").toLowerCase().replace(/\s+/g, "-")}`,
         propertyCount: group._count.id,
-      }))
+      }));
   }
 }
 
@@ -671,7 +708,7 @@ export class PropertyRepository {
  * Singleton del repositorio
  * Usar este en lugar de crear nuevas instancias
  */
-export const propertyRepository = new PropertyRepository()
+export const propertyRepository = new PropertyRepository();
 
 /**
  * SERIALIZATION HELPERS
@@ -688,31 +725,40 @@ export const propertyRepository = new PropertyRepository()
  */
 export type SerializedProperty = Omit<
   PropertyWithRelations,
-  'price' | 'bathrooms' | 'area' | 'latitude' | 'longitude' | 'city' | 'state' | 'bedrooms'
+  | "price"
+  | "bathrooms"
+  | "area"
+  | "latitude"
+  | "longitude"
+  | "city"
+  | "state"
+  | "bedrooms"
 > & {
-  price: number
-  bathrooms?: number | null
-  area?: number | null
-  latitude: number | null
-  longitude: number | null
-  city?: string
-  state?: string
-  bedrooms?: number | null
-}
+  price: number;
+  bathrooms?: number | null;
+  area?: number | null;
+  latitude: number | null;
+  longitude: number | null;
+  city?: string;
+  state?: string;
+  bedrooms?: number | null;
+};
 
 /**
  * Safely converts Decimal values to numbers with validation
  * Preserves 0 values (falsiness issue with Decimal)
  * Returns null for null/undefined, not undefined
  */
-function toNumber(value: Prisma.Decimal | number | null | undefined): number | null {
-  if (value === null || value === undefined) return null
-  const num = Number(value)
+function toNumber(
+  value: Prisma.Decimal | number | null | undefined,
+): number | null {
+  if (value === null || value === undefined) return null;
+  const num = Number(value);
   if (!Number.isFinite(num)) {
-    console.error(`Invalid number conversion: ${value}`)
-    return null
+    console.error(`Invalid number conversion: ${value}`);
+    return null;
   }
-  return num
+  return num;
 }
 
 /**
@@ -721,7 +767,7 @@ function toNumber(value: Prisma.Decimal | number | null | undefined): number | n
  * FIX: Preserva valores 0 (bathrooms, bedrooms, area) que antes retornaban undefined
  */
 export function serializeProperty(
-  property: PropertyWithRelations
+  property: PropertyWithRelations,
 ): SerializedProperty {
   return {
     ...property,
@@ -730,29 +776,32 @@ export function serializeProperty(
     price: toNumber(property.price) ?? 0,
     // Optional Decimal fields - preserve 0 values
     // ⚠️ CRITICAL FIX: Changed from falsy check (? : undefined) to null check
-    bathrooms: property.bathrooms !== null && property.bathrooms !== undefined
-      ? toNumber(property.bathrooms)
-      : undefined,
-    area: property.area !== null && property.area !== undefined
-      ? toNumber(property.area)
-      : undefined,
-    bedrooms: property.bedrooms !== null && property.bedrooms !== undefined
-      ? toNumber(property.bedrooms)
-      : undefined,
+    bathrooms:
+      property.bathrooms !== null && property.bathrooms !== undefined
+        ? toNumber(property.bathrooms)
+        : undefined,
+    area:
+      property.area !== null && property.area !== undefined
+        ? toNumber(property.area)
+        : undefined,
+    bedrooms:
+      property.bedrooms !== null && property.bedrooms !== undefined
+        ? toNumber(property.bedrooms)
+        : undefined,
     // Geographic coordinates (can be null)
     latitude: toNumber(property.latitude),
     longitude: toNumber(property.longitude),
     // Optional string fields
     city: property.city ?? undefined,
     state: property.state ?? undefined,
-  }
+  };
 }
 
 /**
  * Convierte un array de propiedades a formato serializable
  */
 export function serializeProperties(
-  properties: PropertyWithRelations[]
+  properties: PropertyWithRelations[],
 ): SerializedProperty[] {
-  return properties.map(serializeProperty)
+  return properties.map(serializeProperty);
 }

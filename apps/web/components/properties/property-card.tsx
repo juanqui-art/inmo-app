@@ -1,22 +1,21 @@
 "use client";
 
-import { toast } from "sonner";
-import type { PropertyWithRelations } from "@repo/database";
+import type { PropertyWithRelations, SerializedProperty } from "@repo/database";
+import { Badge } from "@repo/ui";
 import { Bath, Bed, Heart, MapPin, Maximize, Share2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
-import { Badge } from "@repo/ui";
-import type { SerializedProperty } from "@repo/database";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { PropertyImageFallback } from "@/components/map/property-image-fallback";
 import { CATEGORY_BADGE_STYLE } from "@/lib/styles/property-card-styles";
-import { generateSlug } from "@/lib/utils/slug-generator";
 import {
   formatPropertyPrice,
-  getTransactionBadgeStyle,
   getCategoryLabel,
+  getTransactionBadgeStyle,
   TRANSACTION_TYPE_LABELS,
 } from "@/lib/utils/property-formatters";
+import { generateSlug } from "@/lib/utils/slug-generator";
 
 interface PropertyCardProps {
   property: PropertyWithRelations | SerializedProperty;
@@ -49,19 +48,19 @@ export function PropertyCard({
   );
 
   // Navigate images
-  const goToNextImage = () => {
+  const goToNextImage = useCallback(() => {
     if (hasMultipleImages && images.length > 0) {
       setCurrentImageIndex((prev) => (prev + 1) % images.length);
     }
-  };
+  }, [hasMultipleImages, images.length]);
 
-  const goToPrevImage = () => {
+  const goToPrevImage = useCallback(() => {
     if (hasMultipleImages && images.length > 0) {
       setCurrentImageIndex(
         (prev) => (prev - 1 + images.length) % images.length,
       );
     }
-  };
+  }, [hasMultipleImages, images.length]);
 
   // Double-tap to favorite
   const handleDoubleTap = () => {
@@ -109,7 +108,7 @@ export function PropertyCard({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentImageIndex]); // Re-bind if index changes, though not strictly necessary
+  }, [goToNextImage, goToPrevImage]); // Re-bind if index changes, though not strictly necessary
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();

@@ -4,18 +4,20 @@
  * Tests for the toggleFavoriteAction Server Action
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { toggleFavoriteAction } from "../favorites";
-import { createMockUser } from "@/__tests__/utils/test-helpers";
-
 // Import mocked modules
 import { FavoriteRepository } from "@repo/database";
-import { getCurrentUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createMockUser } from "@/__tests__/utils/test-helpers";
+import { getCurrentUser } from "@/lib/auth";
+import { toggleFavoriteAction } from "../favorites";
 
 // Get mocked functions
 const mockGetCurrentUser = vi.mocked(getCurrentUser);
 const mockRevalidatePath = vi.mocked(revalidatePath);
+
+// Cast FavoriteRepository to any to access vi.fn() methods
+const MockFavoriteRepository = FavoriteRepository as any;
 
 describe("toggleFavoriteAction", () => {
   const mockUser = createMockUser({ role: "CLIENT" });
@@ -24,18 +26,25 @@ describe("toggleFavoriteAction", () => {
   let mockToggleFavorite: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    // Reset all mocks before each test
-    vi.clearAllMocks();
-
-    // Create mock for toggleFavorite
+    // Create mock for toggleFavorite (must be created before clearAllMocks)
     mockToggleFavorite = vi.fn();
 
-    // Mock FavoriteRepository constructor to return object with mocked methods
-    vi.mocked(FavoriteRepository).mockImplementation(() => ({
-      toggleFavorite: mockToggleFavorite,
-      getUserFavorites: vi.fn(),
-      isFavorite: vi.fn(),
-    }) as any);
+    // Reset mocks AFTER creating toggleFavorite
+    vi.clearAllMocks();
+
+    // Re-create mockToggleFavorite after clear since clearAllMocks wipes it
+    mockToggleFavorite = vi.fn();
+
+    // Use the existing mock from vitest.setup.ts but override with new implementation
+    // IMPORTANT: mockImplementation needs a FUNCTION (not arrow function returning object)
+    // This function becomes the constructor, so "this" refers to the new instance
+    MockFavoriteRepository.mockImplementation(function() {
+      return {
+        toggleFavorite: mockToggleFavorite,
+        getUserFavorites: vi.fn(),
+        isFavorite: vi.fn(),
+      };
+    });
 
     // Default behavior: user is authenticated
     mockGetCurrentUser.mockResolvedValue(mockUser);
@@ -88,7 +97,7 @@ describe("toggleFavoriteAction", () => {
       expect(result.success).toBe(true);
       expect(mockToggleFavorite).toHaveBeenCalledWith(
         mockUser.id,
-        validPropertyId
+        validPropertyId,
       );
     });
 
@@ -122,7 +131,7 @@ describe("toggleFavoriteAction", () => {
       });
       expect(mockToggleFavorite).toHaveBeenCalledWith(
         mockUser.id,
-        validPropertyId
+        validPropertyId,
       );
     });
 
@@ -137,7 +146,7 @@ describe("toggleFavoriteAction", () => {
       });
       expect(mockToggleFavorite).toHaveBeenCalledWith(
         mockUser.id,
-        validPropertyId
+        validPropertyId,
       );
     });
 
@@ -152,7 +161,7 @@ describe("toggleFavoriteAction", () => {
 
       expect(mockToggleFavorite).toHaveBeenCalledWith(
         "custom-user-123",
-        customPropertyId
+        customPropertyId,
       );
     });
   });
@@ -188,7 +197,7 @@ describe("toggleFavoriteAction", () => {
   describe("Error Handling", () => {
     it("should handle database errors gracefully", async () => {
       mockToggleFavorite.mockRejectedValue(
-        new Error("Database connection failed")
+        new Error("Database connection failed"),
       );
 
       const result = await toggleFavoriteAction(validPropertyId);
@@ -211,17 +220,17 @@ describe("toggleFavoriteAction", () => {
     });
 
     it("should log errors in production", async () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
-      mockToggleFavorite.mockRejectedValue(
-        new Error("Database error")
-      );
+      mockToggleFavorite.mockRejectedValue(new Error("Database error"));
 
       await toggleFavoriteAction(validPropertyId);
 
       expect(consoleSpy).toHaveBeenCalledWith(
         "[toggleFavoriteAction]",
-        "Database error"
+        "Database error",
       );
 
       consoleSpy.mockRestore();
@@ -292,12 +301,12 @@ describe("toggleFavoriteAction", () => {
       expect(mockToggleFavorite).toHaveBeenNthCalledWith(
         1,
         mockUser.id,
-        property1
+        property1,
       );
       expect(mockToggleFavorite).toHaveBeenNthCalledWith(
         2,
         mockUser.id,
-        property2
+        property2,
       );
     });
   });

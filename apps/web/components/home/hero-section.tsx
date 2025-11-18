@@ -53,11 +53,11 @@
 
 "use client";
 
-import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
+import { useRef } from "react";
 import { HeroBackground } from "./hero-background";
 import { HeroSearchBar } from "./hero-search-bar";
 

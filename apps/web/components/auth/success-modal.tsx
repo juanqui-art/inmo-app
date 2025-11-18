@@ -9,13 +9,13 @@
  * Patrón: Realtor.com style - celebración después de auth
  */
 
-import { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
 } from "@repo/ui";
+import { useEffect } from "react";
 
 interface SuccessModalProps {
   open: boolean;

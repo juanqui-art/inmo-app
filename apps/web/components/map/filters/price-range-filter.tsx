@@ -10,7 +10,7 @@
  */
 
 import { DollarSign } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 interface PriceRangeFilterProps {
   minPrice?: number;
@@ -34,8 +34,8 @@ export function PriceRangeFilter({
   const [maxInput, setMaxInput] = useState(maxPrice?.toString() || "");
 
   const handleApply = useCallback(() => {
-    const min = minInput ? parseInt(minInput) : undefined;
-    const max = maxInput ? parseInt(maxInput) : undefined;
+    const min = minInput ? parseInt(minInput, 10) : undefined;
+    const max = maxInput ? parseInt(maxInput, 10) : undefined;
 
     // Validate
     if (min && max && min > max) {

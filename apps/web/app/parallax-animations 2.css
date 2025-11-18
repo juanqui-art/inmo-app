@@ -26,7 +26,7 @@
     /* Asigna la animación y la vincula al timeline del scroll principal */
     animation: hero-parallax-effect linear both;
     animation-timeline: scroll(root);
-    
+
     /*
      * Define el rango de la animación.
      * Se inicia en 0px (el inicio del scroll de la página).
@@ -41,6 +41,6 @@
  */
 @media (prefers-reduced-motion: reduce) {
   .hero-parallax-bg {
-    animation: none !important;
+    animation: none;
   }
 }

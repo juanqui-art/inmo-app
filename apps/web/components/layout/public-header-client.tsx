@@ -13,10 +13,10 @@
 
 "use client";
 
-import type { SafeUser } from "@/lib/auth";
 import { Home as HomeIcon, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { SafeUser } from "@/lib/auth";
 import { DesktopNav } from "./navbar/desktop-nav";
 import { useMobileMenu } from "./navbar/hooks/use-mobile-menu";
 import { MobileMenu } from "./navbar/mobile-menu";

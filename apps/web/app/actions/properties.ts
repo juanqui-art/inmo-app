@@ -12,7 +12,7 @@
 import { propertyImageRepository, propertyRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireRole, requireOwnership } from "@/lib/auth";
+import { requireOwnership, requireRole } from "@/lib/auth";
 import { deletePropertyImage, uploadPropertyImage } from "@/lib/storage/client";
 import {
   createPropertySchema,
@@ -45,10 +45,10 @@ export async function createPropertyAction(
       ? Number(formData.get("bathrooms"))
       : undefined,
     area: formData.get("area") ? Number(formData.get("area")) : undefined,
-    address: formData.get("address") as string | undefined,
-    city: formData.get("city") as string | undefined,
-    state: formData.get("state") as string | undefined,
-    zipCode: formData.get("zipCode") as string | undefined,
+    address: formData.get("address") || undefined,
+    city: formData.get("city") || undefined,
+    state: formData.get("state") || undefined,
+    zipCode: formData.get("zipCode") || undefined,
     latitude: formData.get("latitude")
       ? Number(formData.get("latitude"))
       : undefined,
@@ -207,7 +207,7 @@ export async function uploadPropertyImagesAction(
   formData: FormData,
 ) {
   // 1. Verificar autenticación
-  const user = await requireRole(["AGENT", "ADMIN"]);
+  await requireRole(["AGENT", "ADMIN"]);
 
   try {
     // 2. Verificar que la propiedad existe y el usuario tiene permisos
@@ -276,7 +276,7 @@ export async function uploadPropertyImagesAction(
  */
 export async function deletePropertyImageAction(imageId: string) {
   // 1. Verificar autenticación
-  const user = await requireRole(["AGENT", "ADMIN"]);
+  await requireRole(["AGENT", "ADMIN"]);
 
   try {
     // 2. Obtener la imagen
@@ -326,7 +326,7 @@ export async function reorderPropertyImagesAction(
   imageIds: string[],
 ) {
   // 1. Verificar autenticación
-  const user = await requireRole(["AGENT", "ADMIN"]);
+  await requireRole(["AGENT", "ADMIN"]);
 
   try {
     // 2. Verificar permisos

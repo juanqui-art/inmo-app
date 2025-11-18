@@ -1,4 +1,4 @@
-import { PropertyFilters } from "@repo/database";
+import type { PropertyFilters } from "@repo/database";
 
 /**
  * Compares two PropertyFilters objects to see if they are functionally equal.
@@ -16,7 +16,10 @@ export function propertyFiltersAreEqual(
   b: Record<string, any>,
 ): boolean {
   const aKeys = Object.keys(a).filter(
-    (key) => a[key as keyof typeof a] !== undefined && a[key as keyof typeof a] !== null && a[key as keyof typeof a] !== "",
+    (key) =>
+      a[key as keyof typeof a] !== undefined &&
+      a[key as keyof typeof a] !== null &&
+      a[key as keyof typeof a] !== "",
   );
 
   for (const key of aKeys) {
@@ -28,10 +31,13 @@ export function propertyFiltersAreEqual(
     if (typeof valueA === "number") {
       valueB = Number(valueB);
     }
-    
+
     if (Array.isArray(valueA)) {
       const bArray = Array.isArray(valueB) ? valueB : [valueB];
-      if (valueA.length !== bArray.length || !valueA.every((val) => bArray.includes(val))) {
+      if (
+        valueA.length !== bArray.length ||
+        !valueA.every((val) => bArray.includes(val))
+      ) {
         return false;
       }
     } else if (valueA !== valueB) {

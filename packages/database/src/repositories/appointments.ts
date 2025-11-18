@@ -11,8 +11,8 @@
  * - Optimizado para queries frecuentes
  */
 
+import type { AppointmentStatus, Prisma } from "@prisma/client";
 import { db } from "../client";
-import type { Prisma, AppointmentStatus } from "@prisma/client";
 
 /**
  * Appointment select con relaciones básicas
@@ -303,10 +303,7 @@ export class AppointmentRepository {
    * );
    * // Returns: [9, 10, 11, 13, 14, 15, 16] (12 es lunch)
    */
-  async getAvailableSlots(
-    propertyId: string,
-    date: Date,
-  ): Promise<number[]> {
+  async getAvailableSlots(propertyId: string, date: Date): Promise<number[]> {
     // Convertir fecha a inicio del día
     const dayStart = new Date(date);
     dayStart.setHours(0, 0, 0, 0);
@@ -323,7 +320,9 @@ export class AppointmentRepository {
 
     // Horarios de negocio: Lun-Vie 9am-5pm, no lunch 12-1pm
     const businessHours = [9, 10, 11, 13, 14, 15, 16]; // 0-23 en formato 24h
-    const bookedHours = bookedAppointments.map((apt) => apt.scheduledAt.getHours());
+    const bookedHours = bookedAppointments.map((apt) =>
+      apt.scheduledAt.getHours(),
+    );
 
     // Retornar horas que no están ocupadas
     return businessHours.filter((hour) => !bookedHours.includes(hour));
@@ -348,9 +347,9 @@ export class AppointmentRepository {
    * const stats = await appointmentRepository.getAgentAppointmentStats(agentId);
    * // Returns: { PENDING: 5, CONFIRMED: 12, COMPLETED: 48, CANCELLED: 2 }
    */
-  async getAgentAppointmentStats(agentId: string): Promise<
-    Record<string, number>
-  > {
+  async getAgentAppointmentStats(
+    agentId: string,
+  ): Promise<Record<string, number>> {
     const stats = await db.appointment.groupBy({
       by: ["status"],
       where: { agentId },

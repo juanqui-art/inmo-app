@@ -24,16 +24,16 @@
  * - Easier to maintain and extend
  */
 
+import { X } from "lucide-react";
 import { AISearchInline } from "@/components/ai-search/ai-search-inline";
+import { PropertyViewToggle } from "@/components/properties/property-view-toggle";
+import { useMapStore } from "@/stores/map-store";
 import { BathroomsFilter } from "./bathrooms-filter";
 import { BedroomsFilter } from "./bedrooms-filter";
 import { CityFilterDropdown } from "./city-filter-dropdown";
 import { PriceFilterDropdown } from "./price-filter-dropdown";
 import { PropertyTypeDropdown } from "./property-type-dropdown";
 import { TransactionTypeDropdown } from "./transaction-type-dropdown";
-import { PropertyViewToggle } from "@/components/properties/property-view-toggle";
-import { useMapStore } from "@/stores/map-store";
-import { X } from "lucide-react";
 
 /**
  * FilterBar - Layout component with filter count badge + clear all button
@@ -134,7 +134,9 @@ export function FilterBar({
               className="flex h-10 items-center gap-2 px-3 py-2 rounded-full bg-amber-600/30 text-amber-50 font-medium text-sm border border-amber-700/50 hover:bg-amber-600/40 hover:border-amber-600 transition-all duration-200 cursor-pointer"
               aria-label="Limpiar todos los filtros"
             >
-              <span>{activeFilterCount} filtro{activeFilterCount !== 1 ? "s" : ""}</span>
+              <span>
+                {activeFilterCount} filtro{activeFilterCount !== 1 ? "s" : ""}
+              </span>
               <X className="w-4 h-4" />
             </button>
           )}

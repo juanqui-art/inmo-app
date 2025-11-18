@@ -10,13 +10,13 @@
 
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
-import { Spinner } from "@/components/common";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  getCitiesAction,
   type CitySearchResult,
+  getCitiesAction,
 } from "@/app/actions/properties";
+import { Spinner } from "@/components/common";
 import { useMapStore } from "@/stores/map-store";
 import { FilterDropdown } from "./filter-dropdown";
 

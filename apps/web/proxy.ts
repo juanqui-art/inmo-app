@@ -130,10 +130,7 @@ export async function proxy(request: NextRequest) {
           CLIENT: "/perfil",
         };
 
-        const redirectUrl = new URL(
-          redirectMap[userRole] || "/",
-          request.url,
-        );
+        const redirectUrl = new URL(redirectMap[userRole] || "/", request.url);
         return NextResponse.redirect(redirectUrl);
       }
 

@@ -29,8 +29,8 @@
 
 "use client";
 
-import { Popup } from "react-map-gl/mapbox";
 import { X } from "lucide-react";
+import { Popup } from "react-map-gl/mapbox";
 import type { MapProperty } from "./map-view";
 import { PropertyCardHorizontal } from "./property-card-horizontal";
 import { PropertyPopupCompact } from "./property-popup-compact";

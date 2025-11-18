@@ -21,14 +21,14 @@
 
 "use client";
 
-import { Bed, Bath, Maximize2, MapPin } from "lucide-react";
 import { Badge } from "@repo/ui";
-import type { MapProperty } from "./map-view";
+import { Bath, Bed, MapPin, Maximize2 } from "lucide-react";
 import {
   formatPropertyPrice,
   getTransactionBadgeStyle,
   TRANSACTION_TYPE_LABELS,
 } from "@/lib/utils/property-formatters";
+import type { MapProperty } from "./map-view";
 
 interface PropertyCardCompactProps {
   property: MapProperty;

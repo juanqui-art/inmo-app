@@ -5,24 +5,24 @@
  */
 
 export {
-  type PropertyId,
-  createPropertyId,
-  type Price,
-  createPrice,
+  type AuthUserId,
   type Coordinate,
+  createAuthUserId,
   createLatitude,
   createLongitude,
-  type AuthUserId,
-  createAuthUserId,
-} from './branded'
+  createPrice,
+  createPropertyId,
+  type Price,
+  type PropertyId,
+} from "./branded";
 
 export {
-  isSerializedProperty,
   assertIsSerializedProperty,
+  assertPropertyFilters,
   isPropertyCategory,
   isPropertyStatus,
+  isSerializedProperty,
   isTransactionType,
   PropertyFiltersSchema,
   parsePropertyFilters,
-  assertPropertyFilters,
-} from './guards'
+} from "./guards";

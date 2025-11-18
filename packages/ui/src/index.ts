@@ -1,66 +1,67 @@
 // Export components
-export { Button, buttonVariants, type ButtonProps } from "./components/button";
-export {
-  Dialog,
-  DialogPortal,
-  DialogOverlay,
-  DialogTrigger,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-} from "./components/dialog";
-export { Input, type InputProps } from "./components/input";
+
+export { ActiveLinkIndicator } from "./components/active-link-indicator";
+export { Avatar, AvatarFallback, AvatarImage } from "./components/avatar";
+export { Badge, badgeVariants } from "./components/badge";
+export { Button, type ButtonProps, buttonVariants } from "./components/button";
+export { Calendar, type CalendarProps } from "./components/calendar";
 export {
   Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
   CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "./components/card";
-export { Badge, badgeVariants } from "./components/badge";
-export { Separator } from "./components/separator";
 export { Checkbox } from "./components/checkbox";
-export { Label } from "./components/label";
-export { Textarea, type TextareaProps } from "./components/textarea";
-export { Avatar, AvatarImage, AvatarFallback } from "./components/avatar";
-export { SocialIcon } from "./components/social-icon";
 export {
-  Select,
-  SelectGroup,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
-} from "./components/select";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from "./components/dialog";
 export {
   DropdownMenu,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
   DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "./components/dropdown-menu";
-export { Calendar, type CalendarProps } from "./components/calendar";
-export { PasswordInput } from "./components/password-input";
-export { ActiveLinkIndicator } from "./components/active-link-indicator";
-export { Spinner, type SpinnerProps } from "./components/spinner";
 export { EmptyState, type EmptyStateProps } from "./components/empty-state";
+export { Input, type InputProps } from "./components/input";
+export { Label } from "./components/label";
+export { PasswordInput } from "./components/password-input";
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "./components/select";
+export { Separator } from "./components/separator";
+export { SocialIcon } from "./components/social-icon";
+export { Spinner, type SpinnerProps } from "./components/spinner";
+export { Textarea, type TextareaProps } from "./components/textarea";
 
 // Export utilities
 export { cn } from "./lib/utils";

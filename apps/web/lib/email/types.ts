@@ -40,16 +40,16 @@ export interface ResendEmailResponse {
    * Use this for tracking/logging
    * Example: 'msg_123abc456def'
    */
-  id?: string | null
+  id?: string | null;
 
   /**
    * Error details if send failed
    * Resend returns structured error information
    */
   error?: {
-    message: string
-    [key: string]: unknown
-  } | null
+    message: string;
+    [key: string]: unknown;
+  } | null;
 }
 
 /**
@@ -85,7 +85,7 @@ export interface ResendEmailParams {
    *
    * See: docs/technical-debt/04-EMAIL.md for production setup
    */
-  from: string
+  from: string;
 
   /**
    * Recipient email address
@@ -93,38 +93,38 @@ export interface ResendEmailParams {
    * Production: Real user email addresses
    * Development: Test addresses or 'delivered@resend.dev' (Resend testing)
    */
-  to: string
+  to: string;
 
   /**
    * Email subject line
    * Example: 'Your appointment has been confirmed'
    */
-  subject: string
+  subject: string;
 
   /**
    * Email body as HTML
    * Should include both visual and semantic HTML
    * Example: '<h1>Welcome!</h1><p>Your appointment details...</p>'
    */
-  html: string
+  html: string;
 
   /**
    * Optional: Reply-to address
    * Where replies should go if different from sender
    */
-  replyTo?: string
+  replyTo?: string;
 
   /**
    * Optional: Carbon copy recipients
    * Visible to all recipients
    */
-  cc?: string | string[]
+  cc?: string | string[];
 
   /**
    * Optional: Blind carbon copy recipients
    * Not visible to other recipients
    */
-  bcc?: string | string[]
+  bcc?: string | string[];
 }
 
 /**
@@ -136,33 +136,33 @@ export interface AppointmentEmailData {
    * Property address for display
    * Example: '123 Main Street, Quito, Pichincha'
    */
-  propertyAddress: string
+  propertyAddress: string;
 
   /**
    * Appointment date-time
    * Example: 'January 15, 2025 at 3:00 PM'
    */
-  appointmentDateTime: string
+  appointmentDateTime: string;
 
   /**
    * Client name for personalization
    */
-  clientName: string
+  clientName: string;
 
   /**
    * Agent name for contact info
    */
-  agentName: string
+  agentName: string;
 
   /**
    * Agent phone number for client contact
    */
-  agentPhone: string
+  agentPhone: string;
 
   /**
    * Appointment ID for reference/tracking
    */
-  appointmentId: string
+  appointmentId: string;
 }
 
 /**

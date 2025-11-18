@@ -11,8 +11,8 @@
 
 import { FavoriteRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
-import { getCurrentUser } from "@/lib/auth";
 import { z } from "zod";
+import { getCurrentUser } from "@/lib/auth";
 
 const favoriteSchema = z.object({
   propertyId: z.string().uuid("Invalid property ID format"),

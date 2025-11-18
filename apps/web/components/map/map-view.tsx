@@ -1,18 +1,17 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
-import Map, { Source, Layer, Popup } from "react-map-gl/mapbox";
-import type { MapRef } from "react-map-gl/mapbox";
-import type { MapMouseEvent } from "react-map-gl/mapbox";
-import type { GeoJSONSource } from "mapbox-gl";
 import type { FeatureCollection } from "geojson";
+import type { GeoJSONSource } from "mapbox-gl";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { MapMouseEvent, MapRef } from "react-map-gl/mapbox";
+import Map, { Layer, Popup, Source } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { env } from "@repo/env";
 import type { TransactionType } from "@repo/database";
+import { env } from "@repo/env";
+import { CLUSTER_CONFIG } from "@/lib/types/map";
 import { formatPriceCompact } from "@/lib/utils/price-helpers";
 import { MapSpinner } from "./map-spinner";
 import { PropertyCardHorizontal } from "./property-card-horizontal";
-import { CLUSTER_CONFIG } from "@/lib/types/map";
 
 // Property interface
 export interface MapProperty {
@@ -89,19 +88,19 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
           // Type assertion needed: Mapbox's Callback type signature is overly strict
           // Runtime behavior accepts (err: Error | null, zoom?: number)
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (mapboxSource as GeoJSONSource).getClusterExpansionZoom(
-            clusterId,
-            ((err: Error | null, zoom?: number) => {
-              if (err || zoom === undefined) return;
+          (mapboxSource as GeoJSONSource).getClusterExpansionZoom(clusterId, ((
+            err: Error | null,
+            zoom?: number,
+          ) => {
+            if (err || zoom === undefined) return;
 
-              const geometry = feature.geometry as { coordinates: number[] };
-              mapRef.current?.flyTo({
-                center: geometry.coordinates as [number, number],
-                zoom: zoom + CLUSTER_CONFIG.ZOOM_INCREMENT,
-                duration: 600,
-              });
-            }) as any,
-          );
+            const geometry = feature.geometry as { coordinates: number[] };
+            mapRef.current?.flyTo({
+              center: geometry.coordinates as [number, number],
+              zoom: zoom + CLUSTER_CONFIG.ZOOM_INCREMENT,
+              duration: 600,
+            });
+          }) as any);
         }
       }
       // Handle individual property click

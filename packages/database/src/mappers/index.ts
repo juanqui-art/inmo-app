@@ -6,6 +6,6 @@
  */
 
 export {
-  mapPropertyToSerialized,
   mapPropertiesToSerialized,
-} from './property-mapper'
+  mapPropertyToSerialized,
+} from "./property-mapper";

@@ -30,7 +30,7 @@
  * Branded string type to prevent mixing IDs with other strings
  * Example: 'prop_123abc456def'
  */
-export type PropertyId = string & { readonly __brand: 'PropertyId' }
+export type PropertyId = string & { readonly __brand: "PropertyId" };
 
 /**
  * Create a branded PropertyId from a string
@@ -39,9 +39,9 @@ export type PropertyId = string & { readonly __brand: 'PropertyId' }
 export function createPropertyId(id: string): PropertyId {
   // Validation: Simple non-empty check
   if (!id || id.trim().length === 0) {
-    throw new TypeError('PropertyId cannot be empty')
+    throw new TypeError("PropertyId cannot be empty");
   }
-  return id as PropertyId
+  return id as PropertyId;
 }
 
 /**
@@ -51,7 +51,7 @@ export function createPropertyId(id: string): PropertyId {
  * Ensures: price >= 0
  * Example: 250000.50
  */
-export type Price = number & { readonly __brand: 'Price' }
+export type Price = number & { readonly __brand: "Price" };
 
 /**
  * Create a branded Price from a number
@@ -59,12 +59,12 @@ export type Price = number & { readonly __brand: 'Price' }
  */
 export function createPrice(value: number): Price {
   if (!Number.isFinite(value)) {
-    throw new TypeError(`Price must be a finite number, got: ${value}`)
+    throw new TypeError(`Price must be a finite number, got: ${value}`);
   }
   if (value < 0) {
-    throw new RangeError(`Price cannot be negative, got: ${value}`)
+    throw new RangeError(`Price cannot be negative, got: ${value}`);
   }
-  return value as Price
+  return value as Price;
 }
 
 /**
@@ -73,7 +73,7 @@ export function createPrice(value: number): Price {
  * Branded number type with validation
  * Used for map integrations to prevent invalid coordinates
  */
-export type Coordinate = number & { readonly __brand: 'Coordinate' }
+export type Coordinate = number & { readonly __brand: "Coordinate" };
 
 /**
  * Create a branded Coordinate
@@ -81,22 +81,24 @@ export type Coordinate = number & { readonly __brand: 'Coordinate' }
  */
 export function createLatitude(value: number): Coordinate {
   if (!Number.isFinite(value)) {
-    throw new TypeError(`Latitude must be a finite number, got: ${value}`)
+    throw new TypeError(`Latitude must be a finite number, got: ${value}`);
   }
   if (value < -90 || value > 90) {
-    throw new RangeError(`Latitude must be between -90 and 90, got: ${value}`)
+    throw new RangeError(`Latitude must be between -90 and 90, got: ${value}`);
   }
-  return value as Coordinate
+  return value as Coordinate;
 }
 
 export function createLongitude(value: number): Coordinate {
   if (!Number.isFinite(value)) {
-    throw new TypeError(`Longitude must be a finite number, got: ${value}`)
+    throw new TypeError(`Longitude must be a finite number, got: ${value}`);
   }
   if (value < -180 || value > 180) {
-    throw new RangeError(`Longitude must be between -180 and 180, got: ${value}`)
+    throw new RangeError(
+      `Longitude must be between -180 and 180, got: ${value}`,
+    );
   }
-  return value as Coordinate
+  return value as Coordinate;
 }
 
 /**
@@ -105,13 +107,13 @@ export function createLongitude(value: number): Coordinate {
  * Branded string type to distinguish user IDs from other string IDs
  * Often comes from auth token claims
  */
-export type AuthUserId = string & { readonly __brand: 'AuthUserId' }
+export type AuthUserId = string & { readonly __brand: "AuthUserId" };
 
 export function createAuthUserId(id: string): AuthUserId {
   if (!id || id.trim().length === 0) {
-    throw new TypeError('AuthUserId cannot be empty')
+    throw new TypeError("AuthUserId cannot be empty");
   }
-  return id as AuthUserId
+  return id as AuthUserId;
 }
 
 /**

@@ -53,11 +53,11 @@
 
 "use client";
 
-import { TreesIcon, Home } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { Home, TreesIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
 
 export function HeroQuickFilters() {
   const router = useRouter();

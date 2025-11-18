@@ -61,10 +61,10 @@
  */
 
 import { Suspense } from "react";
-import { PublicHeader } from "@/components/layout/public-header";
-import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { Toaster } from "sonner";
 import { BodyStyleManager } from "@/components/layout/body-style-manager";
+import { ConditionalFooter } from "@/components/layout/conditional-footer";
+import { PublicHeader } from "@/components/layout/public-header";
 
 export default function PublicLayout({
   children,

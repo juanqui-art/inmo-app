@@ -17,15 +17,15 @@
  * - Animaciones más suaves (duration-300)
  */
 
-import { Button } from "@repo/ui";
-import { Check, Moon, Sun, Monitor } from "lucide-react";
-import { useDarkMode } from "@/hooks/use-dark-mode";
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@repo/ui";
+import { Check, Monitor, Moon, Sun } from "lucide-react";
+import { useDarkMode } from "@/hooks/use-dark-mode";
 
 export function ModeToggle() {
   const { theme, setTheme, mounted } = useDarkMode();

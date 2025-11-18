@@ -10,10 +10,10 @@
  * 4. Ejecuta el authIntent (favoritos, etc)
  */
 
-import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { SuccessModal } from "./success-modal";
+import { useEffect, useState } from "react";
 import { AuthIntentExecutor } from "./auth-intent-executor";
+import { SuccessModal } from "./success-modal";
 
 export function AuthSuccessHandler() {
   const router = useRouter();

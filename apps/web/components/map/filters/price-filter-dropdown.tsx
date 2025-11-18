@@ -26,10 +26,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Spinner } from "@/components/common";
-import { FilterDropdown } from "./filter-dropdown";
-import { PriceHistogramSlider } from "./price-histogram-slider";
 import { formatPrice, formatPriceCompact } from "@/lib/utils/price-helpers";
 import { useMapStore } from "@/stores/map-store";
+import { FilterDropdown } from "./filter-dropdown";
+import { PriceHistogramSlider } from "./price-histogram-slider";
 
 /**
  * PriceFilterDropdown - No props needed!

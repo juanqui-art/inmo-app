@@ -9,9 +9,9 @@
  * - Optional: Easy to remove/disable
  */
 
-import { RefObject } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import type { RefObject } from "react";
 
 export function useSearchInputAnimation(
   inputRef: RefObject<HTMLInputElement | null>,

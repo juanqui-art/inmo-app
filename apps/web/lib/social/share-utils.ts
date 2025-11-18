@@ -145,7 +145,7 @@ export function shareToTwitter(shareData: ShareData): void {
   // Twitter limits, keep it short
   const text =
     shareData.title.length > 200
-      ? shareData.title.substring(0, 200) + "..."
+      ? `${shareData.title.substring(0, 200)}...`
       : shareData.title;
 
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareData.url)}`;
@@ -235,18 +235,23 @@ export async function copyLinkToClipboard(url: string): Promise<boolean> {
 export function shareProperty(
   platform: SharePlatform,
   shareData: ShareData,
-): void | Promise<boolean> {
+): Promise<boolean> | void {
   switch (platform) {
     case "WHATSAPP":
-      return shareToWhatsApp(shareData);
+      shareToWhatsApp(shareData);
+      break;
     case "FACEBOOK":
-      return shareToFacebook(shareData);
+      shareToFacebook(shareData);
+      break;
     case "TWITTER":
-      return shareToTwitter(shareData);
+      shareToTwitter(shareData);
+      break;
     case "LINKEDIN":
-      return shareToLinkedIn(shareData);
+      shareToLinkedIn(shareData);
+      break;
     case "EMAIL":
-      return shareViaEmail(shareData);
+      shareViaEmail(shareData);
+      break;
     case "COPY_LINK":
       return copyLinkToClipboard(shareData.url);
   }

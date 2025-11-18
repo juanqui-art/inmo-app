@@ -7,26 +7,25 @@
  * - logoutAction: User logout
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { signupAction, loginAction, logoutAction } from "../auth";
+// Import mocked modules
+import { userRepository } from "@repo/database";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  createSignupFormData,
   createLoginFormData,
   createMockDbUser,
   createMockSupabaseUser,
+  createSignupFormData,
 } from "@/__tests__/utils/auth-test-helpers";
-
-// Import mocked modules
-import { userRepository } from "@repo/database";
 import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { loginAction, logoutAction, signupAction } from "../auth";
 
 // Get mocked functions
 const mockUserRepositoryFindById = vi.mocked(userRepository.findById);
 const mockCreateClient = vi.mocked(createClient);
 const mockRevalidatePath = vi.mocked(revalidatePath);
-const mockRedirect = vi.mocked(redirect);
+const _mockRedirect = vi.mocked(redirect);
 
 describe("Auth Server Actions", () => {
   // Mock Supabase client
@@ -118,7 +117,7 @@ describe("Auth Server Actions", () => {
                 role: "AGENT",
               }),
             },
-          })
+          }),
         );
       });
 
@@ -417,7 +416,7 @@ describe("Auth Server Actions", () => {
         expect(result).toHaveProperty("error");
         expect(result.error).toHaveProperty("general");
         expect(result.error.general).toBe(
-          "Usuario no encontrado en la base de datos"
+          "Usuario no encontrado en la base de datos",
         );
 
         // Should sign out the orphaned user

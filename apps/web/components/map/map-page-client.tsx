@@ -15,14 +15,14 @@
  */
 
 import type { PropertyFilters } from "@repo/database";
-import { FilterBar } from "./filters/filter-bar";
-import { useFilterUrlSync } from "./filters/use-filter-url-sync";
-import { MapView } from "./map-view";
+import { useSearchParams } from "next/navigation";
 import { PropertyListTitle } from "@/components/properties/property-list-title";
-import { MapSearchIntegration } from "./map-search-integration";
 import type { MapBounds } from "@/lib/utils/url-helpers";
 import { useMapStore } from "@/stores/map-store";
-import { useSearchParams } from "next/navigation";
+import { FilterBar } from "./filters/filter-bar";
+import { useFilterUrlSync } from "./filters/use-filter-url-sync";
+import { MapSearchIntegration } from "./map-search-integration";
+import { MapView } from "./map-view";
 
 interface MapPageClientProps {
   initialBounds?: MapBounds;
@@ -38,7 +38,11 @@ interface MapPageClientProps {
   filters?: PropertyFilters;
 }
 
-export function MapPageClient({ initialBounds, totalProperties, filters }: MapPageClientProps) {
+export function MapPageClient({
+  initialBounds,
+  totalProperties,
+  filters,
+}: MapPageClientProps) {
   // =========================================================================
   // Initialize URL ↔ Store sync
   // Note: Filters are already initialized by MapStoreInitializer in parent
@@ -74,7 +78,10 @@ export function MapPageClient({ initialBounds, totalProperties, filters }: MapPa
       </div>
 
       {/* Title */}
-      <PropertyListTitle total={totalProperties ?? properties.length} filters={filters} />
+      <PropertyListTitle
+        total={totalProperties ?? properties.length}
+        filters={filters}
+      />
 
       {/* Map - fills remaining space */}
       <div className="flex-1 w-full overflow-hidden">

@@ -6,18 +6,18 @@
 "use client";
 
 import type { SerializedProperty } from "@repo/database";
-import { Button } from "@repo/ui";
-import { useActionState } from "react";
-import { Input } from "@repo/ui";
-import { Label } from "@repo/ui";
 import {
+  Button,
+  Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Textarea,
 } from "@repo/ui";
-import { Textarea } from "@repo/ui";
+import { useActionState } from "react";
 
 interface PropertyFormState {
   error?: {

@@ -12,14 +12,14 @@
 
 import { AppointmentRepository, PropertyRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { getCurrentUser, requireOwnership } from "@/lib/auth";
 import { validateAppointmentDateTime } from "@/lib/constants/availability";
 import {
-  sendAppointmentCreatedEmail,
-  sendAppointmentConfirmedEmail,
   sendAppointmentCancelledEmail,
+  sendAppointmentConfirmedEmail,
+  sendAppointmentCreatedEmail,
 } from "@/lib/email/appointment-emails";
-import { z } from "zod";
 
 // ==================== SCHEMAS ====================
 
@@ -279,11 +279,14 @@ export async function updateAppointmentStatusAction(data: {
 
     // Log if email failed (but don't fail the status update)
     if (!emailResult.success) {
-      console.warn("[updateAppointmentStatusAction] Email notification failed:", {
-        appointmentId: validatedData.id,
-        status: validatedData.status,
-        error: emailResult.error,
-      });
+      console.warn(
+        "[updateAppointmentStatusAction] Email notification failed:",
+        {
+          appointmentId: validatedData.id,
+          status: validatedData.status,
+          error: emailResult.error,
+        },
+      );
     }
 
     // 8. Revalidar rutas

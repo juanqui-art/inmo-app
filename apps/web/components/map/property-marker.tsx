@@ -30,8 +30,8 @@
 
 "use client";
 
-import { PropertyMarker as PropertyMarkerComponent } from "./markers";
 import type { TransactionType } from "@repo/database";
+import { PropertyMarker as PropertyMarkerComponent } from "./markers";
 
 export type PropertyMarkerVariant = "dark" | "light" | "minimal";
 

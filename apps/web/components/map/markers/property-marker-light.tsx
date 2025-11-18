@@ -24,9 +24,9 @@
 
 "use client";
 
-import { Marker } from "react-map-gl/mapbox";
-import { Home } from "lucide-react";
 import type { TransactionType } from "@repo/database";
+import { Home } from "lucide-react";
+import { Marker } from "react-map-gl/mapbox";
 
 interface PropertyMarkerLightProps {
   latitude: number;

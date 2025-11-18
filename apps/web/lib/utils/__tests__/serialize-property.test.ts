@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { serializeProperty, serializeProperties } from "../serialize-property";
 import { Decimal } from "@prisma/client/runtime/library";
 import type { PropertyWithRelations } from "@repo/database";
+import { describe, expect, it } from "vitest";
+import { serializeProperties, serializeProperty } from "../serialize-property";
 
 describe("serializeProperty", () => {
   it("should convert Decimal price to number", () => {

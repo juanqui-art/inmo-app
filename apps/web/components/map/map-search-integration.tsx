@@ -21,13 +21,13 @@
  * Part of: AI Search Cache READ implementation
  */
 
-import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { getCachedAISearchResult } from "@/lib/utils/ai-search-cache";
-import { aiSearchAction } from "@/app/actions/ai-search";
+import { useEffect, useState } from "react";
 import type { AISearchResult } from "@/app/actions/ai-search";
-import { useMapStore } from "@/stores/map-store";
+import { aiSearchAction } from "@/app/actions/ai-search";
+import { getCachedAISearchResult } from "@/lib/utils/ai-search-cache";
 import { logger } from "@/lib/utils/logger";
+import { useMapStore } from "@/stores/map-store";
 
 interface MapSearchIntegrationProps {
   /**
@@ -43,7 +43,9 @@ export function MapSearchIntegration({
   const searchParams = useSearchParams();
   const aiSearchQuery = searchParams.get("ai_search");
   const [_isLoading, setIsLoading] = useState(false);
-  const [_searchResult, setSearchResult] = useState<AISearchResult | null>(null);
+  const [_searchResult, setSearchResult] = useState<AISearchResult | null>(
+    null,
+  );
 
   // Get map store actions
   const setFilters = useMapStore((state) => state.setFilters);
@@ -99,9 +101,7 @@ export function MapSearchIntegration({
       setSearchResult(result);
 
       if (!result.success || !result.filterSummary) {
-        logger.warn(
-          "[MapSearchIntegration] Cannot apply - no filter summary",
-        );
+        logger.warn("[MapSearchIntegration] Cannot apply - no filter summary");
         return;
       }
 
@@ -122,7 +122,7 @@ export function MapSearchIntegration({
         if (priceMatch) {
           const prices = priceMatch.map((p) => {
             const num = p.match(/\d+/);
-            return num ? Number.parseInt(num[0]) * 1000 : 0;
+            return num ? Number.parseInt(num[0], 10) * 1000 : 0;
           });
           if (prices.length === 1) {
             maxPrice = prices[0];

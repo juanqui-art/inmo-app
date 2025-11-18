@@ -1,8 +1,8 @@
 "use client";
 
+import type { PropertyFilters, SerializedProperty } from "@repo/database";
 import { useEffect } from "react";
 import { usePropertyGridStore } from "./property-grid-store";
-import type { SerializedProperty, PropertyFilters } from "@repo/database";
 
 interface PropertyGridStoreInitializerProps {
   properties: SerializedProperty[];

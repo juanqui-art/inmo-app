@@ -9,10 +9,10 @@
  * - Se integra en la página de detalles de propiedad
  */
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Calendar } from "lucide-react";
 import { Button } from "@repo/ui";
+import { Calendar } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { AppointmentDialog } from "./appointment-dialog";
 
 interface AppointmentButtonProps {

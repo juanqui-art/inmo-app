@@ -11,8 +11,8 @@
 
 "use client";
 
+import { MapPin, Search } from "lucide-react";
 import { useState } from "react";
-import { Search, MapPin } from "lucide-react";
 
 interface MapSearchBarProps {
   onLocationSelect: (longitude: number, latitude: number, zoom: number) => void;

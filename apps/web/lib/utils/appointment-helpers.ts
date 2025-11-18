@@ -4,9 +4,9 @@
  * Utilidades para manejo de citas
  */
 
+import type { AppointmentStatus } from "@prisma/client";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import type { AppointmentStatus } from "@prisma/client";
 
 /**
  * Formatar fecha de cita para mostrar al usuario
@@ -183,5 +183,5 @@ export function isAppointmentSoon(date: Date): boolean {
  * Determinar si una cita ya pasó
  */
 export function isAppointmentPast(date: Date): boolean {
-  return date.getTime() < new Date().getTime();
+  return date.getTime() < Date.now();
 }

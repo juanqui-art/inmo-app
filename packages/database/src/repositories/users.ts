@@ -5,8 +5,8 @@
  * Centraliza lógica de negocio y validaciones
  */
 
-import { db } from '../client'
-import type { User, UserRole, Prisma } from '@prisma/client'
+import type { Prisma, User, UserRole } from "@prisma/client";
+import { db } from "../client";
 
 /**
  * User select (campos seguros para retornar)
@@ -21,9 +21,9 @@ export const userSelect = {
   avatar: true,
   createdAt: true,
   updatedAt: true,
-} satisfies Prisma.UserSelect
+} satisfies Prisma.UserSelect;
 
-export type SafeUser = Pick<User, keyof typeof userSelect>
+export type SafeUser = Pick<User, keyof typeof userSelect>;
 
 /**
  * Repository para operaciones de usuarios
@@ -36,7 +36,7 @@ export class UserRepository {
     return db.user.findUnique({
       where: { id },
       select: userSelect,
-    })
+    });
   }
 
   /**
@@ -46,7 +46,7 @@ export class UserRepository {
     return db.user.findUnique({
       where: { email },
       select: userSelect,
-    })
+    });
   }
 
   /**
@@ -56,35 +56,39 @@ export class UserRepository {
     return db.user.create({
       data,
       select: userSelect,
-    })
+    });
   }
 
   /**
    * Actualiza un usuario existente
    * Incluye validación de permisos
    */
-  async update(id: string, data: Prisma.UserUpdateInput, currentUserId: string): Promise<SafeUser> {
+  async update(
+    id: string,
+    data: Prisma.UserUpdateInput,
+    currentUserId: string,
+  ): Promise<SafeUser> {
     // Solo el propio usuario o un admin pueden actualizar
     const currentUser = await db.user.findUnique({
       where: { id: currentUserId },
       select: { id: true, role: true },
-    })
+    });
 
     if (!currentUser) {
-      throw new Error('Current user not found')
+      throw new Error("Current user not found");
     }
 
-    const canUpdate = currentUser.id === id || currentUser.role === 'ADMIN'
+    const canUpdate = currentUser.id === id || currentUser.role === "ADMIN";
 
     if (!canUpdate) {
-      throw new Error('Unauthorized: Cannot update other users')
+      throw new Error("Unauthorized: Cannot update other users");
     }
 
     return db.user.update({
       where: { id },
       data,
       select: userSelect,
-    })
+    });
   }
 
   /**
@@ -95,38 +99,38 @@ export class UserRepository {
     const currentUser = await db.user.findUnique({
       where: { id: currentUserId },
       select: { role: true },
-    })
+    });
 
-    if (currentUser?.role !== 'ADMIN') {
-      throw new Error('Unauthorized: Only admins can delete users')
+    if (currentUser?.role !== "ADMIN") {
+      throw new Error("Unauthorized: Only admins can delete users");
     }
 
     return db.user.delete({
       where: { id },
       select: userSelect,
-    })
+    });
   }
 
   /**
    * Lista usuarios con filtros y paginación
    */
   async list(params: {
-    role?: UserRole
-    search?: string
-    skip?: number
-    take?: number
+    role?: UserRole;
+    search?: string;
+    skip?: number;
+    take?: number;
   }): Promise<{ users: SafeUser[]; total: number }> {
-    const { role, search, skip = 0, take = 20 } = params
+    const { role, search, skip = 0, take = 20 } = params;
 
     const where: Prisma.UserWhereInput = {
       ...(role && { role }),
       ...(search && {
         OR: [
-          { name: { contains: search, mode: 'insensitive' } },
-          { email: { contains: search, mode: 'insensitive' } },
+          { name: { contains: search, mode: "insensitive" } },
+          { email: { contains: search, mode: "insensitive" } },
         ],
       }),
-    }
+    };
 
     const [users, total] = await Promise.all([
       db.user.findMany({
@@ -134,12 +138,12 @@ export class UserRepository {
         select: userSelect,
         skip,
         take,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       }),
       db.user.count({ where }),
-    ])
+    ]);
 
-    return { users, total }
+    return { users, total };
   }
 
   /**
@@ -147,10 +151,10 @@ export class UserRepository {
    */
   async getAgents(): Promise<SafeUser[]> {
     return db.user.findMany({
-      where: { role: 'AGENT' },
+      where: { role: "AGENT" },
       select: userSelect,
-      orderBy: { name: 'asc' },
-    })
+      orderBy: { name: "asc" },
+    });
   }
 }
 
@@ -158,4 +162,4 @@ export class UserRepository {
  * Singleton del repositorio
  * Usar este en lugar de crear nuevas instancias
  */
-export const userRepository = new UserRepository()
+export const userRepository = new UserRepository();

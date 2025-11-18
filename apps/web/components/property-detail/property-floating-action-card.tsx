@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Phone, Mail } from "lucide-react";
 import { cn } from "@repo/ui";
 import gsap from "gsap";
+import { Mail, Phone } from "lucide-react";
+import { useEffect, useRef } from "react";
+
 // DISABLED: AppointmentButton temporarily disabled to fix Turbopack build
 // import { AppointmentButton } from "@/components/appointments/appointment-button";
 
@@ -36,7 +37,7 @@ export function PropertyFloatingActionCard({
     gsap.fromTo(
       containerRef.current,
       { opacity: 0, x: 30 },
-      { opacity: 1, x: 0, duration: 0.6, ease: "power2.out" }
+      { opacity: 1, x: 0, duration: 0.6, ease: "power2.out" },
     );
   }, []);
 
@@ -45,7 +46,7 @@ export function PropertyFloatingActionCard({
       ref={containerRef}
       className={cn(
         "w-full bg-white dark:bg-oslo-gray-900 rounded-2xl p-6 shadow-lg border-2 border-indigo-100 dark:border-indigo-900",
-        isSticky && "lg:sticky lg:top-24 lg:z-10"
+        isSticky && "lg:sticky lg:top-24 lg:z-10",
       )}
     >
       {/* Price Section */}
@@ -64,7 +65,7 @@ export function PropertyFloatingActionCard({
           href={agentEmail ? `mailto:${agentEmail}` : "#"}
           className={cn(
             "w-full inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white h-12 text-base font-semibold rounded-lg transition-all duration-300 active:scale-[0.98]",
-            !agentEmail && "opacity-50 cursor-not-allowed pointer-events-none"
+            !agentEmail && "opacity-50 cursor-not-allowed pointer-events-none",
           )}
         >
           Contactar Agente

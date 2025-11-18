@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { useAuthStore } from "./auth-store";
 import type { SafeUser } from "@/lib/auth";
+import { useAuthStore } from "./auth-store";
 
 interface AuthStoreInitializerProps {
   user: SafeUser | null;

@@ -26,8 +26,8 @@
  *    - No props drilling needed
  */
 
+import type { PropertyFilters, SerializedProperty } from "@repo/database";
 import { create } from "zustand";
-import type { SerializedProperty, PropertyFilters } from "@repo/database";
 
 // ============================================================================
 // TYPES

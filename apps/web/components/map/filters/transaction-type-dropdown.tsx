@@ -16,12 +16,12 @@
  * - Pattern: Same as BedroomsFilter (Zustand draft/commit)
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DollarSign, Home } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Spinner } from "@/components/common";
-import { FilterDropdown } from "./filter-dropdown";
 import { useMapStore } from "@/stores/map-store";
+import { FilterDropdown } from "./filter-dropdown";
 
 const TRANSACTION_OPTIONS = [
   { label: "Venta", value: "SALE" as const, icon: DollarSign },

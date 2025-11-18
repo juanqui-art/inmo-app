@@ -5,8 +5,8 @@
  * reutilizables en diferentes contextos (browser, server, etc.)
  */
 
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
-import { env } from '@repo/env'
+import { env } from "@repo/env";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 /**
  * Crea un cliente de Supabase genérico
@@ -15,8 +15,8 @@ import { env } from '@repo/env'
 export function createClient() {
   return createSupabaseClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  )
+    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  );
 }
 
 /**
@@ -27,17 +27,21 @@ export function createClient() {
 export function createAdminClient() {
   if (!env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error(
-      'SUPABASE_SERVICE_ROLE_KEY is required to create an admin client. ' +
-      'This should only be called on the server side.'
-    )
+      "SUPABASE_SERVICE_ROLE_KEY is required to create an admin client. " +
+        "This should only be called on the server side.",
+    );
   }
 
-  return createSupabaseClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
+  return createSupabaseClient(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
     },
-  })
+  );
 }
 
 /**
@@ -47,5 +51,5 @@ export function createAdminClient() {
  * via @repo/env. Kept for backward compatibility.
  */
 export function validateSupabaseEnv() {
-  return true
+  return true;
 }

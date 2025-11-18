@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { PropertyHeroCarousel } from "./property-hero-carousel";
+import { useCallback, useState } from "react";
 import { toggleFavoriteAction } from "@/app/actions/favorites";
+import { PropertyHeroCarousel } from "./property-hero-carousel";
 
 interface PropertyHeroCarouselWrapperProps {
   images?: Array<{

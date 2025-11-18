@@ -10,8 +10,8 @@ import { Building2, Heart } from "lucide-react";
 // DISABLED: Calendar icon temporarily unused due to disabled Mis Citas link
 // import { Calendar } from "lucide-react";
 import Link from "next/link";
-import { requireAuth } from "@/lib/auth";
 import { AuthSuccessHandler } from "@/components/auth/auth-success-handler";
+import { requireAuth } from "@/lib/auth";
 
 export default async function PerfilPage() {
   const user = await requireAuth();

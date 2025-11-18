@@ -4,15 +4,18 @@
  * Tests for the createPropertyAction Server Action
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { createPropertyAction } from "../properties";
-import { createMockUser, createMockFormData, createValidPropertyData } from "@/__tests__/utils/test-helpers";
-
 // Import mocked modules to get access to their mocked functions
 import { propertyRepository } from "@repo/database";
-import { requireRole } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  createMockFormData,
+  createMockUser,
+  createValidPropertyData,
+} from "@/__tests__/utils/test-helpers";
+import { requireRole } from "@/lib/auth";
+import { createPropertyAction } from "../properties";
 
 // Get mocked functions
 const mockPropertyRepositoryCreate = vi.mocked(propertyRepository.create);
@@ -72,7 +75,7 @@ describe("createPropertyAction", () => {
 
     it("should reject negative prices", async () => {
       const formData = createMockFormData(
-        createValidPropertyData({ price: -100 })
+        createValidPropertyData({ price: -100 }),
       );
 
       const result = await createPropertyAction(null, formData);
@@ -83,7 +86,7 @@ describe("createPropertyAction", () => {
 
     it("should reject invalid category", async () => {
       const formData = createMockFormData(
-        createValidPropertyData({ category: "INVALID_CATEGORY" })
+        createValidPropertyData({ category: "INVALID_CATEGORY" }),
       );
 
       const result = await createPropertyAction(null, formData);
@@ -94,7 +97,7 @@ describe("createPropertyAction", () => {
 
     it("should reject extremely high prices", async () => {
       const formData = createMockFormData(
-        createValidPropertyData({ price: 2000000000 }) // 2 billion
+        createValidPropertyData({ price: 2000000000 }), // 2 billion
       );
 
       const result = await createPropertyAction(null, formData);
@@ -120,7 +123,9 @@ describe("createPropertyAction", () => {
         updatedAt: new Date(),
       };
 
-      mockPropertyRepositoryCreate.mockResolvedValue(mockCreatedProperty as any);
+      mockPropertyRepositoryCreate.mockResolvedValue(
+        mockCreatedProperty as any,
+      );
 
       try {
         await createPropertyAction(null, formData);
@@ -137,7 +142,7 @@ describe("createPropertyAction", () => {
           transactionType: propertyData.transactionType,
           category: propertyData.category,
         }),
-        mockUser.id
+        mockUser.id,
       );
     });
 
@@ -151,7 +156,7 @@ describe("createPropertyAction", () => {
 
       try {
         await createPropertyAction(null, formData);
-      } catch (error) {
+      } catch (_error) {
         // Expect redirect to throw
       }
 
@@ -181,7 +186,7 @@ describe("createPropertyAction", () => {
       const formData = createMockFormData(createValidPropertyData());
 
       mockPropertyRepositoryCreate.mockRejectedValue(
-        new Error("Database connection failed")
+        new Error("Database connection failed"),
       );
 
       const result = await createPropertyAction(null, formData);
@@ -224,7 +229,7 @@ describe("createPropertyAction", () => {
 
       try {
         await createPropertyAction(null, formData);
-      } catch (error) {
+      } catch (_error) {
         // Expect redirect
       }
 
@@ -235,7 +240,7 @@ describe("createPropertyAction", () => {
           bathrooms: undefined,
           area: undefined,
         }),
-        mockUser.id
+        mockUser.id,
       );
     });
 
@@ -254,7 +259,7 @@ describe("createPropertyAction", () => {
 
       try {
         await createPropertyAction(null, formData);
-      } catch (error) {
+      } catch (_error) {
         // Expect redirect
       }
 
@@ -264,7 +269,7 @@ describe("createPropertyAction", () => {
           bathrooms: 3,
           area: 200,
         }),
-        mockUser.id
+        mockUser.id,
       );
     });
   });
@@ -272,7 +277,7 @@ describe("createPropertyAction", () => {
   describe("Transaction Types", () => {
     it("should accept SALE transaction type", async () => {
       const formData = createMockFormData(
-        createValidPropertyData({ transactionType: "SALE" })
+        createValidPropertyData({ transactionType: "SALE" }),
       );
 
       mockPropertyRepositoryCreate.mockResolvedValue({
@@ -281,7 +286,7 @@ describe("createPropertyAction", () => {
 
       try {
         await createPropertyAction(null, formData);
-      } catch (error) {
+      } catch (_error) {
         // Expect redirect
       }
 
@@ -289,13 +294,13 @@ describe("createPropertyAction", () => {
         expect.objectContaining({
           transactionType: "SALE",
         }),
-        mockUser.id
+        mockUser.id,
       );
     });
 
     it("should accept RENT transaction type", async () => {
       const formData = createMockFormData(
-        createValidPropertyData({ transactionType: "RENT", price: 1500 })
+        createValidPropertyData({ transactionType: "RENT", price: 1500 }),
       );
 
       mockPropertyRepositoryCreate.mockResolvedValue({
@@ -304,7 +309,7 @@ describe("createPropertyAction", () => {
 
       try {
         await createPropertyAction(null, formData);
-      } catch (error) {
+      } catch (_error) {
         // Expect redirect
       }
 
@@ -313,7 +318,7 @@ describe("createPropertyAction", () => {
           transactionType: "RENT",
           price: 1500,
         }),
-        mockUser.id
+        mockUser.id,
       );
     });
   });

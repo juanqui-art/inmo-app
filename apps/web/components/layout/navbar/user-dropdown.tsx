@@ -9,10 +9,10 @@
 
 "use client";
 
-import type { SafeUser } from "@/lib/auth";
 import { LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import type { SafeUser } from "@/lib/auth";
 
 interface UserDropdownProps {
   user: SafeUser;

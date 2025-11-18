@@ -19,11 +19,11 @@
 
 "use client";
 
-import React from "react";
+import { cn } from "@repo/ui";
 import { ChevronRight, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { cn } from "@repo/ui";
+import type React from "react";
 import { generateSlug } from "@/lib/utils/slug-generator";
 import { PropertyImageFallback } from "../map/property-image-fallback";
 
