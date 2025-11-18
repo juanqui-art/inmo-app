@@ -1,27 +1,55 @@
 /**
- * PROXY - Protección de Rutas (Autenticación)
+ * PROXY - Protección Centralizada de Rutas (Autenticación + Autorización)
  *
  * ¿Qué hace?
  * 1. Se ejecuta ANTES de cada request
  * 2. Verifica si el usuario está autenticado
  * 3. Refresca tokens expirados automáticamente
- * 4. Redirige a /login si no está autenticado
+ * 4. Valida ROLES usando user_metadata (sin consultar DB)
+ * 5. Redirige según autenticación y autorización
+ * 6. Registra eventos de seguridad (logging)
  *
- * NOTA: La validación de ROLES se hace en las páginas (Server Components)
- * para evitar consultas a DB en Edge Runtime (Prisma no funciona aquí)
+ * Rutas protegidas:
+ * - /dashboard/* → Requiere AGENT o ADMIN
+ * - /admin/* → Requiere ADMIN
+ * - /perfil/* → Requiere autenticación (cualquier rol)
  *
- * Rutas protegidas (requieren autenticación):
- * - /dashboard/* (validación de rol AGENT/ADMIN en layout)
- * - /admin/* (validación de rol ADMIN en layout)
- * - /perfil/* (validación de rol CLIENT en layout)
+ * NOTA: Las páginas mantienen validación con requireRole() como segunda capa
+ * de defensa (defense in depth). El proxy es la primera línea de seguridad.
  */
 
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 
-// Rutas que requieren autenticación
-const protectedRoutes = ["/dashboard", "/admin", "/perfil"];
+// Tipos de roles permitidos
+type UserRole = "CLIENT" | "AGENT" | "ADMIN";
+
+// Configuración de rutas protegidas
+const routePermissions = {
+  "/dashboard": ["AGENT", "ADMIN"] as UserRole[],
+  "/admin": ["ADMIN"] as UserRole[],
+  "/perfil": ["CLIENT", "AGENT", "ADMIN"] as UserRole[], // Todos los roles autenticados
+} as const;
+
+/**
+ * Registra eventos de seguridad (intentos de acceso no autorizado)
+ */
+function logSecurityEvent(
+  event: "unauthorized_access" | "role_mismatch" | "missing_role",
+  details: {
+    pathname: string;
+    userId?: string;
+    userRole?: string;
+    requiredRoles?: string[];
+  },
+) {
+  console.warn(`[SECURITY] ${event}`, {
+    ...details,
+    timestamp: new Date().toISOString(),
+    userAgent: "proxy",
+  });
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -53,28 +81,77 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  // Verificar usuario autenticado
+  // Verificar usuario autenticado y obtener metadata
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Verificar si es ruta protegida
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route),
-  );
+  // Obtener rol del user_metadata (guardado durante signup)
+  const userRole = user?.user_metadata?.role as UserRole | undefined;
 
-  // Si es ruta protegida y no hay usuario, redirigir a login
-  if (isProtectedRoute && !user) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
+  // 1. Verificar rutas protegidas que requieren roles específicos
+  for (const [route, allowedRoles] of Object.entries(routePermissions)) {
+    if (pathname.startsWith(route)) {
+      // Sin usuario → redirigir a login
+      if (!user) {
+        logSecurityEvent("unauthorized_access", {
+          pathname,
+          requiredRoles: allowedRoles,
+        });
+        const loginUrl = new URL("/login", request.url);
+        loginUrl.searchParams.set("redirect", pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+
+      // Usuario sin rol en metadata → redirigir a login (inconsistencia)
+      if (!userRole) {
+        logSecurityEvent("missing_role", {
+          pathname,
+          userId: user.id,
+          requiredRoles: allowedRoles,
+        });
+        const loginUrl = new URL("/login", request.url);
+        return NextResponse.redirect(loginUrl);
+      }
+
+      // Usuario con rol NO permitido → redirigir a su área
+      if (!allowedRoles.includes(userRole)) {
+        logSecurityEvent("role_mismatch", {
+          pathname,
+          userId: user.id,
+          userRole,
+          requiredRoles: allowedRoles,
+        });
+
+        // Redirigir según rol actual
+        const redirectMap: Record<UserRole, string> = {
+          ADMIN: "/admin",
+          AGENT: "/dashboard",
+          CLIENT: "/perfil",
+        };
+
+        const redirectUrl = new URL(
+          redirectMap[userRole] || "/",
+          request.url,
+        );
+        return NextResponse.redirect(redirectUrl);
+      }
+
+      // Usuario autorizado → continuar
+      break;
+    }
   }
 
-  // Si está autenticado y va a login/signup, redirigir a dashboard
-  // (el layout de dashboard hará la validación de rol y redirigirá si es necesario)
-  if (user && (pathname === "/login" || pathname === "/signup")) {
-    const dashboardUrl = new URL("/dashboard", request.url);
-    return NextResponse.redirect(dashboardUrl);
+  // 2. Si está autenticado y va a login/signup, redirigir a su área
+  if (user && userRole && (pathname === "/login" || pathname === "/signup")) {
+    const redirectMap: Record<UserRole, string> = {
+      ADMIN: "/admin",
+      AGENT: "/dashboard",
+      CLIENT: "/perfil",
+    };
+
+    const redirectUrl = new URL(redirectMap[userRole] || "/", request.url);
+    return NextResponse.redirect(redirectUrl);
   }
 
   return supabaseResponse;

@@ -12,7 +12,7 @@
 import { propertyImageRepository, propertyRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireRole } from "@/lib/auth";
+import { requireRole, requireOwnership } from "@/lib/auth";
 import { deletePropertyImage, uploadPropertyImage } from "@/lib/storage/client";
 import {
   createPropertySchema,
@@ -216,9 +216,11 @@ export async function uploadPropertyImagesAction(
       return { error: "Propiedad no encontrada" };
     }
 
-    if (property.agentId !== user.id && user.role !== "ADMIN") {
-      return { error: "No tienes permiso para modificar esta propiedad" };
-    }
+    // Verificar ownership usando helper (con logging incluido)
+    await requireOwnership(
+      property.agentId,
+      "No tienes permiso para modificar esta propiedad",
+    );
 
     // 3. Obtener archivos del FormData
     const files = formData.getAll("images") as File[];
@@ -289,9 +291,11 @@ export async function deletePropertyImageAction(imageId: string) {
       return { error: "Propiedad no encontrada" };
     }
 
-    if (property.agentId !== user.id && user.role !== "ADMIN") {
-      return { error: "No tienes permiso para eliminar esta imagen" };
-    }
+    // Verificar ownership usando helper (con logging incluido)
+    await requireOwnership(
+      property.agentId,
+      "No tienes permiso para eliminar esta imagen",
+    );
 
     // 4. Eliminar de Storage
     await deletePropertyImage(image.url);
@@ -331,9 +335,11 @@ export async function reorderPropertyImagesAction(
       return { error: "Propiedad no encontrada" };
     }
 
-    if (property.agentId !== user.id && user.role !== "ADMIN") {
-      return { error: "No tienes permiso para modificar esta propiedad" };
-    }
+    // Verificar ownership usando helper (con logging incluido)
+    await requireOwnership(
+      property.agentId,
+      "No tienes permiso para modificar esta propiedad",
+    );
 
     // 3. Actualizar orden de imágenes
     const updates = imageIds.map((id, index) => ({
