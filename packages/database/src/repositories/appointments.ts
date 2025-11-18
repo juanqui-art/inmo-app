@@ -172,13 +172,14 @@ export class AppointmentRepository {
     }
 
     if (filters?.startDate || filters?.endDate) {
-      whereConditions.scheduledAt = {};
+      const dateFilter: Prisma.DateTimeFilter = {};
       if (filters?.startDate) {
-        (whereConditions.scheduledAt as any).gte = filters.startDate;
+        dateFilter.gte = filters.startDate;
       }
       if (filters?.endDate) {
-        (whereConditions.scheduledAt as any).lte = filters.endDate;
+        dateFilter.lte = filters.endDate;
       }
+      whereConditions.scheduledAt = dateFilter;
     }
 
     return db.appointment.findMany({

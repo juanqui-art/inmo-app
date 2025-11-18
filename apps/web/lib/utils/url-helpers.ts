@@ -494,8 +494,8 @@ import { z } from "zod";
 
 // Define valid enum values to be used in the Zod schema
 // Source: packages/database/prisma/schema.prisma
-const TRANSACTION_TYPES = ["SALE", "RENT"] as const;
-const PROPERTY_CATEGORIES = [
+export const TRANSACTION_TYPES = ["SALE", "RENT"] as const;
+export const PROPERTY_CATEGORIES = [
   "HOUSE",
   "APARTMENT",
   "SUITE",

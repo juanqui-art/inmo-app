@@ -141,6 +141,8 @@ export function MapContainer({
   const handleClusterClick = useCallback(
     (longitude: number, latitude: number, expansionZoom: number) => {
       // Create proper ViewState event
+      // Note: This is a synthetic event created locally for cluster zoom animation
+      // The target is not actually used but required by ViewStateChangeEvent type
       const mockEvent: ViewStateChangeEvent = {
         viewState: {
           longitude,
@@ -151,6 +153,7 @@ export function MapContainer({
           padding: { top: 0, bottom: 0, left: 0, right: 0 },
         },
         type: "move",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         target: {} as any,
       };
       onMove(mockEvent);

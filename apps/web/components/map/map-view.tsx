@@ -4,6 +4,8 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Map, { Source, Layer, Popup } from "react-map-gl/mapbox";
 import type { MapRef } from "react-map-gl/mapbox";
 import type { MapMouseEvent } from "react-map-gl/mapbox";
+import type { GeoJSONSource } from "mapbox-gl";
+import type { FeatureCollection } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { env } from "@repo/env";
 import type { TransactionType } from "@repo/database";
@@ -84,10 +86,13 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
         const mapboxSource = mapRef.current?.getMap().getSource("properties");
 
         if (mapboxSource && "getClusterExpansionZoom" in mapboxSource) {
-          (mapboxSource as any).getClusterExpansionZoom(
+          // Type assertion needed: Mapbox's Callback type signature is overly strict
+          // Runtime behavior accepts (err: Error | null, zoom?: number)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (mapboxSource as GeoJSONSource).getClusterExpansionZoom(
             clusterId,
-            (err: Error | null, zoom: number) => {
-              if (err) return;
+            ((err: Error | null, zoom?: number) => {
+              if (err || zoom === undefined) return;
 
               const geometry = feature.geometry as { coordinates: number[] };
               mapRef.current?.flyTo({
@@ -95,7 +100,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
                 zoom: zoom + CLUSTER_CONFIG.ZOOM_INCREMENT,
                 duration: 600,
               });
-            },
+            }) as any,
           );
         }
       }
@@ -184,7 +189,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
         <Source
           id="properties"
           type="geojson"
-          data={geojsonData as any}
+          data={geojsonData as FeatureCollection}
           cluster={true}
           clusterMaxZoom={CLUSTER_CONFIG.MAX_ZOOM}
           clusterRadius={CLUSTER_CONFIG.RADIUS}

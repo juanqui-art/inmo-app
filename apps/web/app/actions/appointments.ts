@@ -159,7 +159,7 @@ export async function createAppointmentAction(formData: {
   } catch (error) {
     if (error instanceof z.ZodError) {
       const fieldErrors = error.flatten().fieldErrors;
-      const firstError = (Object.values(fieldErrors)[0] as any)?.[0];
+      const firstError = (Object.values(fieldErrors) as string[][])[0]?.[0];
       return {
         success: false,
         error: firstError || "Invalid input",
