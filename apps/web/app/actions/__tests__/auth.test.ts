@@ -1,0 +1,470 @@
+/**
+ * TESTS - Auth Server Actions
+ *
+ * Integration tests for authentication Server Actions:
+ * - signupAction: User registration
+ * - loginAction: User login
+ * - logoutAction: User logout
+ */
+
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { signupAction, loginAction, logoutAction } from "../auth";
+import {
+  createSignupFormData,
+  createLoginFormData,
+  createMockDbUser,
+  createMockSupabaseUser,
+} from "@/__tests__/utils/auth-test-helpers";
+
+// Import mocked modules
+import { userRepository } from "@repo/database";
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+// Get mocked functions
+const mockUserRepositoryFindById = vi.mocked(userRepository.findById);
+const mockCreateClient = vi.mocked(createClient);
+const mockRevalidatePath = vi.mocked(revalidatePath);
+const mockRedirect = vi.mocked(redirect);
+
+describe("Auth Server Actions", () => {
+  // Mock Supabase client
+  let mockSupabase: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    // Reset all mocks
+    vi.clearAllMocks();
+
+    // Create mock Supabase client
+    mockSupabase = {
+      auth: {
+        getUser: vi.fn(),
+        signUp: vi.fn(),
+        signInWithPassword: vi.fn(),
+        signOut: vi.fn(),
+      },
+    };
+
+    // Mock createClient to return our mock Supabase
+    mockCreateClient.mockResolvedValue(mockSupabase as any);
+  });
+
+  describe("signupAction", () => {
+    describe("Successful Signup", () => {
+      it("should register CLIENT user and redirect to /perfil", async () => {
+        const formData = createSignupFormData({
+          name: "Juan Pérez",
+          email: "juan@example.com",
+          password: "Password123",
+          role: "CLIENT",
+        });
+
+        const mockUser = createMockSupabaseUser({
+          id: "new-user-id",
+          email: "juan@example.com",
+        });
+
+        mockSupabase.auth.signUp.mockResolvedValue({
+          data: { user: mockUser },
+          error: null,
+        });
+
+        await expect(async () => {
+          await signupAction(null, formData);
+        }).rejects.toThrow("NEXT_REDIRECT: /perfil");
+
+        expect(mockSupabase.auth.signUp).toHaveBeenCalledWith({
+          email: "juan@example.com",
+          password: "Password123",
+          options: {
+            data: {
+              name: "Juan Pérez",
+              role: "CLIENT",
+            },
+          },
+        });
+
+        expect(mockRevalidatePath).toHaveBeenCalledWith("/", "layout");
+      });
+
+      it("should register AGENT user and redirect to /dashboard", async () => {
+        const formData = createSignupFormData({
+          name: "Agent Smith",
+          email: "agent@example.com",
+          password: "Password123",
+          role: "AGENT",
+        });
+
+        const mockUser = createMockSupabaseUser({
+          id: "agent-user-id",
+          email: "agent@example.com",
+        });
+
+        mockSupabase.auth.signUp.mockResolvedValue({
+          data: { user: mockUser },
+          error: null,
+        });
+
+        await expect(async () => {
+          await signupAction(null, formData);
+        }).rejects.toThrow("NEXT_REDIRECT: /dashboard");
+
+        expect(mockSupabase.auth.signUp).toHaveBeenCalledWith(
+          expect.objectContaining({
+            email: "agent@example.com",
+            options: {
+              data: expect.objectContaining({
+                role: "AGENT",
+              }),
+            },
+          })
+        );
+      });
+
+      it("should register ADMIN user and redirect to /admin", async () => {
+        const formData = createSignupFormData({
+          role: "ADMIN",
+        });
+
+        const mockUser = createMockSupabaseUser({
+          id: "admin-user-id",
+        });
+
+        mockSupabase.auth.signUp.mockResolvedValue({
+          data: { user: mockUser },
+          error: null,
+        });
+
+        await expect(async () => {
+          await signupAction(null, formData);
+        }).rejects.toThrow("NEXT_REDIRECT: /admin");
+      });
+    });
+
+    describe("Validation Errors", () => {
+      it("should reject signup with missing name", async () => {
+        const formData = createSignupFormData({ name: "" });
+
+        const result = await signupAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("name");
+        expect(mockSupabase.auth.signUp).not.toHaveBeenCalled();
+      });
+
+      it("should reject signup with invalid email", async () => {
+        const formData = createSignupFormData({ email: "invalid-email" });
+
+        const result = await signupAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("email");
+        expect(mockSupabase.auth.signUp).not.toHaveBeenCalled();
+      });
+
+      it("should reject signup with weak password (too short)", async () => {
+        const formData = createSignupFormData({ password: "Pass1" });
+
+        const result = await signupAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("password");
+        expect(mockSupabase.auth.signUp).not.toHaveBeenCalled();
+      });
+
+      it("should reject signup with password without letters", async () => {
+        const formData = createSignupFormData({ password: "12345678" });
+
+        const result = await signupAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("password");
+        expect(mockSupabase.auth.signUp).not.toHaveBeenCalled();
+      });
+
+      it("should reject signup with password without numbers", async () => {
+        const formData = createSignupFormData({ password: "Password" });
+
+        const result = await signupAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("password");
+        expect(mockSupabase.auth.signUp).not.toHaveBeenCalled();
+      });
+
+      it("should reject signup with invalid role", async () => {
+        const formData = new FormData();
+        formData.append("name", "Test User");
+        formData.append("email", "test@example.com");
+        formData.append("password", "Password123");
+        formData.append("role", "INVALID_ROLE");
+
+        const result = await signupAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(mockSupabase.auth.signUp).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("Supabase Errors", () => {
+      it("should handle duplicate email error", async () => {
+        const formData = createSignupFormData({
+          email: "existing@example.com",
+        });
+
+        mockSupabase.auth.signUp.mockResolvedValue({
+          data: { user: null },
+          error: { message: "User already registered" },
+        });
+
+        const result = await signupAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("general");
+        expect(result.error.general).toBe("User already registered");
+      });
+
+      it("should handle Supabase service unavailable", async () => {
+        const formData = createSignupFormData();
+
+        mockSupabase.auth.signUp.mockResolvedValue({
+          data: { user: null },
+          error: { message: "Service temporarily unavailable" },
+        });
+
+        const result = await signupAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("general");
+      });
+
+      it("should handle case where user is null despite no error", async () => {
+        const formData = createSignupFormData();
+
+        mockSupabase.auth.signUp.mockResolvedValue({
+          data: { user: null },
+          error: null,
+        });
+
+        const result = await signupAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("general");
+        expect(result.error.general).toBe("No se pudo crear el usuario");
+      });
+    });
+  });
+
+  describe("loginAction", () => {
+    describe("Successful Login", () => {
+      it("should login CLIENT user and redirect to /perfil", async () => {
+        const formData = createLoginFormData({
+          email: "client@example.com",
+          password: "Password123",
+        });
+
+        const mockAuthUser = createMockSupabaseUser({
+          id: "client-id",
+          email: "client@example.com",
+        });
+
+        const mockDbUser = createMockDbUser({
+          id: "client-id",
+          email: "client@example.com",
+          role: "CLIENT",
+        });
+
+        mockSupabase.auth.signInWithPassword.mockResolvedValue({
+          data: { user: mockAuthUser },
+          error: null,
+        });
+
+        mockUserRepositoryFindById.mockResolvedValue(mockDbUser);
+
+        await expect(async () => {
+          await loginAction(null, formData);
+        }).rejects.toThrow("NEXT_REDIRECT: /perfil");
+
+        expect(mockSupabase.auth.signInWithPassword).toHaveBeenCalledWith({
+          email: "client@example.com",
+          password: "Password123",
+        });
+
+        expect(mockUserRepositoryFindById).toHaveBeenCalledWith("client-id");
+        expect(mockRevalidatePath).toHaveBeenCalledWith("/", "layout");
+      });
+
+      it("should login AGENT user and redirect to /dashboard", async () => {
+        const formData = createLoginFormData({
+          email: "agent@example.com",
+          password: "Password123",
+        });
+
+        const mockAuthUser = createMockSupabaseUser({
+          id: "agent-id",
+          email: "agent@example.com",
+        });
+
+        const mockDbUser = createMockDbUser({
+          id: "agent-id",
+          role: "AGENT",
+        });
+
+        mockSupabase.auth.signInWithPassword.mockResolvedValue({
+          data: { user: mockAuthUser },
+          error: null,
+        });
+
+        mockUserRepositoryFindById.mockResolvedValue(mockDbUser);
+
+        await expect(async () => {
+          await loginAction(null, formData);
+        }).rejects.toThrow("NEXT_REDIRECT: /dashboard");
+      });
+
+      it("should login ADMIN user and redirect to /admin", async () => {
+        const formData = createLoginFormData({
+          email: "admin@example.com",
+          password: "Password123",
+        });
+
+        const mockAuthUser = createMockSupabaseUser({
+          id: "admin-id",
+          email: "admin@example.com",
+        });
+
+        const mockDbUser = createMockDbUser({
+          id: "admin-id",
+          role: "ADMIN",
+        });
+
+        mockSupabase.auth.signInWithPassword.mockResolvedValue({
+          data: { user: mockAuthUser },
+          error: null,
+        });
+
+        mockUserRepositoryFindById.mockResolvedValue(mockDbUser);
+
+        await expect(async () => {
+          await loginAction(null, formData);
+        }).rejects.toThrow("NEXT_REDIRECT: /admin");
+      });
+    });
+
+    describe("Validation Errors", () => {
+      it("should reject login with invalid email", async () => {
+        const formData = createLoginFormData({ email: "invalid-email" });
+
+        const result = await loginAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("email");
+        expect(mockSupabase.auth.signInWithPassword).not.toHaveBeenCalled();
+      });
+
+      it("should reject login with missing password", async () => {
+        const formData = new FormData();
+        formData.append("email", "test@example.com");
+
+        const result = await loginAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(mockSupabase.auth.signInWithPassword).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("Authentication Errors", () => {
+      it("should handle invalid credentials", async () => {
+        const formData = createLoginFormData({
+          email: "test@example.com",
+          password: "WrongPassword123",
+        });
+
+        mockSupabase.auth.signInWithPassword.mockResolvedValue({
+          data: { user: null },
+          error: { message: "Invalid login credentials" },
+        });
+
+        const result = await loginAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("general");
+        expect(result.error.general).toBe("Invalid login credentials");
+      });
+
+      it("should handle user in auth but not in database", async () => {
+        const formData = createLoginFormData({
+          email: "orphan@example.com",
+          password: "Password123",
+        });
+
+        const mockAuthUser = createMockSupabaseUser({
+          id: "orphan-id",
+          email: "orphan@example.com",
+        });
+
+        mockSupabase.auth.signInWithPassword.mockResolvedValue({
+          data: { user: mockAuthUser },
+          error: null,
+        });
+
+        // User not found in database
+        mockUserRepositoryFindById.mockResolvedValue(null);
+
+        const result = await loginAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("general");
+        expect(result.error.general).toBe(
+          "Usuario no encontrado en la base de datos"
+        );
+
+        // Should sign out the orphaned user
+        expect(mockSupabase.auth.signOut).toHaveBeenCalled();
+      });
+
+      it("should handle case where user is null despite no error", async () => {
+        const formData = createLoginFormData();
+
+        mockSupabase.auth.signInWithPassword.mockResolvedValue({
+          data: { user: null },
+          error: null,
+        });
+
+        const result = await loginAction(null, formData);
+
+        expect(result).toHaveProperty("error");
+        expect(result.error).toHaveProperty("general");
+        expect(result.error.general).toBe("No se pudo iniciar sesión");
+      });
+    });
+  });
+
+  describe("logoutAction", () => {
+    it("should sign out and redirect to home", async () => {
+      mockSupabase.auth.signOut.mockResolvedValue({ error: null });
+
+      await expect(async () => {
+        await logoutAction();
+      }).rejects.toThrow("NEXT_REDIRECT: /");
+
+      expect(mockSupabase.auth.signOut).toHaveBeenCalled();
+      expect(mockRevalidatePath).toHaveBeenCalledWith("/", "layout");
+    });
+
+    it("should handle logout even if signOut fails", async () => {
+      // In practice, we don't check for errors in logoutAction
+      // It should redirect regardless
+      mockSupabase.auth.signOut.mockResolvedValue({
+        error: { message: "Session expired" },
+      });
+
+      await expect(async () => {
+        await logoutAction();
+      }).rejects.toThrow("NEXT_REDIRECT: /");
+
+      expect(mockSupabase.auth.signOut).toHaveBeenCalled();
+    });
+  });
+});

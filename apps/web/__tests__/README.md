@@ -38,7 +38,8 @@ bun run test:web
 
 Tests are co-located with the code they test using the `__tests__` directory pattern:
 
-- `app/actions/__tests__/` - Server Actions tests
+- `app/actions/__tests__/` - Server Actions tests (auth, properties, favorites)
+- `lib/__tests__/` - Library function tests (auth helpers)
 - `lib/validations/__tests__/` - Validation schema tests
 - `lib/utils/__tests__/` - Utility function tests
 - `components/__tests__/` - Component tests (when added)
@@ -70,8 +71,9 @@ describe("myAction", () => {
 
 ### Test Helpers
 
-Use the helpers in `__tests__/utils/test-helpers.ts`:
+Use the helpers in `__tests__/utils/test-helpers.ts` and `__tests__/utils/auth-test-helpers.ts`:
 
+**Property & General Helpers:**
 ```typescript
 import { createMockUser, createMockFormData, createValidPropertyData } from "@/__tests__/utils/test-helpers";
 
@@ -91,6 +93,43 @@ const propertyData = createValidPropertyData({
 });
 ```
 
+**Auth Test Helpers:**
+```typescript
+import {
+  createMockSupabaseUser,
+  createMockDbUser,
+  createSignupFormData,
+  createLoginFormData,
+  createMockSupabaseClient
+} from "@/__tests__/utils/auth-test-helpers";
+
+// Create a mock Supabase auth user
+const authUser = createMockSupabaseUser({
+  id: "user-123",
+  email: "test@example.com"
+});
+
+// Create a mock database user
+const dbUser = createMockDbUser({
+  id: "user-123",
+  role: "AGENT"
+});
+
+// Create signup FormData
+const signupForm = createSignupFormData({
+  name: "Juan Pérez",
+  email: "juan@example.com",
+  password: "Password123",
+  role: "CLIENT"
+});
+
+// Create login FormData
+const loginForm = createLoginFormData({
+  email: "test@example.com",
+  password: "Password123"
+});
+```
+
 ## Mocked Dependencies
 
 All external dependencies are mocked in `vitest.setup.ts`:
@@ -103,7 +142,43 @@ All external dependencies are mocked in `vitest.setup.ts`:
 
 ## Current Test Coverage
 
-### Server Actions
+### Server Actions - Auth Flow
+
+- ✅ **`signupAction`** - 12/12 tests passing
+  - Successful signup with different roles (CLIENT, AGENT, ADMIN)
+  - Validation errors (missing name, invalid email, weak password)
+  - Supabase errors (duplicate email, service unavailable)
+- ✅ **`loginAction`** - 8/8 tests passing
+  - Successful login with different roles
+  - Validation errors (invalid email, missing password)
+  - Authentication errors (invalid credentials, orphaned users)
+- ✅ **`logoutAction`** - 2/2 tests passing
+  - Sign out and redirect
+  - Handle logout errors gracefully
+
+### Auth Helpers
+
+- ✅ **`getCurrentUser`** - 5/5 tests passing
+  - Return user with role when authenticated
+  - Return null when not authenticated
+  - Handle orphaned users (auth but not in DB)
+- ✅ **`requireAuth`** - 3/3 tests passing
+  - Return user when authenticated
+  - Redirect to /login when not authenticated
+- ✅ **`requireRole`** - 6/6 tests passing
+  - Allow access with correct role
+  - Redirect to appropriate page based on user role
+- ✅ **`checkPermission`** - 6/6 tests passing
+  - Return true for resource owner
+  - Return true for ADMIN (with override)
+  - Return false for unauthorized users
+- ✅ **`requireOwnership`** - 6/6 tests passing
+  - Allow access for owner
+  - Allow access for ADMIN
+  - Throw error for unauthorized users
+  - Support custom error messages
+
+### Server Actions - Properties & Favorites
 
 - ✅ `createPropertyAction` - 14/15 tests passing
 - ✅ `toggleFavoriteAction` - 4/19 tests passing (15 tests have mock timing issues to be refined)
@@ -118,7 +193,9 @@ All external dependencies are mocked in `vitest.setup.ts`:
 - ✅ `slug-generator` - All tests passing
 - ✅ `serialize-property` - All tests passing
 
-**Overall: 65/81 tests passing (80%)**
+**Overall: 113/129 tests passing (87.6%)**
+
+**Auth Flow Coverage: 48/48 tests passing (100%)** 🎉
 
 ## Known Issues
 
