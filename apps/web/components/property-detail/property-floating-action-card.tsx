@@ -12,7 +12,6 @@ interface PropertyFloatingActionCardProps {
   agentName?: string | null;
   agentEmail?: string | null;
   agentPhone?: string | null;
-  agentAvatar?: string | null;
   propertyId: string;
   isAuthenticated: boolean;
   isSticky?: boolean;
@@ -23,7 +22,6 @@ export function PropertyFloatingActionCard({
   agentName,
   agentEmail,
   agentPhone,
-  agentAvatar,
   // DISABLED: propertyId and isAuthenticated temporarily unused due to disabled AppointmentButton
   // propertyId,
   // isAuthenticated,
@@ -90,17 +88,9 @@ export function PropertyFloatingActionCard({
           <div className="flex items-start gap-4">
             {/* Agent Avatar */}
             <div className="flex-shrink-0">
-              {agentAvatar ? (
-                <img
-                  src={agentAvatar}
-                  alt={agentName}
-                  className="w-14 h-14 rounded-full object-cover border-2 border-indigo-200 dark:border-indigo-900"
-                />
-              ) : (
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
-                  {agentName.charAt(0).toUpperCase()}
-                </div>
-              )}
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
+                {agentName.charAt(0).toUpperCase()}
+              </div>
             </div>
 
             {/* Agent Info */}

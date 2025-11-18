@@ -11,7 +11,6 @@
 
 import type { SafeUser } from "@/lib/auth";
 import { LogOut, Settings, User } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -31,18 +30,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
         aria-label="Menú de usuario"
         aria-expanded={isOpen}
       >
-        {user?.avatar ? (
-          <Image
-            src={user.avatar}
-            alt="Avatar"
-            width={40}
-            height={40}
-            className="w-10 h-10 object-cover"
-            unoptimized
-          />
-        ) : (
-          <User className="w-5 h-5 text-white" />
-        )}
+        <User className="w-5 h-5 text-white" />
       </button>
 
       {/* Dropdown Menu */}

@@ -191,7 +191,6 @@ export default async function PropertyDetailPage(
               agentName={property.agent?.name}
               agentEmail={property.agent?.email}
               agentPhone={property.agent?.phone}
-              agentAvatar={property.agent?.avatar}
               propertyId={id}
               isAuthenticated={!!user && user.role === "CLIENT"}
               isSticky

@@ -8,7 +8,7 @@
 import { LogOut, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { logoutAction } from "@/app/actions/auth";
-import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui";
+import { Avatar, AvatarFallback } from "@repo/ui";
 import { Badge } from "@repo/ui";
 import {
   DropdownMenu,
@@ -66,7 +66,6 @@ export function UserMenu({ user }: UserMenuProps) {
       <DropdownMenuTrigger className="outline-none">
         <div className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.avatar || undefined} alt={name} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
           <div className="hidden md:flex flex-col items-start">
