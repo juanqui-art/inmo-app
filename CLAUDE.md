@@ -159,6 +159,7 @@ bun run dev:web  # Goes directly to apps/web
 - **Auto-loaded:** `.claude/01-06` files (~27k tokens, auto-included)
 - **On-demand:** `.claude/08-11` files in `.claudeignore` (multi-tenant, debt, teaching, appointments)
 - **Guide:** `docs/AI_ASSISTANTS.md` (how Claude/Gemini interact with project)
+- **⭐ NEW:** `docs/technical-debt/00-DEEP-ANALYSIS.md` (análisis profundo de deuda técnica)
 
 **For Humans:**
 - `QUICK_START.md`, `docs/INDEX.md` (navigation hub), `docs/setup/` (installation)
@@ -250,6 +251,47 @@ export function proxy() { }
 **Key Learning:** Dependency arrays express "when should this run," not "what I use." If an effect changes its own dependencies, you have a circular dependency.
 
 **Resources:** `docs/INFINITE_LOOP_DEEP_DIVE.md`, `docs/REACT_HOOKS_ANTIPATTERNS.md`, `docs/DEBUGGING_HOOKS_GUIDE.md`
+
+---
+
+## ⚠️ Deuda Técnica y Problemas Conocidos
+
+**📊 [Ver Análisis Profundo Completo →](docs/technical-debt/00-DEEP-ANALYSIS.md)**
+
+### Estado General
+- **Rating:** 8.4/10 - Aplicación funcional
+- **Deuda total:** ~108 tareas (~200 horas)
+- **Progreso:** 3.7% completado
+
+### 🔥 Problemas URGENTES que Afectan Usuarios
+
+**1. Emails NO se entregan** 🔴 CRÍTICO
+- Status: Usuarios no reciben confirmaciones de citas
+- Causa: Domain not verified en Resend
+- Fix: 45 min (domain verification)
+- Ver: `docs/technical-debt/04-EMAIL.md`
+
+**2. Appointments Feature Disabled** 🔴 CRÍTICO
+- Status: Funcionalidad deshabilitada (commit 536dbba)
+- Causa: Turbopack build issue
+- Fix: Por investigar
+- Acción: URGENTE
+
+**3. Performance 36% más lenta** 🟡 ALTA
+- Status: Queries duplicadas en requests
+- Causa: No hay request deduplication
+- Fix: 2h (React.cache())
+- Ver: `docs/technical-debt/02-PERFORMANCE.md`
+
+### Categorías de Deuda
+1. **Infraestructura** - 50 tareas, 80-120h
+2. **Testing** - 52 tareas, 40-55h (Coverage: 5% → Target: 60%)
+3. **Logging/Monitoring** - 1 plan, 22h
+4. **Performance** - 2 tareas, 2-4h
+5. **Email** - 2 tareas, 45 min
+6. **Map Filters** - 1 tarea, 1-2h
+
+**Ver planes de acción:** `docs/technical-debt/00-DEEP-ANALYSIS.md#planes-de-acción`
 
 ---
 

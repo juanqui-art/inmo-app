@@ -1,7 +1,22 @@
 # 📊 Deuda Técnica - InmoApp
 
 > **Análisis completo de deuda técnica pendiente**
-> Última actualización: Noviembre 16, 2025
+> Última actualización: Noviembre 18, 2025
+
+---
+
+## 🔍 NUEVO: Análisis Profundo Disponible
+
+**📋 [Ver Análisis Profundo Completo →](./00-DEEP-ANALYSIS.md)**
+
+El análisis profundo incluye:
+- ✅ Estado actual detallado con métricas
+- ✅ Problemas que afectan usuarios HOY
+- ✅ Riesgos ocultos identificados
+- ✅ Análisis financiero completo (ROI calculado)
+- ✅ Planes de acción según objetivo (MVP/Scale/Enterprise)
+- ✅ Hallazgos adicionales del codebase
+- ✅ Checklist de acción inmediata
 
 ---
 
@@ -9,9 +24,9 @@
 
 **Estado General:** ✅ Aplicación funcional y bien arquitecturada (Rating: 8.4/10)
 
-**Deuda Técnica Total:** ~106 tareas distribuidas en 7 categorías
+**Deuda Técnica Total:** ~108 tareas distribuidas en 7 categorías
 
-**Progreso Actual:** 4/109 tareas completadas (~3.7%)
+**Progreso Actual:** 4/108 tareas completadas (~3.7%)
 
 ---
 
