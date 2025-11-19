@@ -53,6 +53,7 @@ export async function toggleFavoriteAction(propertyId: string) {
     // 4. Revalidar cache - actualiza lista de favoritos y mapa
     revalidatePath("/mapa");
     revalidatePath("/favoritos");
+    revalidatePath("/perfil/favoritos");
 
     return {
       success: true,
