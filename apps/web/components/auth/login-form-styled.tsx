@@ -12,14 +12,8 @@ export function LoginFormStyled() {
   const searchParams = useSearchParams();
 
   return (
-    <div className="w-full max-w-md space-y-8">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className=" text-4xl font-bold text-foreground mb-2">Bienvenido</h1>
-        <p className="text-muted-foreground text-pretty">
-          Inicia sesión para acceder a tu cuenta
-        </p>
-      </div>
+    <div className="w-full space-y-8">
+      {/* Header removed - provided by Dialog modal */}
 
       <form action={formAction} className="space-y-6">
         {/* Campo oculto para pasar el parámetro redirect a la Server Action */}
