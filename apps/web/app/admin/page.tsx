@@ -1,84 +1,201 @@
 /**
  * ADMIN - Panel de Administración
- * Solo accesible para rol ADMIN
+ * Dashboard principal con estadísticas y accesos rápidos
  */
 
-import { BarChart3, Building2, Settings, Users } from "lucide-react";
+import Link from "next/link";
+import { BarChart3, Building2, Calendar, Heart, Users, ArrowRight } from "lucide-react";
 import { requireRole } from "@/lib/auth";
+import { getAdminStatsAction } from "@/app/actions/admin";
 
 export default async function AdminPage() {
   const user = await requireRole(["ADMIN"]);
+  const stats = await getAdminStatsAction();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold">Panel de Administración</h1>
-        </div>
-      </header>
+    <div className="p-6 space-y-6">
+      {/* Welcome */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Bienvenido, {user.name || "Administrador"}
+        </h1>
+        <p className="text-muted-foreground">
+          Panel de administración de InmoApp
+        </p>
+      </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto space-y-6">
-          {/* Welcome */}
+      {/* Quick stats */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-lg border bg-card p-6">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">Usuarios</span>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <div className="mt-2">
+            <div className="text-2xl font-bold">{stats.totalUsers}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              +{stats.recentUsers} últimos 30 días
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card p-6">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">Propiedades</span>
+            <Building2 className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <div className="mt-2">
+            <div className="text-2xl font-bold">{stats.totalProperties}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              +{stats.recentProperties} últimos 30 días
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card p-6">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">Citas</span>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <div className="mt-2">
+            <div className="text-2xl font-bold">{stats.totalAppointments}</div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card p-6">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">Favoritos</span>
+            <Heart className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <div className="mt-2">
+            <div className="text-2xl font-bold">{stats.totalFavorites}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick actions */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Link
+          href="/admin/usuarios"
+          className="group rounded-lg border bg-card p-6 hover:border-primary transition-colors"
+        >
+          <Users className="h-8 w-8 text-primary mb-4" />
+          <h3 className="font-semibold mb-2 flex items-center gap-2">
+            Gestión de Usuarios
+            <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Administra usuarios, cambia roles y gestiona cuentas
+          </p>
+          <div className="mt-4 flex gap-2">
+            {stats.usersByRole.map((item) => (
+              <span
+                key={item.role}
+                className="text-xs px-2 py-1 rounded-full bg-muted"
+              >
+                {item.count} {item.role === "CLIENT" ? "clientes" : item.role === "AGENT" ? "agentes" : "admins"}
+              </span>
+            ))}
+          </div>
+        </Link>
+
+        <Link
+          href="/admin/propiedades"
+          className="group rounded-lg border bg-card p-6 hover:border-primary transition-colors"
+        >
+          <Building2 className="h-8 w-8 text-primary mb-4" />
+          <h3 className="font-semibold mb-2 flex items-center gap-2">
+            Gestión de Propiedades
+            <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Modera y administra todas las propiedades
+          </p>
+          <div className="mt-4 flex gap-2">
+            {stats.propertiesByStatus.slice(0, 2).map((item) => (
+              <span
+                key={item.status}
+                className="text-xs px-2 py-1 rounded-full bg-muted"
+              >
+                {item.count} {item.status === "AVAILABLE" ? "disponibles" : item.status === "SOLD" ? "vendidas" : item.status.toLowerCase()}
+              </span>
+            ))}
+          </div>
+        </Link>
+
+        <Link
+          href="/admin/analytics"
+          className="group rounded-lg border bg-card p-6 hover:border-primary transition-colors"
+        >
+          <BarChart3 className="h-8 w-8 text-primary mb-4" />
+          <h3 className="font-semibold mb-2 flex items-center gap-2">
+            Analytics
+            <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Métricas y estadísticas de la plataforma
+          </p>
+        </Link>
+      </div>
+
+      {/* Recent activity summary */}
+      <div className="rounded-lg border bg-card p-6">
+        <h3 className="text-lg font-semibold mb-4">Resumen de Actividad</h3>
+        <div className="grid gap-4 md:grid-cols-3">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">
-              Bienvenido, {user.name || "Administrador"}
-            </h2>
-            <p className="text-muted-foreground">
-              Gestiona usuarios, propiedades y configuración de la plataforma
-            </p>
-          </div>
-
-          {/* Admin Links */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-              <Users className="h-8 w-8 text-primary mb-4" />
-              <h3 className="font-semibold mb-2">Usuarios</h3>
-              <p className="text-sm text-muted-foreground">
-                Gestionar usuarios y roles
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-              <Building2 className="h-8 w-8 text-primary mb-4" />
-              <h3 className="font-semibold mb-2">Propiedades</h3>
-              <p className="text-sm text-muted-foreground">
-                Todas las propiedades
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-              <BarChart3 className="h-8 w-8 text-primary mb-4" />
-              <h3 className="font-semibold mb-2">Reportes</h3>
-              <p className="text-sm text-muted-foreground">
-                Analytics y estadísticas
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-              <Settings className="h-8 w-8 text-primary mb-4" />
-              <h3 className="font-semibold mb-2">Configuración</h3>
-              <p className="text-sm text-muted-foreground">
-                Ajustes de la plataforma
-              </p>
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">
+              Citas por Estado
+            </h4>
+            <div className="space-y-2">
+              {stats.appointmentsByStatus.map((item) => (
+                <div key={item.status} className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {item.status === "PENDING" ? "Pendientes" :
+                     item.status === "CONFIRMED" ? "Confirmadas" :
+                     item.status === "CANCELLED" ? "Canceladas" : "Completadas"}
+                  </span>
+                  <span className="font-medium">{item.count}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Info */}
-          <div className="rounded-lg border border-border bg-card p-6">
-            <h3 className="text-lg font-semibold mb-2">
-              Panel de Administración
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Como administrador, tienes acceso completo a todas las
-              funcionalidades de la plataforma. Puedes gestionar usuarios,
-              propiedades, ver reportes y configurar el sistema.
-            </p>
+          <div>
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">
+              Propiedades por Estado
+            </h4>
+            <div className="space-y-2">
+              {stats.propertiesByStatus.map((item) => (
+                <div key={item.status} className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {item.status === "AVAILABLE" ? "Disponibles" :
+                     item.status === "PENDING" ? "Pendientes" :
+                     item.status === "SOLD" ? "Vendidas" : "Rentadas"}
+                  </span>
+                  <span className="font-medium">{item.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">
+              Usuarios por Rol
+            </h4>
+            <div className="space-y-2">
+              {stats.usersByRole.map((item) => (
+                <div key={item.role} className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {item.role === "CLIENT" ? "Clientes" :
+                     item.role === "AGENT" ? "Agentes" : "Admins"}
+                  </span>
+                  <span className="font-medium">{item.count}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
