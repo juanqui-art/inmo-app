@@ -158,12 +158,20 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
     };
   }
 
-  // 5.5 Sincronizar user_metadata con el rol de la DB
-  // Esto es necesario porque el proxy usa user_metadata.role para autorización
-  // Si el usuario fue creado antes de guardar el rol en metadata, o si el rol cambió en DB,
-  // esto asegura que el proxy pueda autorizar correctamente
-  const currentMetadataRole = authData.user.user_metadata?.role;
-  if (currentMetadataRole !== dbUser.role) {
+  // 5.5 Sincronizar rol de metadata → DB si están desincronizados
+  // El rol correcto está en user_metadata (del signup), la DB puede estar desactualizada
+  // debido a un bug previo en el trigger que no incluía el rol
+  const metadataRole = authData.user.user_metadata?.role as "CLIENT" | "AGENT" | "ADMIN" | undefined;
+
+  if (metadataRole && metadataRole !== dbUser.role) {
+    // Actualizar el rol en la DB con el valor correcto de metadata
+    await userRepository.update(dbUser.id, { role: metadataRole });
+    // Actualizar dbUser local para la redirección correcta
+    dbUser.role = metadataRole;
+
+    console.log(`[AUTH] Synced role from metadata to DB for user ${dbUser.id}: ${metadataRole}`);
+  } else if (!metadataRole && dbUser.role) {
+    // Si no hay rol en metadata pero sí en DB, actualizar metadata (caso legacy)
     await supabase.auth.updateUser({
       data: {
         ...authData.user.user_metadata,
@@ -171,6 +179,8 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
         name: dbUser.name || authData.user.user_metadata?.name,
       },
     });
+
+    console.log(`[AUTH] Synced role from DB to metadata for user ${dbUser.id}: ${dbUser.role}`);
   }
 
   // 6. Revalidar
