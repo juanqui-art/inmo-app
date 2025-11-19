@@ -6,9 +6,7 @@
  * (ej: guardar favorito sin estar autenticado)
  */
 
-import { Building2, Heart } from "lucide-react";
-// DISABLED: Calendar icon temporarily unused due to disabled Mis Citas link
-// import { Calendar } from "lucide-react";
+import { Building2, Calendar, Heart } from "lucide-react";
 import Link from "next/link";
 import { AuthSuccessHandler } from "@/components/auth/auth-success-handler";
 import { requireAuth } from "@/lib/auth";
@@ -79,7 +77,6 @@ export default async function PerfilPage() {
               </p>
             </Link>
 
-            {/* DISABLED: Mis Citas link temporarily disabled to fix Turbopack build
             <Link
               href="/perfil/citas"
               className="rounded-lg border border-border bg-card p-6 shadow-sm transition-colors hover:bg-accent"
@@ -88,7 +85,6 @@ export default async function PerfilPage() {
               <h3 className="font-semibold mb-2">Mis Citas</h3>
               <p className="text-sm text-muted-foreground">Citas programadas</p>
             </Link>
-            */}
           </div>
 
           {/* Info Message */}
