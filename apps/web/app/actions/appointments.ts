@@ -13,7 +13,7 @@
 import { AppointmentRepository, PropertyRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { getCurrentUser, requireOwnership } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { validateAppointmentDateTime } from "@/lib/constants/availability";
 import {
   sendAppointmentCancelledEmail,
@@ -192,13 +192,15 @@ export async function createAppointmentAction(formData: {
 /**
  * UPDATE APPOINTMENT STATUS ACTION
  * Agente confirma o cancela una cita
+ * Cliente puede cancelar sus propias citas
  *
  * @param id ID de la cita
  * @param status Nuevo estado (CONFIRMED o CANCELLED)
  * @returns { success: boolean, error?: string }
  *
- * @throws Error si usuario no es el agente de la propiedad
+ * @throws Error si usuario no es el agente o cliente de la cita
  * @throws Error si cita no está en estado PENDING
+ * @throws Error si cliente intenta confirmar (solo agentes pueden confirmar)
  *
  * @example
  * const { success } = await updateAppointmentStatusAction({
@@ -229,26 +231,45 @@ export async function updateAppointmentStatusAction(data: {
       throw new Error("Appointment not found");
     }
 
-    // 4. Verificar que usuario sea el agente de la cita (ownership)
-    await requireOwnership(
-      appointment.agentId,
-      "You are not authorized to manage this appointment",
-    );
+    // 4. Verificar autorización: usuario debe ser agente o cliente de la cita
+    const isAgent = appointment.agentId === user.id;
+    const isClient = appointment.userId === user.id;
 
-    // 5. Verificar que cita esté en estado PENDING (solo se puede confirmar/cancelar si está pendiente)
+    if (!isAgent && !isClient) {
+      // Logging de seguridad
+      console.warn("[SECURITY] Unauthorized appointment access attempt", {
+        userId: user.id,
+        appointmentId: validatedData.id,
+        appointmentAgentId: appointment.agentId,
+        appointmentClientId: appointment.userId,
+        timestamp: new Date().toISOString(),
+        layer: "server-action",
+      });
+      throw new Error("You are not authorized to manage this appointment");
+    }
+
+    // 5. Clientes solo pueden cancelar, no confirmar
+    if (isClient && !isAgent && validatedData.status === "CONFIRMED") {
+      throw new Error("Only agents can confirm appointments");
+    }
+
+    // 6. Verificar que cita esté en estado PENDING (solo se puede confirmar/cancelar si está pendiente)
     if (appointment.status !== "PENDING") {
       throw new Error(
         `Cannot ${validatedData.status === "CONFIRMED" ? "confirm" : "cancel"} an appointment with status ${appointment.status}`,
       );
     }
 
-    // 6. Actualizar estado
+    // 7. Actualizar estado
     await appointmentRepository.updateAppointmentStatus(
       validatedData.id,
       validatedData.status,
     );
 
-    // 7. Enviar email de notificación
+    // 8. Enviar email de notificación
+    // Determinar quién inició la cancelación
+    const cancelledBy = isClient && !isAgent ? "client" : "agent";
+
     let emailResult;
     if (validatedData.status === "CONFIRMED") {
       emailResult = await sendAppointmentConfirmedEmail({
@@ -273,7 +294,7 @@ export async function updateAppointmentStatusAction(data: {
             appointment.property.address || "Address not specified",
           appointmentDate: appointment.scheduledAt,
         },
-        "agent",
+        cancelledBy,
       );
     }
 

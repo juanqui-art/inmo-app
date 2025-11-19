@@ -9,6 +9,7 @@ import type { AppointmentDetail } from "@repo/database";
 import { Badge } from "@repo/ui";
 import { Calendar, MapPin, Phone, User } from "lucide-react";
 import Image from "next/image";
+import type { ReactNode } from "react";
 import {
   formatAppointmentDate,
   getStatusLabel,
@@ -17,11 +18,13 @@ import {
 interface AppointmentCardProps {
   appointment: AppointmentDetail;
   showAgent?: boolean;
+  children?: ReactNode;
 }
 
 export function AppointmentCard({
   appointment,
   showAgent = false,
+  children,
 }: AppointmentCardProps) {
   const { label: statusLabel, color: statusColor } = getStatusLabel(
     appointment.status,
@@ -97,6 +100,9 @@ export function AppointmentCard({
         <Badge className={colorMap[statusColor as keyof typeof colorMap]}>
           {statusLabel}
         </Badge>
+
+        {/* Actions slot */}
+        {children}
       </div>
     </div>
   );
