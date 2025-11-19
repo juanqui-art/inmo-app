@@ -9,6 +9,7 @@
 import { requireRole } from "@/lib/auth";
 import { AppointmentRepository } from "@repo/database";
 import { AppointmentList } from "@/components/appointments/appointment-list";
+import { ClientAppointmentActions } from "@/components/appointments/client-appointment-actions";
 
 export default async function PerfilCitasPage() {
   // Requerir que esté autenticado
@@ -53,6 +54,12 @@ export default async function PerfilCitasPage() {
             appointments={pending}
             variant="user"
             emptyMessage="No tienes citas pendientes"
+            renderActions={(appointment) => (
+              <ClientAppointmentActions
+                appointmentId={appointment.id}
+                status={appointment.status}
+              />
+            )}
           />
         </section>
       )}

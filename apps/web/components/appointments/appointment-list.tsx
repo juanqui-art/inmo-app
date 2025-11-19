@@ -6,18 +6,21 @@
  */
 
 import type { AppointmentDetail } from "@repo/database";
+import type { ReactNode } from "react";
 import { AppointmentCard } from "./appointment-card";
 
 interface AppointmentListProps {
   appointments: AppointmentDetail[];
   variant?: "agent" | "user";
   emptyMessage?: string;
+  renderActions?: (appointment: AppointmentDetail) => ReactNode;
 }
 
 export function AppointmentList({
   appointments,
   variant = "agent",
   emptyMessage,
+  renderActions,
 }: AppointmentListProps) {
   if (appointments.length === 0) {
     return (
@@ -39,7 +42,9 @@ export function AppointmentList({
           key={appointment.id}
           appointment={appointment}
           showAgent={variant === "user"}
-        />
+        >
+          {renderActions?.(appointment)}
+        </AppointmentCard>
       ))}
     </div>
   );
