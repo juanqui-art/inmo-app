@@ -46,14 +46,14 @@ export function MobileMenu({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 animate-in fade-in duration-300"
+        className="fixed inset-0 bg-black/50 z-[80] animate-in fade-in duration-300"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Menu Panel */}
       <div
-        className="fixed inset-y-0 right-0 w-full max-w-sm bg-oslo-gray-900/95 backdrop-blur-xl z-50 shadow-xl border-l border-oslo-gray-700/50 animate-in slide-in-from-right duration-300"
+        className="fixed inset-y-0 right-0 w-full max-w-sm bg-oslo-gray-900/95 backdrop-blur-xl z-[90] shadow-xl border-l border-oslo-gray-700/50 animate-in slide-in-from-right duration-300"
         role="dialog"
         aria-modal="true"
         aria-label="Menú de navegación"
