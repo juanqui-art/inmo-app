@@ -158,6 +158,21 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
     };
   }
 
+  // 5.5 Sincronizar user_metadata con el rol de la DB
+  // Esto es necesario porque el proxy usa user_metadata.role para autorización
+  // Si el usuario fue creado antes de guardar el rol en metadata, o si el rol cambió en DB,
+  // esto asegura que el proxy pueda autorizar correctamente
+  const currentMetadataRole = authData.user.user_metadata?.role;
+  if (currentMetadataRole !== dbUser.role) {
+    await supabase.auth.updateUser({
+      data: {
+        ...authData.user.user_metadata,
+        role: dbUser.role,
+        name: dbUser.name || authData.user.user_metadata?.name,
+      },
+    });
+  }
+
   // 6. Revalidar
   revalidatePath("/", "layout");
 
