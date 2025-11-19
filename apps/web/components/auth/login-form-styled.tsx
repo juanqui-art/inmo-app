@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Checkbox, Input, Label, PasswordInput } from "@repo/ui";
+import { useSearchParams } from "next/navigation";
 import { useActionState, useState } from "react";
 import { loginAction } from "@/app/actions/auth";
 import { GoogleButton } from "./google-button";
@@ -8,6 +9,7 @@ import { GoogleButton } from "./google-button";
 export function LoginFormStyled() {
   const [state, formAction, isPending] = useActionState(loginAction, undefined);
   const [rememberMe, setRememberMe] = useState(false);
+  const searchParams = useSearchParams();
 
   return (
     <div className="w-full max-w-md space-y-8">
@@ -20,6 +22,14 @@ export function LoginFormStyled() {
       </div>
 
       <form action={formAction} className="space-y-6">
+        {/* Campo oculto para pasar el parámetro redirect a la Server Action */}
+        {searchParams.get("redirect") && (
+          <input
+            type="hidden"
+            name="redirect"
+            value={searchParams.get("redirect") || ""}
+          />
+        )}
         {/* Email Field */}
         <div className="space-y-2">
           <Label

@@ -128,7 +128,7 @@ export function HeroSearchBar() {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className="relative w-full max-w-2xl mx-auto"
+      className="relative w-full max-w-2xl mx-auto pointer-events-auto"
     >
       <SearchInput
         ref={inputRef}

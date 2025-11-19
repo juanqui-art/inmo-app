@@ -161,7 +161,15 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
   // 6. Revalidar
   revalidatePath("/", "layout");
 
-  // 7. Redirigir según rol
+  // 7. Redirigir según parámetro redirect o rol
+  const redirectParam = formData.get("redirect") as string | null;
+
+  // Si viene un redirect explícito y es una ruta protegida, usarlo
+  if (redirectParam && redirectParam.startsWith("/")) {
+    redirect(redirectParam);
+  }
+
+  // Si no, redirigir según rol
   switch (dbUser.role) {
     case "ADMIN":
       redirect("/admin");

@@ -13,6 +13,7 @@
  */
 
 import { Button } from "@repo/ui";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -22,11 +23,17 @@ interface GoogleButtonProps {
 
 export function GoogleButton({ onBeforeRedirect }: GoogleButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const searchParams = useSearchParams();
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
 
     try {
+      // Guardar URL de retorno en localStorage
+      // Si viene un parámetro 'redirect', usarlo; si no, usar el referrer; si no, usar home
+      const redirectUrl = searchParams.get("redirect") || document.referrer || "/";
+      localStorage.setItem("authReturnUrl", redirectUrl);
+
       // Ejecutar callback antes del redirect (guardar intent, etc.)
       onBeforeRedirect?.();
 

@@ -27,21 +27,34 @@ export function AuthSuccessHandler() {
     if (authSuccess === "true") {
       setShowSuccess(true);
 
-      // Leer redirectTo del localStorage
+      // Leer URL de retorno del localStorage (guardada en google-button.tsx)
+      const authReturnUrl = localStorage.getItem("authReturnUrl");
+
+      // Leer redirectTo del authIntent (para intents personalizados como guardar favorito)
       const intentStr = localStorage.getItem("authIntent");
+      let redirectTo = "/";
+
+      // Prioridad: authIntent.redirectTo > authReturnUrl > home
       if (intentStr) {
         try {
           const intent = JSON.parse(intentStr);
-          const redirectTo = intent.redirectTo || "/";
-
-          // Redirigir de vuelta a la página anterior después de cerrar el modal
-          setTimeout(() => {
-            router.push(redirectTo);
-          }, 2500); // Tiempo igual al autoCloseDuration del modal
+          redirectTo = intent.redirectTo || authReturnUrl || "/";
         } catch (error) {
           console.error("Error parsing authIntent:", error);
+          redirectTo = authReturnUrl || "/";
         }
+      } else if (authReturnUrl) {
+        redirectTo = authReturnUrl;
       }
+
+      // Limpiar localStorage
+      localStorage.removeItem("authReturnUrl");
+      localStorage.removeItem("authIntent");
+
+      // Redirigir de vuelta a la página anterior después de cerrar el modal
+      setTimeout(() => {
+        router.push(redirectTo);
+      }, 2500); // Tiempo igual al autoCloseDuration del modal
     }
   }, [searchParams, router]);
 
