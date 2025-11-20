@@ -167,7 +167,7 @@ export function RecentListingsSection({
 
         {/* Carousel */}
         <div className="overflow-hidden" ref={emblaRef}>
-          <div className="flex gap-4 -ml-4">
+          <div className="flex gap-4 -ml-4 isolate">
             {displayedProperties.map((property, index) => (
               <div
                 key={property.id}
