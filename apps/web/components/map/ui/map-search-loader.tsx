@@ -55,7 +55,7 @@ export function MapSearchLoader({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="absolute inset-0 z-[1000] flex items-center justify-center pointer-events-none"
+          className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none"
         >
           {/* Semi-transparent overlay */}
           <div className="absolute inset-0 bg-oslo-gray-900/60 backdrop-blur-sm" />

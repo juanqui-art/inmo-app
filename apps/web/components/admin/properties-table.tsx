@@ -184,7 +184,7 @@ export function PropertiesTable({
 
                     {/* Dropdown menu */}
                     {activeMenu === property.id && (
-                      <div className="absolute right-0 mt-1 w-48 rounded-md border bg-popover shadow-lg z-10">
+                      <div className="absolute right-0 mt-1 w-48 rounded-md border bg-popover shadow-lg z-50">
                         <div className="p-1">
                           <Link
                             href={`/propiedades/${property.id}`}

@@ -154,7 +154,7 @@ export function BedroomsFilter() {
       <div className="w-72 m-0 p-0 space-y-3 relative">
         {/* Loading Overlay */}
         {isLoading && (
-          <div className="absolute inset-0 bg-oslo-gray-900/70 flex items-center justify-center z-10 rounded-lg">
+          <div className="absolute inset-0 bg-oslo-gray-900/70 flex items-center justify-center z-40 rounded-lg">
             <Spinner
               size="8"
               color="text-white"

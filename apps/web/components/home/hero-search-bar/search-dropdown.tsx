@@ -58,7 +58,7 @@ export function SearchDropdown({
         shadow-2xl
         border border-white/30
         max-h-[70vh] sm:max-h-96 overflow-y-auto
-        z-[100]
+        z-50
         animate-in fade-in slide-in-from-top-2 duration-200
       "
     >

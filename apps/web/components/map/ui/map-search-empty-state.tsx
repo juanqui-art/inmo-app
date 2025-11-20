@@ -82,7 +82,7 @@ export function MapSearchEmptyState({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
-      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[900] w-full max-w-md px-4"
+      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4"
       onClick={(e) => {
         // Close when clicking on backdrop
         if (e.target === e.currentTarget && onDismiss) {

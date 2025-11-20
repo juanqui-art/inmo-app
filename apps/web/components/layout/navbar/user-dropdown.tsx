@@ -38,12 +38,12 @@ export function UserDropdown({ user }: UserDropdownProps) {
         <>
           {/* Backdrop to close menu */}
           <div
-            className="fixed inset-0 z-30"
+            className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
 
           {/* Menu */}
-          <div className="absolute right-0 mt-2 w-56 bg-oslo-gray-900/95 backdrop-blur-xl rounded-lg shadow-xl border border-oslo-gray-700/50 z-40">
+          <div className="absolute right-0 mt-2 w-56 bg-oslo-gray-900/95 backdrop-blur-xl rounded-lg shadow-xl border border-oslo-gray-700/50 z-50">
             <div className="p-3 border-b border-oslo-gray-800">
               <p className="text-sm text-oslo-gray-400">Conectado como</p>
               <p className="text-sm font-medium text-oslo-gray-100 truncate">

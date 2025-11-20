@@ -217,7 +217,7 @@
 
 /* Reset MapBox popup container styles */
 .mapboxgl-popup {
-  z-index: 10;
+  z-index: 40;
 }
 
 .mapboxgl-popup-content {
