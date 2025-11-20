@@ -197,6 +197,7 @@ Con modelo de comisiones (3% por transacción):
 - `docs/business/COST_SCALING_ANALYSIS.md` - Complete cost analysis, pricing tiers, optimization roadmap
 - `docs/business/BUSINESS_STRATEGY.md` - General business strategy (global market, all monetization models)
 - `docs/business/ECUADOR_STRATEGY.md` - 🇪🇨 **Ecuador-specific strategy** (Cuenca/Azuay launch, local pricing, phased expansion)
+- `docs/business/IMPLEMENTATION_STRATEGY.md` - 🚀 **Development strategy** (Git workflow, no fork decision, sprint plan, rollback strategy)
 
 ---
 
