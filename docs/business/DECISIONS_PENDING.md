@@ -1,8 +1,10 @@
 # Decisiones Pendientes - Implementación Freemium
 
 > **Última actualización**: Noviembre 20, 2025
-> **Status**: ⏳ Esperando decisiones del Product Owner
-> **Deadline**: Antes de iniciar implementación (Semana 1)
+> **Status**: ✅ RESUELTO - Ver `DECISIONS_APPROVED.md`
+> **Decisiones críticas aprobadas**: 2025-11-20
+>
+> ⚠️ **Este documento es histórico** - Las decisiones finales están en `DECISIONS_APPROVED.md`
 
 ---
 

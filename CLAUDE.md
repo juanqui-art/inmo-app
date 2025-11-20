@@ -198,6 +198,47 @@ Con modelo de comisiones (3% por transacción):
 - `docs/business/BUSINESS_STRATEGY.md` - General business strategy (global market, all monetization models)
 - `docs/business/ECUADOR_STRATEGY.md` - 🇪🇨 **Ecuador-specific strategy** (Cuenca/Azuay launch, local pricing, phased expansion)
 - `docs/business/IMPLEMENTATION_STRATEGY.md` - 🚀 **Development strategy** (Git workflow, no fork decision, sprint plan, rollback strategy)
+- `docs/business/DECISIONS_APPROVED.md` - ✅ **Approved decisions** (pricing, limits, business rules - Nov 20, 2025)
+- `docs/business/TECHNICAL_SPEC.md` - 📋 **Technical specification** (schema, helpers, stripe integration)
+
+---
+
+## 💳 Freemium Model (Aprobado)
+
+**Status:** ✅ Decisiones finalizadas (Nov 20, 2025) - Listo para Sprint 1
+
+**Modelo de negocio**: Freemium con 3 tiers (FREE/BASIC/PRO)
+
+### Pricing Aprobado (Ecuador - USD)
+
+```
+FREE:   $0/mes     (1 propiedad, 5 imágenes, sin destacados)
+BASIC:  $4.99/mes  (3 propiedades, 10 imágenes, 3 destacados/mes)
+PRO:    $14.99/mes (10 propiedades, 20 imágenes, destacados ilimitados)
+```
+
+### Decisiones Clave
+
+**Expiración de publicaciones**: Auto-renovación ilimitada
+- Las propiedades NO expiran automáticamente
+- Usuario las mantiene publicadas hasta que las elimine manualmente
+- Simple, flexible, y generoso para lanzamiento
+
+**Nomenclatura**:
+- Código: `FREE`, `BASIC`, `PRO` (enum SubscriptionTier)
+- UI: "Gratuito", "Básico", "Pro" (traducido)
+
+**Mercado objetivo**: Cuenca/Azuay (Ecuador) → Expansión nacional en 12-18 meses
+
+**Próximos pasos**:
+1. Sprint 1-2: Schema + Permissions (2 semanas)
+2. Sprint 3-4: Stripe Integration (2 semanas)
+3. Sprint 5-6: UI + Beta Testing (2 semanas)
+
+**Referencias técnicas**:
+- Schema changes: Ver `TECHNICAL_SPEC.md` sección "Database Schema"
+- Permission helpers: `apps/web/lib/permissions/property-limits.ts`
+- Server Actions: Validación en `createPropertyAction`
 
 ---
 
