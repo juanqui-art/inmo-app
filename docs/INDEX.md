@@ -40,6 +40,7 @@ docs/
 │
 ├── 🏗️ architecture/                (Diseño de sistema)
 │   ├── AUTHENTICATION_SYSTEM.md    ⭐ Sistema de autenticación completo
+│   ├── TECHNICAL_SCALING_CHALLENGES.md ⭐ NUEVO: Problemas técnicos a escala
 │   ├── ENVIRONMENT_VARIABLES.md    (Variables en profundidad)
 │   ├── ENV_ARCHITECTURE.md         (Configuración detallada)
 │   ├── RLS_POLICIES.md             (Políticas de acceso DB)
@@ -155,7 +156,8 @@ docs/
 | ⚙️ Configurar Biome | `tools/biome/BIOME_EXPLAINED.md` |
 | 🚀 Aprender Turborepo | `tools/turborepo/TURBOREPO_GUIDE.md` |
 | 💾 Implementar cacheo | `caching/` |
-| 💼 Análisis de costos a escala | `business/COST_SCALING_ANALYSIS.md` ⭐ NUEVO |
+| 💼 Análisis de costos a escala | `business/COST_SCALING_ANALYSIS.md` |
+| 🏗️ Problemas técnicos de escalamiento | `architecture/TECHNICAL_SCALING_CHALLENGES.md` ⭐ NUEVO |
 | ⚠️ Análisis profundo deuda técnica | `technical-debt/00-DEEP-ANALYSIS.md` |
 | ⚠️ Índice deuda técnica | `technical-debt/README.md` |
 | 🗺️ Trabajo con mapa | `features/MAP.md` |

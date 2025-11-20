@@ -578,6 +578,7 @@ Configura alertas a 80% de cada free tier para evitar sorpresas en la factura. O
 - [Resend Pricing](https://resend.com/pricing)
 
 ### Documentos Internos Relacionados
+- **`docs/architecture/TECHNICAL_SCALING_CHALLENGES.md`** - ⭐ Problemas técnicos de escalamiento (complemento a este doc)
 - `.claude/08-multi-tenant-strategy.md` - Estrategia de multi-tenancy
 - `docs/technical-debt/00-DEEP-ANALYSIS.md` - Análisis de deuda técnica (incluye ROI de observabilidad: $1,244/mes ahorro)
 - `docs/technical-debt/06-LOGGING-MONITORING.md` - Plan detallado de logging/monitoring (22h, $56/mes)
