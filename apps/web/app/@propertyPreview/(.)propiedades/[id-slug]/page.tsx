@@ -17,8 +17,7 @@
  * - Favorite button
  */
 
-import { Dialog, DialogContent } from "@repo/ui";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { Dialog, DialogContent, DialogTitle } from "@repo/ui";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { Bed, Bath, Maximize, MapPin, Heart, Loader2, X } from "lucide-react";
@@ -128,11 +127,11 @@ export default function PropertyPreviewModal({
 
   return (
     <Dialog open={true} onOpenChange={handleOpenChange}>
-      <DialogPrimitive.Portal
-        container={typeof document !== "undefined" ? document.body : undefined}
-      >
-        <DialogContent className="w-full max-w-2xl p-0 overflow-hidden sm:rounded-xl max-h-[90vh] overflow-y-auto">
-          {isLoading ? (
+      <DialogContent className="w-full max-w-2xl p-0 overflow-hidden sm:rounded-xl max-h-[90vh] overflow-y-auto">
+        <DialogTitle className="sr-only">
+          {property ? property.title : "Vista previa de propiedad"}
+        </DialogTitle>
+        {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
@@ -262,8 +261,7 @@ export default function PropertyPreviewModal({
               </div>
             </>
           ) : null}
-        </DialogContent>
-      </DialogPrimitive.Portal>
+      </DialogContent>
     </Dialog>
   );
 }
