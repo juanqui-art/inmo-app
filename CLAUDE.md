@@ -193,7 +193,10 @@ Con modelo de comisiones (3% por transacción):
 - 1 transacción/mes ($3k revenue) cubre costos hasta 100k usuarios
 - Margen: 85-99% profit
 
-**See:** `docs/business/COST_SCALING_ANALYSIS.md` for complete analysis, pricing tiers, optimization roadmap, and break-even models.
+**See:**
+- `docs/business/COST_SCALING_ANALYSIS.md` - Complete cost analysis, pricing tiers, optimization roadmap
+- `docs/business/BUSINESS_STRATEGY.md` - General business strategy (global market, all monetization models)
+- `docs/business/ECUADOR_STRATEGY.md` - 🇪🇨 **Ecuador-specific strategy** (Cuenca/Azuay launch, local pricing, phased expansion)
 
 ---
 
