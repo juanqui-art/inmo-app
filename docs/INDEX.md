@@ -1,6 +1,6 @@
 # 📚 InmoApp Documentation Index
 
-> **Navegación completa de documentación** | Última actualización: Noviembre 18, 2025 (Deep Technical Debt Analysis)
+> **Navegación completa de documentación** | Última actualización: Noviembre 20, 2025 (Cost Scaling Analysis)
 
 ---
 
@@ -80,6 +80,9 @@ docs/
 │   ├── CACHE_QUICK_START.md
 │   └── NEXTJS_CACHING_EXPLAINED.md
 │
+├── 💼 business/                    (Business & Costos) ⭐ NUEVO
+│   └── COST_SCALING_ANALYSIS.md    (Análisis de costos a escala)
+│
 ├── 🧠 learning/                    (Learning materials)
 │   ├── debugging/
 │   │   ├── DEBUGGING_HOOKS_GUIDE.md
@@ -152,7 +155,8 @@ docs/
 | ⚙️ Configurar Biome | `tools/biome/BIOME_EXPLAINED.md` |
 | 🚀 Aprender Turborepo | `tools/turborepo/TURBOREPO_GUIDE.md` |
 | 💾 Implementar cacheo | `caching/` |
-| ⚠️ Análisis profundo deuda técnica | `technical-debt/00-DEEP-ANALYSIS.md` ⭐ NUEVO |
+| 💼 Análisis de costos a escala | `business/COST_SCALING_ANALYSIS.md` ⭐ NUEVO |
+| ⚠️ Análisis profundo deuda técnica | `technical-debt/00-DEEP-ANALYSIS.md` |
 | ⚠️ Índice deuda técnica | `technical-debt/README.md` |
 | 🗺️ Trabajo con mapa | `features/MAP.md` |
 | 🤖 AI Search | `features/ai-search-implementation.md` |
@@ -198,12 +202,12 @@ docs/
 ## 📊 Estadísticas de Documentación
 
 ```
-Estructura: 16 categorías principales
-Total docs:  ~58 documentos markdown
-Total texto: ~150,000+ palabras
+Estructura: 17 categorías principales
+Total docs:  ~59 documentos markdown
+Total texto: ~160,000+ palabras
 Organización: Plana → Jerárquica (Oct 29, 2025)
 Estado: ✅ Completamente reorganizado
-Última adición: Deep Analysis (Nov 18, 2025)
+Última adición: Cost Scaling Analysis (Nov 20, 2025)
 ```
 
 ### Mejoras (Phase 3 - Oct 29)
@@ -216,7 +220,18 @@ Estado: ✅ Completamente reorganizado
 
 ## 🔄 Cambios Recientes
 
-### Nov 18, 2025 - Análisis Profundo de Deuda Técnica ⭐ NUEVO
+### Nov 20, 2025 - Análisis de Costos a Escala 💼 NUEVO
+- ✅ Agregado `business/COST_SCALING_ANALYSIS.md` (análisis completo de costos operacionales)
+- ✅ Inventario de 5 servicios externos: Vercel, Supabase, Mapbox, OpenAI, Resend
+- ✅ Proyecciones de costos: 100 → 100,000 MAUs
+- ✅ Identificados puntos críticos de inflexión (800, 5k, 16k, 50k usuarios)
+- ✅ 7 estrategias de optimización (inmediatas a largo plazo)
+- ✅ Roadmap de implementación en 3 fases
+- ✅ Análisis de rentabilidad: Break-even con diferentes modelos de negocio
+- ✅ Conclusión: Gratis hasta 800 usuarios, $450/mes a 100k (optimizado)
+- ✅ Nueva categoría: `business/` para análisis financieros y de negocio
+
+### Nov 18, 2025 - Análisis Profundo de Deuda Técnica ⭐
 - ✅ Agregado `technical-debt/00-DEEP-ANALYSIS.md` (análisis completo de ~200h de deuda)
 - ✅ Análisis de 233 archivos TypeScript + documentación completa
 - ✅ Identificados problemas que afectan usuarios HOY (email, appointments disabled)

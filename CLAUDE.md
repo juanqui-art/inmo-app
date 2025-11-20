@@ -160,9 +160,40 @@ bun run dev:web  # Goes directly to apps/web
 - **On-demand:** `.claude/08-11` files in `.claudeignore` (multi-tenant, debt, teaching, appointments)
 - **Guide:** `docs/AI_ASSISTANTS.md` (how Claude/Gemini interact with project)
 - **⭐ NEW:** `docs/technical-debt/00-DEEP-ANALYSIS.md` (análisis profundo de deuda técnica)
+- **💼 NEW:** `docs/business/COST_SCALING_ANALYSIS.md` (análisis de costos a escala)
 
 **For Humans:**
 - `QUICK_START.md`, `docs/INDEX.md` (navigation hub), `docs/setup/` (installation)
+
+---
+
+## 💼 Cost Scaling & Business
+
+**Status:** 📊 Analysis Complete (Nov 20, 2025)
+
+**Key Insights:**
+InmoApp utiliza 5 servicios externos (Vercel, Supabase, Mapbox, OpenAI, Resend) que escalan de forma diferente según usuarios.
+
+**Cost Breakdown:**
+- **Gratis hasta ~800 usuarios** (free tiers)
+- **$20/mes a 1,000 usuarios** (Vercel Pro requerido)
+- **$97/mes a 10,000 usuarios** (sin optimización)
+- **$450/mes a 100,000 usuarios** (con optimizaciones)
+
+**Critical Inflection Points:**
+- 800 MAUs → Vercel Pro required ($0 → $20/mes)
+- 16,667 usuarios → Mapbox pago (50k map loads excedidos)
+- 50,000 MAUs → Supabase Pro ($0 → $25/mes)
+
+**Optimizations:**
+Implementando optimizaciones Fase 1+2 → **51% reducción de costos**
+
+**Profitability:**
+Con modelo de comisiones (3% por transacción):
+- 1 transacción/mes ($3k revenue) cubre costos hasta 100k usuarios
+- Margen: 85-99% profit
+
+**See:** `docs/business/COST_SCALING_ANALYSIS.md` for complete analysis, pricing tiers, optimization roadmap, and break-even models.
 
 ---
 

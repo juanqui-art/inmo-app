@@ -579,7 +579,8 @@ Configura alertas a 80% de cada free tier para evitar sorpresas en la factura. O
 
 ### Documentos Internos Relacionados
 - `.claude/08-multi-tenant-strategy.md` - Estrategia de multi-tenancy
-- `docs/technical-debt/00-DEEP-ANALYSIS.md` - Análisis de deuda técnica
+- `docs/technical-debt/00-DEEP-ANALYSIS.md` - Análisis de deuda técnica (incluye ROI de observabilidad: $1,244/mes ahorro)
+- `docs/technical-debt/06-LOGGING-MONITORING.md` - Plan detallado de logging/monitoring (22h, $56/mes)
 - `docs/caching/CACHE_STATUS.md` - Estrategias de caching
 
 ### Herramientas de Análisis de Costos

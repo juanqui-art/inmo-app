@@ -246,6 +246,8 @@ ZERO tests para:
 **Ahorro neto:** $1,244/mes
 **Payback:** <1 mes
 
+**📊 Ver también:** `docs/business/COST_SCALING_ANALYSIS.md` para análisis completo de costos operacionales a escala (Vercel, Supabase, Mapbox, OpenAI, Resend).
+
 #### Plan de Implementación (22 horas)
 
 **Fase 1: Fundamentos (8h)**
