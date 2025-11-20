@@ -12,7 +12,7 @@ import { requireAuth } from "@/lib/auth";
 import { FavoritesList } from "./favorites-list";
 
 export default async function PerfilFavoritosPage() {
-  const user = await requireAuth();
+  await requireAuth();
 
   // Fetch favorites with property details
   const { data: favorites, error } = await getFavoritesWithDetailsAction(100);

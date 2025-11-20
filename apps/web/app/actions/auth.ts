@@ -165,7 +165,7 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
 
   if (metadataRole && metadataRole !== dbUser.role) {
     // Actualizar el rol en la DB con el valor correcto de metadata
-    await userRepository.update(dbUser.id, { role: metadataRole });
+    await userRepository.update(dbUser.id, { role: metadataRole }, dbUser.id);
     // Actualizar dbUser local para la redirección correcta
     dbUser.role = metadataRole;
 

@@ -17,7 +17,7 @@ interface FavoriteProperty {
     id: string;
     title: string;
     price: string;
-    city: string;
+    city: string | null;
     image: { url: string; alt: string | null } | null;
   };
 }
@@ -71,7 +71,7 @@ export function FavoritesList({ initialFavorites }: FavoritesListProps) {
           propertyId={favorite.propertyId}
           title={favorite.property.title}
           price={favorite.property.price}
-          city={favorite.property.city}
+          city={favorite.property.city || ""}
           imageUrl={favorite.property.image?.url}
           onRemove={handleRemove}
           isRemoving={removingId === favorite.propertyId || isPending}

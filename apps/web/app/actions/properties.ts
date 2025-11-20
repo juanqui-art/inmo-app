@@ -564,13 +564,13 @@ export async function getPropertyPreviewAction(propertyId: string): Promise<{
     const previewData: PropertyPreviewData = {
       id: property.id,
       title: property.title,
-      price: property.price,
+      price: Number(property.price),
       description: property.description,
       address: property.address || "",
-      city: property.city,
-      bedrooms: property.bedrooms,
-      bathrooms: property.bathrooms,
-      area: property.area,
+      city: property.city ?? null,
+      bedrooms: property.bedrooms ?? 0,
+      bathrooms: property.bathrooms ?? 0,
+      area: property.area ?? 0,
       images: property.images.map((img) => ({
         url: img.url,
         alt: img.alt,

@@ -3,6 +3,7 @@
  * URL: /signup
  */
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { GoogleButton } from "@/components/auth/google-button";
 import { SignupForm } from "@/components/auth/signup-form";
@@ -22,7 +23,9 @@ export default function SignupPage() {
         {/* Form Card */}
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 space-y-6">
           {/* Google OAuth */}
-          <GoogleButton />
+          <Suspense fallback={<div>Cargando...</div>}>
+            <GoogleButton />
+          </Suspense>
 
           {/* Separador */}
           <div className="relative">

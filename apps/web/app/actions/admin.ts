@@ -455,7 +455,7 @@ export async function getAdminMetricsByPeriodAction(
     const grouped = new Map<string, number>();
 
     for (const item of items) {
-      const date = item.createdAt.toISOString().split("T")[0];
+      const date = item.createdAt.toISOString().split("T")[0] ?? "";
       grouped.set(date, (grouped.get(date) || 0) + 1);
     }
 

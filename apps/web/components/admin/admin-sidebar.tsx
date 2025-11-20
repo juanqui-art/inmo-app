@@ -10,7 +10,6 @@ import {
   Building2,
   Home,
   LogOut,
-  Settings,
   Shield,
   Users,
 } from "lucide-react";

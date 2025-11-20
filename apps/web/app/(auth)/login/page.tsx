@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LoginFormStyled } from "@/components/auth/login-form-styled";
 
 export default function LoginPage() {
@@ -23,7 +24,9 @@ export default function LoginPage() {
 
       {/* Right side - Form */}
       <div className="flex-1 flex items-center justify-center p-8 bg-background">
-        <LoginFormStyled />
+        <Suspense fallback={<div>Cargando formulario...</div>}>
+          <LoginFormStyled />
+        </Suspense>
       </div>
     </div>
   );

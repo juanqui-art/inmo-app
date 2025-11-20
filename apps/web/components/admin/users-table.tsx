@@ -6,9 +6,6 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import {
   ChevronLeft,
   ChevronRight,
@@ -17,6 +14,8 @@ import {
   User,
   Building2,
 } from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import { updateUserRoleAction, deleteUserAction } from "@/app/actions/admin";
 import type { UserWithCounts } from "@/app/actions/admin";
 

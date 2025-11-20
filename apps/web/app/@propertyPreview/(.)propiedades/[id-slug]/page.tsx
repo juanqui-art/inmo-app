@@ -91,7 +91,7 @@ export default function PropertyPreviewModal({
     loadProperty();
   }, [params]);
 
-  const handleOpenChange = (open: boolean) => {
+  const handleOpenChange = (open: boolean | undefined) => {
     if (!open) {
       router.back();
     }

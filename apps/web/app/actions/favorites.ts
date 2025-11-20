@@ -65,6 +65,7 @@ export async function toggleFavoriteAction(propertyId: string) {
       return {
         success: false,
         error: "Invalid property ID",
+        isFavorite: false,
       };
     }
 
@@ -73,12 +74,14 @@ export async function toggleFavoriteAction(propertyId: string) {
       return {
         success: false,
         error: error.message,
+        isFavorite: false,
       };
     }
 
     return {
       success: false,
       error: "Failed to toggle favorite",
+      isFavorite: false,
     };
   }
 }
