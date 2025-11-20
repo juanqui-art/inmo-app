@@ -41,6 +41,75 @@
 
 ---
 
+### 3. [IMPLEMENTATION_STRATEGY.md](./IMPLEMENTATION_STRATEGY.md) - Estrategia de Desarrollo
+
+**Propósito**: Plan de implementación técnico y estrategia Git para Freemium.
+
+**Contenido**:
+- Decisión: NO fork (usar feature branch)
+- Plan de implementación por sprints (5-6 sprints, 10-12 semanas)
+- Git Worktree (opcional para desarrollo paralelo)
+- Estrategia de rollback
+- Checklist de pre-implementación
+- Mejores prácticas de commits y PRs
+
+**Audiencia**: Desarrolladores, Project Managers
+
+**Leer si**: Vas a empezar la implementación o necesitas entender la estrategia Git.
+
+---
+
+### 4. [ECUADOR_STRATEGY.md](./ECUADOR_STRATEGY.md) - Estrategia de Mercado Local
+
+**Propósito**: Plan de lanzamiento específico para Ecuador (Cuenca/Azuay).
+
+**Contenido**:
+- Análisis del mercado ecuatoriano
+- Competencia local (PlusValia, OLX, Facebook)
+- Precios localizados ($0, $4.99, $14.99 USD)
+- Fases de expansión (Cuenca → Azuay → Nacional)
+- Particularidades locales (WhatsApp, terminología)
+- Proyecciones financieras para Ecuador
+
+**Audiencia**: Business Development, Marketing
+
+**Leer si**: Vas a lanzar en Ecuador o necesitas entender el mercado local.
+
+---
+
+### 5. [COST_SCALING_ANALYSIS.md](./COST_SCALING_ANALYSIS.md) - Análisis de Costos
+
+**Propósito**: Proyecciones de costos operacionales a escala.
+
+**Contenido**:
+- Inventario de 5 servicios externos (Vercel, Supabase, Mapbox, OpenAI, Resend)
+- Costos por escala (100 → 100k usuarios)
+- Puntos críticos de inflexión (800, 16k, 50k usuarios)
+- Optimizaciones (51% reducción de costos)
+- Profitabilidad por modelo de negocio
+
+**Audiencia**: Founders, CFO, Inversores
+
+**Leer si**: Necesitas entender costos operacionales y break-even points.
+
+---
+
+### 6. [DECISIONS_PENDING.md](./DECISIONS_PENDING.md) - Decisiones por Tomar
+
+**Propósito**: Lista de decisiones críticas antes de implementar.
+
+**Contenido**:
+- 12 decisiones pendientes (pricing, límites, trials, etc.)
+- Opciones evaluadas para cada decisión
+- Recomendaciones con pros/contras
+- Impacto de cada decisión
+
+**Audiencia**: Product Managers, Founders
+
+**Leer si**: Vas a comenzar implementación (requiere decisiones previas).
+
+---
+
 ## 🎯 Resumen Ejecutivo de 2 Minutos
 
 ### Problema Actual
