@@ -24,9 +24,11 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
   auth,
+  propertyPreview,
 }: Readonly<{
   children: React.ReactNode;
   auth: React.ReactNode;
+  propertyPreview: React.ReactNode;
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
@@ -42,6 +44,7 @@ export default function RootLayout({
         >
           {children}
           {auth}
+          {propertyPreview}
         </ThemeProvider>
       </body>
     </html>
