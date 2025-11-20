@@ -494,3 +494,82 @@ export async function getCitiesAction(): Promise<{
     };
   }
 }
+
+/**
+ * GET PROPERTY PREVIEW ACTION
+ * Obtiene datos simplificados de una propiedad para el modal de preview
+ * Esta action es pública (no requiere autenticación)
+ *
+ * @param propertyId - ID de la propiedad
+ * @returns Datos básicos de la propiedad para preview
+ */
+export interface PropertyPreviewData {
+  id: string;
+  title: string;
+  price: number;
+  description: string | null;
+  address: string;
+  city: string | null;
+  bedrooms: number;
+  bathrooms: number;
+  area: number;
+  images: { url: string; alt: string | null }[];
+  agent: {
+    name: string | null;
+    email: string;
+  } | null;
+}
+
+export async function getPropertyPreviewAction(propertyId: string): Promise<{
+  success: boolean;
+  data?: PropertyPreviewData;
+  error?: string;
+}> {
+  try {
+    // Validar input
+    if (!propertyId || propertyId.length !== 36) {
+      return { success: false, error: "ID de propiedad inválido" };
+    }
+
+    // Obtener propiedad con datos básicos
+    const property = await propertyRepository.findById(propertyId);
+
+    if (!property) {
+      return { success: false, error: "Propiedad no encontrada" };
+    }
+
+    // Formatear datos para el preview
+    const previewData: PropertyPreviewData = {
+      id: property.id,
+      title: property.title,
+      price: property.price,
+      description: property.description,
+      address: property.address || "",
+      city: property.city,
+      bedrooms: property.bedrooms,
+      bathrooms: property.bathrooms,
+      area: property.area,
+      images: property.images.map((img) => ({
+        url: img.url,
+        alt: img.alt,
+      })),
+      agent: property.agent
+        ? {
+            name: property.agent.name,
+            email: property.agent.email,
+          }
+        : null,
+    };
+
+    return { success: true, data: previewData };
+  } catch (error) {
+    console.error("Error getting property preview:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Error al obtener la propiedad",
+    };
+  }
+}
