@@ -152,7 +152,7 @@ export function PropertySplitView() {
               </div>
             ) : (
               // Property Grid
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 isolate">
                 {listProperties.map((property) => (
                   <div
                     key={property.id}
