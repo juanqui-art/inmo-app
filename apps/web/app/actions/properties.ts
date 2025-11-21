@@ -18,6 +18,7 @@ import {
   createPropertySchema,
   updatePropertySchema,
 } from "@/lib/validations/property";
+import { canCreateProperty, canUploadImage } from "@/lib/permissions/property-limits";
 
 /**
  * CREATE PROPERTY ACTION
@@ -30,7 +31,19 @@ export async function createPropertyAction(
   // 1. Verificar que el usuario es AGENT o ADMIN
   const user = await requireRole(["AGENT", "ADMIN"]);
 
-  // 2. Extraer y transformar datos del formulario
+  // 2. Check subscription tier limits
+  const permissionCheck = await canCreateProperty(user.id);
+  if (!permissionCheck.allowed) {
+    return {
+      error: {
+        general: permissionCheck.reason,
+      },
+      upgradeRequired: true,
+      currentLimit: permissionCheck.limit,
+    };
+  }
+
+  // 3. Extraer y transformar datos del formulario
   const rawData = {
     title: formData.get("title") as string,
     description: formData.get("description") as string,
@@ -57,7 +70,7 @@ export async function createPropertyAction(
       : undefined,
   };
 
-  // 3. Validar con Zod
+  // 4. Validar con Zod
   const validatedData = createPropertySchema.safeParse(rawData);
 
   if (!validatedData.success) {
@@ -67,7 +80,7 @@ export async function createPropertyAction(
   }
 
   try {
-    // 4. Crear propiedad usando el repository
+    // 5. Crear propiedad usando el repository
     await propertyRepository.create(validatedData.data, user.id);
   } catch (error) {
     console.error("Error creating property:", error);
@@ -81,12 +94,12 @@ export async function createPropertyAction(
     };
   }
 
-  // 5. Revalidar caches
+  // 6. Revalidar caches
   // Invalida el mapa y lista de propiedades
   revalidatePath("/mapa");
   revalidatePath("/dashboard/propiedades");
 
-  // 6. Redirigir a la lista (fuera del try/catch para que funcione)
+  // 7. Redirigir a la lista (fuera del try/catch para que funcione)
   redirect("/dashboard/propiedades");
 }
 
@@ -207,7 +220,7 @@ export async function uploadPropertyImagesAction(
   formData: FormData,
 ) {
   // 1. Verificar autenticación
-  await requireRole(["AGENT", "ADMIN"]);
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
   try {
     // 2. Verificar que la propiedad existe y el usuario tiene permisos
@@ -229,9 +242,18 @@ export async function uploadPropertyImagesAction(
       return { error: "No se enviaron imágenes" };
     }
 
-    // 4. Obtener el orden inicial (contar imágenes existentes)
-    const existingCount =
-      await propertyImageRepository.countByProperty(propertyId);
+    // 4. Check subscription tier image limits
+    const existingImageCount = await propertyImageRepository.countByProperty(propertyId);
+    const totalAfterUpload = existingImageCount + files.length;
+
+    const imageCheck = canUploadImage(user.subscriptionTier, totalAfterUpload);
+    if (!imageCheck.allowed) {
+      return {
+        error: imageCheck.reason,
+        upgradeRequired: true,
+        currentLimit: imageCheck.limit,
+      };
+    }
 
     // 5. Subir imágenes y guardar en BD
     const uploadedImages = [];
@@ -249,7 +271,7 @@ export async function uploadPropertyImagesAction(
       const image = await propertyImageRepository.create({
         url,
         alt: property.title,
-        order: existingCount + i,
+        order: existingImageCount + i,
         propertyId,
       });
 

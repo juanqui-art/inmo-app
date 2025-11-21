@@ -59,6 +59,15 @@ const clientSchema = z.object({
       "NEXT_PUBLIC_MAPBOX_TOKEN must be a valid MapBox public token (starts with 'pk.')",
     )
     .optional(),
+
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z
+    .string()
+    .min(1, "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is required")
+    .startsWith(
+      "pk_",
+      "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY must be a valid Stripe publishable key",
+    )
+    .optional(),
 });
 
 /**
@@ -85,6 +94,31 @@ const serverSchema = z.object({
   RESEND_API_KEY: z
     .string()
     .min(1, "RESEND_API_KEY is required for email notifications")
+    .optional(),
+
+  // Stripe (for subscription payments)
+  STRIPE_SECRET_KEY: z
+    .string()
+    .min(1, "STRIPE_SECRET_KEY is required")
+    .startsWith("sk_", "STRIPE_SECRET_KEY must be a valid Stripe secret key")
+    .optional(),
+
+  STRIPE_WEBHOOK_SECRET: z
+    .string()
+    .min(1, "STRIPE_WEBHOOK_SECRET is required")
+    .startsWith("whsec_", "STRIPE_WEBHOOK_SECRET must be a valid webhook secret")
+    .optional(),
+
+  STRIPE_BASIC_PRICE_ID: z
+    .string()
+    .min(1, "STRIPE_BASIC_PRICE_ID is required")
+    .startsWith("price_", "STRIPE_BASIC_PRICE_ID must be a valid Stripe price ID")
+    .optional(),
+
+  STRIPE_PRO_PRICE_ID: z
+    .string()
+    .min(1, "STRIPE_PRO_PRICE_ID is required")
+    .startsWith("price_", "STRIPE_PRO_PRICE_ID must be a valid Stripe price ID")
     .optional(),
 
   NODE_ENV: z
@@ -116,6 +150,8 @@ const parseEnv = (): Env => {
       NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
       NEXT_PUBLIC_MAPBOX_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     });
 
     if (!result.success) {
@@ -131,6 +167,10 @@ const parseEnv = (): Env => {
       DIRECT_URL: process.env.DIRECT_URL,
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
       RESEND_API_KEY: process.env.RESEND_API_KEY,
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+      STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+      STRIPE_BASIC_PRICE_ID: process.env.STRIPE_BASIC_PRICE_ID,
+      STRIPE_PRO_PRICE_ID: process.env.STRIPE_PRO_PRICE_ID,
       NODE_ENV: (process.env.NODE_ENV || "development") as
         | "development"
         | "production"
@@ -144,10 +184,16 @@ const parseEnv = (): Env => {
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_MAPBOX_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    STRIPE_BASIC_PRICE_ID: process.env.STRIPE_BASIC_PRICE_ID,
+    STRIPE_PRO_PRICE_ID: process.env.STRIPE_PRO_PRICE_ID,
     NODE_ENV: process.env.NODE_ENV,
   });
 
