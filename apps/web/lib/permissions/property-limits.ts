@@ -6,7 +6,7 @@
  */
 
 import { db } from '@repo/database'
-import type { SubscriptionTier, User } from '@repo/database'
+import type { SubscriptionTier } from '@repo/database'
 
 /**
  * Get maximum properties allowed for a subscription tier
