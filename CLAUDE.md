@@ -242,6 +242,40 @@ PRO:    $14.99/mes (10 propiedades, 20 imágenes, destacados ilimitados)
 
 ---
 
+## 🗺️ Roadmap & Planning
+
+**Status:** 📋 18-Week Plan Defined (Nov 23, 2025)
+
+**Timeline**: Nov 2025 - Abr 2026 (4.5 meses)
+**Inversión total**: $12,400-14,100
+**ROI**: Payback en 11 meses
+
+### Quick Overview
+
+```
+Week 1:    URGENCIAS (Email, Performance, Quick Wins)
+Week 2-4:  FOUNDATIONS (Testing 25%, Logging, Security)
+Week 5-10: FREEMIUM (Schema, Stripe, Beta 50 users)
+Week 11-18: SCALE (E2E tests, Beta pública 500 MAU, Launch)
+```
+
+### Hitos Clave
+
+| Fecha | Hito | Target |
+|-------|------|--------|
+| **Nov 29** | Email funcional + Performance +36% | ✅ Quick wins |
+| **Dic 20** | Testing 25% + Logging + Security | ✅ Foundations |
+| **Feb 14** | Freemium MVP + Beta cerrada | $25-50 MRR |
+| **Mar 28** | Beta pública | 200-500 MAU |
+| **Abr 11** | Production Launch | $700 MRR 🚀 |
+
+**Ver documentación completa**:
+- `docs/ROADMAP.md` - Plan detallado completo (18 semanas)
+- `docs/ROADMAP_VISUAL.md` - Vista visual rápida
+- `docs/technical-debt/00-DEEP-ANALYSIS.md` - Análisis técnico
+
+---
+
 ## Recent Changes in Next.js 16
 
 ### 📝 Middleware → Proxy (Breaking Change)
