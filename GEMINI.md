@@ -6,13 +6,13 @@ This document provides essential context for the InmoApp project, tailored for t
 
 ## 1. Project Overview
 
-**InmoApp** is a modern, full-stack real estate platform. It's built as a monorepo using **Turborepo** and **Bun** as the package manager.
+**InmoApp** is a modern, full-stack real estate platform. It's built as a monorepo using **Bun workspaces** and **Bun** as the package manager.
 
 The primary application is a **Next.js 16** web app located in `apps/web`. The backend is powered by **Supabase** for authentication and storage, with a **PostgreSQL** database managed by the **Prisma ORM**.
 
 ### Key Technologies:
 
-- **Monorepo:** Turborepo
+- **Monorepo:** Bun Workspaces
 - **Package Manager:** Bun
 - **Web Framework:** Next.js 16 (with App Router)
 - **UI:** React 19, Tailwind CSS v4, Radix UI, Shadcn/ui (inferred from `components.json`)
@@ -84,7 +84,7 @@ Database-related commands are typically run from the `packages/database` directo
 ## 4. Development Conventions
 
 -   **Code Style:** Code is formatted and linted by **Biome**. Configuration is in `biome.json`.
--   **Monorepo Management:** **Turborepo** orchestrates tasks. The pipeline is defined in `turbo.json`.
+-   **Monorepo Management:** **Bun workspaces** manage dependencies and scripts. Scripts are defined in root `package.json`.
 -   **Data Access:** The backend uses a **Repository Pattern** for database interactions, abstracting Prisma queries.
 -   **State Management:** Zustand is used for client-side state management.
 -   **Components:** The project heavily favors **React Server Components (RSCs)**. Client components (`"use client"`) are used only when necessary (e.g., for hooks and event listeners).

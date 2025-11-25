@@ -1,6 +1,6 @@
 # InmoApp
 
-Modern real estate platform built with Next.js 16, Supabase, and Turborepo.
+Modern real estate platform built with Next.js 16, Supabase, and Bun workspaces.
 
 ---
 
@@ -89,7 +89,6 @@ inmo-app/
     ├── getting-started/     # Onboarding (DEVELOPMENT_SETUP, QUICK_REFERENCE, etc.)
     ├── architecture/        # System design (ENV, RLS_POLICIES, etc.)
     ├── tools/               # Development tools
-    │   ├── turborepo/
     │   ├── biome/
     │   └── webstorm/
     ├── design/              # UI/UX & themes
@@ -124,7 +123,7 @@ inmo-app/
 - **PostgreSQL** (Database)
 
 ### Tooling
-- **Turborepo** (Monorepo)
+- **Bun Workspaces** (Monorepo)
 - **Biome** (Linting & Formatting)
 - **TypeScript** (Type Safety)
 - **Vitest** (Testing)
@@ -191,7 +190,6 @@ Component → Server Action → Repository → Prisma → Database
 
 | File | Purpose |
 |------|---------|
-| `turbo.json` | Turborepo config |
 | `biome.json` | Linter/formatter |
 | `package.json` | Root dependencies |
 | `.env.example` | Environment template |
@@ -240,4 +238,4 @@ Private project - All rights reserved
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Supabase Documentation](https://supabase.com/docs)
 - [Prisma Documentation](https://www.prisma.io/docs)
-- [Turborepo Documentation](https://turbo.build/repo/docs)
+- [Bun Documentation](https://bun.sh/docs)

@@ -6,17 +6,17 @@
 
 ## Project Overview
 
-**Real estate platform** | Phase 1.5: Public-facing features | Next.js 16 + Supabase + Turborepo
+**Real estate platform** | Phase 1.5: Public-facing features | Next.js 16 + Supabase + Bun Workspaces
 
-**Stack:** Next.js 16 + React 19 + TypeScript + Tailwind v4 + GSAP | Supabase Auth + Storage | Prisma + PostgreSQL | Turborepo monorepo | Bun
+**Stack:** Next.js 16 + React 19 + TypeScript + Tailwind v4 + GSAP | Supabase Auth + Storage | Prisma + PostgreSQL | Bun Workspaces monorepo | Bun
 
 ---
 
 ## Quick Start
 
 ```bash
-bun run dev          # Start development (Turborepo orchestrates, Turbopack compiles)
-bun run dev:web      # Direct: Skip Turborepo (alternative)
+bun run dev          # Start development (Bun workspaces, Turbopack compiles)
+bun run dev:web      # Direct: Skip to apps/web (alternative)
 bun run type-check   # TypeScript validation (run before commits!)
 bun run lint         # Biome linting
 cd packages/database && bunx prisma studio  # DB browser
@@ -58,23 +58,20 @@ packages/
 5. **Forms** use Zod validation
 6. **Server Components** by default (Client only when needed)
 7. **Environment variables:** Use `import { env } from '@repo/env'` (never `process.env`)
-8. **Turborepo orchestrates:** `turbo.json` defines task dependencies (Prisma generation before dev/build)
+8. **Bun workspaces:** Scripts in root `package.json` define task dependencies (Prisma generation before dev/build)
 
 ## Build Tools Explained
 
-**Three distinct tools** work together in your stack:
-- **Turborepo** (`turbo.json`): Monorepo task orchestrator - schedules and caches tasks
+**Two distinct tools** work together in your stack:
 - **Turbopack** (built in Next.js 16): Fast bundler - compiles TS/JSX → JS (default since Next.js 16)
-- **Bun** (`bun run`): Runtime + package manager - executes commands with Turborepo
+- **Bun** (`bun run`): Runtime + package manager - executes commands and manages workspaces
 
 **Development Flow:**
 ```
 bun run dev
-  ↓ (runs root script)
-turbo run dev
-  ↓ (Turborepo reads turbo.json)
-  ├─ @repo/database#db:generate (Prisma)
-  └─ next dev (in apps/web)
+  ↓ (runs root script from package.json)
+  ├─ bun run db:gen (Prisma generation)
+  └─ cd apps/web && bun run dev
       ↓
       Turbopack compiles code → Server starts
 ```
@@ -105,8 +102,8 @@ turbo run dev
 
 ## Environment Variables
 
-**⚠️ CRITICAL:** Turborepo monorepo has TWO `.env.local` files:
-- `root/.env.local` (build tools, Turborepo)
+**⚠️ CRITICAL:** Bun workspaces monorepo has TWO `.env.local` files:
+- `root/.env.local` (build tools, Bun)
 - `apps/web/.env.local` (Next.js, which ONLY reads this one)
 
 **Adding new vars:** Update both files + `packages/env/src/index.ts` schema, then restart `bun run dev`
@@ -125,8 +122,8 @@ turbo run dev
 **Prisma client not found:**
 ```bash
 cd packages/database && bunx prisma generate
-# Or use Turborepo:
-turbo run @repo/database#db:generate
+# Or use root script:
+bun run db:gen
 ```
 
 **Package not found:**
@@ -138,16 +135,16 @@ turbo run @repo/database#db:generate
 rm -rf apps/web/.next && bun run dev
 ```
 
-**Turbo cache issues:**
+**Build cache issues:**
 ```bash
-# Clear Turborepo cache if builds are stale
-rm -rf .turbo
+# Clear Next.js cache if builds are stale
+rm -rf apps/web/.next
 bun run build  # Rebuilds everything
 ```
 
-**Bypass Turborepo (direct dev):**
+**Direct development (skip root scripts):**
 ```bash
-# If you need to skip Turborepo orchestration
+# If you need to skip root orchestration
 bun run dev:web  # Goes directly to apps/web
 ```
 

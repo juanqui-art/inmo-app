@@ -3,7 +3,7 @@
 > Ultra-compressed guide for Claude Code (~1k tokens)
 
 ## Stack
-**Monorepo:** Turborepo + Bun | **Frontend:** Next.js 16 + React 19 + TS + Tailwind v4 + GSAP | **Backend:** Supabase + Prisma | **Deploy:** Vercel
+**Monorepo:** Bun Workspaces | **Frontend:** Next.js 16 + React 19 + TS + Tailwind v4 + GSAP | **Backend:** Supabase + Prisma | **Deploy:** Vercel
 
 ## Commands
 ```bash
