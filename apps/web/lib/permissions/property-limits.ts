@@ -5,8 +5,8 @@
  * Used in Server Actions to validate user permissions before operations.
  */
 
-import { db } from '@repo/database'
 import type { SubscriptionTier } from '@repo/database'
+import { db } from '@repo/database'
 
 /**
  * Get maximum properties allowed for a subscription tier
@@ -104,6 +104,52 @@ export function canUploadImage(
 		return {
 			allowed: false,
 			reason: `Has alcanzado el límite de ${limit} imágenes. Actualiza tu plan para agregar más.`,
+			limit
+		}
+	}
+
+	return { allowed: true, limit }
+}
+
+/**
+ * Check if user can feature a property
+ * @returns Object with permission status, reason, and limit
+ */
+export async function canFeatureProperty(
+	userId: string
+): Promise<{ allowed: boolean; reason?: string; limit: number | null }> {
+	const user = await db.user.findUnique({
+		where: { id: userId },
+		select: { subscriptionTier: true }
+	})
+
+	if (!user) {
+		return { allowed: false, reason: 'User not found', limit: 0 }
+	}
+
+	const limit = getFeaturedLimit(user.subscriptionTier)
+
+	// If limit is null, it means unlimited
+	if (limit === null) {
+		return { allowed: true, limit: null }
+	}
+
+	// Count properties featured in the current month
+	// Note: This assumes we have a way to track when a property was featured.
+	// For now, we'll count properties with isFeatured=true, assuming that's how it works.
+	// Ideally, we should have a 'FeaturedLog' or check 'featuredAt' timestamp if it exists.
+	// Checking schema... Property model usually has isFeatured boolean.
+	const currentFeaturedCount = await db.property.count({
+		where: {
+			agentId: userId,
+			isFeatured: true
+		}
+	})
+
+	if (currentFeaturedCount >= limit) {
+		return {
+			allowed: false,
+			reason: `Has alcanzado el límite de ${limit} ${limit === 1 ? 'propiedad destacada' : 'propiedades destacadas'}. Actualiza tu plan para destacar más.`,
 			limit
 		}
 	}

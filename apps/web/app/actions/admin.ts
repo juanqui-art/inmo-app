@@ -9,10 +9,10 @@
 
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { db, userRepository, propertyRepository } from "@repo/database";
-import type { UserRole, PropertyStatus, AppointmentStatus } from "@prisma/client";
 import { requireRole } from "@/lib/auth";
+import type { AppointmentStatus, PropertyStatus, SubscriptionTier, UserRole } from "@prisma/client";
+import { db, propertyRepository, userRepository } from "@repo/database";
+import { revalidatePath } from "next/cache";
 
 // ==================== TYPES ====================
 
@@ -179,6 +179,32 @@ export async function updateUserRoleAction(
     return {
       success: false,
       error: error instanceof Error ? error.message : "Error al actualizar rol"
+    };
+  }
+}
+
+/**
+ * Actualiza el plan de suscripción de un usuario
+ * Solo ADMIN puede acceder
+ */
+export async function updateUserTierAction(
+  userId: string,
+  newTier: SubscriptionTier
+): Promise<{ success: boolean; error?: string }> {
+  const admin = await requireRole(["ADMIN"]);
+
+  try {
+    await userRepository.update(userId, { subscriptionTier: newTier }, admin.id);
+
+    revalidatePath("/admin/usuarios");
+    revalidatePath(`/admin/usuarios/${userId}`);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating user tier:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error al actualizar plan"
     };
   }
 }
