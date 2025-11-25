@@ -10,14 +10,16 @@
 
 "use client";
 
+import { uploadPropertyImagesAction } from "@/app/actions/properties";
+import { validateImages } from "@/lib/storage/validation";
+import type { SubscriptionTier } from "@repo/database";
 import { Button } from "@repo/ui";
 import imageCompression from "browser-image-compression";
 import { ImagePlus, Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { uploadPropertyImagesAction } from "@/app/actions/properties";
-import { validateImages } from "@/lib/storage/validation";
+import { LimitReachedModal } from "../modals/limit-reached-modal";
 
 interface ImageUploadProps {
   propertyId: string;
@@ -37,6 +39,11 @@ export function ImageUpload({
   );
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [limitModalOpen, setLimitModalOpen] = useState(false);
+  const [limitData, setLimitData] = useState<{
+    currentTier: SubscriptionTier;
+    limit: number;
+  } | null>(null);
 
   // Manejar archivos seleccionados (drag & drop o click)
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -152,6 +159,13 @@ export function ImageUpload({
       progressIntervals.forEach((interval) => clearInterval(interval));
 
       if (result.error) {
+        if (result.upgradeRequired) {
+          setLimitData({
+            currentTier: "FREE", // TODO: Get actual tier
+            limit: result.currentLimit || 0,
+          });
+          setLimitModalOpen(true);
+        }
         setError(result.error);
         setUploadProgress({});
       } else {
@@ -320,6 +334,14 @@ export function ImageUpload({
           </p>
         </div>
       )}
+
+      <LimitReachedModal
+        isOpen={limitModalOpen}
+        onClose={() => setLimitModalOpen(false)}
+        limitType="image"
+        currentTier={limitData?.currentTier || "FREE"}
+        limit={limitData?.limit || 0}
+      />
     </div>
   );
 }

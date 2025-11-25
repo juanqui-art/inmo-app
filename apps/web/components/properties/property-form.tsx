@@ -5,19 +5,20 @@
 
 "use client";
 
-import type { SerializedProperty } from "@repo/database";
+import type { SerializedProperty, SubscriptionTier } from "@repo/database";
 import {
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
+    Button,
+    Input,
+    Label,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    Textarea,
 } from "@repo/ui";
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import { LimitReachedModal } from "../modals/limit-reached-modal";
 
 interface PropertyFormState {
   error?: {
@@ -40,6 +41,8 @@ interface PropertyFormState {
   };
   success?: boolean;
   data?: any;
+  upgradeRequired?: boolean;
+  currentLimit?: number;
 }
 
 interface PropertyFormProps {
@@ -56,8 +59,31 @@ export function PropertyForm({
   const [state, formAction, isPending] =
     useActionState<PropertyFormState | null>(action, null);
 
+  const [limitModalOpen, setLimitModalOpen] = useState(false);
+  const [limitData, setLimitData] = useState<{
+    currentTier: SubscriptionTier;
+    limit: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (state?.upgradeRequired) {
+      // Assuming we can get the current tier from the user session or pass it as prop.
+      // For now, we'll default to FREE if not available, or maybe the action should return it?
+      // The action returns currentLimit.
+      // Let's assume FREE for now or try to get it from props if available.
+      // Ideally the action should return the tier too.
+      // For now, let's just show the modal with the limit.
+      setLimitData({
+        currentTier: "FREE", // TODO: Get actual tier
+        limit: state.currentLimit || 0,
+      });
+      setLimitModalOpen(true);
+    }
+  }, [state]);
+
   return (
-    <form action={formAction} className="space-y-8">
+    <>
+      <form action={formAction} className="space-y-8">
       {/* Hidden ID for edit */}
       {property && <input type="hidden" name="id" value={property.id} />}
 
@@ -372,6 +398,15 @@ export function PropertyForm({
           Cancelar
         </Button>
       </div>
-    </form>
+      </form>
+
+      <LimitReachedModal
+        isOpen={limitModalOpen}
+        onClose={() => setLimitModalOpen(false)}
+        limitType="property"
+        currentTier={limitData?.currentTier || "FREE"}
+        limit={limitData?.limit || 0}
+      />
+    </>
   );
 }
