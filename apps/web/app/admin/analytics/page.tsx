@@ -3,18 +3,21 @@
  * Dashboard con estadísticas globales de la plataforma
  */
 
-import { requireRole } from "@/lib/auth";
-import { getAdminStatsAction, getAdminMetricsByPeriodAction } from "@/app/actions/admin";
 import {
-  Users,
   Building2,
   Calendar,
+  Clock,
   Heart,
+  Home,
   TrendingUp,
   UserCheck,
-  Home,
-  Clock,
+  Users,
 } from "lucide-react";
+import {
+  getAdminMetricsByPeriodAction,
+  getAdminStatsAction,
+} from "@/app/actions/admin";
+import { requireRole } from "@/lib/auth";
 
 // Labels for roles and statuses
 const roleLabels: Record<string, string> = {
@@ -91,7 +94,10 @@ export default async function AnalyticsPage() {
           </h3>
           <div className="space-y-3">
             {stats.usersByRole.map((item) => (
-              <div key={item.role} className="flex items-center justify-between">
+              <div
+                key={item.role}
+                className="flex items-center justify-between"
+              >
                 <span className="text-sm text-muted-foreground">
                   {roleLabels[item.role] || item.role}
                 </span>
@@ -121,7 +127,10 @@ export default async function AnalyticsPage() {
           </h3>
           <div className="space-y-3">
             {stats.propertiesByStatus.map((item) => (
-              <div key={item.status} className="flex items-center justify-between">
+              <div
+                key={item.status}
+                className="flex items-center justify-between"
+              >
                 <span className="text-sm text-muted-foreground">
                   {statusLabels[item.status] || item.status}
                 </span>
@@ -151,7 +160,10 @@ export default async function AnalyticsPage() {
           </h3>
           <div className="space-y-3">
             {stats.appointmentsByStatus.map((item) => (
-              <div key={item.status} className="flex items-center justify-between">
+              <div
+                key={item.status}
+                className="flex items-center justify-between"
+              >
                 <span className="text-sm text-muted-foreground">
                   {appointmentStatusLabels[item.status] || item.status}
                 </span>
@@ -185,13 +197,17 @@ export default async function AnalyticsPage() {
             <div className="text-3xl font-bold text-primary">
               {metrics.users.reduce((acc, u) => acc + u.count, 0)}
             </div>
-            <p className="text-sm text-muted-foreground mt-1">Nuevos usuarios</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Nuevos usuarios
+            </p>
           </div>
           <div className="text-center p-4 rounded-lg bg-muted/50">
             <div className="text-3xl font-bold text-primary">
               {metrics.properties.reduce((acc, p) => acc + p.count, 0)}
             </div>
-            <p className="text-sm text-muted-foreground mt-1">Nuevas propiedades</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Nuevas propiedades
+            </p>
           </div>
           <div className="text-center p-4 rounded-lg bg-muted/50">
             <div className="text-3xl font-bold text-primary">
@@ -248,7 +264,9 @@ function StatsCard({
   return (
     <div className="rounded-lg border bg-card p-6">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-muted-foreground">{title}</span>
+        <span className="text-sm font-medium text-muted-foreground">
+          {title}
+        </span>
         <Icon className="h-4 w-4 text-muted-foreground" />
       </div>
       <div className="mt-2">

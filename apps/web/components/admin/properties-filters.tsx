@@ -4,16 +4,19 @@
  * PROPERTIES FILTERS - Filtros para tabla de propiedades
  */
 
+import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Search } from "lucide-react";
 
 interface PropertiesFiltersProps {
   currentStatus?: "AVAILABLE" | "PENDING" | "SOLD" | "RENTED";
   currentSearch?: string;
 }
 
-export function PropertiesFilters({ currentStatus, currentSearch }: PropertiesFiltersProps) {
+export function PropertiesFilters({
+  currentStatus,
+  currentSearch,
+}: PropertiesFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();

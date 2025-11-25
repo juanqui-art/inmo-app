@@ -3,10 +3,17 @@
  * Dashboard principal con estadísticas y accesos rápidos
  */
 
+import {
+  ArrowRight,
+  BarChart3,
+  Building2,
+  Calendar,
+  Heart,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
-import { BarChart3, Building2, Calendar, Heart, Users, ArrowRight } from "lucide-react";
-import { requireRole } from "@/lib/auth";
 import { getAdminStatsAction } from "@/app/actions/admin";
+import { requireRole } from "@/lib/auth";
 
 export default async function AdminPage() {
   const user = await requireRole(["ADMIN"]);
@@ -28,7 +35,9 @@ export default async function AdminPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground">Usuarios</span>
+            <span className="text-sm font-medium text-muted-foreground">
+              Usuarios
+            </span>
             <Users className="h-4 w-4 text-muted-foreground" />
           </div>
           <div className="mt-2">
@@ -41,7 +50,9 @@ export default async function AdminPage() {
 
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground">Propiedades</span>
+            <span className="text-sm font-medium text-muted-foreground">
+              Propiedades
+            </span>
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </div>
           <div className="mt-2">
@@ -54,7 +65,9 @@ export default async function AdminPage() {
 
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground">Citas</span>
+            <span className="text-sm font-medium text-muted-foreground">
+              Citas
+            </span>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </div>
           <div className="mt-2">
@@ -64,7 +77,9 @@ export default async function AdminPage() {
 
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground">Favoritos</span>
+            <span className="text-sm font-medium text-muted-foreground">
+              Favoritos
+            </span>
             <Heart className="h-4 w-4 text-muted-foreground" />
           </div>
           <div className="mt-2">
@@ -93,7 +108,12 @@ export default async function AdminPage() {
                 key={item.role}
                 className="text-xs px-2 py-1 rounded-full bg-muted"
               >
-                {item.count} {item.role === "CLIENT" ? "clientes" : item.role === "AGENT" ? "agentes" : "admins"}
+                {item.count}{" "}
+                {item.role === "CLIENT"
+                  ? "clientes"
+                  : item.role === "AGENT"
+                    ? "agentes"
+                    : "admins"}
               </span>
             ))}
           </div>
@@ -117,7 +137,12 @@ export default async function AdminPage() {
                 key={item.status}
                 className="text-xs px-2 py-1 rounded-full bg-muted"
               >
-                {item.count} {item.status === "AVAILABLE" ? "disponibles" : item.status === "SOLD" ? "vendidas" : item.status.toLowerCase()}
+                {item.count}{" "}
+                {item.status === "AVAILABLE"
+                  ? "disponibles"
+                  : item.status === "SOLD"
+                    ? "vendidas"
+                    : item.status.toLowerCase()}
               </span>
             ))}
           </div>
@@ -148,11 +173,18 @@ export default async function AdminPage() {
             </h4>
             <div className="space-y-2">
               {stats.appointmentsByStatus.map((item) => (
-                <div key={item.status} className="flex items-center justify-between text-sm">
+                <div
+                  key={item.status}
+                  className="flex items-center justify-between text-sm"
+                >
                   <span className="text-muted-foreground">
-                    {item.status === "PENDING" ? "Pendientes" :
-                     item.status === "CONFIRMED" ? "Confirmadas" :
-                     item.status === "CANCELLED" ? "Canceladas" : "Completadas"}
+                    {item.status === "PENDING"
+                      ? "Pendientes"
+                      : item.status === "CONFIRMED"
+                        ? "Confirmadas"
+                        : item.status === "CANCELLED"
+                          ? "Canceladas"
+                          : "Completadas"}
                   </span>
                   <span className="font-medium">{item.count}</span>
                 </div>
@@ -166,11 +198,18 @@ export default async function AdminPage() {
             </h4>
             <div className="space-y-2">
               {stats.propertiesByStatus.map((item) => (
-                <div key={item.status} className="flex items-center justify-between text-sm">
+                <div
+                  key={item.status}
+                  className="flex items-center justify-between text-sm"
+                >
                   <span className="text-muted-foreground">
-                    {item.status === "AVAILABLE" ? "Disponibles" :
-                     item.status === "PENDING" ? "Pendientes" :
-                     item.status === "SOLD" ? "Vendidas" : "Rentadas"}
+                    {item.status === "AVAILABLE"
+                      ? "Disponibles"
+                      : item.status === "PENDING"
+                        ? "Pendientes"
+                        : item.status === "SOLD"
+                          ? "Vendidas"
+                          : "Rentadas"}
                   </span>
                   <span className="font-medium">{item.count}</span>
                 </div>
@@ -184,10 +223,16 @@ export default async function AdminPage() {
             </h4>
             <div className="space-y-2">
               {stats.usersByRole.map((item) => (
-                <div key={item.role} className="flex items-center justify-between text-sm">
+                <div
+                  key={item.role}
+                  className="flex items-center justify-between text-sm"
+                >
                   <span className="text-muted-foreground">
-                    {item.role === "CLIENT" ? "Clientes" :
-                     item.role === "AGENT" ? "Agentes" : "Admins"}
+                    {item.role === "CLIENT"
+                      ? "Clientes"
+                      : item.role === "AGENT"
+                        ? "Agentes"
+                        : "Admins"}
                   </span>
                   <span className="font-medium">{item.count}</span>
                 </div>

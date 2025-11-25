@@ -4,10 +4,10 @@
  */
 
 import { Suspense } from "react";
-import { requireRole } from "@/lib/auth";
 import { getUsersAction } from "@/app/actions/admin";
-import { UsersTable } from "@/components/admin/users-table";
 import { UsersFilters } from "@/components/admin/users-filters";
+import { UsersTable } from "@/components/admin/users-table";
+import { requireRole } from "@/lib/auth";
 
 interface PageProps {
   searchParams: Promise<{
@@ -40,17 +40,16 @@ export default async function UsuariosPage({ searchParams }: PageProps) {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Gestión de Usuarios</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Gestión de Usuarios
+        </h1>
         <p className="text-muted-foreground">
           Administra usuarios, cambia roles y gestiona cuentas
         </p>
       </div>
 
       {/* Filters */}
-      <UsersFilters
-        currentRole={role}
-        currentSearch={search}
-      />
+      <UsersFilters currentRole={role} currentSearch={search} />
 
       {/* Stats summary */}
       <div className="grid gap-4 md:grid-cols-4">

@@ -9,10 +9,15 @@
 
 "use server";
 
-import { requireRole } from "@/lib/auth";
-import type { AppointmentStatus, PropertyStatus, SubscriptionTier, UserRole } from "@prisma/client";
+import type {
+  AppointmentStatus,
+  PropertyStatus,
+  SubscriptionTier,
+  UserRole,
+} from "@prisma/client";
 import { db, propertyRepository, userRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
+import { requireRole } from "@/lib/auth";
 
 // ==================== TYPES ====================
 
@@ -126,7 +131,9 @@ export async function getUsersAction(params?: {
  * Obtiene un usuario específico por ID
  * Solo ADMIN puede acceder
  */
-export async function getUserByIdAction(userId: string): Promise<UserWithCounts | null> {
+export async function getUserByIdAction(
+  userId: string,
+): Promise<UserWithCounts | null> {
   await requireRole(["ADMIN"]);
 
   return db.user.findUnique({
@@ -158,7 +165,7 @@ export async function getUserByIdAction(userId: string): Promise<UserWithCounts 
  */
 export async function updateUserRoleAction(
   userId: string,
-  newRole: UserRole
+  newRole: UserRole,
 ): Promise<{ success: boolean; error?: string }> {
   const admin = await requireRole(["ADMIN"]);
 
@@ -178,7 +185,7 @@ export async function updateUserRoleAction(
     console.error("Error updating user role:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Error al actualizar rol"
+      error: error instanceof Error ? error.message : "Error al actualizar rol",
     };
   }
 }
@@ -189,12 +196,16 @@ export async function updateUserRoleAction(
  */
 export async function updateUserTierAction(
   userId: string,
-  newTier: SubscriptionTier
+  newTier: SubscriptionTier,
 ): Promise<{ success: boolean; error?: string }> {
   const admin = await requireRole(["ADMIN"]);
 
   try {
-    await userRepository.update(userId, { subscriptionTier: newTier }, admin.id);
+    await userRepository.update(
+      userId,
+      { subscriptionTier: newTier },
+      admin.id,
+    );
 
     revalidatePath("/admin/usuarios");
     revalidatePath(`/admin/usuarios/${userId}`);
@@ -204,7 +215,8 @@ export async function updateUserTierAction(
     console.error("Error updating user tier:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Error al actualizar plan"
+      error:
+        error instanceof Error ? error.message : "Error al actualizar plan",
     };
   }
 }
@@ -215,7 +227,7 @@ export async function updateUserTierAction(
  * No puede eliminarse a sí mismo
  */
 export async function deleteUserAction(
-  userId: string
+  userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   const admin = await requireRole(["ADMIN"]);
 
@@ -234,7 +246,8 @@ export async function deleteUserAction(
     console.error("Error deleting user:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Error al eliminar usuario"
+      error:
+        error instanceof Error ? error.message : "Error al eliminar usuario",
     };
   }
 }
@@ -317,12 +330,16 @@ export async function getAllPropertiesAction(params?: {
  */
 export async function updatePropertyStatusAction(
   propertyId: string,
-  newStatus: PropertyStatus
+  newStatus: PropertyStatus,
 ): Promise<{ success: boolean; error?: string }> {
   const admin = await requireRole(["ADMIN"]);
 
   try {
-    await propertyRepository.update(propertyId, { status: newStatus }, admin.id);
+    await propertyRepository.update(
+      propertyId,
+      { status: newStatus },
+      admin.id,
+    );
 
     revalidatePath("/admin/propiedades");
     revalidatePath(`/propiedades/${propertyId}`);
@@ -332,7 +349,8 @@ export async function updatePropertyStatusAction(
     console.error("Error updating property status:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Error al actualizar estado"
+      error:
+        error instanceof Error ? error.message : "Error al actualizar estado",
     };
   }
 }
@@ -342,7 +360,7 @@ export async function updatePropertyStatusAction(
  * Solo ADMIN puede acceder
  */
 export async function deletePropertyAction(
-  propertyId: string
+  propertyId: string,
 ): Promise<{ success: boolean; error?: string }> {
   const admin = await requireRole(["ADMIN"]);
 
@@ -356,7 +374,8 @@ export async function deletePropertyAction(
     console.error("Error deleting property:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Error al eliminar propiedad"
+      error:
+        error instanceof Error ? error.message : "Error al eliminar propiedad",
     };
   }
 }
@@ -444,7 +463,7 @@ export async function getAdminStatsAction(): Promise<AdminStats> {
  * Solo ADMIN puede acceder
  */
 export async function getAdminMetricsByPeriodAction(
-  days: number = 30
+  days: number = 30,
 ): Promise<{
   users: { date: string; count: number }[];
   properties: { date: string; count: number }[];

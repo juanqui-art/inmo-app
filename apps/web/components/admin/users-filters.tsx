@@ -4,16 +4,19 @@
  * USERS FILTERS - Filtros para tabla de usuarios
  */
 
+import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Search } from "lucide-react";
 
 interface UsersFiltersProps {
   currentRole?: "CLIENT" | "AGENT" | "ADMIN";
   currentSearch?: string;
 }
 
-export function UsersFilters({ currentRole, currentSearch }: UsersFiltersProps) {
+export function UsersFilters({
+  currentRole,
+  currentSearch,
+}: UsersFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();

@@ -4,8 +4,8 @@
  * Incluye sidebar con navegación específica de admin
  */
 
-import { requireRole } from "@/lib/auth";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import { requireRole } from "@/lib/auth";
 
 export default async function AdminLayout({
   children,
@@ -21,9 +21,7 @@ export default async function AdminLayout({
       <AdminSidebar userName={user.name || "Administrador"} />
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
+      <main className="flex-1 overflow-auto">{children}</main>
     </div>
   );
 }
