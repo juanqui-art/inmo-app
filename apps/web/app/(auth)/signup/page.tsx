@@ -3,8 +3,8 @@
  * URL: /signup
  */
 
-import { Suspense } from "react";
 import Link from "next/link";
+import { Suspense } from "react";
 import { GoogleButton } from "@/components/auth/google-button";
 import { SignupForm } from "@/components/auth/signup-form";
 

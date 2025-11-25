@@ -161,7 +161,11 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
   // 5.5 Sincronizar rol de metadata → DB si están desincronizados
   // El rol correcto está en user_metadata (del signup), la DB puede estar desactualizada
   // debido a un bug previo en el trigger que no incluía el rol
-  const metadataRole = authData.user.user_metadata?.role as "CLIENT" | "AGENT" | "ADMIN" | undefined;
+  const metadataRole = authData.user.user_metadata?.role as
+    | "CLIENT"
+    | "AGENT"
+    | "ADMIN"
+    | undefined;
 
   if (metadataRole && metadataRole !== dbUser.role) {
     // Actualizar el rol en la DB con el valor correcto de metadata
@@ -169,7 +173,9 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
     // Actualizar dbUser local para la redirección correcta
     dbUser.role = metadataRole;
 
-    console.log(`[AUTH] Synced role from metadata to DB for user ${dbUser.id}: ${metadataRole}`);
+    console.log(
+      `[AUTH] Synced role from metadata to DB for user ${dbUser.id}: ${metadataRole}`,
+    );
   } else if (!metadataRole && dbUser.role) {
     // Si no hay rol en metadata pero sí en DB, actualizar metadata (caso legacy)
     await supabase.auth.updateUser({
@@ -180,7 +186,9 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
       },
     });
 
-    console.log(`[AUTH] Synced role from DB to metadata for user ${dbUser.id}: ${dbUser.role}`);
+    console.log(
+      `[AUTH] Synced role from DB to metadata for user ${dbUser.id}: ${dbUser.role}`,
+    );
   }
 
   // 6. Revalidar
@@ -190,7 +198,7 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
   const redirectParam = formData.get("redirect") as string | null;
 
   // Si viene un redirect explícito y es una ruta protegida, usarlo
-  if (redirectParam && redirectParam.startsWith("/")) {
+  if (redirectParam?.startsWith("/")) {
     redirect(redirectParam);
   }
 

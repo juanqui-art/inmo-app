@@ -14,8 +14,13 @@
  * evitando que sea ocultado por stacking contexts de componentes padres.
  */
 
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@repo/ui";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@repo/ui";
 import { useRouter } from "next/navigation";
 import { SignupForm } from "@/components/auth/signup-form";
 
@@ -31,22 +36,24 @@ export default function SignupModal() {
 
   return (
     <Dialog open={true} onOpenChange={handleOpenChange}>
-      <DialogPrimitive.Portal container={typeof document !== "undefined" ? document.body : undefined}>
+      <DialogPrimitive.Portal
+        container={typeof document !== "undefined" ? document.body : undefined}
+      >
         <DialogContent className="w-full max-w-md p-0 overflow-hidden sm:rounded-lg">
-        {/* Header del modal */}
-        <div className="px-6 pt-6 pb-0">
-          <DialogTitle className="text-2xl font-bold text-center mb-2">
-            Crear cuenta
-          </DialogTitle>
-          <DialogDescription className="text-center text-sm">
-            Únete a InmoApp y encuentra tu propiedad ideal
-          </DialogDescription>
-        </div>
+          {/* Header del modal */}
+          <div className="px-6 pt-6 pb-0">
+            <DialogTitle className="text-2xl font-bold text-center mb-2">
+              Crear cuenta
+            </DialogTitle>
+            <DialogDescription className="text-center text-sm">
+              Únete a InmoApp y encuentra tu propiedad ideal
+            </DialogDescription>
+          </div>
 
-        {/* Formulario de signup */}
-        <div className="px-6 py-6">
-          <SignupForm />
-        </div>
+          {/* Formulario de signup */}
+          <div className="px-6 py-6">
+            <SignupForm />
+          </div>
         </DialogContent>
       </DialogPrimitive.Portal>
     </Dialog>
