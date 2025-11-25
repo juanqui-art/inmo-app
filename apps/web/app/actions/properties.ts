@@ -13,12 +13,15 @@ import { propertyImageRepository, propertyRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOwnership, requireRole } from "@/lib/auth";
+import {
+  canCreateProperty,
+  canUploadImage,
+} from "@/lib/permissions/property-limits";
 import { deletePropertyImage, uploadPropertyImage } from "@/lib/storage/client";
 import {
   createPropertySchema,
   updatePropertySchema,
 } from "@/lib/validations/property";
-import { canCreateProperty, canUploadImage } from "@/lib/permissions/property-limits";
 
 /**
  * CREATE PROPERTY ACTION
@@ -243,7 +246,8 @@ export async function uploadPropertyImagesAction(
     }
 
     // 4. Check subscription tier image limits
-    const existingImageCount = await propertyImageRepository.countByProperty(propertyId);
+    const existingImageCount =
+      await propertyImageRepository.countByProperty(propertyId);
     const totalAfterUpload = existingImageCount + files.length;
 
     const imageCheck = canUploadImage(user.subscriptionTier, totalAfterUpload);

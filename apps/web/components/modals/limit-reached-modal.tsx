@@ -1,18 +1,18 @@
 "use client";
 
-import { getTierFeatures } from "@/lib/permissions/property-limits";
 import type { SubscriptionTier } from "@repo/database";
 import {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@repo/ui";
 import { Check, Rocket } from "lucide-react";
 import Link from "next/link";
+import { getTierFeatures } from "@/lib/permissions/property-limits";
 
 interface LimitReachedModalProps {
   isOpen: boolean;
@@ -57,7 +57,9 @@ export function LimitReachedModal({
           <DialogDescription className="text-center pt-2">
             {descriptions[limitType]}
             <br />
-            Actualiza a <span className="font-bold text-primary">Plan {nextTier}</span> para desbloquear más.
+            Actualiza a{" "}
+            <span className="font-bold text-primary">Plan {nextTier}</span> para
+            desbloquear más.
           </DialogDescription>
         </DialogHeader>
 
@@ -74,9 +76,7 @@ export function LimitReachedModal({
             </li>
             <li className="flex items-center gap-2">
               <Check className="w-4 h-4 text-green-500" />
-              <span>
-                {nextTierFeatures.imageLimit} Imágenes por propiedad
-              </span>
+              <span>{nextTierFeatures.imageLimit} Imágenes por propiedad</span>
             </li>
             {nextTierFeatures.hasFeatured && (
               <li className="flex items-center gap-2">
@@ -93,9 +93,7 @@ export function LimitReachedModal({
 
         <DialogFooter className="flex-col sm:flex-col gap-2">
           <Button asChild className="w-full" size="lg">
-            <Link href="/pricing">
-              Actualizar Plan
-            </Link>
+            <Link href="/pricing">Actualizar Plan</Link>
           </Button>
           <Button variant="ghost" onClick={onClose} className="w-full">
             No por ahora

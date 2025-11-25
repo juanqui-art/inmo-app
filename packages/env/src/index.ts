@@ -106,13 +106,19 @@ const serverSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z
     .string()
     .min(1, "STRIPE_WEBHOOK_SECRET is required")
-    .startsWith("whsec_", "STRIPE_WEBHOOK_SECRET must be a valid webhook secret")
+    .startsWith(
+      "whsec_",
+      "STRIPE_WEBHOOK_SECRET must be a valid webhook secret",
+    )
     .optional(),
 
   STRIPE_BASIC_PRICE_ID: z
     .string()
     .min(1, "STRIPE_BASIC_PRICE_ID is required")
-    .startsWith("price_", "STRIPE_BASIC_PRICE_ID must be a valid Stripe price ID")
+    .startsWith(
+      "price_",
+      "STRIPE_BASIC_PRICE_ID must be a valid Stripe price ID",
+    )
     .optional(),
 
   STRIPE_PRO_PRICE_ID: z
