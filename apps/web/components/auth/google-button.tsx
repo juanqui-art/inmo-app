@@ -31,7 +31,8 @@ export function GoogleButton({ onBeforeRedirect }: GoogleButtonProps) {
     try {
       // Guardar URL de retorno en localStorage
       // Si viene un parámetro 'redirect', usarlo; si no, usar el referrer; si no, usar home
-      const redirectUrl = searchParams.get("redirect") || document.referrer || "/";
+      const redirectUrl =
+        searchParams.get("redirect") || document.referrer || "/";
       localStorage.setItem("authReturnUrl", redirectUrl);
 
       // Ejecutar callback antes del redirect (guardar intent, etc.)

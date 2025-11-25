@@ -10,8 +10,6 @@
 
 "use client";
 
-import { uploadPropertyImagesAction } from "@/app/actions/properties";
-import { validateImages } from "@/lib/storage/validation";
 import type { SubscriptionTier } from "@repo/database";
 import { Button } from "@repo/ui";
 import imageCompression from "browser-image-compression";
@@ -19,6 +17,8 @@ import { ImagePlus, Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { uploadPropertyImagesAction } from "@/app/actions/properties";
+import { validateImages } from "@/lib/storage/validation";
 import { LimitReachedModal } from "../modals/limit-reached-modal";
 
 interface ImageUploadProps {

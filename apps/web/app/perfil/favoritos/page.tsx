@@ -33,7 +33,10 @@ export default async function PerfilFavoritosPage() {
             <div>
               <h1 className="text-xl font-bold">Mis Favoritos</h1>
               <p className="text-sm text-muted-foreground">
-                {favorites.length} {favorites.length === 1 ? "propiedad guardada" : "propiedades guardadas"}
+                {favorites.length}{" "}
+                {favorites.length === 1
+                  ? "propiedad guardada"
+                  : "propiedades guardadas"}
               </p>
             </div>
           </div>
@@ -51,7 +54,9 @@ export default async function PerfilFavoritosPage() {
             <div className="text-center py-12 space-y-4">
               <Heart className="h-16 w-16 mx-auto text-muted-foreground/50" />
               <div>
-                <h2 className="text-xl font-semibold mb-2">No tienes favoritos</h2>
+                <h2 className="text-xl font-semibold mb-2">
+                  No tienes favoritos
+                </h2>
                 <p className="text-muted-foreground mb-4">
                   Explora propiedades y guarda las que te interesen
                 </p>

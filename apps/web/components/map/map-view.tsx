@@ -65,7 +65,7 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
     if (!map) return;
 
     const image = new Image(48, 24);
-    image.src = "data:image/svg+xml;base64," + btoa(badgeSvg);
+    image.src = `data:image/svg+xml;base64,${btoa(badgeSvg)}`;
     image.onload = () => {
       if (!map.hasImage("badge-background")) {
         map.addImage("badge-background", image, { sdf: true });

@@ -232,23 +232,19 @@ export function MapContainer({
         })}
 
         {/* Property Popup on Marker Click */}
-        {selectedProperty &&
-          selectedProperty.latitude &&
-          selectedProperty.longitude && (
-            <PropertyPopup
-              property={selectedProperty}
-              onClose={() => setSelectedPropertyId(null)}
-              onViewDetails={() => {
-                setSelectedPropertyId(null);
-                handleDrawerPropertyClick(selectedProperty.id);
-              }}
-              onUnauthenticatedFavoriteClick={
-                !isAuthenticated
-                  ? handleUnauthenticatedFavoriteClick
-                  : undefined
-              }
-            />
-          )}
+        {selectedProperty?.latitude && selectedProperty.longitude && (
+          <PropertyPopup
+            property={selectedProperty}
+            onClose={() => setSelectedPropertyId(null)}
+            onViewDetails={() => {
+              setSelectedPropertyId(null);
+              handleDrawerPropertyClick(selectedProperty.id);
+            }}
+            onUnauthenticatedFavoriteClick={
+              !isAuthenticated ? handleUnauthenticatedFavoriteClick : undefined
+            }
+          />
+        )}
       </Map>
 
       {/* Property List Drawer */}

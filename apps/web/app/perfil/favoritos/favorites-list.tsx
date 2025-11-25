@@ -40,7 +40,9 @@ export function FavoritesList({ initialFavorites }: FavoritesListProps) {
 
         if (result.success && !result.isFavorite) {
           // Remove from local state
-          setFavorites((prev) => prev.filter((f) => f.propertyId !== propertyId));
+          setFavorites((prev) =>
+            prev.filter((f) => f.propertyId !== propertyId),
+          );
           toast.success("Propiedad eliminada de favoritos");
         } else if (!result.success) {
           toast.error(result.error || "Error al eliminar favorito");

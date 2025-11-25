@@ -235,7 +235,7 @@ export async function copyLinkToClipboard(url: string): Promise<boolean> {
 export function shareProperty(
   platform: SharePlatform,
   shareData: ShareData,
-): Promise<boolean> | void {
+): Promise<boolean> | undefined {
   switch (platform) {
     case "WHATSAPP":
       shareToWhatsApp(shareData);
