@@ -2,24 +2,28 @@
  * AUTH UTILITIES
  *
  * Funciones helper para autenticación y autorización
- * - getCurrentUser: Obtener usuario autenticado con rol desde DB
+ * - getCurrentUser: Obtener usuario autenticado con rol desde DB (cached)
  * - requireAuth: Requerir autenticación (redirige si no auth)
  * - requireRole: Validar rol requerido (redirige si no tiene permiso)
  * - checkPermission: Verificar si usuario tiene permiso sobre un recurso
  * - requireOwnership: Requerir ownership (lanza error si no es dueño)
+ *
+ * CACHING (Nov 29, 2025):
+ * - getCurrentUser() uses React.cache() for request-level deduplication
+ * - Multiple calls within same request = single DB query
+ * - Compatible with cookies() (Next.js allows cache() with dynamic functions)
  */
 
 import { userRepository } from "@repo/database";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * Obtiene el usuario autenticado actual con su rol desde DB
- * Retorna null si no hay usuario autenticado
- *
- * Uso: const user = await getCurrentUser()
+ * Internal implementation of getCurrentUser
+ * DO NOT export - use cached version instead
  */
-export async function getCurrentUser() {
+async function _getCurrentUser() {
   const supabase = await createClient();
   const {
     data: { user: authUser },
@@ -40,6 +44,25 @@ export async function getCurrentUser() {
 
   return dbUser;
 }
+
+/**
+ * Obtiene el usuario autenticado actual con su rol desde DB
+ * Retorna null si no hay usuario autenticado
+ *
+ * PERFORMANCE OPTIMIZATION:
+ * - Wrapped with React.cache() for request-level deduplication
+ * - Multiple calls per request → single DB query
+ * - Example: Page calls getCurrentUser(), then child component calls it again
+ *   Result: Only 1 database query executed
+ *
+ * COMPATIBILITY:
+ * - Works with cookies() despite being cached
+ * - Next.js allows cache() on functions that call dynamic APIs
+ * - Cache scope: Single request only (not cross-request)
+ *
+ * Uso: const user = await getCurrentUser()
+ */
+export const getCurrentUser = cache(_getCurrentUser);
 
 /**
  * Requiere que el usuario esté autenticado

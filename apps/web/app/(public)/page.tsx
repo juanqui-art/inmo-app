@@ -84,26 +84,24 @@ export default async function HomePage() {
   /**
    * Fetch all homepage data in parallel
    *
-   * PERFORMANCE: 3 queries execute simultaneously
-   * - Featured properties: 12 newest/curated
-   * - Recent listings: 8 most recent
-   * - Stats: Counts for social proof
+   * PERFORMANCE OPTIMIZATION (Nov 29, 2025):
+   * - Reduced duplicate queries: Featured and Recent were fetching identical data
+   * - Now: 1 query instead of 2 (50% reduction)
+   * - React.cache() at repository level provides request-level deduplication
+   *
+   * QUERIES:
+   * - Properties: Single query for both featured and recent (9 items)
+   * - Stats: Counts for social proof (parallel)
    *
    * ERROR HANDLING:
    * If any query fails, entire Promise.all fails
    * In production, add try/catch per query
    */
-  const [featuredResult, recentResult, propertyCount, cityCount, agentCount] =
+  const [propertiesResult, propertyCount, cityCount, agentCount] =
     await Promise.all([
-      // Featured Properties
-      // TODO: Add 'featured' field to Property model
-      // For now, just get newest 9 properties
-      propertyRepo.list({
-        filters: { status: "AVAILABLE" },
-        take: 9,
-      }),
-
-      // Recent Listings
+      // Properties for both Featured and Recent sections
+      // TODO: Add 'featured' field to Property model to differentiate
+      // For now, both sections show the same 9 newest available properties
       propertyRepo.list({
         filters: { status: "AVAILABLE" },
         take: 9,
@@ -137,9 +135,13 @@ export default async function HomePage() {
    * No need to call serializeProperties() again
    *
    * Updated: Nov 2025 - Migration to getPropertiesList() with React.cache()
+   *
+   * CACHE OPTIMIZATION: Single query reused for both sections
+   * - Featured and Recent use the same data (identical parameters)
+   * - Future: Add 'featured' field to differentiate or sort differently
    */
-  const serializedFeatured = featuredResult.properties;
-  const serializedRecent = recentResult.properties;
+  const serializedFeatured = propertiesResult.properties;
+  const serializedRecent = propertiesResult.properties;
 
   /**
    * SECTION COMPOSITION:
