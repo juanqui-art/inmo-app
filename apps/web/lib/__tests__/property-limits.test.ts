@@ -25,6 +25,9 @@ import {
   getTierPricing,
 } from "../permissions/property-limits";
 
+// Unmock property-limits to test real implementation
+vi.unmock("@/lib/permissions/property-limits");
+
 // Note: db is already mocked globally in vitest.setup.ts
 const mockUserFindUnique = db.user.findUnique as any;
 const mockPropertyCount = db.property.count as any;

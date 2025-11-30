@@ -174,7 +174,8 @@ describe("toggleFavoriteAction", () => {
 
       expect(mockRevalidatePath).toHaveBeenCalledWith("/mapa");
       expect(mockRevalidatePath).toHaveBeenCalledWith("/favoritos");
-      expect(mockRevalidatePath).toHaveBeenCalledTimes(2);
+      expect(mockRevalidatePath).toHaveBeenCalledWith("/perfil/favoritos");
+      expect(mockRevalidatePath).toHaveBeenCalledTimes(3);
     });
 
     it("should not revalidate cache on validation error", async () => {

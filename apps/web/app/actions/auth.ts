@@ -87,13 +87,13 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
   // 6. Redirigir según rol
   switch (role) {
     case "ADMIN":
-      redirect("/admin");
+      return redirect("/admin");
     case "AGENT":
-      redirect("/dashboard");
+      return redirect("/dashboard");
     case "CLIENT":
-      redirect("/perfil");
+      return redirect("/perfil");
     default:
-      redirect("/");
+      return redirect("/");
   }
 }
 
@@ -205,13 +205,13 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
   // Si no, redirigir según rol
   switch (dbUser.role) {
     case "ADMIN":
-      redirect("/admin");
+      return redirect("/admin");
     case "AGENT":
-      redirect("/dashboard");
+      return redirect("/dashboard");
     case "CLIENT":
-      redirect("/perfil");
+      return redirect("/perfil");
     default:
-      redirect("/");
+      return redirect("/");
   }
 }
 

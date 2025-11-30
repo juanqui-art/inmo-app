@@ -303,6 +303,10 @@ describe("Auth Server Actions", () => {
         const mockAuthUser = createMockSupabaseUser({
           id: "agent-id",
           email: "agent@example.com",
+          user_metadata: {
+            name: "Agent User",
+            role: "AGENT",
+          },
         });
 
         const mockDbUser = createMockDbUser({
@@ -331,6 +335,10 @@ describe("Auth Server Actions", () => {
         const mockAuthUser = createMockSupabaseUser({
           id: "admin-id",
           email: "admin@example.com",
+          user_metadata: {
+            name: "Admin User",
+            role: "ADMIN",
+          },
         });
 
         const mockDbUser = createMockDbUser({

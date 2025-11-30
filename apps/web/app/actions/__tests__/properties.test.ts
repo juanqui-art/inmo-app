@@ -15,6 +15,7 @@ import {
   createValidPropertyData,
 } from "@/__tests__/utils/test-helpers";
 import { requireRole } from "@/lib/auth";
+import { canCreateProperty } from "@/lib/permissions/property-limits";
 import { createPropertyAction } from "../properties";
 
 // Get mocked functions
@@ -22,6 +23,7 @@ const mockPropertyRepositoryCreate = vi.mocked(propertyRepository.create);
 const mockRequireRole = vi.mocked(requireRole);
 const mockRevalidatePath = vi.mocked(revalidatePath);
 const mockRedirect = vi.mocked(redirect);
+const mockCanCreateProperty = vi.mocked(canCreateProperty);
 
 describe("createPropertyAction", () => {
   const mockUser = createMockUser({ role: "AGENT" });
@@ -32,6 +34,12 @@ describe("createPropertyAction", () => {
 
     // Default behavior: user is authenticated as AGENT
     mockRequireRole.mockResolvedValue(mockUser);
+
+    // Default behavior: property creation is allowed
+    mockCanCreateProperty.mockResolvedValue({
+      allowed: true,
+      limit: 10,
+    });
   });
 
   describe("Authentication & Authorization", () => {

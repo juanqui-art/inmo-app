@@ -93,3 +93,15 @@ vi.mock("@/lib/storage/client", () => ({
   uploadPropertyImage: vi.fn(),
   deletePropertyImage: vi.fn(),
 }));
+
+// Mock property limit helpers
+vi.mock("@/lib/permissions/property-limits", () => ({
+  canCreateProperty: vi.fn(),
+  canUploadImage: vi.fn(),
+  getPropertyLimit: vi.fn(),
+  getImageLimit: vi.fn(),
+  getFeaturedLimit: vi.fn(),
+  getTierDisplayName: vi.fn(),
+  getTierFeatures: vi.fn(),
+  getTierPricing: vi.fn(),
+}));
