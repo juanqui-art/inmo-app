@@ -11,6 +11,25 @@ process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/test";
 // Mock database repositories BEFORE they're imported
 vi.mock("@repo/database", () => {
   return {
+    db: {
+      user: {
+        findUnique: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+      },
+      property: {
+        create: vi.fn(),
+        findUnique: vi.fn(),
+        findMany: vi.fn(),
+        count: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+      },
+      propertyImage: {
+        createMany: vi.fn(),
+        deleteMany: vi.fn(),
+      },
+    },
     propertyRepository: {
       create: vi.fn(),
       update: vi.fn(),

@@ -64,7 +64,7 @@ describe("PropertyRepository", () => {
       };
 
       // Mock the transaction
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -104,7 +104,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -130,7 +130,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -154,7 +154,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -178,7 +178,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -215,7 +215,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -257,7 +257,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -287,7 +287,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -320,7 +320,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -351,7 +351,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -386,7 +386,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -426,7 +426,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -455,7 +455,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -484,7 +484,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 
@@ -511,7 +511,7 @@ describe("PropertyRepository", () => {
         },
       };
 
-      vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      (db.$transaction as any).mockImplementation(async (callback: any) => {
         return callback(mockTx);
       });
 

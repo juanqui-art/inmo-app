@@ -172,6 +172,7 @@ Siempre usar `bunx vitest run` desde `apps/web`, NO `bun test` desde root.
 
 **Timeline**: Diciembre 2-20, 2025 (3 semanas)
 **Inversión**: 40-50 horas (~$2,000-2,500)
+**Status**: 🔄 **EN PROGRESO** (Iniciada Nov 30, 2025)
 
 ### Semana 2: Testing Infrastructure (Dic 2-6)
 
@@ -179,14 +180,27 @@ Siempre usar `bunx vitest run` desde `apps/web`, NO `bun test` desde root.
 
 | Tarea | Entregable | Tiempo | Status |
 |-------|------------|--------|--------|
-| **2.1 Repository Unit Tests** | FavoriteRepo, AppointmentRepo, PropertyImageRepo, UserRepo | 8h | ⏳ |
-| **2.2 Server Action Tests** | Complete properties.test.ts, appointments.test.ts | 6h | ⏳ |
-| **2.3 CI/CD Enforcement** | GitHub Actions con coverage threshold | 4h | ⏳ |
+| **2.1 Fix Failing Tests** | 20 → 0 failing tests | 2h | 🔄 **EN PROGRESO** |
+| **2.2 Repository Unit Tests** | FavoriteRepo, AppointmentRepo, PropertyImageRepo, UserRepo | 8h | ⏳ Pending |
+| **2.3 Server Action Tests** | Complete properties.test.ts, appointments.test.ts | 6h | ⏳ Pending |
+| **2.4 CI/CD Enforcement** | GitHub Actions con coverage threshold | 4h | ⏳ Pending |
+
+**Progreso de Tests**:
+- Estado inicial: 140/160 passing (87.5%) - 20 failing
+- Estado actual: 143/160 passing (89.4%) - 17 failing
+- **Mejora**: +3 tests arreglados ✅
+- **Pendiente**: 17 tests aún requieren fixes
+
+**Trabajo Realizado (Nov 30)**:
+- ✅ Agregado export `db` al mock global (`vitest.setup.ts`)
+- ✅ Arreglado PropertyRepository tests (15 tests de packages/database)
+- ✅ Removido mock duplicado en property-limits.test.ts
+- ✅ Identificados 17 tests restantes que necesitan corrección
 
 **Entregables**:
-- ✅ 40+ tests totales (actualmente 23)
-- ✅ Coverage >25% (actualmente ~5%)
-- ✅ CI/CD bloquea merges si tests fallan
+- ⏳ 160/160 tests passing (100%) - Actualmente: 143/160 (89.4%)
+- ⏳ Coverage >25% (actualmente ~15-20%)
+- ⏳ CI/CD bloquea merges si tests fallan
 
 ---
 

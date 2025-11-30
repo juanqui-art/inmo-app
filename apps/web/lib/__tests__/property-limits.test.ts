@@ -25,20 +25,9 @@ import {
   getTierPricing,
 } from "../permissions/property-limits";
 
-// Mock the database
-vi.mock("@repo/database", () => ({
-  db: {
-    user: {
-      findUnique: vi.fn(),
-    },
-    property: {
-      count: vi.fn(),
-    },
-  },
-}));
-
-const mockUserFindUnique = vi.mocked(db.user.findUnique);
-const mockPropertyCount = vi.mocked(db.property.count);
+// Note: db is already mocked globally in vitest.setup.ts
+const mockUserFindUnique = db.user.findUnique as any;
+const mockPropertyCount = db.property.count as any;
 
 describe("Property Limits - Freemium Model", () => {
   beforeEach(() => {
