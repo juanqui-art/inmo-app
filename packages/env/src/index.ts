@@ -96,6 +96,14 @@ const serverSchema = z.object({
     .min(1, "RESEND_API_KEY is required for email notifications")
     .optional(),
 
+  EMAIL_FROM_DOMAIN: z
+    .string()
+    .min(1)
+    .optional()
+    .describe(
+      "Verified domain for sending emails (e.g., 'inmoapp.com'). Leave empty for test mode.",
+    ),
+
   // Stripe (for subscription payments)
   STRIPE_SECRET_KEY: z
     .string()

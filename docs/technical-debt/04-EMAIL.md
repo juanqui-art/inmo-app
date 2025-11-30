@@ -1,25 +1,80 @@
 # 📧 Email Delivery
 
-> **2 tareas identificadas** | Estimado: 45 min + DNS propagation
-> Status: 🔴 BLOQUEADO - Usuarios no reciben confirmaciones
+> **Status:** ✅ **Test Mode Configured** - Production requires domain verification
+> Last Updated: November 29, 2025
 
 ---
 
-## 📋 Resumen
+## 🧪 Testing Emails in Development (Without Domain)
 
-**Estado Actual:** ⚠️ **Emails NO se entregan a direcciones reales**
+### Quick Test (Immediate)
 
-**Problema:**
-- Usando `test@resend.dev` como sender
-- Resend solo entrega a emails `@resend.dev` en modo test
-- Emails a Gmail, Outlook, etc. **fallan silenciosamente**
+**Current Status:** Email system is configured for testing mode. Emails are sent to `delivered@resend.dev` for verification.
 
-**Impacto:**
-- ❌ Usuarios no reciben confirmación de citas
-- ❌ Agentes no reciben notificación de citas nuevas
-- ❌ Funcionalidad de negocio bloqueada
+1. **Verify test mode is active:**
+   ```bash
+   # Check .env.local - EMAIL_FROM_DOMAIN should be empty or missing
+   grep EMAIL_FROM_DOMAIN apps/web/.env.local
+   # Should return nothing or commented line
+   ```
 
-**Root Cause:** Domain verification pendiente en Resend
+2. **Trigger an appointment email:**
+   - Go to property detail page (e.g., `/propiedades/[id]`)
+   - Fill appointment form and submit
+   - Check terminal logs for:
+     ```
+     [EMAIL] Test mode active - emails sent to delivered@resend.dev
+     [EMAIL] Original recipients: { clientEmail: '...', agentEmail: '...' }
+     ```
+
+3. **Check Resend Dashboard:**
+   - Login to [resend.com](https://resend.com)
+   - Navigate to "Emails" tab
+   - See emails sent to `delivered@resend.dev`
+   - Click email to preview HTML content
+
+### What Works in Test Mode
+- ✅ Email HTML rendering validated
+- ✅ Email sending logic tested
+- ✅ Error handling verified
+- ✅ Subject lines confirmed
+- ✅ Spanish translations checked
+- ✅ Appointment creation successful (non-blocking)
+
+### What Doesn't Work
+- ❌ Real user email delivery (not sent to gmail/outlook/etc)
+- ❌ User experience testing (users won't receive emails)
+- ❌ Production validation
+
+### When Ready for Production
+1. Purchase domain (e.g., `inmoapp.com` from namecheap.com, ~$12-15/year)
+2. Add to Resend Dashboard → Domains → Add Domain
+3. Add DNS records (provided by Resend):
+   - TXT record (domain verification)
+   - DKIM records (email authentication)
+   - SPF record (sender policy)
+4. Wait 5-30 minutes for DNS propagation
+5. Set `EMAIL_FROM_DOMAIN=inmoapp.com` in `.env.local`
+6. Restart dev server: `bun run dev`
+7. Test with your real email address
+
+---
+
+## 📋 Production Readiness Status
+
+**Estado Actual:** ⚠️ **Test Mode Only** - Real emails require domain
+
+**Current Configuration:**
+- ✅ Environment-based email config (`lib/email/config.ts`)
+- ✅ Test mode: `test@resend.dev` → `delivered@resend.dev`
+- ✅ Production ready: Just needs `EMAIL_FROM_DOMAIN` env var
+- ✅ Enhanced logging with test mode indicators
+
+**Migration to Production:**
+- ⏳ Domain purchase pending
+- ⏳ Domain verification in Resend
+- ✅ Code ready (zero changes needed)
+- ✅ One environment variable: `EMAIL_FROM_DOMAIN`
 
 ---
 

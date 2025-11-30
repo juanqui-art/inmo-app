@@ -11,6 +11,7 @@ import {
   formatAppointmentDate,
   getAppointmentEmailSubject,
 } from "@/lib/utils/appointment-helpers";
+import { getEmailConfig, getTestRecipient } from "./config";
 
 /**
  * Resend email response data structure
@@ -69,21 +70,23 @@ interface AppointmentEmailData {
  */
 export async function sendAppointmentCreatedEmail(data: AppointmentEmailData) {
   const resend = getResendClient();
+  const emailConfig = getEmailConfig();
   const appointmentDateFormatted = formatAppointmentDate(data.appointmentDate);
   const subject = getAppointmentEmailSubject("created", data.propertyTitle);
 
-  // Log email attempt
+  // Log email attempt with test mode awareness
   console.log("[sendAppointmentCreatedEmail] Attempting to send emails:", {
     clientEmail: data.clientEmail,
     agentEmail: data.agentEmail,
-    from: "test@resend.dev",
+    from: emailConfig.from,
     propertyTitle: data.propertyTitle,
+    testMode: emailConfig.testMode,
   });
 
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
-    from: "test@resend.dev",
-    to: data.clientEmail,
+    from: emailConfig.from,
+    to: getTestRecipient(data.clientEmail),
     subject,
     html: generateClientAppointmentCreatedHTML(
       data.clientName,
@@ -97,8 +100,8 @@ export async function sendAppointmentCreatedEmail(data: AppointmentEmailData) {
 
   // Email para el agente
   const agentEmailPromise = resend.emails.send({
-    from: "test@resend.dev",
-    to: data.agentEmail,
+    from: emailConfig.from,
+    to: getTestRecipient(data.agentEmail),
     subject: `Nueva cita agendada - ${data.propertyTitle}`,
     html: generateAgentAppointmentCreatedHTML(
       data.agentName,
@@ -147,6 +150,17 @@ export async function sendAppointmentCreatedEmail(data: AppointmentEmailData) {
       });
     }
 
+    // Log test mode info
+    if (emailConfig.testMode) {
+      console.log(
+        "[EMAIL] Test mode active - emails sent to delivered@resend.dev",
+      );
+      console.log("[EMAIL] Original recipients:", {
+        clientEmail: data.clientEmail,
+        agentEmail: data.agentEmail,
+      });
+    }
+
     return {
       success: clientSuccess && agentSuccess,
       clientEmailId: clientSuccess
@@ -185,19 +199,21 @@ export async function sendAppointmentConfirmedEmail(
   data: AppointmentEmailData,
 ) {
   const resend = getResendClient();
+  const emailConfig = getEmailConfig();
   const appointmentDateFormatted = formatAppointmentDate(data.appointmentDate);
   const subject = getAppointmentEmailSubject("confirmed", data.propertyTitle);
 
   console.log("[sendAppointmentConfirmedEmail] Attempting to send emails:", {
     clientEmail: data.clientEmail,
     agentEmail: data.agentEmail,
-    from: "test@resend.dev",
+    from: emailConfig.from,
+    testMode: emailConfig.testMode,
   });
 
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
-    from: "test@resend.dev",
-    to: data.clientEmail,
+    from: emailConfig.from,
+    to: getTestRecipient(data.clientEmail),
     subject,
     html: generateClientAppointmentConfirmedHTML(
       data.clientName,
@@ -210,8 +226,8 @@ export async function sendAppointmentConfirmedEmail(
 
   // Email para el agente (confirmación de que se envió al cliente)
   const agentEmailPromise = resend.emails.send({
-    from: "test@resend.dev",
-    to: data.agentEmail,
+    from: emailConfig.from,
+    to: getTestRecipient(data.agentEmail),
     subject: `Cita confirmada - ${data.propertyTitle}`,
     html: generateAgentAppointmentConfirmedHTML(
       data.clientName,
@@ -255,6 +271,17 @@ export async function sendAppointmentConfirmedEmail(
       });
     }
 
+    // Log test mode info
+    if (emailConfig.testMode) {
+      console.log(
+        "[EMAIL] Test mode active - emails sent to delivered@resend.dev",
+      );
+      console.log("[EMAIL] Original recipients:", {
+        clientEmail: data.clientEmail,
+        agentEmail: data.agentEmail,
+      });
+    }
+
     return {
       success: clientSuccess && agentSuccess,
       clientEmailId: clientSuccess
@@ -294,20 +321,22 @@ export async function sendAppointmentCancelledEmail(
   cancelledBy: "client" | "agent",
 ) {
   const resend = getResendClient();
+  const emailConfig = getEmailConfig();
   const appointmentDateFormatted = formatAppointmentDate(data.appointmentDate);
   const subject = getAppointmentEmailSubject("cancelled", data.propertyTitle);
 
   console.log("[sendAppointmentCancelledEmail] Attempting to send emails:", {
     clientEmail: data.clientEmail,
     agentEmail: data.agentEmail,
-    from: "test@resend.dev",
+    from: emailConfig.from,
     cancelledBy,
+    testMode: emailConfig.testMode,
   });
 
   // Email para el cliente
   const clientEmailPromise = resend.emails.send({
-    from: "test@resend.dev",
-    to: data.clientEmail,
+    from: emailConfig.from,
+    to: getTestRecipient(data.clientEmail),
     subject,
     html: generateClientAppointmentCancelledHTML(
       data.propertyTitle,
@@ -319,8 +348,8 @@ export async function sendAppointmentCancelledEmail(
 
   // Email para el agente
   const agentEmailPromise = resend.emails.send({
-    from: "test@resend.dev",
-    to: data.agentEmail,
+    from: emailConfig.from,
+    to: getTestRecipient(data.agentEmail),
     subject: `Cita cancelada - ${data.propertyTitle}`,
     html: generateAgentAppointmentCancelledHTML(
       data.clientName,
@@ -362,6 +391,17 @@ export async function sendAppointmentCancelledEmail(
         agentFailed: !agentSuccess,
         clientError: clientResult.error,
         agentError: agentResult.error,
+      });
+    }
+
+    // Log test mode info
+    if (emailConfig.testMode) {
+      console.log(
+        "[EMAIL] Test mode active - emails sent to delivered@resend.dev",
+      );
+      console.log("[EMAIL] Original recipients:", {
+        clientEmail: data.clientEmail,
+        agentEmail: data.agentEmail,
       });
     }
 
