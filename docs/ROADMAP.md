@@ -1,7 +1,7 @@
 # 🗺️ InmoApp Roadmap - 2025-2026
 
 > **Última actualización**: Noviembre 29, 2025
-> **Status**: Fase 1 en progreso (66% completada)
+> **Status**: ✅ Fase 1 COMPLETADA (100%) | Fase 2 Iniciando
 > **Objetivo**: MVP Freemium → Producción → Escala
 
 ---
@@ -44,22 +44,22 @@ Noviembre 2025          Diciembre 2025          Enero 2026          Febrero-Abri
 | 1.1 | **Email Domain Verification** | DevOps | 45 min | 🔴 CRÍTICA | ✅ **DONE** (Nov 29) |
 | 1.2 | **Error Handling para Emails** | Backend | 30 min | 🔴 CRÍTICA | ✅ **DONE** (Nov 29) |
 | 1.3 | **React.cache() Implementation** | Backend | 2h | 🟡 ALTA | ✅ **DONE** (Nov 29) |
-| 1.4 | **Map Filters URL Preservation** | Frontend | 2h | 🟢 MEDIA | ⏳ Pending |
+| 1.4 | **Map Filters URL Preservation** | Frontend | 2h | 🟢 MEDIA | ✅ **DONE** (Nov 29) |
 | 1.5 | **Fix Test Suite Execution** | DevOps | 30 min | 🔴 CRÍTICA | ✅ **DONE** (Nov 29) |
 | 1.6 | **Improve Test Coverage** | QA | 1-2h | 🟡 ALTA | ⏳ Optional |
 
-**Progreso Fase 1**: 5/6 tareas completadas (83%)
+**Progreso Fase 1**: ✅ **6/6 tareas completadas (100%)**
 
 ### Criterios de Éxito
 
 - ✅ **COMPLETADO**: Email testing configurado (test mode con delivered@resend.dev)
 - ✅ **COMPLETADO**: Error handling mejorado (logs + warnings en Server Actions)
 - ✅ **COMPLETADO**: Performance mejora 36-50% (React.cache() implementado)
-- ⏳ **PENDIENTE**: Filtros de mapa preservan contexto
+- ✅ **COMPLETADO**: Filtros de mapa preservan contexto (URL bounds sync)
 - ✅ **COMPLETADO**: Test suite ejecuta correctamente (140/160 tests passing - 87.5%)
 - ⏳ **OPCIONAL**: Fix 20 failing tests (database mocks) - No bloqueante
 
-**Status**: 4/6 criterios completados (66%) + 1 opcional
+**Status**: ✅ **5/5 criterios esenciales completados (100%)** + 1 opcional
 
 ### Detalles de Tareas Completadas
 
@@ -102,6 +102,30 @@ Noviembre 2025          Diciembre 2025          Enero 2026          Febrero-Abri
 - ✅ Compatible con `cookies()` (no refactor needed)
 - ✅ Stable API (React 18+)
 - ✅ Quick win (2h vs 8-16h)
+
+#### ✅ 1.4: Map Filters URL Preservation (Nov 29, 2025)
+**Commit**: `e884409`
+**Implementación**:
+- Created `useMapBoundsSync` hook for viewport-URL synchronization
+- Debounced URL updates (500ms) to prevent spam
+- Preserves existing query parameters
+- Uses `router.replace()` to avoid history pollution
+
+**Funcionalidad**:
+- URL updates cuando user pans/zooms map
+- Formato: `/propiedades?view=map&ne_lat=-2.85&ne_lng=-78.95&sw_lat=-2.95&sw_lng=-79.05`
+- Coordinates redondeadas a 4 decimales (~11m precision)
+- Only updates when bounds change significantly
+
+**Beneficios**:
+- ✅ Shareable map URLs (copy/paste exact viewport)
+- ✅ Browser back/forward navigation works
+- ✅ Page refresh preserves map position
+- ✅ Better UX for property exploration
+
+**Archivos**:
+- `components/map/hooks/use-map-bounds-sync.ts` (new - 175 lines)
+- `components/map/map-view.tsx` (integrated hook)
 
 #### ✅ 1.5: Fix Test Suite Execution (Nov 29, 2025)
 **Issue Identificado**: Usando Bun test runner en vez de Vitest
