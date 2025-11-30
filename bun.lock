@@ -82,6 +82,7 @@
         "@prisma/client": "6.19.0",
       },
       "devDependencies": {
+        "pathe": "^2.0.3",
         "prisma": "6.19.0",
         "typescript": "^5",
         "vitest": "^4.0.8",

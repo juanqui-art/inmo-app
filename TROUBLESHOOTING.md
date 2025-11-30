@@ -52,6 +52,7 @@ bun install
 ```bash
 Error: Cannot find module 'jiti'
 Error: Cannot find module './MergeStrategy.js'
+Error: Cannot find module 'pathe'
 Cannot find module 'pure-rand'
 ```
 
@@ -59,17 +60,19 @@ Cannot find module 'pure-rand'
 
 **Solución:**
 ```bash
-# 1. Limpieza nuclear
-rm -rf node_modules bun.lockb ~/.bun/install/cache
+# 1. Agregar dependencias faltantes explícitamente
+cd packages/database
+bun add -D jiti c12 pathe
 
-# 2. Reinstalar todo
+# 2. Si persiste, limpieza nuclear
+rm -rf node_modules bun.lockb ~/.bun/install/cache
 bun install
 
 # 3. Verificar Prisma Client
 ls node_modules/.prisma/client
 # Debe existir y contener archivos
 
-# 4. Si persiste, regenerar manualmente
+# 4. Regenerar manualmente si es necesario
 cd packages/database
 bunx prisma generate
 ```
@@ -278,6 +281,8 @@ ls node_modules/.prisma/client
 
 # 3. Verificar dependencias críticas
 ls node_modules/jiti
+ls node_modules/c12
+ls node_modules/pathe
 ls node_modules/effect/dist/cjs/MergeStrategy.js
 ```
 

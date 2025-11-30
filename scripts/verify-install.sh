@@ -25,11 +25,11 @@ fi
 echo "✅ Prisma Client generado"
 
 # Check critical deps
-DEPS=("jiti" "effect/dist/cjs/MergeStrategy.js" "c12")
+DEPS=("jiti" "effect/dist/cjs/MergeStrategy.js" "c12" "pathe")
 for dep in "${DEPS[@]}"; do
   if [ ! -e "node_modules/$dep" ]; then
     echo "❌ Dependencia crítica faltante: $dep"
-    echo "Ejecuta: bun run fresh"
+    echo "Ejecuta: cd packages/database && bun add -D jiti c12 pathe"
     exit 1
   fi
 done
