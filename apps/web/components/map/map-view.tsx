@@ -10,6 +10,7 @@ import type { TransactionType } from "@repo/database";
 import { env } from "@repo/env";
 import { CLUSTER_CONFIG } from "@/lib/types/map";
 import { formatPriceCompact } from "@/lib/utils/price-helpers";
+import { useMapBoundsSync } from "./hooks/use-map-bounds-sync";
 import { MapSpinner } from "./map-spinner";
 import { PropertyCardHorizontal } from "./property-card-horizontal";
 
@@ -58,6 +59,10 @@ export function MapView({ properties, initialBounds }: MapViewProps) {
   const [selectedProperty, setSelectedProperty] = useState<MapProperty | null>(
     null,
   );
+
+  // Sync map viewport bounds with URL (Phase 1.4 - Map Filters URL Preservation)
+  // Updates URL when user pans/zooms, enables shareable map URLs & browser navigation
+  useMapBoundsSync(mapRef, isMapLoaded);
 
   const handleMapLoad = useCallback(() => {
     setIsMapLoaded(true);
