@@ -30,7 +30,7 @@
     "verify:install": "./scripts/verify-install.sh"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.5",
+    "@biomejs/biome": "2.3.8",
     "react-scan": "^0.4.3"
   },
   "dependencies": {
