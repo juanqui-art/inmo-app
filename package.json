@@ -21,7 +21,13 @@
     "test:web": "cd apps/web && bun run test",
     "pre-commit": "bun run type-check && bun run lint && bun run test",
     "ci": "bun run type-check && bun run lint && bun run test && bun run build",
-    "postinstall": "bun run db:gen"
+    "postinstall": "bun run db:gen",
+    "clean": "rm -rf node_modules bun.lockb apps/web/.next apps/web/node_modules && rm -rf ~/.bun/install/cache",
+    "fresh": "bun run clean && bun install",
+    "rebuild": "bun run fresh && bun run build",
+    "verify": "find node_modules -name '* [0-9]' -type d",
+    "diagnose": "./scripts/diagnose.sh",
+    "verify:install": "./scripts/verify-install.sh"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.5",
