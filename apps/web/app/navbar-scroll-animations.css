@@ -150,22 +150,27 @@
 
 /**
  * Navbar styling when any Radix Dialog is open
- * Makes navbar completely transparent to give maximum focus to modal
+ * Applies same blur as modal overlay for visual coherence
  *
  * Selector explanation:
  * - [data-state="open"][data-radix-dialog-overlay] identifies open Radix Dialog overlay
  * - [role="dialog"] is fallback selector for broader compatibility
  * - :has() checks if body contains the open overlay
  * - Nested [data-navbar] targets the navbar element
+ *
+ * Visual coherence:
+ * - Modal overlay uses backdrop-blur-sm (4px)
+ * - Navbar uses same backdrop-blur-sm (4px)
+ * - Both create unified blurred background effect
  */
 body:has([data-state="open"][data-radix-dialog-overlay]),
 body:has([role="dialog"]) {
   [data-navbar] {
-    /* Remove all background */
+    /* Remove background color for transparency */
     background-color: transparent !important;
 
-    /* Remove blur effect */
-    backdrop-filter: none !important;
+    /* Apply same blur as modal overlay (backdrop-blur-sm = 4px) */
+    backdrop-filter: blur(4px) !important;
 
     /* Remove border */
     border-bottom-color: transparent !important;

@@ -273,7 +273,7 @@ Cuando se abre un modal de autenticación, el navbar cambiaba visualmente a un c
 
 ### Solución Implementada
 
-**Estrategia:** CSS selector con `:has()` para hacer el navbar **completamente transparente** cuando un modal está abierto.
+**Estrategia:** CSS selector con `:has()` para aplicar el mismo blur del modal overlay al navbar, creando coherencia visual perfecta.
 
 **Cambios realizados en `apps/web/app/navbar-scroll-animations.css`:**
 
@@ -282,11 +282,11 @@ Cuando se abre un modal de autenticación, el navbar cambiaba visualmente a un c
 body:has([data-state="open"][data-radix-dialog-overlay]),
 body:has([role="dialog"]) {
   [data-navbar] {
-    /* Remove all background */
+    /* Remove background color for transparency */
     background-color: transparent !important;
 
-    /* Remove blur effect */
-    backdrop-filter: none !important;
+    /* Apply same blur as modal overlay (backdrop-blur-sm = 4px) */
+    backdrop-filter: blur(4px) !important;
 
     /* Remove border */
     border-bottom-color: transparent !important;
@@ -319,8 +319,9 @@ body:has([role="dialog"]) {
 
 ### Beneficios
 
-- ✅ **Máximo foco en modal:** Navbar no distrae, permite concentración total en el contenido del modal
-- ✅ **Aspecto limpio:** Elimina todos los estilos visuales del navbar (background, blur, borde, sombra)
+- ✅ **Coherencia visual perfecta:** Navbar y modal overlay usan el mismo blur (4px)
+- ✅ **Efecto unificado:** Ambos elementos crean un fondo borroso consistente
+- ✅ **Aspecto limpio:** Elimina background color, borde y sombra del navbar
 - ✅ **Automático:** Funciona con cualquier modal de Radix UI sin cambios adicionales
 - ✅ **Performante:** CSS puro, sin JavaScript
 - ✅ **Transiciones suaves:** Cambio visual gradual de 0.3s
@@ -347,10 +348,11 @@ body:has([role="dialog"]) {
 
 ✅ **Verificado:**
 1. Navbar transparente en homepage sin modal (scroll=0)
-2. Navbar se vuelve completamente transparente al abrir modal
+2. Navbar aplica backdrop-blur-sm (4px) al abrir modal - igual que overlay
 3. Transición suave de 0.3s al abrir/cerrar modal
-4. Override correcto de animación de scroll (navbar permanece transparente incluso al scrollear con modal abierto)
+4. Override correcto de animación de scroll (navbar mantiene blur coherente incluso al scrollear con modal abierto)
 5. Compatible con páginas internas (/propiedades)
-6. Links del navbar mantienen contraste suficiente sobre overlay oscuro
+6. Links del navbar mantienen contraste suficiente sobre fondo borroso
+7. Coherencia visual: navbar y overlay crean efecto de blur unificado
 
-**Fecha de implementación:** Diciembre 1, 2025
+**Fecha de implementación:** Diciembre 1, 2025 (actualizado con blur coherente)
