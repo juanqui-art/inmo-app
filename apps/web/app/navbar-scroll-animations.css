@@ -145,6 +145,37 @@
 }
 
 /* ========================================
+   MODAL OPEN STATE
+   ======================================== */
+
+/**
+ * Navbar styling when any Radix Dialog is open
+ * Makes navbar completely transparent to give maximum focus to modal
+ *
+ * Selector explanation:
+ * - [data-state="open"][data-radix-dialog-overlay] identifies open Radix Dialog overlay
+ * - [role="dialog"] is fallback selector for broader compatibility
+ * - :has() checks if body contains the open overlay
+ * - Nested [data-navbar] targets the navbar element
+ */
+body:has([data-state="open"][data-radix-dialog-overlay]),
+body:has([role="dialog"]) {
+  [data-navbar] {
+    /* Remove all background */
+    background-color: transparent !important;
+
+    /* Remove blur effect */
+    backdrop-filter: none !important;
+
+    /* Remove border */
+    border-bottom-color: transparent !important;
+
+    /* Remove shadow */
+    box-shadow: none !important;
+  }
+}
+
+/* ========================================
    FALLBACK FOR UNSUPPORTED BROWSERS
    ======================================== */
 
@@ -185,14 +216,32 @@
 }
 
 /**
+ * Smooth transitions for modal state changes
+ * Applied to all navbar properties that change when modal opens/closes
+ */
+[data-navbar] {
+  transition: backdrop-filter 0.3s ease-out,
+              background-color 0.3s ease-out,
+              border-bottom-color 0.3s ease-out,
+              box-shadow 0.3s ease-out;
+}
+
+/**
  * Force hardware acceleration during scroll
  * Only for browsers that support scroll-driven animations
+ *
+ * REMOVED (2025-01-01): transform: translateZ(0) creates an unnecessary stacking context
+ * that prevents modals from appearing above the hero section. CSS animations are already
+ * GPU-accelerated, so this optimization is redundant and causes z-index issues.
+ * See: docs/MODAL_ZINDEX_ANALYSIS.md for detailed explanation.
  */
+/*
 @supports (animation-timeline: scroll()) {
   [data-navbar] {
-    transform: translateZ(0); /* Force GPU layer */
+    transform: translateZ(0);
   }
 }
+*/
 
 /* ========================================
    ACCESSIBILITY
