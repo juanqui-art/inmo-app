@@ -1,16 +1,12 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { useIsSplitView } from "@/hooks/use-is-split-view";
 
 export function BodyStyleManager() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const isSplitView = useIsSplitView();
 
   useEffect(() => {
-    const view = searchParams.get("view");
-    const isSplitView = pathname === "/propiedades" && view === "map";
-
     if (isSplitView) {
       document.body.classList.add("overflow-hidden");
     } else {
@@ -21,7 +17,7 @@ export function BodyStyleManager() {
     return () => {
       document.body.classList.remove("overflow-hidden");
     };
-  }, [pathname, searchParams]);
+  }, [isSplitView]);
 
   return null;
 }

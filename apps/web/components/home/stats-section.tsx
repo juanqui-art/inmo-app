@@ -98,15 +98,22 @@ export function StatsSection({
   };
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-oslo-gray-900 text-white">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-oslo-gray-900 to-oslo-gray-950 text-white relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[100px]" />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Grid Container */}
         <div
           className="
           grid
           grid-cols-2
           md:grid-cols-4
-          gap-8
+          gap-6
+          md:gap-8
           text-center
         "
         >
@@ -114,69 +121,55 @@ export function StatsSection({
             RESPONSIVE LAYOUT:
             - Mobile: 2 columns (2x2 grid)
             - Desktop: 4 columns (1x4 row)
-
-            WHY 2 cols on mobile?
-            - 1 col = too much scrolling
-            - 3 cols = too cramped
-            - 2 cols = perfect balance
-
-            WHY 4 cols on desktop?
-            - Fits perfectly with 4 stats
-            - Symmetrical
-            - Easy to scan left-to-right
           */}
 
           {/* Stat 1: Properties */}
-          <div className="flex flex-col items-center">
-            <Building2 className="w-12 h-12 mb-4 opacity-90" />
-            <p className="text-4xl font-bold mb-2">
+          <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
+            <div className="p-3 rounded-xl bg-indigo-500/10 mb-4 group-hover:scale-110 transition-transform duration-300">
+              <Building2 className="w-8 h-8 text-indigo-400" />
+            </div>
+            <p className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">
               {formatStat(propertyCount)}
             </p>
-            <p className="text-oslo-gray-400">Propiedades</p>
+            <p className="text-oslo-gray-400 font-medium">Propiedades</p>
           </div>
 
           {/* Stat 2: Cities */}
-          <div className="flex flex-col items-center">
-            <MapPin className="w-12 h-12 mb-4 opacity-90" />
-            <p className="text-4xl font-bold mb-2">{formatStat(cityCount)}</p>
-            <p className="text-oslo-gray-400">Ciudades</p>
+          <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
+            <div className="p-3 rounded-xl bg-indigo-500/10 mb-4 group-hover:scale-110 transition-transform duration-300">
+              <MapPin className="w-8 h-8 text-indigo-400" />
+            </div>
+            <p className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">
+              {formatStat(cityCount)}
+            </p>
+            <p className="text-oslo-gray-400 font-medium">Ciudades</p>
           </div>
 
           {/* Stat 3: Agents */}
-          <div className="flex flex-col items-center">
-            <Users className="w-12 h-12 mb-4 opacity-90" />
-            <p className="text-4xl font-bold mb-2">{formatStat(agentCount)}</p>
-            <p className="text-oslo-gray-400">Agentes</p>
+          <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
+            <div className="p-3 rounded-xl bg-indigo-500/10 mb-4 group-hover:scale-110 transition-transform duration-300">
+              <Users className="w-8 h-8 text-indigo-400" />
+            </div>
+            <p className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">
+              {formatStat(agentCount)}
+            </p>
+            <p className="text-oslo-gray-400 font-medium">Agentes</p>
           </div>
 
           {/* Stat 4: Transactions (Optional) */}
           {transactionsCount !== undefined && (
-            <div className="flex flex-col items-center">
-              <CheckCircle2 className="w-12 h-12 mb-4 opacity-90" />
-              <p className="text-4xl font-bold mb-2">
+            <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
+              <div className="p-3 rounded-xl bg-indigo-500/10 mb-4 group-hover:scale-110 transition-transform duration-300">
+                <CheckCircle2 className="w-8 h-8 text-indigo-400" />
+              </div>
+              <p className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">
                 {formatStat(transactionsCount)}
               </p>
-              <p className="text-oslo-gray-400">Ventas Completadas</p>
+              <p className="text-oslo-gray-400 font-medium">
+                Ventas Completadas
+              </p>
             </div>
           )}
-
-          {/*
-            DESIGN NOTE: Icons
-            - Large (w-12 h-12) for visibility
-            - opacity-90: Subtle, not overpowering
-            - Matches text color (white)
-
-            WHY icons?
-            - Visual anchors (easier to scan)
-            - Universal understanding
-            - Breaks monotony of just numbers
-
-            ICON CHOICE:
-            - Building2: Represents properties
-            - MapPin: Represents locations
-            - Users: Represents people/agents
-            - CheckCircle2: Represents completion
-          */}
         </div>
       </div>
     </section>

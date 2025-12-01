@@ -72,95 +72,90 @@ import Link from "next/link";
 
 export function AgentCTASection() {
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-oslo-gray-900 to-oslo-gray-800 text-white">
-      <div className="max-w-4xl mx-auto text-center">
+    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-oslo-gray-900 to-oslo-gray-950 text-white relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/10 rounded-full blur-[120px]" />
+      </div>
+
+      <div className="max-w-4xl mx-auto text-center relative z-10">
         {/* Heading */}
-        <h2 className="text-4xl font-bold mb-4">¿Eres Agente Inmobiliario?</h2>
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
+          ¿Eres Agente Inmobiliario?
+        </h2>
 
         {/* Subheading */}
-        <p className="text-xl text-oslo-gray-300 mb-8">
+        <p className="text-xl text-oslo-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
           Únete a nuestra plataforma y conecta con miles de compradores
-          potenciales
+          potenciales buscando su próximo hogar.
         </p>
 
         {/* Benefits Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-left">
-          {/*
-            WHY 2 columns?
-            - Scannable: Easy to compare benefits
-            - Balanced: Not overwhelming
-            - Responsive: Stacks nicely on mobile
-
-            WHY left-aligned text?
-            - Readability: Easier to read lists
-            - Professional: Business context
-            - Icons + text: Better alignment
-          */}
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 text-left">
           {/* Benefit 1 */}
-          <div className="flex items-start gap-4 bg-white/10 p-5 rounded-lg backdrop-blur-sm">
-            <TrendingUp className="w-6 h-6 text-indigo-400 flex-shrink-0 mt-1" />
+          <div className="flex items-start gap-5 bg-white/5 p-6 rounded-2xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
+            <div className="p-3 rounded-xl bg-indigo-500/10 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+              <TrendingUp className="w-6 h-6 text-indigo-400" />
+            </div>
             <div>
-              <h3 className="font-semibold text-lg mb-1">Aumenta tus Ventas</h3>
-              <p className="text-oslo-gray-300 text-sm">
-                Llega a compradores activos buscando propiedades ahora mismo
+              <h3 className="font-bold text-lg mb-2 text-white">
+                Aumenta tus Ventas
+              </h3>
+              <p className="text-oslo-gray-400 text-sm leading-relaxed">
+                Llega a compradores activos buscando propiedades ahora mismo en
+                tu zona.
               </p>
             </div>
           </div>
 
           {/* Benefit 2 */}
-          <div className="flex items-start gap-4 bg-white/10 p-5 rounded-lg backdrop-blur-sm">
-            <Users className="w-6 h-6 text-indigo-400 flex-shrink-0 mt-1" />
+          <div className="flex items-start gap-5 bg-white/5 p-6 rounded-2xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
+            <div className="p-3 rounded-xl bg-indigo-500/10 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+              <Users className="w-6 h-6 text-indigo-400" />
+            </div>
             <div>
-              <h3 className="font-semibold text-lg mb-1">
+              <h3 className="font-bold text-lg mb-2 text-white">
                 Gestión Simplificada
               </h3>
-              <p className="text-oslo-gray-300 text-sm">
-                Administra todas tus propiedades desde un solo lugar
+              <p className="text-oslo-gray-400 text-sm leading-relaxed">
+                Administra todas tus propiedades, clientes y citas desde un solo
+                lugar.
               </p>
             </div>
           </div>
 
           {/* Benefit 3 */}
-          <div className="flex items-start gap-4 bg-white/10 p-5 rounded-lg backdrop-blur-sm">
-            <BarChart3 className="w-6 h-6 text-indigo-400 flex-shrink-0 mt-1" />
+          <div className="flex items-start gap-5 bg-white/5 p-6 rounded-2xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
+            <div className="p-3 rounded-xl bg-indigo-500/10 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+              <BarChart3 className="w-6 h-6 text-indigo-400" />
+            </div>
             <div>
-              <h3 className="font-semibold text-lg mb-1">
+              <h3 className="font-bold text-lg mb-2 text-white">
                 Analíticas Detalladas
               </h3>
-              <p className="text-oslo-gray-300 text-sm">
+              <p className="text-oslo-gray-400 text-sm leading-relaxed">
                 Conoce qué propiedades reciben más interés y optimiza tu
-                estrategia
+                estrategia de venta.
               </p>
             </div>
           </div>
 
           {/* Benefit 4 */}
-          <div className="flex items-start gap-4 bg-white/10 p-5 rounded-lg backdrop-blur-sm">
-            <Shield className="w-6 h-6 text-indigo-400 flex-shrink-0 mt-1" />
+          <div className="flex items-start gap-5 bg-white/5 p-6 rounded-2xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
+            <div className="p-3 rounded-xl bg-indigo-500/10 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+              <Shield className="w-6 h-6 text-indigo-400" />
+            </div>
             <div>
-              <h3 className="font-semibold text-lg mb-1">
+              <h3 className="font-bold text-lg mb-2 text-white">
                 Plataforma Confiable
               </h3>
-              <p className="text-oslo-gray-300 text-sm">
-                Sistema seguro y respaldo profesional para tu negocio
+              <p className="text-oslo-gray-400 text-sm leading-relaxed">
+                Sistema seguro y respaldo profesional para potenciar tu negocio
+                inmobiliario.
               </p>
             </div>
           </div>
-
-          {/*
-            DESIGN NOTE: Benefits cards
-            - bg-white/10: Subtle card effect (glassmorphism)
-            - backdrop-blur-sm: Modern blur effect
-            - p-5: Comfortable padding
-            - rounded-lg: Soft corners
-
-            WHY glassmorphism?
-            - Modern: Trendy design pattern
-            - Subtle: Not overwhelming
-            - Depth: Visual hierarchy
-            - Premium feel: Elevates brand
-          */}
         </div>
 
         {/* CTA Button */}
@@ -170,12 +165,12 @@ export function AgentCTASection() {
             className="
               inline-flex items-center gap-2
               px-8 py-4
-              bg-indigo-600 hover:bg-indigo-700
+              bg-indigo-600 hover:bg-indigo-500
               text-white font-bold text-lg
-              rounded-lg
-              shadow-xl hover:shadow-2xl
-              transition-all duration-200
-              transform hover:scale-105
+              rounded-xl
+              shadow-lg hover:shadow-indigo-500/25
+              transition-all duration-300
+              transform hover:-translate-y-1
             "
           >
             Comenzar Ahora
@@ -187,52 +182,20 @@ export function AgentCTASection() {
             className="
               inline-flex items-center
               px-6 py-3
-              text-white/90 hover:text-white
+              text-oslo-gray-300 hover:text-white
               font-medium
-              underline underline-offset-4
               transition-colors duration-200
             "
           >
             Conoce más sobre ser agente
           </Link>
-
-          {/*
-            CTA BUTTON HIERARCHY:
-
-            Primary (Blue button):
-            - Main action (signup)
-            - High contrast
-            - Larger size
-            - Shadow + hover effects
-
-            Secondary (Text link):
-            - Learn more (less commitment)
-            - Subtle styling
-            - Smaller
-            - Underline for clarity
-
-            WHY two CTAs?
-            - Different commitment levels
-            - Primary: Ready to sign up
-            - Secondary: Want more info first
-            - Covers both user states
-          */}
         </div>
 
         {/* Trust Signal */}
-        <p className="text-oslo-gray-400 text-sm mt-6">
-          ✓ Gratis para comenzar • ✓ Sin tarjeta de crédito • ✓ Cancela cuando
-          quieras
+        <p className="text-oslo-gray-500 text-sm mt-8 font-medium">
+          ✓ Gratis para comenzar &nbsp;•&nbsp; ✓ Sin tarjeta de crédito
+          &nbsp;•&nbsp; ✓ Cancela cuando quieras
         </p>
-
-        {/*
-          TRUST SIGNALS:
-          - "Gratis": Removes price objection
-          - "Sin tarjeta": Removes risk/commitment
-          - "Cancela": Freedom (not locked in)
-          - Checkmarks: Visual confirmation
-          - Gray text: Subtle (not overselling)
-        */}
       </div>
     </section>
   );

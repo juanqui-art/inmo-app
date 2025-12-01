@@ -1,71 +1,26 @@
-/**
- * Public Layout - Layout for Public-Facing Pages
- *
- * PATTERN: Route Group Layout (Next.js 15 App Router)
- *
- * WHY use route groups?
- * - Organization: Group related routes without affecting URL
- * - Shared layouts: Apply same layout to multiple pages
- * - Clean URLs: (public) doesn't appear in URL path
- * - Separation: Different layout from /dashboard
- *
- * ROUTE GROUP SYNTAX:
- * - Folder name: (public)
- * - Parentheses: Indicates route group
- * - URL: /propiedades (NOT /public/propiedades)
- *
- * ALTERNATIVE 1: No route group (root layout for all)
- * ❌ Dashboard + public share same header/footer
- * ❌ Less control over public-specific features
- * ✅ Simpler file structure
- *
- * ALTERNATIVE 2: Separate /public prefix
- * ❌ URLs become /public/propiedades (not ideal)
- * ❌ Extra typing
- * ✅ More explicit
- *
- * ✅ We chose Route Groups because:
- * - Clean URLs (no /public prefix)
- * - Separate layouts (public vs dashboard)
- * - Best practice (Next.js recommended)
- * - Easy to understand
- *
- * LAYOUT COMPOSITION:
- * Root Layout → (public)/layout → page
- *
- * EXAMPLE STRUCTURE:
- * app/
- * ├── layout.tsx              ← Root (global styles, metadata)
- * ├── (public)/
- * │   ├── layout.tsx          ← This file (header + footer)
- * │   ├── page.tsx            ← Homepage (/)
- * │   └── propiedades/
- * │       └── page.tsx        ← Listings (/propiedades)
- * └── dashboard/
- *     ├── layout.tsx          ← Dashboard layout
- *     └── page.tsx            ← Dashboard home
- *
- * PERFORMANCE:
- * - Server Component: No JavaScript needed
- * - Static: Header/footer rendered once
- * - Streaming: Children can stream independently
- *
- * PITFALLS:
- * - ⚠️ Don't nest route groups too deep (confusing)
- * - ⚠️ Ensure unique route paths (no conflicts)
- * - ⚠️ Remember route groups don't affect URL
- *
- * RESOURCES:
- * - https://nextjs.org/docs/app/building-your-application/routing/route-groups
- * - https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts
- */
-
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 import { BodyStyleManager } from "@/components/layout/body-style-manager";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { PublicHeader } from "@/components/layout/public-header";
 
+export const metadata: Metadata = {
+  title: {
+    template: "%s | InmoApp",
+    default: "InmoApp - Tu plataforma inmobiliaria",
+  },
+  description: "Encuentra la propiedad de tus sueños con InmoApp.",
+};
+
+/**
+ * Layout público de la aplicación.
+ *
+ * ARQUITECTURA:
+ * - Usa un Route Group (public) para separar el layout de marketing del dashboard.
+ * - Incluye lógica condicional para la "Vista Dividida" (Mapa/Lista) en /propiedades.
+ * - El Header es sticky y el Footer se oculta dinámicamente en vistas de mapa completo.
+ */
 export default function PublicLayout({
   children,
 }: {
@@ -76,106 +31,16 @@ export default function PublicLayout({
       <Suspense fallback={null}>
         <BodyStyleManager />
       </Suspense>
-      {/*
-        HEADER (floating)
-        - Positioned absolutely over hero
-        - Navigation + CTAs
-        - Transparent with backdrop blur
-      */}
+
       <PublicHeader />
 
-      {/*
-        MAIN CONTENT
-        flex-1 para que crezca y llene el espacio disponible
-        WHY? Permite que el mapa ocupe el viewport completo sin scroll
-      */}
       <main className="w-full flex-1">{children}</main>
 
-      {/*
-        FOOTER
-        - Links, social, copyright
-        - Conditional: Hidden on split view (renderizado dentro de PropertySplitView)
-        - Shown on list view normal
-      */}
       <Suspense fallback={<div className="h-16" />}>
         <ConditionalFooter />
       </Suspense>
 
-      {/*
-        TOAST NOTIFICATIONS
-        - Success/error messages
-        - Share confirmations
-        - Copy link feedback
-      */}
       <Toaster position="bottom-right" richColors />
     </div>
   );
 }
-
-/**
- * LAYOUT HIERARCHY:
- *
- * Root Layout (app/layout.tsx):
- * - Global providers (theme, auth)
- * - Global styles (Tailwind, fonts)
- * - Metadata (title, description, OG)
- * - <html>, <body> tags
- *
- * Public Layout (this file):
- * - Public header
- * - Public footer
- * - Applied to: /, /propiedades, /propiedades/[id], etc.
- *
- * Dashboard Layout (app/dashboard/layout.tsx):
- * - Dashboard sidebar
- * - Dashboard header
- * - Applied to: /dashboard, /dashboard/propiedades, etc.
- *
- * WHY separate layouts?
- * - Different navigation (public browse vs agent manage)
- * - Different styling (public marketing vs dashboard utility)
- * - Different goals (convert visitors vs productivity)
- */
-
-/**
- * PAGES USING THIS LAYOUT:
- *
- * ✅ Homepage (/)
- * ✅ Property Listings (/propiedades)
- * ✅ Property Detail (/propiedades/[id])
- * ✅ Agent Profiles (/agentes)
- * ✅ About (/nosotros)
- * ✅ Contact (/contacto)
- * ❌ Dashboard (/dashboard) - Uses separate layout
- * ❌ Auth pages (/login, /signup) - Uses separate layout
- */
-
-/**
- * FUTURE ENHANCEMENTS:
- *
- * 1. Breadcrumbs:
- *    <Breadcrumbs />
- *    Home > Propiedades > Casa en Miami
- *
- * 2. Back to top button:
- *    {showScrollTop && (
- *      <button onClick={scrollToTop}>
- *        ↑ Volver Arriba
- *      </button>
- *    )}
- *
- * 3. Announcement banner:
- *    <AnnouncementBanner>
- *      🎉 Nueva función: Recorridos virtuales!
- *    </AnnouncementBanner>
- *
- * 4. Cookie consent banner:
- *    <CookieConsent />
- *    Positioned fixed at bottom
- *
- * 5. Chat widget:
- *    <ChatWidget />
- *    Live chat with support
- *
- * But keep it simple for now: Just header + content + footer.
- */

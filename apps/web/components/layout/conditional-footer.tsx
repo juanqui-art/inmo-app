@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useIsSplitView } from "@/hooks/use-is-split-view";
 import { PublicFooter } from "./public-footer";
 
 /**
@@ -13,7 +14,7 @@ import { PublicFooter } from "./public-footer";
  */
 export function ConditionalFooter() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const isSplitView = useIsSplitView();
 
   // Hide footer on map page (legacy route)
   if (pathname === "/mapa") {
@@ -22,8 +23,7 @@ export function ConditionalFooter() {
 
   // Hide footer on split view (/propiedades?view=map)
   // because footer is now rendered at end of list column in PropertySplitView
-  const view = searchParams.get("view");
-  if (pathname === "/propiedades" && view === "map") {
+  if (isSplitView) {
     return null;
   }
 

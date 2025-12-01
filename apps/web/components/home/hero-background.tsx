@@ -9,11 +9,10 @@
  * - Fast: Loads once, cached
  * - Industry Standard: Zillow, Redfin use static hero images
  *
- * PERFORMANCE NOTES:
- * - Next.js Image: Automatic WebP conversion
- * - Priority loading: Loads before other images
- * - fill + object-cover: Covers entire container
- * - Dark overlay: Ensures text readability
+ * OPTIMIZATIONS:
+ * ✅ Memoized to prevent re-renders
+ * ✅ Next.js Image optimization (WebP, priority loading)
+ * ✅ Gradient overlay for text readability
  *
  * RESOURCES:
  * - https://nextjs.org/docs/api-reference/next/image
@@ -21,14 +20,15 @@
  */
 
 import Image from "next/image";
+import { memo } from "react";
 
-export function HeroBackground() {
+function HeroBackgroundComponent() {
   return (
     <div className="absolute inset-0 z-0">
       {/* Background Image - Full Screen */}
       <Image
         src="/hero_section.jpg"
-        alt="Hero background"
+        alt="Modern real estate property showcasing luxury living spaces"
         fill
         priority
         className="object-cover"
@@ -36,11 +36,18 @@ export function HeroBackground() {
         sizes="100vw"
       />
 
-      {/* Gradient overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
+      {/* Gradient overlay for text readability - Darkened for better contrast */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/10" />
     </div>
   );
 }
+
+/**
+ * Memoized export to prevent re-renders
+ * Background never changes, so no need to re-render
+ */
+export const HeroBackground = memo(HeroBackgroundComponent);
+HeroBackground.displayName = "HeroBackground";
 
 /**
  * Future Enhancements:

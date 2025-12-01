@@ -37,7 +37,7 @@ export function PublicHeaderClient({
   return (
     <header
       data-navbar={isHomepage ? "homepage" : "pages"}
-      className="sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
+      className="sticky top-0 z-50 backdrop-blur-lg border-b border-white/10 shadow-lg shadow-black/20"
     >
       <nav className=" mx-auto px-4 sm:px-6 lg:px-8">
         <div
