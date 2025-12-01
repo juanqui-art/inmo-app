@@ -51,12 +51,14 @@ Total: 8-12 horas              $400-600
 
 **Semana 2** (Dic 2-6): Testing
 ```
+✅ Fix failing tests           [2h]      ✅ COMPLETADO
 □ Repository tests             [8h]      Coverage: 5% → 15%
 □ Server Action tests          [6h]
 □ CI/CD enforcement            [4h]
 ─────────────────────────────────────────────────
-Total: 18h                     ~$900
+Total: 18h (~2h completado)    ~$900
 Target: 25% coverage
+Status: Tests existentes 100%, nuevos tests pendientes
 ```
 
 **Semana 3** (Dic 9-13): Logging
@@ -324,26 +326,19 @@ Ver: `docs/business/DECISIONS_APPROVED.md`
 
 ---
 
-## 🎯 Esta Semana (Nov 25-29)
+## 🎯 Esta Semana (Dic 2-6)
 
-### Lunes
-- [ ] 🔴 Email domain verification
-- [ ] 🔴 Fix Prisma issue
-
-### Martes
-- [ ] 🟡 React.cache() implementation
-- [ ] 🟡 Map filters fix
+### Lunes-Martes ✅
+- [x] 🟢 Fix 17 failing tests → **COMPLETADO** (160/160 passing)
 
 ### Miércoles
-- [ ] 🟡 Full test suite
-- [ ] 🟢 Documentation
+- [ ] 🟡 Repository unit tests - FavoriteRepo (3h)
 
 ### Jueves
-- [ ] 🟡 Plan Fase 2
-- [ ] 🟢 Setup board
+- [ ] 🟡 Repository unit tests - AppointmentRepo (3h)
 
 ### Viernes
-- [ ] ✅ Review & metrics
-- [ ] 🎯 Kick-off Fase 2
+- [ ] 🟡 CI/CD setup + review (4h)
 
-**Meta semana**: ✅ 4/4 urgencias completadas
+**Meta semana**: Tests 100% + Coverage >25% + CI/CD
+**Progreso**: 1/4 tareas completadas (25%)

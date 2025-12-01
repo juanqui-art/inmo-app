@@ -180,26 +180,27 @@ Siempre usar `bunx vitest run` desde `apps/web`, NO `bun test` desde root.
 
 | Tarea | Entregable | Tiempo | Status |
 |-------|------------|--------|--------|
-| **2.1 Fix Failing Tests** | 20 → 0 failing tests | 2h | 🔄 **EN PROGRESO** |
+| **2.1 Fix Failing Tests** | 20 → 0 failing tests | 2h | ✅ **COMPLETADO** |
 | **2.2 Repository Unit Tests** | FavoriteRepo, AppointmentRepo, PropertyImageRepo, UserRepo | 8h | ⏳ Pending |
 | **2.3 Server Action Tests** | Complete properties.test.ts, appointments.test.ts | 6h | ⏳ Pending |
 | **2.4 CI/CD Enforcement** | GitHub Actions con coverage threshold | 4h | ⏳ Pending |
 
 **Progreso de Tests**:
 - Estado inicial: 140/160 passing (87.5%) - 20 failing
-- Estado actual: 143/160 passing (89.4%) - 17 failing
-- **Mejora**: +3 tests arreglados ✅
-- **Pendiente**: 17 tests aún requieren fixes
+- Estado Dic 1: ✅ **160/160 passing (100%) - 0 failing**
+- **Mejora**: +20 tests arreglados ✅
+- **Meta Fase 2 Semana 2**: 100% de tests pasando - ✅ **LOGRADO**
 
-**Trabajo Realizado (Nov 30)**:
+**Trabajo Realizado (Nov 30 - Dic 1)**:
 - ✅ Agregado export `db` al mock global (`vitest.setup.ts`)
 - ✅ Arreglado PropertyRepository tests (15 tests de packages/database)
 - ✅ Removido mock duplicado en property-limits.test.ts
-- ✅ Identificados 17 tests restantes que necesitan corrección
+- ✅ Corregidos 17 tests restantes
+- ✅ **Todos los 160 tests ahora pasan correctamente**
 
 **Entregables**:
-- ⏳ 160/160 tests passing (100%) - Actualmente: 143/160 (89.4%)
-- ⏳ Coverage >25% (actualmente ~15-20%)
+- ✅ **160/160 tests passing (100%)** - COMPLETADO
+- ⏳ Coverage >25% (actualmente ~15-20%) - Requiere nuevos tests
 - ⏳ CI/CD bloquea merges si tests fallan
 
 ---
@@ -251,11 +252,13 @@ Siempre usar `bunx vitest run` desde `apps/web`, NO `bun test` desde root.
 
 ### Hitos de Fase 2
 
+**Progreso actual**: Semana 2 - 25% completado
+
 **Métricas de éxito**:
-- ✅ Test Coverage: 5% → 25%
-- ✅ MTTR (Mean Time to Resolve): 2h → 30min
-- ✅ Error visibility: 0% → 100%
-- ✅ Security score: 6/10 → 8/10
+- 🔄 Test Coverage: 5% → 25% (actualmente ~15-20%, tests existentes al 100%)
+- ⏳ MTTR (Mean Time to Resolve): 2h → 30min (Sentry pendiente)
+- ⏳ Error visibility: 0% → 100% (Logging pendiente)
+- ⏳ Security score: 6/10 → 8/10 (Security headers pendientes)
 
 **Inversión total Fase 2**: ~$2,250
 **ROI**: Debugging 5x más rápido
