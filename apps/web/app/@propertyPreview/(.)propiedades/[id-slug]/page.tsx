@@ -105,7 +105,7 @@ export default function PropertyPreviewModal({
 
     startTransition(async () => {
       const result = await toggleFavoriteAction(property.id);
-      if (result.success) {
+      if (result.success && result.isFavorite !== undefined) {
         setIsFavorite(result.isFavorite);
         toast.success(
           result.isFavorite ? "Agregado a favoritos" : "Eliminado de favoritos",

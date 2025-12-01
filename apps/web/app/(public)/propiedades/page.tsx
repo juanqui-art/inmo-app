@@ -174,10 +174,10 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
       displayBounds
         ? // OPTIMIZED: Fetch only properties within map viewport bounds
           propertyRepository.findInBounds({
-            minLatitude: displayBounds.south,
-            maxLatitude: displayBounds.north,
-            minLongitude: displayBounds.west,
-            maxLongitude: displayBounds.east,
+            minLatitude: displayBounds.sw_lat,
+            maxLatitude: displayBounds.ne_lat,
+            minLongitude: displayBounds.sw_lng,
+            maxLongitude: displayBounds.ne_lng,
             filters: {
               ...filters,
               status: "AVAILABLE",

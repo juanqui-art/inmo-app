@@ -78,7 +78,7 @@ function debounce<T extends (...args: any[]) => void>(
  * After:  /propiedades?view=map&city=Cuenca&ne_lat=-2.85&ne_lng=-78.95&sw_lat=-2.95&sw_lng=-79.05
  */
 export function useMapBoundsSync(
-  mapRef: RefObject<MapRef>,
+  mapRef: RefObject<MapRef | null>,
   isMapLoaded: boolean,
 ) {
   const router = useRouter();
@@ -97,6 +97,9 @@ export function useMapBoundsSync(
 
     const map = mapRef.current.getMap();
     const bounds = map.getBounds();
+
+    // Ensure bounds exist before processing
+    if (!bounds) return;
 
     // Extract bounds coordinates
     const ne = bounds.getNorthEast();
