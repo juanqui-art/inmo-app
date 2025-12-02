@@ -3,12 +3,16 @@
  * URL: /signup
  */
 
-import Link from "next/link";
-import { Suspense } from "react";
 import { GoogleButton } from "@/components/auth/google-button";
 import { SignupForm } from "@/components/auth/signup-form";
+import Link from "next/link";
+import { Suspense } from "react";
 
-export default function SignupPage() {
+export default function SignupPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-md space-y-8">
@@ -40,7 +44,10 @@ export default function SignupPage() {
           </div>
 
           {/* Email/Password Form */}
-          <SignupForm />
+          <SignupForm
+            role={searchParams.role as string}
+            redirect={searchParams.redirect as string}
+          />
         </div>
 
         {/* Link a Login */}

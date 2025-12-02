@@ -10,11 +10,17 @@
  * - Rol (CLIENT, AGENT, ADMIN)
  */
 
+import { signupAction } from "@/app/actions/auth";
 import { Button, Input, Label } from "@repo/ui";
 import { useActionState } from "react";
-import { signupAction } from "@/app/actions/auth";
 
-export function SignupForm() {
+export function SignupForm({
+  role,
+  redirect,
+}: {
+  role?: string;
+  redirect?: string;
+}) {
   const [state, formAction, isPending] = useActionState(
     signupAction,
     undefined,
@@ -22,6 +28,7 @@ export function SignupForm() {
 
   return (
     <form action={formAction} className="space-y-4">
+      {redirect && <input type="hidden" name="redirect" value={redirect} />}
       {/* Nombre */}
       <div className="space-y-2">
         <Label htmlFor="name">Nombre completo</Label>
@@ -78,7 +85,7 @@ export function SignupForm() {
           name="role"
           className="flex h-10 w-full rounded-md border border-oslo-gray-300 dark:border-oslo-gray-700 bg-white dark:bg-oslo-gray-1000 px-3 py-2 text-sm text-oslo-gray-900 dark:text-oslo-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           required
-          defaultValue="CLIENT"
+          defaultValue={role || "CLIENT"}
         >
           <option value="CLIENT">Cliente (Busco propiedades)</option>
           <option value="AGENT">Agente (Publico propiedades)</option>

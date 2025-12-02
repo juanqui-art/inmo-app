@@ -16,11 +16,11 @@
 
 "use server";
 
+import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/utils/logger";
+import { loginSchema, signupSchema } from "@/lib/validations/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { loginSchema, signupSchema } from "@/lib/validations/auth";
-import { logger } from "@/lib/utils/logger";
 
 /**
  * SIGNUP ACTION - Registrar nuevo usuario
@@ -38,6 +38,7 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
     role: formData.get("role") as "CLIENT" | "AGENT" | "ADMIN",
+    redirect: formData.get("redirect") as string | null,
   };
 
   // 2. Validar con Zod schema
@@ -86,6 +87,11 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
   revalidatePath("/", "layout");
 
   // 6. Redirigir según rol
+  const redirectParam = rawData.redirect;
+  if (redirectParam?.startsWith("/")) {
+    return redirect(redirectParam);
+  }
+
   switch (role) {
     case "ADMIN":
       return redirect("/admin");
