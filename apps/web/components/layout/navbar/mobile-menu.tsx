@@ -44,23 +44,23 @@ export function MobileMenu({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-neutral-950 flex flex-col animate-in slide-in-from-bottom-5 duration-300"
+      className="fixed inset-0 z-50 bg-gradient-to-b from-oslo-gray-1000 via-oslo-gray-1000 to-oslo-gray-950 flex flex-col animate-in slide-in-from-bottom-5 duration-300"
       role="dialog"
       aria-modal="true"
       aria-label="Menú de navegación"
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-white/5">
-        <span className="font-bold text-2xl text-white tracking-tight">
+      <div className="flex items-center justify-between h-14 px-4 sm:px-6 border-b border-white/10">
+        <span className="font-bold text-xl text-white tracking-tight">
           InmoApp
         </span>
         <button
           type="button"
           onClick={onClose}
-          className="p-2 -mr-2 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white"
+          className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white/70 hover:text-white"
           aria-label="Cerrar menú"
         >
-          <X className="w-8 h-8" />
+          <X className="w-6 h-6" />
         </button>
       </div>
 
