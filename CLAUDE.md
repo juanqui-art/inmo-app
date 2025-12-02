@@ -558,13 +558,13 @@ TOTAL:              289 tests ✅ (100% passing)
 - ✅ Test runner fix (Vitest working correctly)
 - ✅ Test improvements (140 → 160 tests passing)
 
-**Phase 2 (Foundations):** 🔄 Week 2 Active - Testing Infrastructure (Dec 2-6)
+**Phase 2 (Foundations):** ✅ Week 2 COMPLETADO - Testing Infrastructure (Dec 2-6)
 - ✅ **COMPLETADO**: Fix 17 failing tests (160/160 passing)
 - ✅ **COMPLETADO**: Repository unit tests (+114 tests, 289/289 passing)
-- ⏳ **PENDING**: CI/CD enforcement (4h)
-- ⏳ **PENDING**: Coverage measurement (2h)
+- ✅ **COMPLETADO**: CI/CD enforcement (GitHub Actions + coverage)
+- ✅ **COMPLETADO**: Coverage measurement (46.53%, target: 25%)
 
-**Progress Week 2:** 2/4 tareas (50%) | Coverage: ~25-30% ✅ Meta alcanzada
+**Progress Week 2:** ✅ 4/4 tareas (100%) | Coverage: 46.53% 🎉 Meta SUPERADA
 
 **Next (from ROADMAP.md):**
 - **Week 3 (Dec 9-13):** Logging & Monitoring (Sentry, structured logging)
