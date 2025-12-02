@@ -6,7 +6,8 @@
  * MIGRATION NOTES:
  * v1.0.0: Manual optimistic updates with useState + useCallback (197 lines)
  * v2.0.0: Context + useOptimistic + useTransition (220 lines with flickering)
- * v3.0.0: Zustand with persist middleware (30 lines, no flickering) ← CURRENT
+ * v3.0.0: Zustand with persist middleware (30 lines, no flickering)
+ * v3.1.0: Added auth redirect via custom events (parallel routes support) ← CURRENT
  *
  * USAGE (unchanged):
  * const { isFavorite, toggleFavorite, isPending } = useFavorites();
@@ -17,6 +18,7 @@
 
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useFavoritesStore } from "@/stores/favorites-store";
 
@@ -41,6 +43,7 @@ import { useFavoritesStore } from "@/stores/favorites-store";
  */
 export function useFavorites() {
   const store = useFavoritesStore();
+  const router = useRouter();
 
   // Load favorites from server on mount (only once)
   // This runs in background and syncs localStorage with server
@@ -53,6 +56,32 @@ export function useFavorites() {
     store.isInitialized, // Non-blocking - UI shows localStorage state immediately
     store.loadFavorites,
   ]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Listen for auth-required events from the store
+  // When user is not authenticated, store emits event and we handle redirect
+  useEffect(() => {
+    const handleAuthRequired = (
+      event: CustomEvent<{ propertyId: string }>,
+    ) => {
+      const { propertyId } = event.detail;
+      // Use Next.js router for client-side navigation
+      // This triggers parallel route interception (@auth/(.)login)
+      router.push(`/login?intent=favorite&propertyId=${propertyId}`);
+    };
+
+    // Type-safe event listener
+    window.addEventListener(
+      "favorites:auth-required",
+      handleAuthRequired as EventListener,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "favorites:auth-required",
+        handleAuthRequired as EventListener,
+      );
+    };
+  }, [router]);
 
   return {
     // State - comes from localStorage immediately (via persist middleware)

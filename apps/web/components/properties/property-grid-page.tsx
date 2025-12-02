@@ -16,19 +16,17 @@
  * - Child components also read from store directly
  */
 
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { AuthModal } from "@/components/auth/auth-modal";
 import { FilterBar } from "@/components/map/filters/filter-bar";
 import { useFilterUrlSync } from "@/components/map/filters/use-filter-url-sync";
 import { useFavorites } from "@/hooks/use-favorites";
-import { useAuthStore } from "@/stores/auth-store";
 import { usePropertyGridStore } from "@/stores/property-grid-store";
+import { useSearchParams } from "next/navigation";
 import { PropertyCard } from "./property-card";
 import { PropertyCardSkeleton } from "./property-card-skeleton";
 import { PropertyGridPagination } from "./property-grid-pagination";
 import { PropertyListSchema } from "./property-list-schema";
 import { PropertyListTitle } from "./property-list-title";
+import { PropertyViewBottomBar } from "./property-view-bottom-bar";
 
 export function PropertyGridPage() {
   // Sync filters between URL and store
@@ -38,11 +36,7 @@ export function PropertyGridPage() {
   const { properties, total, currentPage, totalPages, isLoading } =
     usePropertyGridStore();
 
-  // UI state (local, not stored globally)
-  const [showAuthModal, setShowAuthModal] = useState(false);
-
   // External dependencies
-  const isAuth = useAuthStore((state) => state.isAuthenticated);
   const { isFavorite, toggleFavorite } = useFavorites();
   const searchParams = useSearchParams();
 
@@ -52,15 +46,8 @@ export function PropertyGridPage() {
   // Build current filter query string for view toggle
   const filterString = searchParams.toString();
 
-  // Handle favorite toggle
+  // Simplified: toggleFavorite now handles auth check internally
   const handleFavoriteToggle = (propertyId: string) => {
-    if (!isAuth) {
-      // Show auth modal if not authenticated
-      setShowAuthModal(true);
-      return;
-    }
-
-    // If authenticated, toggle favorite (shows toast)
     toggleFavorite(propertyId);
   };
 
@@ -100,9 +87,6 @@ export function PropertyGridPage() {
             </a>
           </div>
         </div>
-
-        {/* Auth Modal */}
-        <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
       </div>
     );
   }
@@ -136,18 +120,18 @@ export function PropertyGridPage() {
       {/* Content Area - No overflow, scrolls at body level */}
       <div className="flex-1 flex flex-col">
         {/* Inner container with padding and max-width */}
-        <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8 py-6 md:py-8">
           {/* Grid Layout */}
           {isLoading ? (
             // Loading state: Show skeletons
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {Array.from({ length: 12 }).map((_, i) => (
                 <PropertyCardSkeleton key={`skeleton-${i}`} />
               ))}
             </div>
           ) : (
             // Loaded state: Show properties
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 isolate">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 isolate">
               {properties.map((property) => (
                 <PropertyCard
                   key={property.id}
@@ -163,14 +147,18 @@ export function PropertyGridPage() {
 
         {/* Pagination - Sticky at bottom */}
         {totalPages > 1 && !isLoading && (
-          <div className="flex-shrink-0 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-8">
+          <div className="flex-shrink-0 max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8 pb-6 md:pb-8">
             <PropertyGridPagination />
           </div>
         )}
       </div>
 
-      {/* Auth Modal */}
-      <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
+      {/* Mobile Bottom Bar with View Toggle */}
+      <PropertyViewBottomBar
+        currentView={currentView}
+        filters={filterString}
+        totalResults={total}
+      />
     </div>
   );
 }

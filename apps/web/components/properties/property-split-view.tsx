@@ -32,14 +32,11 @@
  */
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { AuthModal } from "@/components/auth/auth-modal";
 import { PublicFooter } from "@/components/layout/public-footer";
 import { FilterBar } from "@/components/map/filters/filter-bar";
 import { useFilterUrlSync } from "@/components/map/filters/use-filter-url-sync";
 import { MapView } from "@/components/map/map-view";
 import { useFavorites } from "@/hooks/use-favorites";
-import { useAuthStore } from "@/stores/auth-store";
 import { useMapStore } from "@/stores/map-store";
 import { usePropertyGridStore } from "@/stores/property-grid-store";
 import { PropertyCard } from "./property-card";
@@ -71,16 +68,9 @@ export function PropertySplitView() {
   const priceRangeMax = useMapStore((state) => state.priceRangeMax);
 
   // =========================================================================
-  // UI STATE
-  // =========================================================================
-
-  const [showAuthModal, setShowAuthModal] = useState(false);
-
-  // =========================================================================
   // EXTERNAL DEPENDENCIES
   // =========================================================================
 
-  const isAuth = useAuthStore((state) => state.isAuthenticated);
   const { isFavorite, toggleFavorite } = useFavorites();
   const searchParams = useSearchParams();
 
@@ -94,11 +84,8 @@ export function PropertySplitView() {
 
   const setHoveredProperty = useMapStore((state) => state.setHoveredProperty);
 
+  // Simplified: toggleFavorite now handles auth check internally
   const handleFavoriteToggle = (propertyId: string) => {
-    if (!isAuth) {
-      setShowAuthModal(true);
-      return;
-    }
     toggleFavorite(propertyId);
   };
 
@@ -185,10 +172,6 @@ export function PropertySplitView() {
         </div>
       </div>
 
-      {/* ===================================================================
-          AUTH MODAL
-          =================================================================== */}
-      <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
     </div>
   );
 }

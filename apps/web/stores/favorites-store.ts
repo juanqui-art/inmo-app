@@ -120,6 +120,14 @@ const favoritesStorage = {
 };
 
 // ============================================================================
+// DEBOUNCE STATE (prevents race conditions from rapid clicks)
+// ============================================================================
+
+let lastClickTime = 0;
+let lastClickPropertyId: string | null = null;
+const DEBOUNCE_MS = 300;
+
+// ============================================================================
 // STORE
 // ============================================================================
 
@@ -142,13 +150,27 @@ export const useFavoritesStore = create<FavoritesState>()(
        * Toggle favorite (Optimistic Update)
        *
        * FLOW:
+       * 0. Debounce check (prevent race conditions from rapid clicks)
        * 1. Add/remove from favorites (instant UI update)
        * 2. Mark as pending
        * 3. Sync with server (background)
        * 4. On success: update confirmed state
        * 5. On error: rollback + show toast
+       * 6. On auth error: redirect to login with intent
        */
       toggleFavorite: async (propertyId: string) => {
+        // PASO 0: Debounce check - prevent race conditions
+        const now = Date.now();
+        if (
+          propertyId === lastClickPropertyId &&
+          now - lastClickTime < DEBOUNCE_MS
+        ) {
+          // Ignore rapid duplicate clicks on same property
+          return;
+        }
+        lastClickTime = now;
+        lastClickPropertyId = propertyId;
+
         const {
           favorites,
           _addToFavorites,
@@ -176,7 +198,44 @@ export const useFavoritesStore = create<FavoritesState>()(
 
           // PASO 4: Handle response
           if (!result.success) {
-            // Error: rollback
+            // Check if error is authentication-related
+            if (
+              result.error?.includes("Authentication required") ||
+              result.error?.includes("autenticación")
+            ) {
+              // PASO 4a: Auth error → Save intent and emit custom event for redirect
+              // Rollback optimistic update first
+              if (wasLiked) {
+                _addToFavorites(propertyId);
+              } else {
+                _removeFromFavorites(propertyId);
+              }
+
+              // Save intent to localStorage (for post-auth execution)
+              if (typeof window !== "undefined") {
+                localStorage.setItem(
+                  "authIntent",
+                  JSON.stringify({
+                    action: "favorite",
+                    propertyId,
+                    redirectTo: window.location.pathname,
+                  }),
+                );
+
+                // Emit custom event for components to handle redirect
+                // Components with router access will listen to this event
+                window.dispatchEvent(
+                  new CustomEvent("favorites:auth-required", {
+                    detail: { propertyId },
+                  }),
+                );
+              }
+
+              _removeFromPending(propertyId);
+              return;
+            }
+
+            // PASO 4b: Other error → rollback + show toast
             if (wasLiked) {
               _addToFavorites(propertyId);
             } else {

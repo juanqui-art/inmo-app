@@ -32,7 +32,6 @@ import Map, {
   type MapRef,
   type ViewStateChangeEvent,
 } from "react-map-gl/mapbox";
-import { AuthModal } from "@/components/auth/auth-modal";
 import { CLUSTER_CONFIG, DEFAULT_MAP_CONFIG } from "@/lib/types/map";
 import { ClusterMarker } from "../cluster-marker";
 import {
@@ -69,7 +68,7 @@ interface MapContainerProps {
   mapboxToken: string;
   /** Properties to display as markers */
   properties: MapProperty[];
-  /** Whether user is authenticated (for auth modals) */
+  /** Whether user is authenticated (for auth modals) - Keep for backward compatibility, not used internally */
   isAuthenticated?: boolean;
   /** AI Search results - for display info */
   searchResults?: Array<{
@@ -87,19 +86,12 @@ export function MapContainer({
   mapStyle,
   mapboxToken,
   properties,
-  isAuthenticated = false,
   searchResults,
 }: MapContainerProps) {
   const router = useRouter();
 
   // State for selected property popup
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
-    null,
-  );
-
-  // State for auth modal (when unauthenticated user tries to favorite)
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [pendingPropertyId, setPendingPropertyId] = useState<string | null>(
     null,
   );
 
@@ -119,15 +111,6 @@ export function MapContainer({
   const handleMarkerClick = useCallback((property: MapProperty) => {
     setSelectedPropertyId(property.id);
   }, []);
-
-  // Handle unauthenticated favorite click - show auth modal
-  const handleUnauthenticatedFavoriteClick = useCallback(
-    (propertyId: string) => {
-      setPendingPropertyId(propertyId);
-      setShowAuthModal(true);
-    },
-    [],
-  );
 
   // Handle drawer property click - navigate to details
   const handleDrawerPropertyClick = useCallback(
@@ -240,9 +223,6 @@ export function MapContainer({
               setSelectedPropertyId(null);
               handleDrawerPropertyClick(selectedProperty.id);
             }}
-            onUnauthenticatedFavoriteClick={
-              !isAuthenticated ? handleUnauthenticatedFavoriteClick : undefined
-            }
           />
         )}
       </Map>
@@ -278,13 +258,6 @@ export function MapContainer({
       {/*<div className="absolute bottom-0 right-0 z-10 bg-white/90 dark:bg-oslo-gray-900/90 px-2 py-1 text-[10px] text-oslo-gray-600 dark:text-oslo-gray-400">*/}
       {/*  © MapBox © OpenStreetMap*/}
       {/*</div>*/}
-
-      {/* Auth Modal (at top level, outside MapBox popup container) */}
-      <AuthModal
-        open={showAuthModal}
-        onOpenChange={setShowAuthModal}
-        propertyId={pendingPropertyId || undefined}
-      />
     </div>
   );
 }

@@ -53,7 +53,6 @@
 
 "use client";
 
-import { AuthModal } from "@/components/auth/auth-modal";
 import { PropertyCard } from "@/components/properties/property-card";
 import { useFavorites } from "@/hooks/use-favorites";
 import type { SerializedProperty } from "@repo/database";
@@ -64,25 +63,16 @@ import { ViewMoreCard } from "./view-more-card";
 
 interface RecentListingsSectionProps {
   properties: SerializedProperty[];
-  isAuthenticated?: boolean;
+  isAuthenticated?: boolean; // Keep for backward compatibility, not used internally
 }
 
 export function RecentListingsSection({
   properties,
-  isAuthenticated = false,
 }: RecentListingsSectionProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [pendingPropertyId, setPendingPropertyId] = useState<string | null>(
-    null,
-  );
 
+  // Simplified: toggleFavorite now handles auth check internally
   const handleFavoriteClick = (propertyId: string) => {
-    if (!isAuthenticated) {
-      setPendingPropertyId(propertyId);
-      setShowAuthModal(true);
-      return;
-    }
     toggleFavorite(propertyId);
   };
 
@@ -221,12 +211,6 @@ export function RecentListingsSection({
           )}
         </div>
       </div>
-
-      <AuthModal
-        open={showAuthModal}
-        onOpenChange={setShowAuthModal}
-        propertyId={pendingPropertyId || undefined}
-      />
     </section>
   );
 }
