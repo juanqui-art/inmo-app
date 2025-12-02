@@ -29,20 +29,21 @@
  * - Rationale: Industry best practices (Booking.com, Hotels.com pattern)
  */
 
-import {
-  getPropertiesList,
-  type PropertyFilters,
-  propertyRepository,
-} from "@repo/database";
-import type { Metadata } from "next";
 import { MapPageClient } from "@/components/map/map-page-client";
 import MapStoreInitializer from "@/components/map/map-store-initializer";
 import { PropertyGridPage } from "@/components/properties/property-grid-page";
 import { PropertySplitView } from "@/components/properties/property-split-view";
 import { getCurrentUser } from "@/lib/auth";
+import { toMapProperties } from "@/lib/utils/property-mappers";
 import { parseBoundsParams, parseFilterParams } from "@/lib/utils/url-helpers";
 import AuthStoreInitializer from "@/stores/AuthStoreInitializer";
 import PropertyGridStoreInitializer from "@/stores/PropertyGridStoreInitializer";
+import {
+    getPropertiesList,
+    type PropertyFilters,
+    propertyRepository,
+} from "@repo/database";
+import type { Metadata } from "next";
 
 interface PropiedadesPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -135,202 +136,117 @@ export default async function PropiedadesPage(props: PropiedadesPageProps) {
   // Fetch current user (needed for auth state)
   const currentUser = await getCurrentUser();
 
-  // CONDITIONAL DATA FETCHING based on view
-  if (isMapView) {
-    // =========================================================================
-    // MAP VIEW: Fetch data for BOTH list and map (needed for split view)
-    // =========================================================================
+  // Common params
+  const page = Math.max(1, Number(searchParams.page) || 1);
+  const pageSize = 12;
+  const displayBounds = isMapView ? parseBoundsParams(searchParams) : null;
 
-    // Parse map bounds from URL
-    const displayBounds = parseBoundsParams(searchParams);
-
-    // Get page number for list side (default: 1)
-    const page = Math.max(1, Number(searchParams.page) || 1);
-    const pageSize = 12; // Properties per page in list
-
-    // Fetch both list data (paginated) and map data (all properties) in parallel
-    //
-    // PERFORMANCE OPTIMIZATION (Nov 29, 2025):
-    // - Use findInBounds() when map viewport bounds are available
-    // - Loads only properties within visible area (30-50% fewer properties)
-    // - Falls back to full list (1000 cap) when no bounds provided
-    // - findInBounds() is already cached with React.cache()
-    const [
-      { properties: listProperties, total },
-      { properties: allProperties },
-      { minPrice: priceRangeMin, maxPrice: priceRangeMax },
-      priceDistribution,
-    ] = await Promise.all([
-      // List data (paginated)
-      getPropertiesList({
-        filters: {
-          ...filters,
-          status: "AVAILABLE",
-        },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      }),
-      // Map data: Use bounds optimization when available
-      displayBounds
-        ? // OPTIMIZED: Fetch only properties within map viewport bounds
-          propertyRepository.findInBounds({
-            minLatitude: displayBounds.sw_lat,
-            maxLatitude: displayBounds.ne_lat,
-            minLongitude: displayBounds.sw_lng,
-            maxLongitude: displayBounds.ne_lng,
-            filters: {
-              ...filters,
-              status: "AVAILABLE",
-            },
-            take: 1000,
-          })
-        : // FALLBACK: Fetch all properties when no bounds (initial load)
-          propertyRepository.list({
-            filters: {
-              ...filters,
-              status: "AVAILABLE",
-            },
-            take: 1000,
-          }),
-      // Price range for filters
-      propertyRepository.getPriceRange(filters),
-      // Price distribution for map
-      propertyRepository.getPriceDistribution({
-        filters,
-      }),
-    ]);
-
-    // Calculate pagination
-    const totalPages = Math.ceil(total / pageSize);
-
-    // Type assertion: SerializedProperty[] → MapProperty[]
-    const mapProperties =
-      allProperties as unknown as import("@/components/map/map-view").MapProperty[];
-
-    return (
-      <>
-        {/* Initialize auth store */}
-        <AuthStoreInitializer user={currentUser} />
-
-        {/* Initialize property grid store (for list side of split view) */}
-        <PropertyGridStoreInitializer
-          properties={listProperties}
-          total={total}
-          currentPage={page}
-          totalPages={totalPages}
-          pageSize={pageSize}
-          filters={filters}
-        />
-
-        {/* Initialize map store (for map side of split view) */}
-        <MapStoreInitializer
-          properties={mapProperties}
-          priceDistribution={priceDistribution}
-          priceRangeMin={priceRangeMin}
-          priceRangeMax={priceRangeMax}
-          filters={filterState}
-        />
-
-        {/* RESPONSIVE RENDERING:
-            - Desktop (≥1024px): Split View (50/50 list + map)
-            - Mobile (<1024px): Full-screen map only */}
-
-        {/* Desktop: Split View */}
-        <div className="hidden lg:block">
-          <PropertySplitView />
-        </div>
-
-        {/* Mobile: Full-screen map */}
-        <div className="lg:hidden">
-          <MapPageClient
-            initialBounds={displayBounds ?? undefined}
-            totalProperties={total}
-            filters={filters}
-          />
-        </div>
-      </>
-    );
-  } else {
-    // =========================================================================
-    // LIST VIEW (default): Fetch data for grid display with pagination
-    // =========================================================================
-
-    // Get page number (default: 1)
-    const page = Math.max(1, Number(searchParams.page) || 1);
-    const pageSize = 12; // Properties per page
-
-    // Fetch paginated list data, full data for filters, and price stats in parallel
-    const [
-      { properties, total },
-      { properties: allPropertiesForFilters },
-      { minPrice: priceRangeMin, maxPrice: priceRangeMax },
-      priceDistribution,
-    ] = await Promise.all([
-      // 1. Paginated properties for the current page view
-      getPropertiesList({
-        filters: {
-          ...filters,
-          status: "AVAILABLE",
-        },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      }),
-      // 2. All properties matching filters (for client-side filter controls)
-      propertyRepository.list({
-        filters: {
-          ...filters,
-          status: "AVAILABLE",
-        },
-        take: 1000, // Capped at 1000 for performance
-      }),
-      // 3. Price range for the filter slider
-      propertyRepository.getPriceRange({
+  // Unified Data Fetching
+  // We fetch:
+  // 1. Paginated list (for grid view)
+  // 2. Map/Filter properties (for map pins OR client-side filter stats)
+  // 3. Price stats (for filter sliders)
+  const [
+    { properties: listProperties, total },
+    { properties: mapOrFilterProperties },
+    { minPrice: priceRangeMin, maxPrice: priceRangeMax },
+    priceDistribution,
+  ] = await Promise.all([
+    // 1. List data (always paginated)
+    getPropertiesList({
+      filters: {
         ...filters,
         status: "AVAILABLE",
-      }),
-      // 4. Price distribution for the histogram in filters
-      propertyRepository.getPriceDistribution({
-        filters: {
-          ...filters,
-          status: "AVAILABLE",
-        },
-      }),
-    ]);
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    // 2. Map/Filter data (context dependent)
+    isMapView && displayBounds
+      ? // OPTIMIZED: Fetch only properties within map viewport bounds
+        propertyRepository.findInBounds({
+          minLatitude: displayBounds.sw_lat,
+          maxLatitude: displayBounds.ne_lat,
+          minLongitude: displayBounds.sw_lng,
+          maxLongitude: displayBounds.ne_lng,
+          filters: {
+            ...filters,
+            status: "AVAILABLE",
+          },
+          take: 1000,
+        })
+      : // FALLBACK / LIST VIEW: Fetch properties for filters (capped)
+        propertyRepository.list({
+          filters: {
+            ...filters,
+            status: "AVAILABLE",
+          },
+          take: 1000,
+        }),
+    // 3. Price range
+    propertyRepository.getPriceRange({
+      ...filters,
+      status: "AVAILABLE",
+    }),
+    // 4. Price distribution
+    propertyRepository.getPriceDistribution({
+      filters: {
+        ...filters,
+        status: "AVAILABLE",
+      },
+    }),
+  ]);
 
-    // Calculate pagination
-    const totalPages = Math.ceil(total / pageSize);
+  // Calculate pagination
+  const totalPages = Math.ceil(total / pageSize);
 
-    // Type assertion for map properties
-    const mapProperties =
-      allPropertiesForFilters as unknown as import("@/components/map/map-view").MapProperty[];
+  // Convert SerializedProperty[] to MapProperty[] using type-safe mapper
+  const mapProperties = toMapProperties(mapOrFilterProperties);
 
-    return (
-      <>
-        {/* Initialize auth store */}
-        <AuthStoreInitializer user={currentUser} />
+  return (
+    <>
+      {/* Initialize auth store */}
+      <AuthStoreInitializer user={currentUser} />
 
-        {/* Initialize property grid store with fetched data */}
-        <PropertyGridStoreInitializer
-          properties={properties}
-          total={total}
-          currentPage={page}
-          totalPages={totalPages}
-          pageSize={pageSize}
-          filters={filters}
-        />
+      {/* Initialize property grid store (for list view / list side) */}
+      <PropertyGridStoreInitializer
+        properties={listProperties}
+        total={total}
+        currentPage={page}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        filters={filters}
+      />
 
-        {/* Initialize map store (needed for FilterBar to work) */}
-        <MapStoreInitializer
-          properties={mapProperties} // Pass all properties for filter controls
-          priceDistribution={priceDistribution}
-          priceRangeMin={priceRangeMin}
-          priceRangeMax={priceRangeMax}
-          filters={filterState}
-        />
+      {/* Initialize map store (for map view / filter bar) */}
+      <MapStoreInitializer
+        properties={mapProperties}
+        priceDistribution={priceDistribution}
+        priceRangeMin={priceRangeMin}
+        priceRangeMax={priceRangeMax}
+        filters={filterState}
+      />
 
-        {/* Render list view */}
+      {isMapView ? (
+        <>
+          {/* Desktop: Split View */}
+          <div className="hidden lg:block">
+            <PropertySplitView />
+          </div>
+
+          {/* Mobile: Full-screen map */}
+          <div className="lg:hidden">
+            <MapPageClient
+              initialBounds={displayBounds ?? undefined}
+              totalProperties={total}
+              filters={filters}
+            />
+          </div>
+        </>
+      ) : (
+        /* List View */
         <PropertyGridPage />
-      </>
-    );
-  }
+      )}
+    </>
+  );
 }

@@ -17,6 +17,7 @@
 import type { PropertyFilters } from "@repo/database";
 import { useSearchParams } from "next/navigation";
 import { PropertyListTitle } from "@/components/properties/property-list-title";
+import { PropertyViewBottomBar } from "@/components/properties/property-view-bottom-bar";
 import type { MapBounds } from "@/lib/utils/url-helpers";
 import { useMapStore } from "@/stores/map-store";
 import { FilterBar } from "./filters/filter-bar";
@@ -92,6 +93,13 @@ export function MapPageClient({
           priceRangeMax={priceRangeMax}
         />
       </div>
+
+      {/* Mobile Bottom Bar with View Toggle */}
+      <PropertyViewBottomBar
+        currentView={currentView}
+        filters={filterString}
+        totalResults={totalProperties ?? properties.length}
+      />
     </div>
   );
 }
