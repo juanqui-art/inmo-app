@@ -27,13 +27,6 @@ export const AuthButtons = forwardRef<HTMLDivElement, AuthButtonsProps>(
           >
             Ingresar
           </Link>
-
-          <Link
-            href="/vender"
-            className="px-4 py-2 font-semibold rounded-lg transition-all bg-neutral-800 text-white/80 hover:bg-neutral-800/60 hover:text-white hover:scale-105 shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
-          >
-            Publicar anuncio
-          </Link>
         </div>
       );
     }
@@ -47,14 +40,6 @@ export const AuthButtons = forwardRef<HTMLDivElement, AuthButtonsProps>(
           className="block w-full px-4 py-3 text-center text-oslo-gray-100 font-medium border-2 border-oslo-gray-700 rounded-lg hover:bg-oslo-gray-800 transition-colors"
         >
           Ingresar
-        </Link>
-
-        <Link
-          href="/vender"
-          onClick={onNavigate}
-          className="block w-full px-4 py-3 text-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg transition-colors"
-        >
-          Publicar anuncio
         </Link>
       </div>
     );

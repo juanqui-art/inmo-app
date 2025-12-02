@@ -19,20 +19,13 @@ export interface NavLink {
  * - Comprar, Rentar, Vender
  * - NO Favoritos (requires auth)
  */
-export const PUBLIC_NAV_LINKS: NavLink[] = [
-  { href: "/mapa?transactionType=SALE", label: "Comprar" },
-  { href: "/mapa?transactionType=RENT", label: "Rentar" },
-  { href: "/vender", label: "Vender" },
-];
+export const PUBLIC_NAV_LINKS: NavLink[] = [];
 
 /**
  * Authenticated navigation links
- * - Comprar, Rentar, Vender, Favoritos
+ * - Favoritos
  */
 export const AUTHENTICATED_NAV_LINKS: NavLink[] = [
-  { href: "/mapa?transactionType=SALE", label: "Comprar" },
-  { href: "/mapa?transactionType=RENT", label: "Rentar" },
-  { href: "/vender", label: "Vender" },
   { href: "/favoritos", label: "Favoritos", icon: "heart" },
 ];
 

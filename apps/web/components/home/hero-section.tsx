@@ -145,24 +145,24 @@ export function HeroSection() {
       }
 
       // ============================================================
-      // 2. HEADING: Blur-to-Focus Character Reveal
+      // 2. HEADING: Blur-to-Focus Word Reveal
       // ============================================================
       if (headingRef.current) {
         splitInstance = new SplitText(headingRef.current, {
-          type: "chars",
-          charsClass: "char",
+          type: "words",
+          wordsClass: "word",
         });
 
         // Set initial state: blurred with reduced scale
-        gsap.set(splitInstance.chars, {
+        gsap.set(splitInstance.words, {
           filter: `blur(${ANIMATION_CONFIG.heading.blurAmount}px)`,
           opacity: 0,
           scale: 0.8,
         });
 
-        // Animate blur-to-focus character reveal
+        // Animate blur-to-focus word reveal
         tl.to(
-          splitInstance.chars,
+          splitInstance.words,
           {
             filter: "blur(0px)",
             opacity: 1,

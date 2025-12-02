@@ -22,12 +22,12 @@
 
 "use client";
 
-import { useRouter } from "next/navigation";
-import { type FormEvent, useRef } from "react";
 import { useKeyboardNavigation } from "@/hooks/use-keyboard-navigation";
 import { useSearchAutocomplete } from "@/hooks/use-search-autocomplete";
 import { useSearchHistory } from "@/hooks/use-search-history";
 import { useSearchInputAnimation } from "@/hooks/use-search-input-animation";
+import { useRouter } from "next/navigation";
+import { type FormEvent, useRef } from "react";
 import { QUICK_SEARCH_CATEGORIES } from "./hero-search-bar/constants";
 import { SearchDropdown } from "./hero-search-bar/search-dropdown";
 import { SearchInput } from "./hero-search-bar/search-input";
@@ -67,14 +67,14 @@ export function HeroSearchBar() {
     }
 
     // Otherwise, search by text query
-    router.push(`/mapa?q=${encodeURIComponent(query)}`);
+    router.push(`/propiedades?q=${encodeURIComponent(query)}`);
   };
 
   /**
    * Navigate to map with selected city filter
    */
   const navigateToCity = (city: (typeof suggestions)[0]) => {
-    router.push(`/mapa?city=${encodeURIComponent(city.name)}`);
+    router.push(`/propiedades?city=${encodeURIComponent(city.name)}`);
     clearSuggestions();
   };
 
@@ -110,9 +110,9 @@ export function HeroSearchBar() {
    */
   const handleHistoryClick = (item: { query: string; type: string }) => {
     if (item.type === "city") {
-      router.push(`/mapa?city=${encodeURIComponent(item.query)}`);
+      router.push(`/propiedades?city=${encodeURIComponent(item.query)}`);
     } else {
-      router.push(`/mapa?q=${encodeURIComponent(item.query)}`);
+      router.push(`/propiedades?q=${encodeURIComponent(item.query)}`);
     }
     addSearch(item.query, item.type as "city" | "query");
   };
@@ -121,7 +121,7 @@ export function HeroSearchBar() {
    * Handle quick search category click
    */
   const handleQuickSearchClick = (categoryQuery: string) => {
-    router.push(`/mapa?${categoryQuery}`);
+    router.push(`/propiedades?${categoryQuery}`);
   };
 
   return (

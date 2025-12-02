@@ -11,10 +11,10 @@
 
 "use client";
 
+import type { SafeUser } from "@/lib/auth";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
-import type { SafeUser } from "@/lib/auth";
 import { AuthButtons } from "./auth-buttons";
 import { getNavLinks } from "./constants/nav-links";
 import { FavoritesDropdown } from "./favorites-dropdown";
@@ -67,6 +67,14 @@ export function DesktopNav({ isAuthenticated, user }: DesktopNavProps) {
 
       {/* Vertical Divider */}
       <div className="h-6 w-px bg-white/30" />
+
+      {/* Action Button: Vender */}
+      <Link
+        href="/vender"
+        className="px-4 py-2 font-semibold rounded-lg transition-all bg-neutral-800 text-white/80 hover:bg-neutral-800/60 hover:text-white hover:scale-105 shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
+      >
+        Publicar anuncio
+      </Link>
 
       {/* Auth Section */}
       {isAuthenticated ? (
