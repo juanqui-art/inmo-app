@@ -13,7 +13,7 @@
 "use client";
 
 import type { SafeUser } from "@/lib/auth";
-import { Heart, LogOut, PlusCircle, Search, Settings, User, X } from "lucide-react";
+import { Heart, Home as HomeIcon, LogOut, PlusCircle, Search, Settings, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
 import { AuthButtons } from "./auth-buttons";
@@ -51,9 +51,9 @@ export function MobileMenu({
     >
       {/* Header */}
       <div className="flex items-center justify-between h-14 px-4 sm:px-6 border-b border-white/10">
-        <span className="font-bold text-xl text-white tracking-tight">
-          InmoApp
-        </span>
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-indigo-600">
+          <HomeIcon className="w-5 h-5 text-white" />
+        </div>
         <button
           type="button"
           onClick={onClose}
