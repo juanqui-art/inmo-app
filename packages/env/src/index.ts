@@ -68,6 +68,22 @@ const clientSchema = z.object({
       "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY must be a valid Stripe publishable key",
     )
     .optional(),
+
+  // Sentry (public DSN for client-side error tracking)
+  NEXT_PUBLIC_SENTRY_DSN: z
+    .string()
+    .url("NEXT_PUBLIC_SENTRY_DSN must be a valid Sentry DSN URL")
+    .optional(),
+
+  NEXT_PUBLIC_SENTRY_ENVIRONMENT: z
+    .string()
+    .optional()
+    .describe("Sentry environment (development, staging, production)"),
+
+  NEXT_PUBLIC_SENTRY_ENABLED: z
+    .string()
+    .optional()
+    .describe("Enable Sentry in development (true/false)"),
 });
 
 /**
@@ -134,6 +150,27 @@ const serverSchema = z.object({
     .min(1, "STRIPE_PRO_PRICE_ID is required")
     .startsWith("price_", "STRIPE_PRO_PRICE_ID must be a valid Stripe price ID")
     .optional(),
+
+  // Sentry (server-side error tracking)
+  SENTRY_DSN: z
+    .string()
+    .url("SENTRY_DSN must be a valid Sentry DSN URL")
+    .optional(),
+
+  SENTRY_ENVIRONMENT: z
+    .string()
+    .optional()
+    .describe("Sentry environment (development, staging, production)"),
+
+  SENTRY_ENABLED: z
+    .string()
+    .optional()
+    .describe("Enable Sentry in development (true/false)"),
+
+  SENTRY_AUTH_TOKEN: z
+    .string()
+    .optional()
+    .describe("Sentry auth token for uploading source maps"),
 
   NODE_ENV: z
     .enum(["development", "production", "test"])

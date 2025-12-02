@@ -20,6 +20,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { loginSchema, signupSchema } from "@/lib/validations/auth";
+import { logger } from "@/lib/utils/logger";
 
 /**
  * SIGNUP ACTION - Registrar nuevo usuario
@@ -69,7 +70,7 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
   });
 
   if (error) {
-    console.error("Supabase signup error:", error);
+    logger.error({ err: error, email }, "Supabase signup error");
     return {
       error: { general: error.message },
     };
@@ -134,7 +135,7 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
   });
 
   if (error) {
-    console.error("Supabase login error:", error);
+    logger.error({ err: error, email }, "Supabase login error");
     return {
       error: { general: error.message || "Credenciales inválidas" },
     };
@@ -173,8 +174,9 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
     // Actualizar dbUser local para la redirección correcta
     dbUser.role = metadataRole;
 
-    console.log(
-      `[AUTH] Synced role from metadata to DB for user ${dbUser.id}: ${metadataRole}`,
+    logger.info(
+      { userId: dbUser.id, role: metadataRole },
+      "[AUTH] Synced role from metadata to DB",
     );
   } else if (!metadataRole && dbUser.role) {
     // Si no hay rol en metadata pero sí en DB, actualizar metadata (caso legacy)
@@ -186,8 +188,9 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
       },
     });
 
-    console.log(
-      `[AUTH] Synced role from DB to metadata for user ${dbUser.id}: ${dbUser.role}`,
+    logger.info(
+      { userId: dbUser.id, role: dbUser.role },
+      "[AUTH] Synced role from DB to metadata",
     );
   }
 

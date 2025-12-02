@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@/components/error-boundary";
 import { ReactScanProvider } from "@/components/react-scan-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
@@ -43,9 +44,11 @@ export default function RootLayout({
           enableSystem
           storageKey="inmoapp-theme"
         >
-          {children}
-          {auth}
-          {propertyPreview}
+          <ErrorBoundary>
+            {children}
+            {auth}
+            {propertyPreview}
+          </ErrorBoundary>
         </ThemeProvider>
       </body>
     </html>
