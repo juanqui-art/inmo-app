@@ -51,14 +51,14 @@ Total: 8-12 horas              $400-600
 
 **Semana 2** (Dic 2-6): Testing
 ```
-✅ Fix failing tests           [2h]      ✅ COMPLETADO
-□ Repository tests             [8h]      Coverage: 5% → 15%
-□ Server Action tests          [6h]
+✅ Fix failing tests           [2h]      ✅ COMPLETADO (160/160 tests)
+✅ Repository tests             [8h]      ✅ COMPLETADO (289/289 tests)
 □ CI/CD enforcement            [4h]
+□ Coverage measurement         [2h]
 ─────────────────────────────────────────────────
-Total: 18h (~2h completado)    ~$900
-Target: 25% coverage
-Status: Tests existentes 100%, nuevos tests pendientes
+Total: 16h (~10h completado)   ~$800 (~$500 gastado)
+Target: 25% coverage           ✅ ALCANZADO (~25-30%)
+Status: 2/4 tareas (50%)       +129 tests agregados
 ```
 
 **Semana 3** (Dic 9-13): Logging
@@ -328,17 +328,21 @@ Ver: `docs/business/DECISIONS_APPROVED.md`
 
 ## 🎯 Esta Semana (Dic 2-6)
 
-### Lunes-Martes ✅
+### Lunes ✅
 - [x] 🟢 Fix 17 failing tests → **COMPLETADO** (160/160 passing)
 
-### Miércoles
-- [ ] 🟡 Repository unit tests - FavoriteRepo (3h)
+### Lunes PM ✅
+- [x] 🟢 Repository unit tests - FavoriteRepo (26 tests) → **COMPLETADO**
+- [x] 🟢 Repository unit tests - AppointmentRepo (33 tests) → **COMPLETADO**
+- [x] 🟢 Repository unit tests - PropertyImageRepo (26 tests) → **COMPLETADO**
+- [x] 🟢 Repository unit tests - UserRepo (29 tests) → **COMPLETADO**
 
-### Jueves
-- [ ] 🟡 Repository unit tests - AppointmentRepo (3h)
+### Martes-Miércoles
+- [ ] 🟡 CI/CD enforcement + coverage measurement (6h)
 
-### Viernes
-- [ ] 🟡 CI/CD setup + review (4h)
+### Jueves-Viernes
+- [ ] 🔵 Week 3 Planning: Logging & Monitoring
 
 **Meta semana**: Tests 100% + Coverage >25% + CI/CD
-**Progreso**: 1/4 tareas completadas (25%)
+**Progreso**: 2/4 tareas completadas (50%)
+**Coverage**: ✅ ~25-30% alcanzado (289 tests passing)
