@@ -11,6 +11,7 @@
 | Necesidad | Documento |
 |-----------|-----------|
 | 🚀 Comandos rápidos | [QUICK_REFERENCE.md](#quick-reference) |
+| ⚡ **CI/CD Actual (Dec 2025)** | **[CI_CD_GUIDE.md](#cicd-guide)** ✨ **NUEVO** |
 | 📚 Entender todo el sistema | [TESTING_AND_CI_CD.md](#testing-and-cicd) |
 | ✅ Activar GitHub Actions | [CI_CD_SETUP_SUMMARY.md](#setup-summary) |
 | 🧪 Escribir tests | [TESTING_GUIDE.md](#testing-guide) |
@@ -19,6 +20,31 @@
 ---
 
 ## 📄 Documentos Disponibles
+
+### CI_CD_GUIDE.md ✨ NUEVO
+**Guía actualizada de CI/CD (Diciembre 2025)**
+
+**Contenido:**
+- Estado actual del CI/CD (ACTIVO)
+- 289 tests ejecutándose automáticamente
+- Coverage enforcement (46.53%, target: 25%)
+- GitHub Actions workflow explicado
+- Comandos locales y troubleshooting
+- Métricas y performance actual
+
+**Cuándo usar:**
+- Entender el CI/CD implementado
+- Ver coverage actual y thresholds
+- Comandos para ejecutar tests
+- Troubleshooting de CI
+
+**Audiencia:** Todos los desarrolladores
+
+**Tiempo de lectura:** 10-15 minutos
+
+[📖 Ver documento](./CI_CD_GUIDE.md)
+
+---
 
 ### QUICK_REFERENCE.md
 **Cheat Sheet para día a día**
@@ -369,6 +395,16 @@ bun run ci
 
 ---
 
-**Last Updated:** November 17, 2025
+**Last Updated:** December 1, 2025
 **Maintained by:** Engineering Team
 **For updates:** See individual document headers
+
+---
+
+## 🎉 Recent Updates (Dec 1, 2025)
+
+- ✅ **CI/CD_GUIDE.md** - Nuevo documento con estado actual del CI/CD
+- ✅ CI/CD Pipeline implementado y activo
+- ✅ 289 tests ejecutándose automáticamente
+- ✅ Coverage 46.53% (superó meta de 25%)
+- ✅ GitHub Actions configurado y funcional
