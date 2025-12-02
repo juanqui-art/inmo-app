@@ -11,7 +11,7 @@ export default defineConfig({
     include: ["**/__tests__/**/*.{test,spec}.{ts,tsx}"],
     coverage: {
       provider: "v8",
-      reporter: ["text", "json", "html"],
+      reporter: ["text", "json", "html", "lcov"],
       exclude: [
         "node_modules/",
         ".next/",
@@ -19,7 +19,15 @@ export default defineConfig({
         "vitest.setup.ts",
         "**/*.d.ts",
         "**/__tests__/**",
+        "**/*.config.{ts,js}",
+        "**/types/**",
       ],
+      thresholds: {
+        lines: 25,
+        functions: 20,
+        branches: 20,
+        statements: 25,
+      },
     },
   },
   resolve: {

@@ -21,6 +21,7 @@
     "@prisma/client": "6.19.0"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.14",
     "pathe": "^2.0.3",
     "prisma": "6.19.0",
     "typescript": "^5",
