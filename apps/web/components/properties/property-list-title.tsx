@@ -95,7 +95,7 @@ export function PropertyListTitle({
     filters.bathrooms;
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-3 border-b border-oslo-gray-800">
+    <div className="px-4 sm:px-6 lg:px-8 pt-2 ">
       <div>
         <h2 className="text-lg font-semibold text-oslo-gray-50">
           {title}{" "}

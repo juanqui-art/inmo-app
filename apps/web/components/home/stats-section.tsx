@@ -111,7 +111,7 @@ export function StatsSection({
           className="
           grid
           grid-cols-2
-          md:grid-cols-4
+          md:grid-cols-3
           gap-6
           md:gap-8
           text-center

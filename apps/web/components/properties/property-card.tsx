@@ -1,5 +1,14 @@
 "use client";
 
+import { PropertyImageFallback } from "@/components/map/property-image-fallback";
+import { CATEGORY_BADGE_STYLE } from "@/lib/styles/property-card-styles";
+import {
+    formatPropertyPrice,
+    getCategoryLabel,
+    getTransactionBadgeStyle,
+    TRANSACTION_TYPE_LABELS,
+} from "@/lib/utils/property-formatters";
+import { generateSlug } from "@/lib/utils/slug-generator";
 import type { PropertyWithRelations, SerializedProperty } from "@repo/database";
 import { Badge } from "@repo/ui";
 import { Bath, Bed, Heart, MapPin, Maximize, Share2 } from "lucide-react";
@@ -7,15 +16,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { PropertyImageFallback } from "@/components/map/property-image-fallback";
-import { CATEGORY_BADGE_STYLE } from "@/lib/styles/property-card-styles";
-import {
-  formatPropertyPrice,
-  getCategoryLabel,
-  getTransactionBadgeStyle,
-  TRANSACTION_TYPE_LABELS,
-} from "@/lib/utils/property-formatters";
-import { generateSlug } from "@/lib/utils/slug-generator";
 
 interface PropertyCardProps {
   property: PropertyWithRelations | SerializedProperty;
@@ -143,7 +143,7 @@ export function PropertyCard({
   };
 
   return (
-    <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden bg-oslo-gray-900 shadow-lg hover:shadow-xl transition-all duration-300 group border border-oslo-gray-800 hover:border-oslo-gray-700 z-0">
+    <div className="relative w-full aspect-[3/4] md:aspect-[4/5] rounded-xl md:rounded-2xl overflow-hidden bg-oslo-gray-900 shadow-lg hover:shadow-xl transition-all duration-300 group border border-oslo-gray-800 hover:border-oslo-gray-700 z-0">
       {/* Image Container & Overlays */}
       <div
         className="relative w-full h-full cursor-pointer"
@@ -171,7 +171,7 @@ export function PropertyCard({
         )}
 
         {/* Top Content: Badges & Favorite Button */}
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-20">
+        <div className="absolute top-3 left-3 right-3 md:top-4 md:left-4 md:right-4 flex justify-between items-start z-20">
           <div className="flex flex-col gap-2">
             <Badge className={transactionBadgeStyle}>
               {TRANSACTION_TYPE_LABELS[property.transactionType]}
@@ -191,7 +191,7 @@ export function PropertyCard({
                   e.stopPropagation();
                   onFavoriteToggle(property.id);
                 }}
-                className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                className="w-10 h-10 md:w-9 md:h-9 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
                 aria-label={
                   isFavorite ? "Remove from favorites" : "Add to favorites"
                 }
@@ -207,7 +207,7 @@ export function PropertyCard({
               type="button"
               onClick={handleShare}
               disabled={isSharing}
-              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-10 h-10 md:w-9 md:h-9 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Share property"
             >
               <Share2 className="w-5 h-5 text-white" />
@@ -299,19 +299,19 @@ export function PropertyCard({
         )}
 
         {/* Bottom Info Section */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+        <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 z-10">
           <Link
             href={`/propiedades/${property.id}-${generateSlug(property.title)}`}
             className="block"
           >
             <div className="space-y-2">
               <div>
-                <p className="text-white text-3xl font-medium font-stretch-120% drop-shadow-lg">
+                <p className="text-white text-2xl md:text-3xl font-medium font-stretch-120% drop-shadow-lg">
                   {formattedPrice}
                 </p>
               </div>
               <div>
-                <h3 className="text-white font-semibold text-lg line-clamp-1 hover:underline drop-shadow-md">
+                <h3 className="text-white font-semibold text-base md:text-lg line-clamp-1 hover:underline drop-shadow-md">
                   {property.title}
                 </h3>
                 {(property.city || property.state) && (

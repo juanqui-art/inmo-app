@@ -64,7 +64,7 @@ export function PropertyViewToggle({
           title="Ver como lista"
         >
           <Grid3x3 className="w-4 h-4" />
-          <span className="hidden sm:inline">Lista</span>
+          <span className="hidden xs:inline sm:inline">Lista</span>
         </Link>
       </ToggleGroup.Item>
 
@@ -84,7 +84,7 @@ export function PropertyViewToggle({
           title="Ver como mapa"
         >
           <Map className="w-4 h-4" />
-          <span className="hidden sm:inline">Mapa</span>
+          <span className="hidden xs:inline sm:inline">Mapa</span>
         </Link>
       </ToggleGroup.Item>
     </ToggleGroup.Root>
