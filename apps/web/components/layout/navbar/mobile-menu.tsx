@@ -44,7 +44,7 @@ export function MobileMenu({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-gradient-to-b from-oslo-gray-1000 via-oslo-gray-1000 to-oslo-gray-950 flex flex-col animate-in slide-in-from-bottom-5 duration-300"
+      className="fixed inset-0 z-50 bg-neutral-900 flex flex-col animate-in slide-in-from-bottom-5 duration-300"
       role="dialog"
       aria-modal="true"
       aria-label="Menú de navegación"
@@ -149,7 +149,7 @@ export function MobileMenu({
       </div>
 
       {/* Footer Actions */}
-      <div className="p-6 border-t border-white/5 bg-neutral-950">
+      <div className="p-6 border-t border-white/10">
         <div className="max-w-lg mx-auto space-y-6">
           {isAuthenticated ? (
             <form action="/api/auth/logout" method="POST">
