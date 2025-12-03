@@ -27,22 +27,14 @@
  * - Single CTA: Don't confuse with multiple options
  */
 
+import { FAQAccordion } from "@/components/faq/faq-accordion";
 import { HeroBackground } from "@/components/home/hero-background";
 import { PricingCard } from "@/components/pricing/pricing-card";
-import { getCurrentUser } from "@/lib/auth";
 import { pricingTiers } from "@/lib/pricing/tiers";
-import { ArrowRight, CheckCircle, Home, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, CheckCircle, ChevronDown, Home, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 
 export default async function VenderPage() {
-  const user = await getCurrentUser();
-  const isAuthenticated = !!user;
-
-  // Redirect URL based on auth state
-  const ctaUrl = isAuthenticated
-    ? "/dashboard/propiedades/nueva"
-    : "/signup?redirect=/dashboard/propiedades/nueva";
-
   return (
     <div className="bg-background text-foreground">
       {/* Hero Section */}
@@ -57,19 +49,18 @@ export default async function VenderPage() {
           </div>
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white drop-shadow-2xl tracking-tight leading-[1.1] mb-6">
-            Publica tu propiedad{" "}
-            <span className="text-indigo-300">gratis</span>
+            Publica tu propiedad <span className="text-indigo-300">gratis</span>
           </h1>
 
           <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-lg mb-10">
-            Comienza con 1 propiedad gratis, sin expiración. Escala cuando necesites
-            más. Sin comisiones por transacción.
+            Comienza con 1 propiedad gratis, sin expiración. Escala cuando
+            necesites más. Sin comisiones por transacción.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href={ctaUrl}
+              href="#planes"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-gray-100 text-indigo-600 font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105 hover:-translate-y-1"
             >
               <span>Comenzar gratis</span>
@@ -77,33 +68,36 @@ export default async function VenderPage() {
             </Link>
 
             <Link
-              href="#planes"
+              href="#beneficios"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white font-semibold text-lg rounded-xl border border-white/20 transition-colors"
             >
-              Ver planes y precios
+              Ver beneficios
             </Link>
           </div>
 
           {/* Trust signals */}
           <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm font-medium text-white/80">
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-400" />
-              <span>Plan gratuito real</span>
+              <CheckCircle className="w-5 h-5 text-emerald-400" />
+              <span>1 propiedad gratis, sin límite de tiempo</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-400" />
-              <span>Sin expiración</span>
+              <CheckCircle className="w-5 h-5 text-emerald-400" />
+              <span>Publicación permanente (no caduca)</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-400" />
-              <span>Planes desde $4.99/mes</span>
+              <CheckCircle className="w-5 h-5 text-emerald-400" />
+              <span>Escala a 3 propiedades por $4.99/mes</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* Benefits Section - Dark Theme & Glassmorphism */}
-      <section id="beneficios" className="py-24 bg-gradient-to-br from-oslo-gray-900 to-oslo-gray-950 text-white relative overflow-hidden">
+      <section
+        id="beneficios"
+        className="py-24 bg-gradient-to-br from-oslo-gray-900 to-oslo-gray-950 text-white relative overflow-hidden"
+      >
         {/* Decorative background elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[100px]" />
@@ -127,9 +121,7 @@ export default async function VenderPage() {
               <div className="w-14 h-14 bg-green-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <CheckCircle className="w-7 h-7 text-green-400" />
               </div>
-              <h3 className="text-xl font-bold mb-3">
-                Plan gratuito real
-              </h3>
+              <h3 className="text-xl font-bold mb-3">Plan gratuito real</h3>
               <p className="text-oslo-gray-400 leading-relaxed">
                 Publica tu primera propiedad completamente gratis, sin
                 expiración, sin límite de tiempo. Escala a planes pagos solo si
@@ -142,12 +134,9 @@ export default async function VenderPage() {
               <div className="w-14 h-14 bg-indigo-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Users className="w-7 h-7 text-indigo-400" />
               </div>
-              <h3 className="text-xl font-bold mb-3">
-                Miles de compradores
-              </h3>
+              <h3 className="text-xl font-bold mb-3">Búsqueda inteligente con IA</h3>
               <p className="text-oslo-gray-400 leading-relaxed">
-                Tu propiedad será vista por miles de personas buscando
-                activamente comprar o rentar en nuestra plataforma.
+                Tu propiedad será encontrada fácilmente gracias a nuestro sistema de búsqueda por lenguaje natural potenciado por inteligencia artificial.
               </p>
             </div>
 
@@ -156,9 +145,7 @@ export default async function VenderPage() {
               <div className="w-14 h-14 bg-purple-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <TrendingUp className="w-7 h-7 text-purple-400" />
               </div>
-              <h3 className="text-xl font-bold mb-3">
-                Gestión profesional
-              </h3>
+              <h3 className="text-xl font-bold mb-3">Gestión profesional</h3>
               <p className="text-oslo-gray-400 leading-relaxed">
                 Dashboard intuitivo, analytics en tiempo real, y herramientas
                 para escalar tu negocio cuando estés listo.
@@ -189,12 +176,10 @@ export default async function VenderPage() {
               <div className="w-20 h-20 bg-oslo-gray-900 border border-indigo-500/30 text-white rounded-2xl flex items-center justify-center text-3xl font-bold mb-8 shadow-lg shadow-indigo-500/10 z-10 group-hover:scale-110 transition-transform duration-300">
                 <span className="text-indigo-400">1</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4">
-                Crea tu cuenta
-              </h3>
+              <h3 className="text-2xl font-bold mb-4">Crea tu cuenta</h3>
               <p className="text-oslo-gray-400 leading-relaxed max-w-xs">
-                Regístrate gratis en menos de 1 minuto. Solo necesitas tu
-                correo electrónico para empezar.
+                Regístrate gratis en menos de 1 minuto. Solo necesitas tu correo
+                electrónico para empezar.
               </p>
             </div>
 
@@ -203,11 +188,10 @@ export default async function VenderPage() {
               <div className="w-20 h-20 bg-oslo-gray-900 border border-indigo-500/30 text-white rounded-2xl flex items-center justify-center text-3xl font-bold mb-8 shadow-lg shadow-indigo-500/10 z-10 group-hover:scale-110 transition-transform duration-300">
                 <span className="text-indigo-400">2</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4">
-                Publica tu propiedad
-              </h3>
+              <h3 className="text-2xl font-bold mb-4">Publica tu propiedad</h3>
               <p className="text-oslo-gray-400 leading-relaxed max-w-xs">
-                Completa la información básica, sube tus mejores fotos y publica tu anuncio en minutos.
+                Completa la información básica, sube tus mejores fotos y publica
+                tu anuncio en minutos.
               </p>
             </div>
 
@@ -216,75 +200,176 @@ export default async function VenderPage() {
               <div className="w-20 h-20 bg-oslo-gray-900 border border-indigo-500/30 text-white rounded-2xl flex items-center justify-center text-3xl font-bold mb-8 shadow-lg shadow-indigo-500/10 z-10 group-hover:scale-110 transition-transform duration-300">
                 <span className="text-indigo-400">3</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4">
-                Recibe contactos
-              </h3>
+              <h3 className="text-2xl font-bold mb-4">Gestiona tu publicación</h3>
               <p className="text-oslo-gray-400 leading-relaxed max-w-xs">
-                Empieza a recibir mensajes y solicitudes de visita de personas interesadas de inmediato.
+                Controla tus publicaciones desde el dashboard. Edita información, actualiza precios y gestiona disponibilidad fácilmente.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section - Planes y Precios */}
-      <section id="planes" className="py-24 bg-white dark:bg-oslo-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* FAQ Section */}
+      <section className="py-24 bg-gradient-to-br from-oslo-gray-900 to-oslo-gray-950 text-white relative overflow-hidden border-t border-white/5">
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/2 left-0 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-400/10 rounded-full blur-3xl -translate-y-1/2" />
+          <div className="absolute top-1/2 right-0 w-96 h-96 bg-purple-500/5 dark:bg-purple-400/10 rounded-full blur-3xl -translate-y-1/2" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-5xl font-bold mb-6 tracking-tight text-oslo-gray-900 dark:text-oslo-gray-50">
-              Elige el plan perfecto para ti
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm text-oslo-gray-300 rounded-full text-sm font-semibold mb-6 border border-white/10">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Preguntas frecuentes</span>
+            </div>
+
+            <h2 className="text-4xl lg:text-5xl font-extrabold mb-6 tracking-tight">
+              ¿Tienes dudas?
             </h2>
-            <p className="text-xl text-oslo-gray-600 dark:text-oslo-gray-400 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-oslo-gray-300 max-w-2xl mx-auto leading-relaxed">
+              Respondemos las preguntas más comunes sobre nuestros planes y servicios
+            </p>
+          </div>
+
+          <FAQAccordion
+            items={[
+              {
+                question: "¿Qué incluye el plan gratuito?",
+                answer: "El plan gratuito incluye 1 propiedad activa sin expiración, hasta 5 imágenes por propiedad, búsqueda con IA, y acceso completo al dashboard. Es perfecto para comenzar sin compromiso.",
+              },
+              {
+                question: "¿Qué pasa si necesito publicar más de 1 propiedad?",
+                answer: "Puedes escalar fácilmente al plan Básico ($4.99/mes) para publicar hasta 3 propiedades, o al plan Pro ($14.99/mes) para hasta 10 propiedades. Todos los planes incluyen las mismas herramientas profesionales.",
+              },
+              {
+                question: "¿Puedo cancelar en cualquier momento?",
+                answer: "Sí, puedes cancelar tu suscripción en cualquier momento desde tu dashboard sin penalización. Si cancelas, tus propiedades seguirán activas hasta el final del período de facturación actual.",
+              },
+              {
+                question: "¿Cobran comisiones por transacciones?",
+                answer: "No, nunca cobramos comisión por la venta o renta de tus propiedades. Solo pagas la suscripción mensual del plan que elijas. El dinero de tus transacciones es 100% tuyo.",
+              },
+              {
+                question: "¿Necesito tarjeta de crédito para el plan gratuito?",
+                answer: "No, el plan gratuito no requiere tarjeta de crédito. Solo necesitas crear una cuenta con tu correo electrónico y puedes empezar a publicar inmediatamente.",
+              },
+              {
+                question: "¿Qué son los 'destacados' en los planes pagos?",
+                answer: "Los destacados te permiten poner tus propiedades en posiciones privilegiadas en los resultados de búsqueda y en la página principal, aumentando significativamente su visibilidad ante compradores potenciales.",
+              },
+            ]}
+          />
+
+          {/* CTA Footer */}
+          <div className="text-center mt-16">
+            <p className="text-oslo-gray-400 mb-4">
+              ¿No encuentras la respuesta que buscas?
+            </p>
+            <Link
+              href="#planes"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-semibold rounded-xl transition-all hover:scale-105"
+            >
+              <span>Ver planes y comenzar</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section - Planes y Precios */}
+      <section
+        id="planes"
+        className="relative py-24  from-oslo-gray-50 via-oslo-gray-400 to-oslo-gray-500 dark:from-oslo-gray-950 dark:via-oslo-gray-900 dark:to-oslo-gray-950 overflow-hidden"
+      >
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Top left gradient blob */}
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-400/10 rounded-full blur-3xl" />
+          {/* Top right gradient blob */}
+          <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-purple-500/5 dark:bg-purple-400/10 rounded-full blur-3xl" />
+          {/* Bottom center gradient blob */}
+          <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-indigo-500/3 dark:bg-indigo-400/8 rounded-full blur-3xl" />
+
+          {/* Subtle grid pattern - more visible in dark mode */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:24px_24px]" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-oslo-gray-100 dark:bg-oslo-gray-800/80 text-oslo-gray-700 dark:text-oslo-gray-200 rounded-full text-sm font-semibold mb-6 backdrop-blur-sm border border-oslo-gray-200/50 dark:border-oslo-gray-700/50">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
+              </svg>
+              <span>Planes flexibles</span>
+            </div>
+
+            <h2 className="text-4xl lg:text-6xl font-extrabold mb-6 tracking-tight text-oslo-gray-900 dark:text-oslo-gray-50">
+              Elige el plan{" "}
+              <span className="bg-gradient-to-r from-indigo-500 to-purple-500 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+                perfecto para ti
+              </span>
+            </h2>
+            <p className="text-xl text-oslo-gray-600 dark:text-oslo-gray-300 max-w-2xl mx-auto leading-relaxed">
               Comienza gratis con 1 propiedad. Escala cuando necesites más.
-              Todos los planes sin expiración.
+              <br />
+              <span className="font-semibold text-oslo-gray-900 dark:text-oslo-gray-100">
+                Todos los planes sin expiración.
+              </span>
             </p>
           </div>
 
           {/* Pricing Cards Grid */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
             {pricingTiers.map((tier) => (
               <PricingCard key={tier.name} tier={tier} compact={true} />
             ))}
           </div>
 
           {/* Additional Info */}
-          <div className="mt-12 text-center">
-            <p className="text-sm text-oslo-gray-600 dark:text-oslo-gray-400">
+          <div className="text-center">
+            <p className="text-sm text-oslo-gray-600 dark:text-oslo-gray-400 mb-4">
               ¿Necesitas más información?{" "}
               <Link
                 href="/pricing"
-                className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+                className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline inline-flex items-center gap-1 group"
               >
-                Ver comparación detallada →
+                <span>Ver comparación detallada</span>
+                <svg
+                  className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
+                </svg>
               </Link>
             </p>
+
+            {/* Trust indicators */}
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-oslo-gray-500 dark:text-oslo-gray-400 mt-8">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <span>Sin tarjeta de crédito</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <span>Cancela en cualquier momento</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <span>Soporte incluido</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Final CTA - Premium Gradient */}
-      <section className="py-24 bg-gradient-to-br from-indigo-600 to-indigo-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/patterns/grid.svg')] opacity-10" />
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h2 className="text-4xl lg:text-6xl font-extrabold mb-8 tracking-tight">
-            ¿Listo para publicar?
-          </h2>
-          <p className="text-xl md:text-2xl text-indigo-100 mb-10 max-w-2xl mx-auto font-medium">
-            Únete a los miles de propietarios que ya confían en InmoApp para vender y rentar.
-          </p>
-
-          <Link
-            href={ctaUrl}
-            className="inline-flex items-center gap-3 px-10 py-5 bg-white hover:bg-gray-50 text-indigo-600 font-bold text-xl rounded-xl shadow-2xl hover:shadow-white/20 transition-all hover:scale-105 hover:-translate-y-1"
-          >
-            <span>Comenzar ahora</span>
-            <ArrowRight className="w-6 h-6" />
-          </Link>
-
-          <p className="mt-8 text-sm font-medium text-indigo-200/80 uppercase tracking-wider">
-            Sin tarjeta de crédito • Sin comisiones • Cancelación inmediata
-          </p>
         </div>
       </section>
     </div>
