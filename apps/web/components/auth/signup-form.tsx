@@ -3,24 +3,19 @@
 /**
  * SIGNUP FORM (Registro)
  *
- * Similar al LoginForm pero con más campos:
+ * Campos requeridos:
  * - Nombre
  * - Email
  * - Password
- * - Rol (CLIENT, AGENT, ADMIN)
+ *
+ * NOTA: Todos los usuarios son AGENT por defecto
  */
 
 import { signupAction } from "@/app/actions/auth";
 import { Button, Input, Label } from "@repo/ui";
 import { useActionState } from "react";
 
-export function SignupForm({
-  role,
-  redirect,
-}: {
-  role?: string;
-  redirect?: string;
-}) {
+export function SignupForm({ redirect }: { redirect?: string }) {
   const [state, formAction, isPending] = useActionState(
     signupAction,
     undefined,
@@ -75,25 +70,6 @@ export function SignupForm({
         <p className="text-xs text-oslo-gray-500 dark:text-oslo-gray-400">
           Mínimo 8 caracteres, debe incluir letras y números
         </p>
-      </div>
-
-      {/* Rol (Select) */}
-      <div className="space-y-2">
-        <Label htmlFor="role">Tipo de cuenta</Label>
-        <select
-          id="role"
-          name="role"
-          className="flex h-10 w-full rounded-md border border-oslo-gray-300 dark:border-oslo-gray-700 bg-white dark:bg-oslo-gray-1000 px-3 py-2 text-sm text-oslo-gray-900 dark:text-oslo-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          required
-          defaultValue={role || "CLIENT"}
-        >
-          <option value="CLIENT">Cliente (Busco propiedades)</option>
-          <option value="AGENT">Agente (Publico propiedades)</option>
-          <option value="ADMIN">Administrador</option>
-        </select>
-        {state?.error && "role" in state.error && state.error.role && (
-          <p className="text-sm text-red-600">{state.error.role[0]}</p>
-        )}
       </div>
 
       {/* Error general */}

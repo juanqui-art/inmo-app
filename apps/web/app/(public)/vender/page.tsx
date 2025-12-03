@@ -28,7 +28,9 @@
  */
 
 import { HeroBackground } from "@/components/home/hero-background";
+import { PricingCard } from "@/components/pricing/pricing-card";
 import { getCurrentUser } from "@/lib/auth";
+import { pricingTiers } from "@/lib/pricing/tiers";
 import { ArrowRight, CheckCircle, Home, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -39,7 +41,7 @@ export default async function VenderPage() {
   // Redirect URL based on auth state
   const ctaUrl = isAuthenticated
     ? "/dashboard/propiedades/nueva"
-    : "/signup?role=AGENT&redirect=/dashboard/propiedades/nueva";
+    : "/signup?redirect=/dashboard/propiedades/nueva";
 
   return (
     <div className="bg-background text-foreground">
@@ -55,30 +57,30 @@ export default async function VenderPage() {
           </div>
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white drop-shadow-2xl tracking-tight leading-[1.1] mb-6">
-            Vende o renta tu propiedad{" "}
-            <span className="text-indigo-300">más rápido</span>
+            Publica tu propiedad{" "}
+            <span className="text-indigo-300">gratis</span>
           </h1>
 
           <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-lg mb-10">
-            Publica tu propiedad en minutos y conéctate con miles de compradores
-            y arrendatarios interesados. Sin comisiones ocultas.
+            Comienza con 1 propiedad gratis, sin expiración. Escala cuando necesites
+            más. Sin comisiones por transacción.
           </p>
 
-          {/* CTA Button */}
+          {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href={ctaUrl}
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-gray-100 text-indigo-600 font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105 hover:-translate-y-1"
             >
-              <span>Publicar propiedad gratis</span>
+              <span>Comenzar gratis</span>
               <ArrowRight className="w-5 h-5" />
             </Link>
 
             <Link
-              href="#beneficios"
+              href="#planes"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white font-semibold text-lg rounded-xl border border-white/20 transition-colors"
             >
-              Ver beneficios
+              Ver planes y precios
             </Link>
           </div>
 
@@ -86,15 +88,15 @@ export default async function VenderPage() {
           <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm font-medium text-white/80">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-green-400" />
-              <span>100% Gratis</span>
+              <span>Plan gratuito real</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-green-400" />
-              <span>Sin comisiones</span>
+              <span>Sin expiración</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-green-400" />
-              <span>Publicación rápida</span>
+              <span>Planes desde $4.99/mes</span>
             </div>
           </div>
         </div>
@@ -122,6 +124,21 @@ export default async function VenderPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Benefit 1 */}
             <div className="p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
+              <div className="w-14 h-14 bg-green-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <CheckCircle className="w-7 h-7 text-green-400" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">
+                Plan gratuito real
+              </h3>
+              <p className="text-oslo-gray-400 leading-relaxed">
+                Publica tu primera propiedad completamente gratis, sin
+                expiración, sin límite de tiempo. Escala a planes pagos solo si
+                necesitas más.
+              </p>
+            </div>
+
+            {/* Benefit 2 */}
+            <div className="p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
               <div className="w-14 h-14 bg-indigo-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Users className="w-7 h-7 text-indigo-400" />
               </div>
@@ -134,31 +151,17 @@ export default async function VenderPage() {
               </p>
             </div>
 
-            {/* Benefit 2 */}
-            <div className="p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
-              <div className="w-14 h-14 bg-green-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <CheckCircle className="w-7 h-7 text-green-400" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">
-                Publicación gratuita
-              </h3>
-              <p className="text-oslo-gray-400 leading-relaxed">
-                Sin costos ocultos, sin comisiones. Publica tu propiedad y
-                gestiona tus anuncios completamente gratis.
-              </p>
-            </div>
-
             {/* Benefit 3 */}
             <div className="p-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 group">
               <div className="w-14 h-14 bg-purple-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <TrendingUp className="w-7 h-7 text-purple-400" />
               </div>
               <h3 className="text-xl font-bold mb-3">
-                Gestión fácil
+                Gestión profesional
               </h3>
               <p className="text-oslo-gray-400 leading-relaxed">
-                Dashboard intuitivo para gestionar tus propiedades, ver
-                estadísticas y responder mensajes de interesados.
+                Dashboard intuitivo, analytics en tiempo real, y herramientas
+                para escalar tu negocio cuando estés listo.
               </p>
             </div>
           </div>
@@ -224,6 +227,41 @@ export default async function VenderPage() {
         </div>
       </section>
 
+      {/* Pricing Section - Planes y Precios */}
+      <section id="planes" className="py-24 bg-white dark:bg-oslo-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-5xl font-bold mb-6 tracking-tight text-oslo-gray-900 dark:text-oslo-gray-50">
+              Elige el plan perfecto para ti
+            </h2>
+            <p className="text-xl text-oslo-gray-600 dark:text-oslo-gray-400 max-w-2xl mx-auto leading-relaxed">
+              Comienza gratis con 1 propiedad. Escala cuando necesites más.
+              Todos los planes sin expiración.
+            </p>
+          </div>
+
+          {/* Pricing Cards Grid */}
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {pricingTiers.map((tier) => (
+              <PricingCard key={tier.name} tier={tier} compact={true} />
+            ))}
+          </div>
+
+          {/* Additional Info */}
+          <div className="mt-12 text-center">
+            <p className="text-sm text-oslo-gray-600 dark:text-oslo-gray-400">
+              ¿Necesitas más información?{" "}
+              <Link
+                href="/pricing"
+                className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+              >
+                Ver comparación detallada →
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA - Premium Gradient */}
       <section className="py-24 bg-gradient-to-br from-indigo-600 to-indigo-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/patterns/grid.svg')] opacity-10" />
@@ -257,12 +295,13 @@ export default async function VenderPage() {
  * METADATA for SEO
  */
 export const metadata = {
-  title: "Vende o Renta tu Propiedad | InmoApp",
+  title: "Publica tu Propiedad Gratis | InmoApp",
   description:
-    "Publica tu propiedad gratis y conéctate con miles de compradores. Sin comisiones, sin letra pequeña. Comienza ahora.",
+    "Comienza con 1 propiedad gratis, sin expiración. Planes desde $4.99/mes. Sin comisiones por transacción. Escala cuando necesites más.",
   openGraph: {
-    title: "Vende o Renta tu Propiedad | InmoApp",
-    description: "Publica tu propiedad gratis en InmoApp",
+    title: "Publica tu Propiedad Gratis | InmoApp",
+    description:
+      "Plan gratuito real. 1 propiedad sin expiración. Planes desde $4.99/mes",
     type: "website",
   },
 };

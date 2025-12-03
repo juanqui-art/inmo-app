@@ -35,7 +35,8 @@ export const loginSchema = z.object({
  * - name: Mínimo 2 caracteres
  * - email: Debe ser email válido
  * - password: Mínimo 8 caracteres + letra + número
- * - role: Solo puede ser CLIENT, AGENT, o ADMIN
+ *
+ * NOTA: Todos los usuarios son AGENT por defecto (no requiere campo role)
  */
 export const signupSchema = z.object({
   name: z
@@ -51,9 +52,6 @@ export const signupSchema = z.object({
     .min(8, "La contraseña debe tener al menos 8 caracteres")
     .regex(/[a-zA-Z]/, "La contraseña debe contener al menos una letra")
     .regex(/[0-9]/, "La contraseña debe contener al menos un número"),
-  role: z.enum(["CLIENT", "AGENT", "ADMIN"], {
-    message: "Rol inválido",
-  }),
 });
 
 // Tipos TypeScript generados automáticamente desde los schemas

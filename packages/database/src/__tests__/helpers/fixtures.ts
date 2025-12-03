@@ -6,7 +6,8 @@
 
 // Use type definitions instead of importing from Prisma
 // This avoids dependency on generated Prisma types in test environment
-type UserRole = "CLIENT" | "AGENT" | "ADMIN";
+type UserRole = "AGENT" | "ADMIN";
+type SubscriptionTier = "FREE" | "BASIC" | "PRO";
 type TransactionType = "SALE" | "RENT";
 type PropertyCategory = "HOUSE" | "APARTMENT" | "LAND" | "COMMERCIAL";
 type PropertyStatus = "AVAILABLE" | "PENDING" | "SOLD" | "RENTED";
@@ -16,6 +17,11 @@ interface User {
   email: string;
   name: string | null;
   role: UserRole;
+  subscriptionTier: SubscriptionTier;
+  stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
+  stripePriceId: string | null;
+  stripeCurrentPeriodEnd: Date | null;
   phone: string | null;
   avatar: string | null;
   createdAt: Date;
@@ -73,6 +79,11 @@ export const mockUsers = {
     email: "agent@test.com",
     name: "Test Agent",
     role: "AGENT" as UserRole,
+    subscriptionTier: "FREE" as SubscriptionTier,
+    stripeCustomerId: null,
+    stripeSubscriptionId: null,
+    stripePriceId: null,
+    stripeCurrentPeriodEnd: null,
     phone: "+1234567890",
     avatar: null,
     createdAt: new Date("2025-01-01"),
@@ -84,6 +95,11 @@ export const mockUsers = {
     email: "another@test.com",
     name: "Another Agent",
     role: "AGENT" as UserRole,
+    subscriptionTier: "FREE" as SubscriptionTier,
+    stripeCustomerId: null,
+    stripeSubscriptionId: null,
+    stripePriceId: null,
+    stripeCurrentPeriodEnd: null,
     phone: "+0987654321",
     avatar: null,
     createdAt: new Date("2025-01-01"),
@@ -95,18 +111,12 @@ export const mockUsers = {
     email: "admin@test.com",
     name: "Test Admin",
     role: "ADMIN" as UserRole,
+    subscriptionTier: "FREE" as SubscriptionTier,
+    stripeCustomerId: null,
+    stripeSubscriptionId: null,
+    stripePriceId: null,
+    stripeCurrentPeriodEnd: null,
     phone: "+1111111111",
-    avatar: null,
-    createdAt: new Date("2025-01-01"),
-    updatedAt: new Date("2025-01-01"),
-  } as User,
-
-  client: {
-    id: "client-999",
-    email: "client@test.com",
-    name: "Test Client",
-    role: "CLIENT" as UserRole,
-    phone: "+2222222222",
     avatar: null,
     createdAt: new Date("2025-01-01"),
     updatedAt: new Date("2025-01-01"),

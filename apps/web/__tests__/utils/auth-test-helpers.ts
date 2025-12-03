@@ -11,7 +11,7 @@ type SafeUser = {
   id: string;
   email: string;
   name: string | null;
-  role: "CLIENT" | "AGENT" | "ADMIN";
+  role: "AGENT" | "ADMIN";
   phone: string | null;
   avatar: string | null;
   createdAt: Date;
@@ -42,7 +42,7 @@ export function createMockSupabaseUser(
     email: "test@example.com",
     user_metadata: {
       name: "Test User",
-      role: "CLIENT",
+      role: "AGENT",
     },
     ...overrides,
   };
@@ -56,7 +56,7 @@ export function createMockDbUser(overrides?: Partial<SafeUser>): SafeUser {
     id: "db-user-id",
     email: "test@example.com",
     name: "Test User",
-    role: "CLIENT",
+    role: "AGENT",
     phone: null,
     avatar: null,
     createdAt: new Date("2024-01-01"),
@@ -67,18 +67,17 @@ export function createMockDbUser(overrides?: Partial<SafeUser>): SafeUser {
 
 /**
  * Create mock signup FormData
+ * Note: role is no longer required as all users are AGENT by default
  */
 export function createSignupFormData(overrides?: {
   name?: string;
   email?: string;
   password?: string;
-  role?: "CLIENT" | "AGENT" | "ADMIN";
 }): FormData {
   const formData = new FormData();
   formData.append("name", overrides?.name ?? "Test User");
   formData.append("email", overrides?.email ?? "test@example.com");
   formData.append("password", overrides?.password ?? "Password123");
-  formData.append("role", overrides?.role ?? "CLIENT");
   return formData;
 }
 

@@ -51,12 +51,11 @@ describe("Auth Server Actions", () => {
 
   describe("signupAction", () => {
     describe("Successful Signup", () => {
-      it("should register CLIENT user and redirect to /perfil", async () => {
+      it("should register user as AGENT and redirect to /dashboard", async () => {
         const formData = createSignupFormData({
           name: "Juan Pérez",
           email: "juan@example.com",
           password: "Password123",
-          role: "CLIENT",
         });
 
         const mockUser = createMockSupabaseUser({
@@ -71,7 +70,7 @@ describe("Auth Server Actions", () => {
 
         await expect(async () => {
           await signupAction(null, formData);
-        }).rejects.toThrow("NEXT_REDIRECT: /perfil");
+        }).rejects.toThrow("NEXT_REDIRECT: /dashboard");
 
         expect(mockSupabase.auth.signUp).toHaveBeenCalledWith({
           email: "juan@example.com",
@@ -79,65 +78,12 @@ describe("Auth Server Actions", () => {
           options: {
             data: {
               name: "Juan Pérez",
-              role: "CLIENT",
+              role: "AGENT",
             },
           },
         });
 
         expect(mockRevalidatePath).toHaveBeenCalledWith("/", "layout");
-      });
-
-      it("should register AGENT user and redirect to /dashboard", async () => {
-        const formData = createSignupFormData({
-          name: "Agent Smith",
-          email: "agent@example.com",
-          password: "Password123",
-          role: "AGENT",
-        });
-
-        const mockUser = createMockSupabaseUser({
-          id: "agent-user-id",
-          email: "agent@example.com",
-        });
-
-        mockSupabase.auth.signUp.mockResolvedValue({
-          data: { user: mockUser },
-          error: null,
-        });
-
-        await expect(async () => {
-          await signupAction(null, formData);
-        }).rejects.toThrow("NEXT_REDIRECT: /dashboard");
-
-        expect(mockSupabase.auth.signUp).toHaveBeenCalledWith(
-          expect.objectContaining({
-            email: "agent@example.com",
-            options: {
-              data: expect.objectContaining({
-                role: "AGENT",
-              }),
-            },
-          }),
-        );
-      });
-
-      it("should register ADMIN user and redirect to /admin", async () => {
-        const formData = createSignupFormData({
-          role: "ADMIN",
-        });
-
-        const mockUser = createMockSupabaseUser({
-          id: "admin-user-id",
-        });
-
-        mockSupabase.auth.signUp.mockResolvedValue({
-          data: { user: mockUser },
-          error: null,
-        });
-
-        await expect(async () => {
-          await signupAction(null, formData);
-        }).rejects.toThrow("NEXT_REDIRECT: /admin");
       });
     });
 
@@ -257,21 +203,21 @@ describe("Auth Server Actions", () => {
 
   describe("loginAction", () => {
     describe("Successful Login", () => {
-      it("should login CLIENT user and redirect to /perfil", async () => {
+      it("should login AGENT user and redirect to /dashboard", async () => {
         const formData = createLoginFormData({
-          email: "client@example.com",
+          email: "user@example.com",
           password: "Password123",
         });
 
         const mockAuthUser = createMockSupabaseUser({
-          id: "client-id",
-          email: "client@example.com",
+          id: "user-id",
+          email: "user@example.com",
         });
 
         const mockDbUser = createMockDbUser({
-          id: "client-id",
-          email: "client@example.com",
-          role: "CLIENT",
+          id: "user-id",
+          email: "user@example.com",
+          role: "AGENT",
         });
 
         mockSupabase.auth.signInWithPassword.mockResolvedValue({
@@ -283,18 +229,18 @@ describe("Auth Server Actions", () => {
 
         await expect(async () => {
           await loginAction(null, formData);
-        }).rejects.toThrow("NEXT_REDIRECT: /perfil");
+        }).rejects.toThrow("NEXT_REDIRECT: /dashboard");
 
         expect(mockSupabase.auth.signInWithPassword).toHaveBeenCalledWith({
-          email: "client@example.com",
+          email: "user@example.com",
           password: "Password123",
         });
 
-        expect(mockUserRepositoryFindById).toHaveBeenCalledWith("client-id");
+        expect(mockUserRepositoryFindById).toHaveBeenCalledWith("user-id");
         expect(mockRevalidatePath).toHaveBeenCalledWith("/", "layout");
       });
 
-      it("should login AGENT user and redirect to /dashboard", async () => {
+      it("should login AGENT user with metadata and redirect to /dashboard", async () => {
         const formData = createLoginFormData({
           email: "agent@example.com",
           password: "Password123",

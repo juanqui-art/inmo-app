@@ -37,11 +37,10 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
     name: formData.get("name") as string,
     email: formData.get("email") as string,
     password: formData.get("password") as string,
-    role: formData.get("role") as "CLIENT" | "AGENT" | "ADMIN",
     redirect: formData.get("redirect") as string | null,
   };
 
-  // 2. Validar con Zod schema
+  // 2. Validar con Zod schema (sin role)
   const validatedData = signupSchema.safeParse(rawData);
 
   if (!validatedData.success) {
@@ -51,7 +50,10 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
     };
   }
 
-  const { name, email, password, role } = validatedData.data;
+  const { name, email, password } = validatedData.data;
+
+  // Todos los usuarios son AGENT por defecto (pueden publicar propiedades)
+  const role = "AGENT";
 
   // 3. Crear cliente de Supabase
   const supabase = await createClient();
@@ -86,22 +88,14 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
   // 5. Revalidar
   revalidatePath("/", "layout");
 
-  // 6. Redirigir según rol
+  // 6. Redirigir (todos los usuarios van a /dashboard por defecto)
   const redirectParam = rawData.redirect;
   if (redirectParam?.startsWith("/")) {
     return redirect(redirectParam);
   }
 
-  switch (role) {
-    case "ADMIN":
-      return redirect("/admin");
-    case "AGENT":
-      return redirect("/dashboard");
-    case "CLIENT":
-      return redirect("/perfil");
-    default:
-      return redirect("/");
-  }
+  // Todos los usuarios son AGENT, van al dashboard
+  return redirect("/dashboard");
 }
 
 /**
@@ -212,16 +206,12 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
   }
 
   // Si no, redirigir según rol
-  switch (dbUser.role) {
-    case "ADMIN":
-      return redirect("/admin");
-    case "AGENT":
-      return redirect("/dashboard");
-    case "CLIENT":
-      return redirect("/perfil");
-    default:
-      return redirect("/");
+  if (dbUser.role === "ADMIN") {
+    return redirect("/admin");
   }
+
+  // Por defecto (AGENT), ir al dashboard
+  return redirect("/dashboard");
 }
 
 /**

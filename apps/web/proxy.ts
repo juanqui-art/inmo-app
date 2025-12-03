@@ -23,13 +23,13 @@ import { type NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 
 // Tipos de roles permitidos
-type UserRole = "CLIENT" | "AGENT" | "ADMIN";
+type UserRole = "AGENT" | "ADMIN";
 
 // Configuración de rutas protegidas
 const routePermissions = {
   "/dashboard": ["AGENT", "ADMIN"] as UserRole[],
   "/admin": ["ADMIN"] as UserRole[],
-  "/perfil": ["CLIENT", "AGENT", "ADMIN"] as UserRole[], // Todos los roles autenticados
+  "/perfil": ["AGENT", "ADMIN"] as UserRole[], // Todos los usuarios autenticados
 } as const;
 
 /**
@@ -127,7 +127,6 @@ export async function proxy(request: NextRequest) {
         const redirectMap: Record<UserRole, string> = {
           ADMIN: "/admin",
           AGENT: "/dashboard",
-          CLIENT: "/perfil",
         };
 
         const redirectUrl = new URL(redirectMap[userRole] || "/", request.url);
@@ -144,7 +143,6 @@ export async function proxy(request: NextRequest) {
     const redirectMap: Record<UserRole, string> = {
       ADMIN: "/admin",
       AGENT: "/dashboard",
-      CLIENT: "/perfil",
     };
 
     const redirectUrl = new URL(redirectMap[userRole] || "/", request.url);
