@@ -46,84 +46,107 @@ const nextConfig: NextConfig = {
   /**
    * Security Headers
    *
-   * Comprehensive security headers to protect against common web vulnerabilities:
+   * Environment-aware security configuration:
+   * - Development: Permissive CSP to support Fast Refresh, HMR, and dev tools
+   * - Production: Strict CSP with only whitelisted domains
+   *
+   * Headers configured:
    * - CSP: Content Security Policy prevents XSS attacks
    * - X-Frame-Options: Prevents clickjacking
    * - X-Content-Type-Options: Prevents MIME sniffing
-   * - HSTS: Forces HTTPS connections
+   * - HSTS: Forces HTTPS connections (production only)
    * - Referrer-Policy: Controls referrer information
    * - Permissions-Policy: Restricts browser features
    *
    * RELATED: docs/technical-debt/01-INFRASTRUCTURE.md (Section 1.3)
    */
   async headers() {
-    return [
+    const isDev = process.env.NODE_ENV === "development";
+
+    // Development CSP: Permissive to support Fast Refresh, HMR, and development tools
+    const devCSP = [
+      "default-src 'self'",
+      // Allow unsafe-eval and unsafe-inline for Fast Refresh and HMR
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://api.mapbox.com https://accounts.google.com https://www.googletagmanager.com",
+      "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
+      // Allow all HTTPS images for easier development
+      "img-src 'self' data: blob: https://*",
+      "font-src 'self' data:",
+      // Allow all WebSocket and HTTP connections for HMR
+      "connect-src 'self' ws: wss: http: https:",
+      "frame-src 'self' https://accounts.google.com",
+      "worker-src 'self' blob:",
+      "child-src 'self' blob:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+    ].join("; ");
+
+    // Production CSP: Strict whitelist of trusted domains only
+    const prodCSP = [
+      "default-src 'self'",
+      // Scripts: Only from self, Vercel Analytics, Mapbox, and Google OAuth
+      "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://api.mapbox.com https://accounts.google.com https://www.googletagmanager.com",
+      // Styles: Self, inline (Tailwind), and Mapbox
+      "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
+      // Images: Supabase storage, Mapbox tiles, Unsplash
+      "img-src 'self' data: blob: https://*.supabase.co https://*.tiles.mapbox.com https://api.mapbox.com https://images.unsplash.com",
+      "font-src 'self' data:",
+      // API connections: Supabase, Mapbox, OpenAI, Vercel Analytics, Google
+      "connect-src 'self' https://*.supabase.co https://api.mapbox.com https://events.mapbox.com https://api.openai.com https://vitals.vercel-insights.com https://accounts.google.com wss://*.supabase.co",
+      "frame-src 'self' https://accounts.google.com",
+      "worker-src 'self' blob:",
+      "child-src 'self' blob:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "upgrade-insecure-requests",
+    ].join("; ");
+
+    // Base security headers (applied in both dev and prod)
+    const baseHeaders = [
       {
-        source: "/:path*",
-        headers: [
-          {
-            key: "X-DNS-Prefetch-Control",
-            value: "on",
-          },
+        key: "X-DNS-Prefetch-Control",
+        value: "on",
+      },
+      {
+        key: "X-Frame-Options",
+        value: "DENY",
+      },
+      {
+        key: "X-Content-Type-Options",
+        value: "nosniff",
+      },
+      {
+        key: "Referrer-Policy",
+        value: "origin-when-cross-origin",
+      },
+      {
+        key: "Permissions-Policy",
+        value: "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
+      },
+      {
+        key: "Content-Security-Policy",
+        value: isDev ? devCSP : prodCSP,
+      },
+    ];
+
+    // Production-only headers (HSTS requires HTTPS)
+    const prodOnlyHeaders = isDev
+      ? []
+      : [
           {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
           },
-          {
-            key: "X-Frame-Options",
-            value: "DENY",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
-          },
-          {
-            key: "Permissions-Policy",
-            value:
-              "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
-          },
-          {
-            key: "Content-Security-Policy",
-            value: [
-              // Default: Only allow resources from same origin
-              "default-src 'self'",
-              // Scripts: Allow self, Next.js chunks, Mapbox, Google OAuth, and unsafe-eval for development
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://api.mapbox.com https://accounts.google.com https://www.googletagmanager.com",
-              // Styles: Allow self, unsafe-inline for Tailwind, and Mapbox styles
-              "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
-              // Images: Allow self, data URIs, Supabase storage, Mapbox tiles
-              "img-src 'self' data: blob: https://*.supabase.co https://*.tiles.mapbox.com https://api.mapbox.com",
-              // Fonts: Allow self and data URIs
-              "font-src 'self' data:",
-              // Connect: Allow API calls to Supabase, Mapbox, Google
-              "connect-src 'self' https://*.supabase.co https://api.mapbox.com https://events.mapbox.com https://accounts.google.com wss://*.supabase.co",
-              // Frames: Allow Google OAuth iframe
-              "frame-src 'self' https://accounts.google.com",
-              // Workers: Allow self and blob for map workers
-              "worker-src 'self' blob:",
-              // Child sources: For web workers
-              "child-src 'self' blob:",
-              // Object/embed: Block all
-              "object-src 'none'",
-              // Base URI: Restrict to self
-              "base-uri 'self'",
-              // Form actions: Only allow self
-              "form-action 'self'",
-              // Frame ancestors: Deny embedding (redundant with X-Frame-Options but good defense-in-depth)
-              "frame-ancestors 'none'",
-              // Upgrade insecure requests in production
-              process.env.NODE_ENV === "production"
-                ? "upgrade-insecure-requests"
-                : "",
-            ]
-              .filter(Boolean)
-              .join("; "),
-          },
-        ],
+        ];
+
+    return [
+      {
+        source: "/:path*",
+        headers: [...baseHeaders, ...prodOnlyHeaders],
       },
     ];
   },

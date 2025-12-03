@@ -53,6 +53,7 @@ function logSecurityEvent(
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const isDev = process.env.NODE_ENV === "development";
 
   let supabaseResponse = NextResponse.next({
     request,
@@ -147,6 +148,55 @@ export async function proxy(request: NextRequest) {
 
     const redirectUrl = new URL(redirectMap[userRole] || "/", request.url);
     return NextResponse.redirect(redirectUrl);
+  }
+
+  // 3. Agregar Security Headers
+  // Development: Permissive CSP for Fast Refresh and HMR
+  // Production: Strict CSP with whitelisted domains only
+  const devCSP = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://api.mapbox.com https://accounts.google.com https://www.googletagmanager.com",
+    "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
+    "img-src 'self' data: blob: https://*",
+    "font-src 'self' data:",
+    "connect-src 'self' ws: wss: http: https:",
+    "frame-src 'self' https://accounts.google.com",
+    "worker-src 'self' blob:",
+    "child-src 'self' blob:",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+  ].join("; ");
+
+  const prodCSP = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://api.mapbox.com https://accounts.google.com https://www.googletagmanager.com",
+    "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
+    "img-src 'self' data: blob: https://*.supabase.co https://*.tiles.mapbox.com https://api.mapbox.com https://images.unsplash.com",
+    "font-src 'self' data:",
+    "connect-src 'self' https://*.supabase.co https://api.mapbox.com https://events.mapbox.com https://api.openai.com https://vitals.vercel-insights.com https://accounts.google.com wss://*.supabase.co",
+    "frame-src 'self' https://accounts.google.com",
+    "worker-src 'self' blob:",
+    "child-src 'self' blob:",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "upgrade-insecure-requests",
+  ].join("; ");
+
+  // Apply security headers
+  supabaseResponse.headers.set("X-DNS-Prefetch-Control", "on");
+  supabaseResponse.headers.set("X-Frame-Options", "DENY");
+  supabaseResponse.headers.set("X-Content-Type-Options", "nosniff");
+  supabaseResponse.headers.set("Referrer-Policy", "origin-when-cross-origin");
+  supabaseResponse.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(self), interest-cohort=()");
+  supabaseResponse.headers.set("Content-Security-Policy", isDev ? devCSP : prodCSP);
+
+  // HSTS only in production (localhost doesn't have HTTPS)
+  if (!isDev) {
+    supabaseResponse.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
   }
 
   return supabaseResponse;
