@@ -13,6 +13,7 @@
 
 import type { AppointmentStatus, Prisma } from "@prisma/client";
 import { db } from "../client";
+import { sanitizeOptional, sanitizePlainText } from "../utils/sanitize";
 
 /**
  * Appointment select con relaciones básicas
@@ -95,6 +96,9 @@ export class AppointmentRepository {
    *
    * @param data Datos de la cita (userId, propertyId, agentId, scheduledAt, notes?)
    * @throws Error si hay conflicto de horarios o datos inválidos
+   *
+   * SANITIZATION: User-provided notes field is sanitized to prevent XSS attacks
+   * - notes: Plain text only (no HTML allowed)
    */
   async createAppointment(data: {
     userId: string;
@@ -109,7 +113,7 @@ export class AppointmentRepository {
         propertyId: data.propertyId,
         agentId: data.agentId,
         scheduledAt: data.scheduledAt,
-        notes: data.notes,
+        notes: sanitizeOptional(data.notes, sanitizePlainText), // Sanitize notes (Defense in Depth - Layer 2)
         status: "PENDING",
       },
       select: appointmentDetailSelect,

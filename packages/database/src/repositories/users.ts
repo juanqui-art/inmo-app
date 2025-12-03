@@ -7,6 +7,7 @@
 
 import type { Prisma, User, UserRole } from "@prisma/client";
 import { db } from "../client";
+import { sanitizePlainText, sanitizeOptional } from "../utils/sanitize";
 
 /**
  * User select (campos seguros para retornar)
@@ -63,6 +64,10 @@ export class UserRepository {
   /**
    * Actualiza un usuario existente
    * Incluye validación de permisos
+   *
+   * SANITIZATION: User-provided text fields are sanitized to prevent XSS attacks
+   * - name, phone: Plain text only (no HTML)
+   * - avatar: URL validation handled separately (not sanitized as HTML)
    */
   async update(
     id: string,
@@ -85,9 +90,17 @@ export class UserRepository {
       throw new Error("Unauthorized: Cannot update other users");
     }
 
+    // Sanitize user-provided fields (Defense in Depth - Layer 2)
+    const sanitizedData: Prisma.UserUpdateInput = {
+      ...data,
+      ...(data.name && { name: sanitizeOptional(data.name as string | null, sanitizePlainText) }),
+      ...(data.phone && { phone: sanitizeOptional(data.phone as string | null, sanitizePlainText) }),
+      // Note: avatar is a URL and should be validated separately (not HTML sanitized)
+    };
+
     return db.user.update({
       where: { id },
-      data,
+      data: sanitizedData,
       select: userSelect,
     });
   }

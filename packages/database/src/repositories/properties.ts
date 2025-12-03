@@ -13,6 +13,7 @@ import type {
 } from "@prisma/client";
 import { cache } from "react";
 import { db } from "../client";
+import { sanitizeHTML, sanitizePlainText, sanitizeOptional } from "../utils/sanitize";
 
 /**
  * Property select con relaciones incluidas
@@ -329,6 +330,10 @@ export class PropertyRepository {
    *
    * TRANSACTION: Uses db.$transaction() to ensure authorization check + creation are atomic
    * - Prevents race conditions where user role could change between check and creation
+   *
+   * SANITIZATION: All user-provided text fields are sanitized to prevent XSS attacks
+   * - title, address, city, state, zipCode: Plain text (no HTML)
+   * - description: Rich text (allows safe HTML tags like <b>, <i>, <a>)
    */
   async create(
     data: Omit<Prisma.PropertyUncheckedCreateInput, "agentId">,
@@ -345,11 +350,20 @@ export class PropertyRepository {
         throw new Error("Unauthorized: Only agents can create properties");
       }
 
+      // Sanitize all user-provided text fields (Defense in Depth - Layer 2)
+      const sanitizedData = {
+        ...data,
+        title: sanitizePlainText(data.title),
+        description: sanitizeOptional(data.description, sanitizeHTML),
+        address: sanitizePlainText(data.address),
+        city: sanitizePlainText(data.city),
+        state: sanitizePlainText(data.state),
+        zipCode: sanitizeOptional(data.zipCode, sanitizePlainText),
+        agentId: currentUserId, // Asegurar que la propiedad pertenece al usuario actual
+      };
+
       return tx.property.create({
-        data: {
-          ...data,
-          agentId: currentUserId, // Asegurar que la propiedad pertenece al usuario actual
-        },
+        data: sanitizedData,
         select: propertySelect,
       });
     });
@@ -362,6 +376,9 @@ export class PropertyRepository {
    * TRANSACTION: Uses db.$transaction() to ensure atomicity
    * - Authorization check + update in single transaction
    * - Prevents ownership/role changes between check and update
+   *
+   * SANITIZATION: All user-provided text fields are sanitized to prevent XSS attacks
+   * - Only sanitizes fields that are actually being updated (partial updates supported)
    */
   async update(
     id: string,
@@ -393,9 +410,20 @@ export class PropertyRepository {
         );
       }
 
+      // Sanitize only fields that are being updated (Defense in Depth - Layer 2)
+      const sanitizedData: Prisma.PropertyUpdateInput = {
+        ...data,
+        ...(data.title && { title: sanitizePlainText(data.title as string) }),
+        ...(data.description && { description: sanitizeOptional(data.description as string | null, sanitizeHTML) }),
+        ...(data.address && { address: sanitizePlainText(data.address as string) }),
+        ...(data.city && { city: sanitizePlainText(data.city as string) }),
+        ...(data.state && { state: sanitizePlainText(data.state as string) }),
+        ...(data.zipCode && { zipCode: sanitizeOptional(data.zipCode as string | null, sanitizePlainText) }),
+      };
+
       return tx.property.update({
         where: { id },
-        data,
+        data: sanitizedData,
         select: propertySelect,
       });
     });
