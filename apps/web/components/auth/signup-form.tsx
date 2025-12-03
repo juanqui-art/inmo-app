@@ -15,7 +15,7 @@ import { signupAction } from "@/app/actions/auth";
 import { Button, Input, Label } from "@repo/ui";
 import { useActionState } from "react";
 
-export function SignupForm({ redirect }: { redirect?: string }) {
+export function SignupForm({ redirect, plan }: { redirect?: string; plan?: string }) {
   const [state, formAction, isPending] = useActionState(
     signupAction,
     undefined,
@@ -24,6 +24,7 @@ export function SignupForm({ redirect }: { redirect?: string }) {
   return (
     <form action={formAction} className="space-y-4">
       {redirect && <input type="hidden" name="redirect" value={redirect} />}
+      {plan && <input type="hidden" name="plan" value={plan} />}
       {/* Nombre */}
       <div className="space-y-2">
         <Label htmlFor="name">Nombre completo</Label>

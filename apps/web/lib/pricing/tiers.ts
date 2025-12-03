@@ -27,7 +27,7 @@ export const pricingTiers: PricingTier[] = [
       "Soporte por email (72h)",
     ],
     ctaText: "Comenzar gratis",
-    ctaUrl: "/signup",
+    ctaUrl: "/signup?plan=free",
     highlighted: false,
   },
   {
@@ -46,7 +46,7 @@ export const pricingTiers: PricingTier[] = [
       "Soporte por email (24h)",
     ],
     ctaText: "Comenzar prueba",
-    ctaUrl: "/signup?redirect=/dashboard",
+    ctaUrl: "/signup?plan=basic&redirect=/dashboard",
     highlighted: true,
   },
   {
@@ -66,7 +66,7 @@ export const pricingTiers: PricingTier[] = [
       "Soporte WhatsApp (12h)",
     ],
     ctaText: "Escalar ahora",
-    ctaUrl: "/signup?redirect=/dashboard",
+    ctaUrl: "/signup?plan=pro&redirect=/dashboard",
     highlighted: false,
   },
 ];

@@ -11,9 +11,10 @@
  * - Responsive grid layout
  */
 
+import { UpgradeModal } from "@/components/dashboard/upgrade-modal";
+import { requireRole } from "@/lib/auth";
 import { db } from "@repo/database/src/client";
 import { Building2, Calendar, TrendingUp, Users } from "lucide-react";
-import { requireRole } from "@/lib/auth";
 
 export default async function DashboardPage() {
   const user = await requireRole(["AGENT", "ADMIN"]);
@@ -175,6 +176,9 @@ export default async function DashboardPage() {
           </a>
         </div>
       </div>
+
+      {/* Upgrade Modal (Client Component) */}
+      <UpgradeModal />
     </div>
   );
 }

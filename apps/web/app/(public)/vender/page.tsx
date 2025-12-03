@@ -31,10 +31,34 @@ import { FAQAccordion } from "@/components/faq/faq-accordion";
 import { HeroBackground } from "@/components/home/hero-background";
 import { PricingCard } from "@/components/pricing/pricing-card";
 import { pricingTiers } from "@/lib/pricing/tiers";
-import { ArrowRight, CheckCircle, ChevronDown, Home, TrendingUp, Users } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { ArrowRight, CheckCircle, Home, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 
 export default async function VenderPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const tiers = pricingTiers.map((tier) => {
+    if (user) {
+      if (tier.name === "FREE") {
+        return {
+          ...tier,
+          ctaText: "Publicar ahora",
+          ctaUrl: "/dashboard/propiedades/nueva",
+        };
+      }
+      return {
+        ...tier,
+        ctaText: "Elegir plan",
+        ctaUrl: `/dashboard?upgrade=${tier.name.toLowerCase()}`,
+      };
+    }
+    return tier;
+  });
+
   return (
     <div className="bg-background text-foreground">
       {/* Hero Section */}
@@ -324,7 +348,7 @@ export default async function VenderPage() {
 
           {/* Pricing Cards Grid */}
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
-            {pricingTiers.map((tier) => (
+            {tiers.map((tier) => (
               <PricingCard key={tier.name} tier={tier} compact={true} />
             ))}
           </div>

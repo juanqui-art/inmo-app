@@ -44,7 +44,10 @@ export default function SignupPage({
           </div>
 
           {/* Email/Password Form */}
-          <SignupForm redirect={searchParams.redirect as string} />
+          <SignupForm 
+            redirect={searchParams.redirect as string} 
+            plan={searchParams.plan as string}
+          />
         </div>
 
         {/* Link a Login */}

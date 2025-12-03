@@ -38,6 +38,7 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
     redirect: formData.get("redirect") as string | null,
+    plan: formData.get("plan") as string | null,
   };
 
   // 2. Validar con Zod schema (sin role)
@@ -68,6 +69,7 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
       data: {
         name,
         role,
+        plan: rawData.plan, // Guardar plan seleccionado en metadata
       },
     },
   });
@@ -92,6 +94,11 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
   const redirectParam = rawData.redirect;
   if (redirectParam?.startsWith("/")) {
     return redirect(redirectParam);
+  }
+
+  // Lógica de redirección según plan
+  if (rawData.plan && ["BASIC", "PRO"].includes(rawData.plan.toUpperCase())) {
+    return redirect(`/dashboard?upgrade=${rawData.plan.toLowerCase()}`);
   }
 
   // Todos los usuarios son AGENT, van al dashboard
