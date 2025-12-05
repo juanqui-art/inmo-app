@@ -13,6 +13,8 @@ import { FavoriteRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
+import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
+import { logger } from "@/lib/utils/logger";
 
 const favoriteSchema = z.object({
   propertyId: z.string().uuid("Invalid property ID format"),
@@ -43,6 +45,17 @@ export async function toggleFavoriteAction(propertyId: string) {
       throw new Error("Authentication required to manage favorites");
     }
 
+    // 2.5 Rate limiting (user-based to prevent spam)
+    try {
+      await enforceRateLimit({ userId: user.id, tier: "favorite" });
+    } catch (error) {
+      if (isRateLimitError(error)) {
+        logger.warn({ userId: user.id, tier: "favorite" }, "[Favorite] Rate limit exceeded");
+        return { success: false, error: error.message };
+      }
+      throw error;
+    }
+
     // 3. Ejecutar toggle
     const favoriteRepository = new FavoriteRepository();
     const result = await favoriteRepository.toggleFavorite(
@@ -69,7 +82,7 @@ export async function toggleFavoriteAction(propertyId: string) {
     }
 
     if (error instanceof Error) {
-      console.error("[toggleFavoriteAction]", error.message);
+      logger.error({ err: error }, "[toggleFavoriteAction] Failed");
       return {
         success: false,
         error: error.message,
@@ -124,7 +137,7 @@ export async function getUserFavoritesAction() {
     };
   } catch (error) {
     if (error instanceof Error) {
-      console.error("[getUserFavoritesAction]", error.message);
+      logger.error({ err: error }, "[getUserFavoritesAction] Failed");
       return {
         success: false,
         error: error.message,
@@ -176,7 +189,7 @@ export async function checkIfFavoriteAction(propertyId: string) {
       isFavorite,
     };
   } catch (error) {
-    console.error("[checkIfFavoriteAction]", error);
+    logger.error({ err: error }, "[checkIfFavoriteAction] Failed");
     return {
       success: false,
       isFavorite: false,
@@ -242,7 +255,7 @@ export async function getFavoritesWithDetailsAction(limit: number = 8) {
     };
   } catch (error) {
     if (error instanceof Error) {
-      console.error("[getFavoritesWithDetailsAction]", error.message);
+      logger.error({ err: error }, "[getFavoritesWithDetailsAction] Failed");
       return {
         success: false,
         error: error.message,

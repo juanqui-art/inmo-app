@@ -18,18 +18,18 @@
  * de defensa (defense in depth). El proxy es la primera línea de seguridad.
  */
 
+import { env } from "@/lib/env";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
-import { env } from "@/lib/env";
 
 // Tipos de roles permitidos
-type UserRole = "AGENT" | "ADMIN";
+type UserRole = "CLIENT" | "AGENT" | "ADMIN";
 
 // Configuración de rutas protegidas
 const routePermissions = {
   "/dashboard": ["AGENT", "ADMIN"] as UserRole[],
   "/admin": ["ADMIN"] as UserRole[],
-  "/perfil": ["AGENT", "ADMIN"] as UserRole[], // Todos los usuarios autenticados
+  "/perfil": ["CLIENT", "AGENT", "ADMIN"] as UserRole[], // Todos los usuarios autenticados
 } as const;
 
 /**
@@ -126,6 +126,7 @@ export async function proxy(request: NextRequest) {
 
         // Redirigir según rol actual
         const redirectMap: Record<UserRole, string> = {
+          CLIENT: "/perfil",
           ADMIN: "/admin",
           AGENT: "/dashboard",
         };
@@ -142,6 +143,7 @@ export async function proxy(request: NextRequest) {
   // 2. Si está autenticado y va a login/signup, redirigir a su área
   if (user && userRole && (pathname === "/login" || pathname === "/signup")) {
     const redirectMap: Record<UserRole, string> = {
+      CLIENT: "/perfil",
       ADMIN: "/admin",
       AGENT: "/dashboard",
     };

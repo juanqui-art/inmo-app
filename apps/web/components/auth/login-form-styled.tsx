@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Checkbox, Input, Label, PasswordInput } from "@repo/ui";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useState } from "react";
 import { loginAction } from "@/app/actions/auth";
@@ -129,12 +130,12 @@ export function LoginFormStyled() {
       {/* Signup Link */}
       <p className="text-center text-sm text-muted-foreground">
         ¿No tienes una cuenta?{" "}
-        <a
+        <Link
           href="/signup"
           className="text-foreground hover:underline font-semibold transition-colors"
         >
           Regístrate aquí
-        </a>
+        </Link>
       </p>
     </div>
   );

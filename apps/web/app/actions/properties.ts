@@ -17,7 +17,9 @@ import {
   canCreateProperty,
   canUploadImage,
 } from "@/lib/permissions/property-limits";
+import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { deletePropertyImage, uploadPropertyImage } from "@/lib/storage/client";
+import { logger } from "@/lib/utils/logger";
 import {
   createPropertySchema,
   updatePropertySchema,
@@ -33,6 +35,17 @@ export async function createPropertyAction(
 ) {
   // 1. Verificar que el usuario es AGENT o ADMIN
   const user = await requireRole(["AGENT", "ADMIN"]);
+
+  // 1.5 Rate limiting (user-based to prevent spam)
+  try {
+    await enforceRateLimit({ userId: user.id, tier: "property-create" });
+  } catch (error) {
+    if (isRateLimitError(error)) {
+      logger.warn({ userId: user.id, tier: "property-create" }, "[Property] Rate limit exceeded");
+      return { error: { general: error.message } };
+    }
+    throw error;
+  }
 
   // 2. Check subscription tier limits
   const permissionCheck = await canCreateProperty(user.id);
@@ -86,7 +99,7 @@ export async function createPropertyAction(
     // 5. Crear propiedad usando el repository
     await propertyRepository.create(validatedData.data, user.id);
   } catch (error) {
-    console.error("Error creating property:", error);
+    logger.error({ err: error }, "Error creating property");
     return {
       error: {
         general:
@@ -165,7 +178,7 @@ export async function updatePropertyAction(
     // 4. Actualizar (repository verifica ownership)
     await propertyRepository.update(id, updateData, user.id);
   } catch (error) {
-    console.error("Error updating property:", error);
+    logger.error({ err: error, propertyId: id }, "Error updating property");
     return {
       error: {
         general:
@@ -204,7 +217,7 @@ export async function deletePropertyAction(propertyId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting property:", error);
+    logger.error({ err: error, propertyId }, "Error deleting property");
     return {
       error:
         error instanceof Error
@@ -288,7 +301,7 @@ export async function uploadPropertyImagesAction(
 
     return { success: true, images: uploadedImages };
   } catch (error) {
-    console.error("Error uploading images:", error);
+    logger.error({ err: error, propertyId }, "Error uploading images");
     return {
       error:
         error instanceof Error ? error.message : "Error al subir las imágenes",
@@ -335,7 +348,7 @@ export async function deletePropertyImageAction(imageId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting image:", error);
+    logger.error({ err: error, imageId }, "Error deleting image");
     return {
       error:
         error instanceof Error ? error.message : "Error al eliminar la imagen",
@@ -381,7 +394,7 @@ export async function reorderPropertyImagesAction(
 
     return { success: true };
   } catch (error) {
-    console.error("Error reordering images:", error);
+    logger.error({ err: error, propertyId }, "Error reordering images");
     return {
       error:
         error instanceof Error
@@ -457,7 +470,7 @@ export async function searchCitiesAction(
 
     return { cities };
   } catch (error) {
-    console.error("Error searching cities:", error);
+    logger.error({ err: error, query }, "Error searching cities");
     return {
       cities: [],
       error:
@@ -512,7 +525,7 @@ export async function getCitiesAction(): Promise<{
 
     return { cities };
   } catch (error) {
-    console.error("Error getting cities:", error);
+    logger.error({ err: error }, "Error getting cities");
     return {
       cities: [],
       error:
@@ -589,7 +602,7 @@ export async function getPropertyPreviewAction(propertyId: string): Promise<{
 
     return { success: true, data: previewData };
   } catch (error) {
-    console.error("Error getting property preview:", error);
+    logger.error({ err: error, propertyId }, "Error getting property preview");
     return {
       success: false,
       error:

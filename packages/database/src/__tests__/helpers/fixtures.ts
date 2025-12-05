@@ -6,7 +6,7 @@
 
 // Use type definitions instead of importing from Prisma
 // This avoids dependency on generated Prisma types in test environment
-type UserRole = "AGENT" | "ADMIN";
+type UserRole = "CLIENT" | "AGENT" | "ADMIN";
 type SubscriptionTier = "FREE" | "BASIC" | "PRO";
 type TransactionType = "SALE" | "RENT";
 type PropertyCategory = "HOUSE" | "APARTMENT" | "LAND" | "COMMERCIAL";
@@ -117,6 +117,23 @@ export const mockUsers = {
     stripePriceId: null,
     stripeCurrentPeriodEnd: null,
     phone: "+1111111111",
+    avatar: null,
+    createdAt: new Date("2025-01-01"),
+    updatedAt: new Date("2025-01-01"),
+  } as User,
+
+  // CLIENT role for testing authorization rejection
+  client: {
+    id: "client-999",
+    email: "client@test.com",
+    name: "Test Client",
+    role: "CLIENT" as UserRole,
+    subscriptionTier: "FREE" as SubscriptionTier,
+    stripeCustomerId: null,
+    stripeSubscriptionId: null,
+    stripePriceId: null,
+    stripeCurrentPeriodEnd: null,
+    phone: "+2222222222",
     avatar: null,
     createdAt: new Date("2025-01-01"),
     updatedAt: new Date("2025-01-01"),

@@ -220,21 +220,15 @@ describe("toggleFavoriteAction", () => {
       });
     });
 
-    it("should log errors in production", async () => {
-      const consoleSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-
+    it("should handle errors gracefully", async () => {
+      // Note: We now use structured logger instead of console.error
+      // The important behavior is that errors are caught and returned gracefully
       mockToggleFavorite.mockRejectedValue(new Error("Database error"));
 
-      await toggleFavoriteAction(validPropertyId);
+      const result = await toggleFavoriteAction(validPropertyId);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "[toggleFavoriteAction]",
-        "Database error",
-      );
-
-      consoleSpy.mockRestore();
+      expect(result.success).toBe(false);
+      expect(result.error).toBe("Database error");
     });
   });
 

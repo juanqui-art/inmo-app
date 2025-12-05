@@ -7,7 +7,7 @@
  * v1.0.0: Manual optimistic updates with useState + useCallback (197 lines)
  * v2.0.0: Context + useOptimistic + useTransition (220 lines with flickering)
  * v3.0.0: Zustand with persist middleware (30 lines, no flickering)
- * v3.1.0: Added auth redirect via custom events (parallel routes support) ← CURRENT
+ * v3.1.0: Added auth redirect via custom events ← CURRENT
  *
  * USAGE (unchanged):
  * const { isFavorite, toggleFavorite, isPending } = useFavorites();
@@ -64,8 +64,7 @@ export function useFavorites() {
       event: CustomEvent<{ propertyId: string }>,
     ) => {
       const { propertyId } = event.detail;
-      // Use Next.js router for client-side navigation
-      // This triggers parallel route interception (@auth/(.)login)
+      // Use Next.js router for client-side navigation to login page
       router.push(`/login?intent=favorite&propertyId=${propertyId}`);
     };
 

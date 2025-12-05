@@ -3,60 +3,52 @@
 /**
  * AUTH SUCCESS HANDLER
  *
- * Client component que maneja post-auth flow:
- * 1. Detecta si viene de OAuth exitoso
- * 2. Muestra SuccessModal
- * 3. Redirige de vuelta a la página anterior
- * 4. Ejecuta el authIntent (favoritos, etc)
+ * Muestra modal de éxito después de autenticación OAuth.
+ * El callback ya maneja la redirección, este componente solo:
+ * 1. Detecta ?authSuccess=true en la URL
+ * 2. Muestra el SuccessModal
+ * 3. Ejecuta authIntent si existe (para favoritos, etc.)
+ * 4. Limpia el parámetro de la URL
+ *
+ * NOTA: La redirección ya fue manejada por /auth/callback
+ * Este componente solo muestra feedback visual.
  */
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AuthIntentExecutor } from "./auth-intent-executor";
 import { SuccessModal } from "./success-modal";
 
 export function AuthSuccessHandler() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    // Detectar si viene de OAuth exitoso
     const authSuccess = searchParams.get("authSuccess");
 
     if (authSuccess === "true") {
       setShowSuccess(true);
 
-      // Leer URL de retorno del localStorage (guardada en google-button.tsx)
-      const authReturnUrl = localStorage.getItem("authReturnUrl");
+      // Limpiar el parámetro authSuccess de la URL (sin recargar)
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.delete("authSuccess");
+      const newUrl = newParams.toString()
+        ? `${pathname}?${newParams.toString()}`
+        : pathname;
 
-      // Leer redirectTo del authIntent (para intents personalizados como guardar favorito)
-      const intentStr = localStorage.getItem("authIntent");
-      let redirectTo = "/";
+      // Reemplazar la URL sin el parámetro (para que no se muestre en el historial)
+      window.history.replaceState({}, "", newUrl);
 
-      // Prioridad: authIntent.redirectTo > authReturnUrl > home
-      if (intentStr) {
-        try {
-          const intent = JSON.parse(intentStr);
-          redirectTo = intent.redirectTo || authReturnUrl || "/";
-        } catch (error) {
-          console.error("Error parsing authIntent:", error);
-          redirectTo = authReturnUrl || "/";
-        }
-      } else if (authReturnUrl) {
-        redirectTo = authReturnUrl;
-      }
+      // Auto-cerrar el modal después de un tiempo
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 2500);
 
-      // Limpiar localStorage
-      localStorage.removeItem("authReturnUrl");
-      localStorage.removeItem("authIntent");
-
-      // Redirigir de vuelta a la página anterior después de cerrar el modal
-      setTimeout(() => {
-        router.push(redirectTo);
-      }, 2500); // Tiempo igual al autoCloseDuration del modal
+      return () => clearTimeout(timer);
     }
-  }, [searchParams, router]);
+  }, [searchParams, pathname, router]);
 
   if (!showSuccess) {
     return null;

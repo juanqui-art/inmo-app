@@ -11,7 +11,7 @@ type SafeUser = {
   id: string;
   email: string;
   name: string | null;
-  role: "AGENT" | "ADMIN";
+  role: "CLIENT" | "AGENT" | "ADMIN";
   phone: string | null;
   avatar: string | null;
   createdAt: Date;
@@ -67,17 +67,28 @@ export function createMockDbUser(overrides?: Partial<SafeUser>): SafeUser {
 
 /**
  * Create mock signup FormData
- * Note: role is no longer required as all users are AGENT by default
+ *
+ * Role logic:
+ * - No plan → CLIENT (buyers/renters)
+ * - With plan (free/basic/pro) → AGENT (can publish properties)
  */
 export function createSignupFormData(overrides?: {
   name?: string;
   email?: string;
   password?: string;
+  plan?: string;
+  redirect?: string;
 }): FormData {
   const formData = new FormData();
   formData.append("name", overrides?.name ?? "Test User");
   formData.append("email", overrides?.email ?? "test@example.com");
   formData.append("password", overrides?.password ?? "Password123");
+  if (overrides?.plan) {
+    formData.append("plan", overrides.plan);
+  }
+  if (overrides?.redirect) {
+    formData.append("redirect", overrides.redirect);
+  }
   return formData;
 }
 

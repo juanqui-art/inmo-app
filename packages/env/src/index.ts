@@ -175,6 +175,19 @@ const serverSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
+
+  // Upstash Redis (Rate Limiting)
+  UPSTASH_REDIS_REST_URL: z
+    .string()
+    .url("UPSTASH_REDIS_REST_URL must be a valid URL")
+    .optional()
+    .describe("Upstash Redis REST URL for rate limiting"),
+
+  UPSTASH_REDIS_REST_TOKEN: z
+    .string()
+    .min(1, "UPSTASH_REDIS_REST_TOKEN is required")
+    .optional()
+    .describe("Upstash Redis REST token for rate limiting"),
 });
 
 /**
@@ -222,6 +235,8 @@ const parseEnv = (): Env => {
       STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
       STRIPE_BASIC_PRICE_ID: process.env.STRIPE_BASIC_PRICE_ID,
       STRIPE_PRO_PRICE_ID: process.env.STRIPE_PRO_PRICE_ID,
+      UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+      UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
       NODE_ENV: (process.env.NODE_ENV || "development") as
         | "development"
         | "production"
@@ -245,6 +260,8 @@ const parseEnv = (): Env => {
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     STRIPE_BASIC_PRICE_ID: process.env.STRIPE_BASIC_PRICE_ID,
     STRIPE_PRO_PRICE_ID: process.env.STRIPE_PRO_PRICE_ID,
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     NODE_ENV: process.env.NODE_ENV,
   });
 

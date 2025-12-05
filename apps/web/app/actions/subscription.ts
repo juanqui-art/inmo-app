@@ -27,6 +27,8 @@ export async function upgradeSubscriptionAction(formData: FormData) {
       where: { id: user.id },
       data: {
         subscriptionTier: plan as "BASIC" | "PRO",
+        // Promote CLIENT to AGENT when they subscribe (sellers need AGENT role)
+        role: user.role === "CLIENT" ? "AGENT" : user.role,
       },
     });
 

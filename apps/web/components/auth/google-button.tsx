@@ -3,13 +3,17 @@
 /**
  * GOOGLE OAUTH BUTTON
  *
- * ¿Cómo funciona?
+ * Flujo OAuth seguro (sin localStorage):
  * 1. Usuario hace click
- * 2. Ejecuta onBeforeRedirect (guardar intent, etc.)
+ * 2. Construimos redirectTo con parámetros (plan, returnUrl)
  * 3. Redirige a Google para autorizar
- * 4. Google redirige de vuelta a /auth/callback
- * 5. Callback ejecuta el intent guardado
- * 6. Usuario autenticado
+ * 4. Google redirige a /auth/callback con los parámetros
+ * 5. Callback procesa y redirige según rol/plan
+ *
+ * SEGURIDAD:
+ * - No usamos localStorage para datos sensibles
+ * - Todos los parámetros van en URL (verificables server-side)
+ * - El callback valida y sanitiza los parámetros
  */
 
 import { Button } from "@repo/ui";
@@ -29,22 +33,41 @@ export function GoogleButton({ onBeforeRedirect }: GoogleButtonProps) {
     setIsLoading(true);
 
     try {
-      // Guardar URL de retorno en localStorage
-      // Si viene un parámetro 'redirect', usarlo; si no, usar el referrer; si no, usar home
-      const redirectUrl =
-        searchParams.get("redirect") || document.referrer || "/";
-      localStorage.setItem("authReturnUrl", redirectUrl);
-
       // Ejecutar callback antes del redirect (guardar intent, etc.)
       onBeforeRedirect?.();
+
+      // Construir URL de callback con parámetros
+      const callbackUrl = new URL("/auth/callback", window.location.origin);
+
+      // Pasar plan si existe (para flujo de /vender)
+      const plan = searchParams.get("plan");
+      if (plan) {
+        callbackUrl.searchParams.set("plan", plan);
+      }
+
+      // Pasar URL de retorno (para volver después del auth)
+      const returnUrl = searchParams.get("redirect") || document.referrer;
+      if (returnUrl && returnUrl !== window.location.origin) {
+        // Solo guardar si es una ruta relativa o del mismo origen
+        try {
+          const url = new URL(returnUrl, window.location.origin);
+          if (url.origin === window.location.origin) {
+            callbackUrl.searchParams.set("returnUrl", url.pathname + url.search);
+          }
+        } catch {
+          // Si no es una URL válida, intentar como ruta relativa
+          if (returnUrl.startsWith("/")) {
+            callbackUrl.searchParams.set("returnUrl", returnUrl);
+          }
+        }
+      }
 
       const supabase = createClient();
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          // Redirigir de vuelta a nuestra app después de Google
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: callbackUrl.toString(),
           queryParams: {
             access_type: "offline",
             prompt: "consent",
@@ -76,7 +99,6 @@ export function GoogleButton({ onBeforeRedirect }: GoogleButtonProps) {
         "Redirigiendo..."
       ) : (
         <div className="flex items-center justify-center gap-2">
-          {/* Ícono de Google (SVG inline) */}
           <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
             <title>Google logo</title>
             <path

@@ -24,11 +24,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  auth,
   propertyPreview,
 }: Readonly<{
   children: React.ReactNode;
-  auth: React.ReactNode;
   propertyPreview: React.ReactNode;
 }>) {
   return (
@@ -46,7 +44,6 @@ export default function RootLayout({
         >
           <ErrorBoundary>
             {children}
-            {auth}
             {propertyPreview}
           </ErrorBoundary>
         </ThemeProvider>

@@ -15,9 +15,6 @@
  * - Responsive sticky sidebar with floating CTA card
  */
 
-import { PropertyRepository } from "@repo/database";
-import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
 import { checkIfFavoriteAction } from "@/app/actions/favorites";
 import { PropertyDescriptionCard } from "@/components/property-detail/property-description-card";
 import { PropertyFloatingActionCard } from "@/components/property-detail/property-floating-action-card";
@@ -26,6 +23,9 @@ import { PropertyLocationCard } from "@/components/property-detail/property-loca
 import { PropertyStatsCard } from "@/components/property-detail/property-stats-card";
 import { getCurrentUser } from "@/lib/auth";
 import { generateSlug, parseIdSlugParam } from "@/lib/utils/slug-generator";
+import { PropertyRepository } from "@repo/database";
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
 
 interface PropertyDetailPageProps {
   params: Promise<{
@@ -124,7 +124,7 @@ export default async function PropertyDetailPage(
         propertyTitle={property.title}
         propertyId={id}
         initialIsFavorite={isFavorite}
-        isAuthenticated={!!user && user.role === "CLIENT"}
+        isAuthenticated={!!user}
       />
 
       {/* Main Content Container */}
@@ -192,7 +192,7 @@ export default async function PropertyDetailPage(
               agentEmail={property.agent?.email}
               agentPhone={property.agent?.phone}
               propertyId={id}
-              isAuthenticated={!!user && user.role === "CLIENT"}
+              isAuthenticated={!!user}
               isSticky
             />
           </div>

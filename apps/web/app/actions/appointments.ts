@@ -20,6 +20,8 @@ import {
   sendAppointmentConfirmedEmail,
   sendAppointmentCreatedEmail,
 } from "@/lib/email/appointment-emails";
+import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
+import { logger } from "@/lib/utils/logger";
 
 // ==================== SCHEMAS ====================
 
@@ -88,16 +90,26 @@ export async function createAppointmentAction(formData: {
       throw new Error("Authentication required to book an appointment");
     }
 
+    // 2.5 Rate limiting (user-based to prevent spam)
+    try {
+      await enforceRateLimit({ userId: user.id, tier: "appointment" });
+    } catch (error) {
+      if (isRateLimitError(error)) {
+        logger.warn({ userId: user.id, tier: "appointment" }, "[Appointment] Rate limit exceeded");
+        return { success: false, error: error.message };
+      }
+      throw error;
+    }
+
     // 3. Verificar que usuario sea CLIENT (solo clientes pueden agendar citas)
     if (user.role !== "CLIENT") {
       // Logging de seguridad
-      console.warn("[SECURITY] Role restriction - only CLIENT can book", {
+      logger.warn({
         userId: user.id,
         userRole: user.role,
         requiredRole: "CLIENT",
-        timestamp: new Date().toISOString(),
         layer: "server-action",
-      });
+      }, "[SECURITY] Role restriction - only CLIENT can book");
       throw new Error("Only clients can book appointments");
     }
 
@@ -145,10 +157,10 @@ export async function createAppointmentAction(formData: {
 
     // Log if email failed (but don't fail the appointment creation)
     if (!emailResult.success) {
-      console.warn("[createAppointmentAction] Email notification failed:", {
+      logger.warn({
         appointmentId: appointment.id,
         error: emailResult.error,
-      });
+      }, "[createAppointmentAction] Email notification failed");
     }
 
     // 8. Revalidar rutas
@@ -175,7 +187,7 @@ export async function createAppointmentAction(formData: {
     }
 
     if (error instanceof Error) {
-      console.error("[createAppointmentAction]", error.message);
+      logger.error({ err: error }, "[createAppointmentAction] Failed");
       return {
         success: false,
         error: error.message,
@@ -237,14 +249,13 @@ export async function updateAppointmentStatusAction(data: {
 
     if (!isAgent && !isClient) {
       // Logging de seguridad
-      console.warn("[SECURITY] Unauthorized appointment access attempt", {
+      logger.warn({
         userId: user.id,
         appointmentId: validatedData.id,
         appointmentAgentId: appointment.agentId,
         appointmentClientId: appointment.userId,
-        timestamp: new Date().toISOString(),
         layer: "server-action",
-      });
+      }, "[SECURITY] Unauthorized appointment access attempt");
       throw new Error("You are not authorized to manage this appointment");
     }
 
@@ -300,14 +311,11 @@ export async function updateAppointmentStatusAction(data: {
 
     // Log if email failed (but don't fail the status update)
     if (!emailResult.success) {
-      console.warn(
-        "[updateAppointmentStatusAction] Email notification failed:",
-        {
-          appointmentId: validatedData.id,
-          status: validatedData.status,
-          error: emailResult.error,
-        },
-      );
+      logger.warn({
+        appointmentId: validatedData.id,
+        status: validatedData.status,
+        error: emailResult.error,
+      }, "[updateAppointmentStatusAction] Email notification failed");
     }
 
     // 8. Revalidar rutas
@@ -330,7 +338,7 @@ export async function updateAppointmentStatusAction(data: {
     }
 
     if (error instanceof Error) {
-      console.error("[updateAppointmentStatusAction]", error.message);
+      logger.error({ err: error }, "[updateAppointmentStatusAction] Failed");
       return {
         success: false,
         error: error.message,
@@ -391,7 +399,7 @@ export async function getAvailableSlotsAction(data: {
       };
     }
 
-    console.error("[getAvailableSlotsAction]", error);
+    logger.error({ err: error }, "[getAvailableSlotsAction] Failed");
     return {
       success: false,
       slots: [],
@@ -429,13 +437,12 @@ export async function getAgentAppointmentsAction(filters?: {
     // 2. Verificar que sea agente (solo AGENT/ADMIN pueden ver sus citas)
     if (user.role !== "AGENT" && user.role !== "ADMIN") {
       // Logging de seguridad
-      console.warn("[SECURITY] Role restriction - only AGENT/ADMIN", {
+      logger.warn({
         userId: user.id,
         userRole: user.role,
         requiredRoles: ["AGENT", "ADMIN"],
-        timestamp: new Date().toISOString(),
         layer: "server-action",
-      });
+      }, "[SECURITY] Role restriction - only AGENT/ADMIN");
       throw new Error("Only agents can view their appointments");
     }
 
@@ -456,7 +463,7 @@ export async function getAgentAppointmentsAction(filters?: {
     };
   } catch (error) {
     if (error instanceof Error) {
-      console.error("[getAgentAppointmentsAction]", error.message);
+      logger.error({ err: error }, "[getAgentAppointmentsAction] Failed");
       return {
         success: false,
         appointments: [],
@@ -503,7 +510,7 @@ export async function getUserAppointmentsAction() {
     };
   } catch (error) {
     if (error instanceof Error) {
-      console.error("[getUserAppointmentsAction]", error.message);
+      logger.error({ err: error }, "[getUserAppointmentsAction] Failed");
       return {
         success: false,
         appointments: [],

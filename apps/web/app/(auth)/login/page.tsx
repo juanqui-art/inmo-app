@@ -1,33 +1,48 @@
+/**
+ * LOGIN PAGE
+ * URL: /login
+ *
+ * Features:
+ * - Email/password authentication
+ * - Google OAuth
+ * - Redirect parameter support
+ * - Rate limiting protection
+ */
+
 import { Suspense } from "react";
 import { LoginFormStyled } from "@/components/auth/login-form-styled";
 
+function LoginFormFallback() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      <div className="h-8 bg-muted rounded w-3/4 mx-auto" />
+      <div className="h-4 bg-muted rounded w-1/2 mx-auto" />
+      <div className="space-y-4 mt-8">
+        <div className="h-12 bg-muted rounded" />
+        <div className="h-12 bg-muted rounded" />
+        <div className="h-12 bg-muted rounded" />
+      </div>
+    </div>
+  );
+}
+
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex">
-      {/* Left side - Image */}
-      <div
-        className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-cover bg-center"
-        style={{
-          backgroundImage: "url('/hero_section.jpg')",
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60 z-10" />
-        <div className="absolute bottom-12 left-12 text-oslo-gray-50 z-20">
-          <h2 className="font-serif text-4xl font-bold mb-3 text-balance">
-            Encuentra tu hogar ideal
-          </h2>
-          <p className="text-lg text-oslo-gray-200 text-pretty">
-            Las mejores propiedades en las ubicaciones más exclusivas
-          </p>
-        </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="text-center">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          Bienvenido
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Inicia sesión para acceder a tu cuenta
+        </p>
       </div>
 
-      {/* Right side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-background">
-        <Suspense fallback={<div>Cargando formulario...</div>}>
-          <LoginFormStyled />
-        </Suspense>
-      </div>
+      {/* Form */}
+      <Suspense fallback={<LoginFormFallback />}>
+        <LoginFormStyled />
+      </Suspense>
     </div>
   );
 }

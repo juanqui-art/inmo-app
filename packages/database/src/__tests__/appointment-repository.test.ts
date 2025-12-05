@@ -102,13 +102,14 @@ describe("AppointmentRepository", () => {
       const result = await repository.createAppointment(appointmentData);
 
       // Assert
+      // Note: sanitizeOptional converts undefined to null
       expect(db.appointment.create).toHaveBeenCalledWith({
         data: {
           userId: mockUserId,
           propertyId: mockPropertyId,
           agentId: mockAgentId,
           scheduledAt: mockScheduledAt,
-          notes: undefined,
+          notes: null,
           status: "PENDING",
         },
         select: appointmentDetailSelect,

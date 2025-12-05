@@ -355,9 +355,9 @@ export class PropertyRepository {
         ...data,
         title: sanitizePlainText(data.title),
         description: sanitizeOptional(data.description, sanitizeHTML),
-        address: sanitizePlainText(data.address),
-        city: sanitizePlainText(data.city),
-        state: sanitizePlainText(data.state),
+        address: sanitizeOptional(data.address, sanitizePlainText),
+        city: sanitizeOptional(data.city, sanitizePlainText),
+        state: sanitizeOptional(data.state, sanitizePlainText),
         zipCode: sanitizeOptional(data.zipCode, sanitizePlainText),
         agentId: currentUserId, // Asegurar que la propiedad pertenece al usuario actual
       };

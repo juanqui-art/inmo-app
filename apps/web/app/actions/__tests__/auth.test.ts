@@ -51,7 +51,7 @@ describe("Auth Server Actions", () => {
 
   describe("signupAction", () => {
     describe("Successful Signup", () => {
-      it("should register user as AGENT and redirect to /dashboard", async () => {
+      it("should register user as CLIENT and redirect to /perfil (no plan)", async () => {
         const formData = createSignupFormData({
           name: "Juan Pérez",
           email: "juan@example.com",
@@ -68,9 +68,10 @@ describe("Auth Server Actions", () => {
           error: null,
         });
 
+        // Sin plan → CLIENT → /perfil
         await expect(async () => {
           await signupAction(null, formData);
-        }).rejects.toThrow("NEXT_REDIRECT: /dashboard");
+        }).rejects.toThrow("NEXT_REDIRECT: /perfil");
 
         expect(mockSupabase.auth.signUp).toHaveBeenCalledWith({
           email: "juan@example.com",
@@ -78,12 +79,85 @@ describe("Auth Server Actions", () => {
           options: {
             data: {
               name: "Juan Pérez",
-              role: "AGENT",
+              role: "CLIENT", // No plan = CLIENT (buyers/renters)
+              plan: null,
             },
           },
         });
 
         expect(mockRevalidatePath).toHaveBeenCalledWith("/", "layout");
+      });
+
+      it("should register user as AGENT and redirect to /dashboard (with FREE plan)", async () => {
+        const formData = createSignupFormData({
+          name: "María García",
+          email: "maria@example.com",
+          password: "Password123",
+          plan: "free",
+        });
+
+        const mockUser = createMockSupabaseUser({
+          id: "new-user-id",
+          email: "maria@example.com",
+        });
+
+        mockSupabase.auth.signUp.mockResolvedValue({
+          data: { user: mockUser },
+          error: null,
+        });
+
+        // Con plan FREE → AGENT → /dashboard/propiedades/nueva
+        await expect(async () => {
+          await signupAction(null, formData);
+        }).rejects.toThrow("NEXT_REDIRECT: /dashboard/propiedades/nueva");
+
+        expect(mockSupabase.auth.signUp).toHaveBeenCalledWith({
+          email: "maria@example.com",
+          password: "Password123",
+          options: {
+            data: {
+              name: "María García",
+              role: "AGENT", // With plan = AGENT (can publish properties)
+              plan: "free",
+            },
+          },
+        });
+      });
+
+      it("should register user as AGENT with upgrade param (with BASIC plan)", async () => {
+        const formData = createSignupFormData({
+          name: "Carlos López",
+          email: "carlos@example.com",
+          password: "Password123",
+          plan: "basic",
+        });
+
+        const mockUser = createMockSupabaseUser({
+          id: "new-user-id",
+          email: "carlos@example.com",
+        });
+
+        mockSupabase.auth.signUp.mockResolvedValue({
+          data: { user: mockUser },
+          error: null,
+        });
+
+        // Con plan BASIC → AGENT → /dashboard?upgrade=basic
+        await expect(async () => {
+          await signupAction(null, formData);
+        }).rejects.toThrow("NEXT_REDIRECT: /dashboard?upgrade=basic");
+
+        expect(mockSupabase.auth.signUp).toHaveBeenCalledWith({
+          email: "carlos@example.com",
+          password: "Password123",
+          options: {
+            data: {
+              name: "Carlos López",
+              role: "AGENT",
+              plan: "basic",
+            },
+          },
+        });
       });
     });
 
@@ -138,18 +212,9 @@ describe("Auth Server Actions", () => {
         expect(mockSupabase.auth.signUp).not.toHaveBeenCalled();
       });
 
-      it("should reject signup with invalid role", async () => {
-        const formData = new FormData();
-        formData.append("name", "Test User");
-        formData.append("email", "test@example.com");
-        formData.append("password", "Password123");
-        formData.append("role", "INVALID_ROLE");
-
-        const result = await signupAction(null, formData);
-
-        expect(result).toHaveProperty("error");
-        expect(mockSupabase.auth.signUp).not.toHaveBeenCalled();
-      });
+      // Note: Role is determined by plan parameter:
+      // - No plan → CLIENT (buyers/renters)
+      // - With plan (free/basic/pro) → AGENT (property publishers)
     });
 
     describe("Supabase Errors", () => {
@@ -302,6 +367,38 @@ describe("Auth Server Actions", () => {
         await expect(async () => {
           await loginAction(null, formData);
         }).rejects.toThrow("NEXT_REDIRECT: /admin");
+      });
+
+      it("should login CLIENT user and redirect to /perfil", async () => {
+        const formData = createLoginFormData({
+          email: "client@example.com",
+          password: "Password123",
+        });
+
+        const mockAuthUser = createMockSupabaseUser({
+          id: "client-id",
+          email: "client@example.com",
+          user_metadata: {
+            name: "Client User",
+            role: "CLIENT",
+          },
+        });
+
+        const mockDbUser = createMockDbUser({
+          id: "client-id",
+          role: "CLIENT",
+        });
+
+        mockSupabase.auth.signInWithPassword.mockResolvedValue({
+          data: { user: mockAuthUser },
+          error: null,
+        });
+
+        mockUserRepositoryFindById.mockResolvedValue(mockDbUser);
+
+        await expect(async () => {
+          await loginAction(null, formData);
+        }).rejects.toThrow("NEXT_REDIRECT: /perfil");
       });
     });
 

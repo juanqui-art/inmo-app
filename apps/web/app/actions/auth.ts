@@ -16,6 +16,7 @@
 
 "use server";
 
+import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/utils/logger";
 import { loginSchema, signupSchema } from "@/lib/validations/auth";
@@ -25,13 +26,27 @@ import { redirect } from "next/navigation";
 /**
  * SIGNUP ACTION - Registrar nuevo usuario
  *
- * Flujo:
+ * Flujo de roles (Principio de mínimo privilegio):
+ * - Signup normal → CLIENT → /perfil (navegación, favoritos, citas)
+ * - Signup desde /vender con plan → AGENT → /dashboard (publicar propiedades)
+ *
+ * Pasos:
  * 1. Validar datos con Zod
- * 2. Crear cuenta en Supabase Auth
- * 3. Guardar metadata (name, role)
- * 4. Redirigir a dashboard
+ * 2. Determinar rol según origen (plan = AGENT, sin plan = CLIENT)
+ * 3. Crear cuenta en Supabase Auth con metadata
+ * 4. Redirigir según rol
  */
 export async function signupAction(_prevState: unknown, formData: FormData) {
+  // 0. Rate limiting (IP-based to prevent brute force)
+  try {
+    await enforceRateLimit({ tier: "auth" });
+  } catch (error) {
+    if (isRateLimitError(error)) {
+      return { error: { general: error.message } };
+    }
+    throw error;
+  }
+
   // 1. Extraer datos del formulario
   const rawData = {
     name: formData.get("name") as string,
@@ -41,11 +56,10 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
     plan: formData.get("plan") as string | null,
   };
 
-  // 2. Validar con Zod schema (sin role)
+  // 2. Validar con Zod schema
   const validatedData = signupSchema.safeParse(rawData);
 
   if (!validatedData.success) {
-    // Si la validación falla, retornar errores
     return {
       error: validatedData.error.flatten().fieldErrors,
     };
@@ -53,23 +67,26 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
 
   const { name, email, password } = validatedData.data;
 
-  // Todos los usuarios son AGENT por defecto (pueden publicar propiedades)
-  const role = "AGENT";
+  // 3. Determinar rol según origen del signup
+  // - Si viene con plan (desde /vender) → AGENT (puede publicar propiedades)
+  // - Si viene sin plan (signup normal) → CLIENT (solo navegar, favoritos, citas)
+  const hasPlan = rawData.plan && ["FREE", "BASIC", "PRO"].includes(rawData.plan.toUpperCase());
+  const role = hasPlan ? "AGENT" : "CLIENT";
 
-  // 3. Crear cliente de Supabase
+  // 4. Crear cliente de Supabase
   const supabase = await createClient();
 
-  // 4. Registrar usuario en Supabase Auth
+  // 5. Registrar usuario en Supabase Auth
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      // Guardar metadata adicional (nombre y rol)
-      // Esto se usará en el Database Trigger para crear el usuario en la tabla
+      // Guardar metadata (nombre, rol, plan)
+      // El Database Trigger usa esto para crear el usuario en la tabla
       data: {
         name,
         role,
-        plan: rawData.plan, // Guardar plan seleccionado en metadata
+        plan: rawData.plan,
       },
     },
   });
@@ -87,22 +104,29 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
     };
   }
 
-  // 5. Revalidar
+  logger.info({ userId: data.user.id, role, plan: rawData.plan }, "[AUTH] User registered");
+
+  // 6. Revalidar
   revalidatePath("/", "layout");
 
-  // 6. Redirigir (todos los usuarios van a /dashboard por defecto)
+  // 7. Redirigir según parámetro explícito o rol
   const redirectParam = rawData.redirect;
   if (redirectParam?.startsWith("/")) {
     return redirect(redirectParam);
   }
 
-  // Lógica de redirección según plan
-  if (rawData.plan && ["BASIC", "PRO"].includes(rawData.plan.toUpperCase())) {
-    return redirect(`/dashboard?upgrade=${rawData.plan.toLowerCase()}`);
+  // Redirigir según rol asignado
+  if (role === "AGENT") {
+    // AGENT con plan pago → dashboard con modal de upgrade
+    if (rawData.plan && ["BASIC", "PRO"].includes(rawData.plan.toUpperCase())) {
+      return redirect(`/dashboard?upgrade=${rawData.plan.toLowerCase()}`);
+    }
+    // AGENT con plan FREE → directo a crear propiedad
+    return redirect("/dashboard/propiedades/nueva");
   }
 
-  // Todos los usuarios son AGENT, van al dashboard
-  return redirect("/dashboard");
+  // CLIENT → perfil (favoritos, citas)
+  return redirect("/perfil");
 }
 
 /**
@@ -112,9 +136,22 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
  * 1. Validar email y password
  * 2. Autenticar con Supabase
  * 3. Obtener rol del usuario desde DB
- * 4. Redirigir según rol (CLIENT → /perfil, AGENT/ADMIN → /dashboard)
+ * 4. Redirigir según rol:
+ *    - CLIENT → /perfil (favoritos, citas)
+ *    - AGENT → /dashboard (gestión de propiedades)
+ *    - ADMIN → /admin (administración)
  */
 export async function loginAction(_prevState: unknown, formData: FormData) {
+  // 0. Rate limiting (IP-based to prevent brute force)
+  try {
+    await enforceRateLimit({ tier: "auth" });
+  } catch (error) {
+    if (isRateLimitError(error)) {
+      return { error: { general: error.message } };
+    }
+    throw error;
+  }
+
   // 1. Extraer datos
   const rawData = {
     email: formData.get("email") as string,
@@ -212,13 +249,16 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
     redirect(redirectParam);
   }
 
-  // Si no, redirigir según rol
-  if (dbUser.role === "ADMIN") {
-    return redirect("/admin");
+  // Redirigir según rol del usuario
+  switch (dbUser.role) {
+    case "ADMIN":
+      return redirect("/admin");
+    case "AGENT":
+      return redirect("/dashboard");
+    case "CLIENT":
+    default:
+      return redirect("/perfil");
   }
-
-  // Por defecto (AGENT), ir al dashboard
-  return redirect("/dashboard");
 }
 
 /**

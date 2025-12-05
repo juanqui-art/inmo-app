@@ -241,7 +241,7 @@ PRO:    $14.99/mes (10 propiedades, 20 imágenes, destacados ilimitados)
 
 ## 🗺️ Roadmap & Planning
 
-**Status:** ✅ Phase 1 Complete (100%) | 🔄 Phase 2 Week 2 Active (Nov 30, 2025)
+**Status:** ✅ Phase 1 (100%) | ✅ Phase 2 (~95%) | 🔄 Phase 3 (~50%) — **~3 SEMANAS ADELANTADO** 🚀
 
 **Timeline**: Nov 2025 - Abr 2026 (4.5 meses)
 **Inversión total**: $12,400-14,100
@@ -250,20 +250,24 @@ PRO:    $14.99/mes (10 propiedades, 20 imágenes, destacados ilimitados)
 ### Quick Overview
 
 ```
-Week 1:    ✅ URGENCIAS (Email, Performance, Quick Wins) - DONE
-Week 2-4:  🔄 FOUNDATIONS (Testing 25%, Logging, Security) - IN PROGRESS
-Week 5-10: ⏳ FREEMIUM (Schema, Stripe, Beta 50 users)
+Week 1:     ✅ URGENCIAS (Email, Performance, Quick Wins) - DONE
+Week 2-4:   ✅ FOUNDATIONS (Testing 46.53%, Logging, Security 75%) - ~95% DONE
+Week 5-10:  🔄 FREEMIUM (Schema ✅, UI ✅, Stripe ⏳) - ~50% DONE
 Week 11-18: ⏳ SCALE (E2E tests, Beta pública 500 MAU, Launch)
 ```
 
-### Hitos Clave
+### Hitos Clave (Actualizado Dic 4, 2025)
 
 | Fecha | Hito | Target | Status |
 |-------|------|--------|--------|
-| **Nov 29** | Email funcional + Performance +36% | ✅ Quick wins | ✅ **DONE** |
-| **Dic 6** | Fix 17 tests + Repository tests | Testing >25% | 🔄 In Progress |
-| **Dic 20** | Logging + Security complete | ✅ Foundations | ⏳ Pending |
-| **Feb 14** | Freemium MVP + Beta cerrada | $25-50 MRR | ⏳ Pending |
+| **Nov 29** | Email funcional + Performance +36% | Quick wins | ✅ **DONE** |
+| **Dic 1** | Fix tests + Repository tests | Testing >25% | ✅ **DONE** (46.53%) |
+| **Dic 2** | Logging + Monitoring | Pino + Sentry | ✅ **DONE** |
+| **Dic 3-4** | Security Headers + DOMPurify | Security 8/10 | ✅ **DONE** |
+| **Dic 3-4** | Freemium Schema + UI | Pricing page | ✅ **DONE** |
+| ~~**Dic 20**~~ | Rate Limiting + CSRF | Completar Phase 2 | ⏳ Pendiente |
+| **Dic 20** | Stripe Integration | Payments | ⏳ Próximo |
+| **Feb 14** | Beta cerrada | $25-50 MRR | ⏳ Pending |
 | **Mar 28** | Beta pública | 200-500 MAU | ⏳ Pending |
 | **Abr 11** | Production Launch | $700 MRR 🚀 | ⏳ Pending |
 
@@ -594,33 +598,53 @@ TOTAL:              289 tests ✅ (100% passing)
 - ✅ Test runner fix (Vitest working correctly)
 - ✅ Test improvements (140 → 160 tests passing)
 
-**Phase 2 (Foundations):** 🔄 IN PROGRESS (2/3 weeks complete - 1 WEEK AHEAD)
+**Phase 2 (Foundations):** ✅ ~95% COMPLETE - **3 SEMANAS ADELANTADO** 🚀
 
-**✅ Week 2 COMPLETADO** - Testing Infrastructure (Nov 30 - Dec 1, 2025)
+**✅ Week 2 COMPLETADO** - Testing Infrastructure (Dec 1, 2025)
 - ✅ Fix 17 failing tests (160/160 passing)
 - ✅ Repository unit tests (+114 tests, 289/289 passing)
 - ✅ CI/CD enforcement (GitHub Actions + coverage)
 - ✅ Coverage measurement (46.53%, target: 25%)
 
-**✅ Week 3 COMPLETADO** - Logging & Monitoring (Dec 2, 2025) - **1 SEMANA ADELANTADO** 🚀
+**✅ Week 3 COMPLETADO** - Logging & Monitoring (Dec 2, 2025)
 - ✅ Structured logging with Pino (JSON logs, request ID tracking)
 - ✅ Sentry integration (error tracking, session replay)
 - ✅ React Error Boundaries (fallback UI, auto-reporting)
 - ✅ Server Action wrapper HOC (automatic logging, timing)
 
-**Progress:** ✅ 2/3 weeks (66% - 1 WEEK AHEAD!) | Tests: 289/289 (100%) | Coverage: 46.53%
+**✅ Week 4 ~75% COMPLETADO** - Security (Dec 3-4, 2025)
+- ✅ Security headers (CSP, X-Frame-Options, HSTS)
+- ✅ Input sanitization (DOMPurify integration)
+- ⏳ Rate limiting (Upstash Redis) - PENDIENTE
+- ⏳ CSRF protection - PENDIENTE
 
-**Next (from ROADMAP.md):**
-- **Week 4 (Dec 9-13):** Security & Rate Limiting (CSP headers, Upstash Redis)
-  - **Note**: Can start early since Week 3 completed ahead of schedule
-- **Weeks 5-10 (Jan 6 - Feb 14):** Freemium implementation (schema, Stripe, UI)
-- **Weeks 11-18 (Feb 17 - Apr 11):** Scale & Production (E2E tests, beta, launch)
+**Phase 3 (Freemium):** 🔄 ~50% COMPLETE - **INICIADO TEMPRANO**
+
+**✅ Sprint 1-2 ~80% COMPLETADO** - Schema + Permissions (Dec 3-4, 2025)
+- ✅ SubscriptionTier enum (FREE/BASIC/PRO)
+- ✅ Stripe fields en User schema
+- ✅ Permission helpers (property-limits.ts)
+- ✅ upgradeSubscriptionAction (simulado)
+
+**🔄 Sprint 5-6 ~50% COMPLETADO** - UI + Beta (Dec 3-4, 2025)
+- ✅ PricingCard component (premium design)
+- ✅ Pricing tiers definidos ($0/$4.99/$14.99)
+- ✅ Upgrade flow (signup con plan)
+- ⏳ Dashboard subscription view
+- ⏳ Beta cerrada (50 usuarios)
+
+**Progress:** Phase 2: ~95% | Phase 3: ~50% | Tests: 289/289 (100%) | Coverage: 46.53%
+
+**Next Steps:**
+- **Dic 5-10:** Rate Limiting + CSRF + Stripe account setup
+- **Dic 11-20:** Stripe Checkout + Webhooks integration
+- **Ene 2026:** Beta cerrada (50 usuarios)
 
 **Timeline:**
-- Today: Dec 2, 2025
-- Phase 2 completion: Dec 13, 2025 (2 weeks) - **1 WEEK EARLY** 🚀
-- Beta cerrada: Feb 14, 2026 (10 weeks)
-- Production launch: Apr 11, 2026 (18 weeks)
+- Today: Dec 4, 2025
+- Stripe Integration: Dec 20, 2025
+- Beta cerrada: Feb 14, 2026
+- Production launch: Apr 11, 2026
 
 ---
 

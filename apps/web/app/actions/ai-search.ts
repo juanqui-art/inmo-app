@@ -16,6 +16,9 @@ import {
   isConfidentParse,
   parseSearchQuery,
 } from "@/lib/ai/search-parser";
+import { getCurrentUser } from "@/lib/auth";
+import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
+import { logger } from "@/lib/utils/logger";
 
 export interface LocationValidation {
   isValid: boolean;
@@ -81,13 +84,29 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
       };
     }
 
-    console.log("🔍 AI Search Query:", query);
+    // Rate limiting (user-based to protect OpenAI costs)
+    try {
+      const user = await getCurrentUser();
+      await enforceRateLimit({ userId: user?.id, tier: "ai-search" });
+    } catch (error) {
+      if (isRateLimitError(error)) {
+        logger.warn({ query: query.slice(0, 50), tier: "ai-search" }, "[AI Search] Rate limit exceeded");
+        return {
+          success: false,
+          query,
+          error: error.message,
+        };
+      }
+      throw error;
+    }
+
+    logger.info({ query: query.slice(0, 100) }, "🔍 AI Search Query");
 
     // Parse the natural language query
     const parseResult = await parseSearchQuery(query);
 
     if (!parseResult.success) {
-      console.error("❌ Parse failed:", parseResult.error);
+      logger.error({ error: parseResult.error }, "❌ Parse failed");
       return {
         success: false,
         query,
@@ -95,8 +114,8 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
       };
     }
 
-    console.log("✅ Parsed filters:", parseResult.filters);
-    console.log("📊 Confidence:", parseResult.confidence);
+    logger.debug({ filters: parseResult.filters }, "✅ Parsed filters");
+    logger.debug({ confidence: parseResult.confidence }, "📊 Confidence");
 
     // Check if we have enough confidence in the parsing
     // Threshold: 30% (balanced approach)
@@ -107,8 +126,9 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
     const WARN_CONFIDENCE_THRESHOLD = 50;
 
     if (!isConfidentParse(parseResult, MIN_CONFIDENCE_THRESHOLD)) {
-      console.error(
-        `❌ Query confidence ${parseResult.confidence}% is below minimum threshold (${MIN_CONFIDENCE_THRESHOLD}%)`,
+      logger.warn(
+        { confidence: parseResult.confidence, threshold: MIN_CONFIDENCE_THRESHOLD },
+        `❌ Query confidence below minimum threshold`,
       );
 
       // Generate helpful suggestions based on what's missing
@@ -153,18 +173,16 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
     }
 
     if (parseResult.confidence < WARN_CONFIDENCE_THRESHOLD) {
-      console.warn(
-        `⚠️ Low confidence parse (${parseResult.confidence}% < ${WARN_CONFIDENCE_THRESHOLD}%). Results may be incomplete.`,
+      logger.warn(
+        { confidence: parseResult.confidence, threshold: WARN_CONFIDENCE_THRESHOLD },
+        `⚠️ Low confidence parse - results may be incomplete`,
       );
     }
 
     // Convert parsed filters to Prisma WHERE clause
     const whereClause = filtersToWhereClause(parseResult.filters);
 
-    console.log(
-      "🔧 Prisma WHERE clause:",
-      JSON.stringify(whereClause, null, 2),
-    );
+    logger.debug({ whereClause }, "🔧 Prisma WHERE clause");
 
     // Query the database
     const properties = await db.property.findMany({
@@ -185,7 +203,7 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
       take: 50, // Limit results
     });
 
-    console.log(`✅ Found ${properties.length} properties`);
+    logger.info({ count: properties.length }, `✅ Found properties`);
 
     // Convert Decimal types to numbers and format the response
     const formattedProperties = properties.map((prop) => ({
@@ -260,7 +278,7 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
       suggestions: suggestions.length > 0 ? suggestions : undefined,
     };
   } catch (error) {
-    console.error("❌ AI Search Error:", error);
+    logger.error({ err: error, query: query.slice(0, 50) }, "❌ AI Search Error");
     return {
       success: false,
       query,
