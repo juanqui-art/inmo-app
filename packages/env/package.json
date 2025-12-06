@@ -10,7 +10,7 @@
     "format": "biome format --write ."
   },
   "dependencies": {
-    "zod": "^4.1.12"
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "typescript": "^5"
