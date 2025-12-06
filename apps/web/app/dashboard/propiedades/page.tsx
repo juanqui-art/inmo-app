@@ -3,12 +3,12 @@
  * Muestra todas las propiedades que pertenecen al agente autenticado
  */
 
+import { AgentPropertyCard } from "@/components/dashboard/agent-property-card";
+import { requireRole } from "@/lib/auth";
 import { propertyRepository } from "@repo/database";
 import { Button } from "@repo/ui";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { PropertyCard } from "@/components/properties/property-card";
-import { requireRole } from "@/lib/auth";
 
 export default async function PropiedadesPage() {
   // Verificar que el usuario es AGENT o ADMIN
@@ -55,7 +55,7 @@ export default async function PropiedadesPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 isolate">
           {properties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
+            <AgentPropertyCard key={property.id} property={property} />
           ))}
         </div>
       )}

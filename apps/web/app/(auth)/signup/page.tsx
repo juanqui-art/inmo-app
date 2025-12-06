@@ -131,7 +131,15 @@ export default async function SignupPage({
       <p className="text-center text-sm text-muted-foreground">
         ¿Ya tienes cuenta?{" "}
         <Link
-          href="/login"
+          href={`/login${
+            plan || redirect
+              ? "?" +
+                new URLSearchParams({
+                  ...(plan && { plan }),
+                  ...(redirect && { redirect }),
+                }).toString()
+              : ""
+          }`}
           className="font-semibold text-foreground hover:underline transition-colors"
         >
           Inicia sesión

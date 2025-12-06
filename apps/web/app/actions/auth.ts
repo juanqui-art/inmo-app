@@ -238,6 +238,35 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
     );
   }
 
+  // 5.6 UPGRADE ROLE if plan selected (e.g. CLIENT logging in from /vender)
+  const selectedPlan = formData.get("plan") as string | null;
+  if (
+    selectedPlan &&
+    ["FREE", "BASIC", "PRO"].includes(selectedPlan.toUpperCase()) &&
+    dbUser.role === "CLIENT"
+  ) {
+    // Upgrade to AGENT
+    const newRole = "AGENT";
+    
+    // 1. Update DB
+    await userRepository.update(dbUser.id, { role: newRole }, dbUser.id);
+    dbUser.role = newRole; // Update local for redirect
+
+    // 2. Update Supabase Metadata
+    await supabase.auth.updateUser({
+      data: {
+        ...authData.user.user_metadata,
+        role: newRole,
+        plan: selectedPlan,
+      },
+    });
+
+    logger.info(
+      { userId: dbUser.id, oldRole: "CLIENT", newRole, plan: selectedPlan },
+      "[AUTH] Upgraded user role on login",
+    );
+  }
+
   // 6. Revalidar
   revalidatePath("/", "layout");
 

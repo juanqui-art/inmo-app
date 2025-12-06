@@ -18,9 +18,9 @@
  * - Con plan → AGENT → /dashboard (con upgrade si es pago)
  */
 
+import { createClient } from "@/lib/supabase/server";
 import { userRepository } from "@repo/database";
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -55,11 +55,40 @@ export async function GET(request: Request) {
     const existingUser = await userRepository.findById(data.user.id);
 
     if (existingUser) {
-      // Usuario existente - usar su rol actual
-      // (no cambiamos el rol de usuarios existentes)
-      const userRole = existingUser.role;
+      // Usuario existente
+      let userRole = existingUser.role;
 
-      // Redirigir según rol existente
+      // UPGRADE ROLE if plan selected (e.g. CLIENT logging in from /vender via Google)
+      if (
+        plan &&
+        ["free", "basic", "pro"].includes(plan.toLowerCase()) &&
+        userRole === "CLIENT"
+      ) {
+        // Upgrade to AGENT
+        const newRole = "AGENT";
+        
+        // 1. Update DB
+        await userRepository.update(existingUser.id, { role: newRole }, existingUser.id);
+        userRole = newRole; // Update local for redirect logic
+
+        // 2. Update Supabase Metadata
+        await supabase.auth.updateUser({
+          data: {
+            ...data.user.user_metadata,
+            role: newRole,
+            plan: plan,
+          },
+        });
+
+        console.log("[AUTH CALLBACK] Upgraded user role", { 
+          userId: existingUser.id, 
+          oldRole: "CLIENT", 
+          newRole, 
+          plan 
+        });
+      }
+
+      // Redirigir según rol (actualizado o existente)
       if (returnUrl && returnUrl.startsWith("/")) {
         return NextResponse.redirect(`${origin}${returnUrl}`);
       }
@@ -68,6 +97,18 @@ export async function GET(request: Request) {
         case "ADMIN":
           return NextResponse.redirect(`${origin}/admin`);
         case "AGENT":
+          // AGENT con plan pago → dashboard con modal de upgrade
+          if (plan && ["basic", "pro"].includes(plan.toLowerCase())) {
+            return NextResponse.redirect(
+              `${origin}/dashboard?upgrade=${plan.toLowerCase()}&authSuccess=true`
+            );
+          }
+          // AGENT con plan FREE → directo a crear propiedad (si venía de /vender)
+          if (plan) {
+             return NextResponse.redirect(
+              `${origin}/dashboard/propiedades/nueva?authSuccess=true`
+            );
+          }
           return NextResponse.redirect(`${origin}/dashboard`);
         case "CLIENT":
         default:

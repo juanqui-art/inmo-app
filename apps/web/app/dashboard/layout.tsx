@@ -7,10 +7,16 @@
  * - Solo accesible para AGENT y ADMIN
  */
 
-import { Toaster } from "sonner";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { UserMenu } from "@/components/dashboard/user-menu";
 import { requireRole } from "@/lib/auth";
+import { Toaster } from "sonner";
+
+import {
+    getImageLimit,
+    getPropertyLimit,
+} from "@/lib/permissions/property-limits";
+import { db } from "@repo/database";
 
 export default async function DashboardLayout({
   children,
@@ -20,10 +26,22 @@ export default async function DashboardLayout({
   // Verificar que el usuario sea AGENT o ADMIN
   const user = await requireRole(["AGENT", "ADMIN"]);
 
+  // Fetch usage stats for Sidebar
+  const propertyCount = await db.property.count({
+    where: { agentId: user.id },
+  });
+
+  const usageStats = {
+    tier: user.subscriptionTier,
+    propertyCount,
+    propertyLimit: getPropertyLimit(user.subscriptionTier),
+    imageLimit: getImageLimit(user.subscriptionTier),
+  };
+
   return (
     <div className="flex min-h-screen">
       {/* Sidebar - Navigation */}
-      <Sidebar userRole={user.role} />
+      <Sidebar user={user} usageStats={usageStats} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">

@@ -27,7 +27,7 @@ export const pricingTiers: PricingTier[] = [
       "Soporte por email (72h)",
     ],
     ctaText: "Comenzar gratis",
-    ctaUrl: "/signup?plan=free",
+    ctaUrl: "/signup?plan=free&redirect=/dashboard/propiedades/nueva",
     highlighted: false,
   },
   {

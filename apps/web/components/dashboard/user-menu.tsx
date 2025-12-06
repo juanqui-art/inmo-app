@@ -5,20 +5,20 @@
  * Dropdown con opciones: Perfil, Logout
  */
 
+import { logoutAction } from "@/app/actions/auth";
 import {
-  Avatar,
-  AvatarFallback,
-  Badge,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    Avatar,
+    AvatarFallback,
+    Badge,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@repo/ui";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { logoutAction } from "@/app/actions/auth";
 
 // Type para el usuario desde DB (SafeUser del repository)
 interface User {
@@ -90,9 +90,9 @@ export function UserMenu({ user }: UserMenuProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push("/dashboard/perfil")}>
+        <DropdownMenuItem onClick={() => router.push("/perfil")}>
           <UserIcon className="mr-2 h-4 w-4" />
-          <span>Mi Perfil</span>
+          <span>Mi Perfil (Vista Cliente)</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="text-destructive">

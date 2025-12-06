@@ -1,10 +1,10 @@
 "use client";
 
+import { loginAction } from "@/app/actions/auth";
 import { Button, Checkbox, Input, Label, PasswordInput } from "@repo/ui";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useState } from "react";
-import { loginAction } from "@/app/actions/auth";
 import { GoogleButton } from "./google-button";
 
 export function LoginFormStyled() {
@@ -23,6 +23,14 @@ export function LoginFormStyled() {
             type="hidden"
             name="redirect"
             value={searchParams.get("redirect") || ""}
+          />
+        )}
+        {/* Campo oculto para pasar el plan seleccionado */}
+        {searchParams.get("plan") && (
+          <input
+            type="hidden"
+            name="plan"
+            value={searchParams.get("plan") || ""}
           />
         )}
         {/* Email Field */}
@@ -131,7 +139,19 @@ export function LoginFormStyled() {
       <p className="text-center text-sm text-muted-foreground">
         ¿No tienes una cuenta?{" "}
         <Link
-          href="/signup"
+          href={`/signup${
+            searchParams.get("redirect") || searchParams.get("plan")
+              ? "?" +
+                new URLSearchParams({
+                  ...(searchParams.get("redirect") && {
+                    redirect: searchParams.get("redirect")!,
+                  }),
+                  ...(searchParams.get("plan") && {
+                    plan: searchParams.get("plan")!,
+                  }),
+                }).toString()
+              : ""
+          }`}
           className="text-foreground hover:underline font-semibold transition-colors"
         >
           Regístrate aquí

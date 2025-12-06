@@ -1,46 +1,40 @@
-/**
- * NUEVA PROPIEDAD
- * Formulario para crear una nueva propiedad
- */
+"use client";
 
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
-import { createPropertyAction } from "@/app/actions/properties";
-import { PropertyForm } from "@/components/properties/property-form";
-import { requireRole } from "@/lib/auth";
+import { WizardLayout } from "@/components/dashboard/property-wizard/wizard-layout";
+import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 
-export default async function NuevaPropiedadPage() {
-  // Verificar que el usuario es AGENT o ADMIN
-  await requireRole(["AGENT", "ADMIN"]);
+import { Step1 } from "@/components/dashboard/property-wizard/steps/basic-info";
+import { Step3 } from "@/components/dashboard/property-wizard/steps/features";
+import { Step4 } from "@/components/dashboard/property-wizard/steps/images";
+import { Step2 } from "@/components/dashboard/property-wizard/steps/location";
+import { Step5 } from "@/components/dashboard/property-wizard/steps/review";
+
+// Placeholder components for steps
+
+
+export default function NewPropertyPage() {
+  const { currentStep } = usePropertyWizardStore();
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1: return <Step1 />;
+      case 2: return <Step2 />;
+      case 3: return <Step3 />;
+      case 4: return <Step4 />;
+      case 5: return <Step5 />;
+      default: return <Step1 />;
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Back Button */}
-      <Link
-        href="/dashboard/propiedades"
-        className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ChevronLeft className="h-4 w-4 mr-1" />
-        Volver a propiedades
-      </Link>
-
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Nueva Propiedad</h1>
-        <p className="text-muted-foreground">
-          Completa la información de la propiedad
-        </p>
+    <WizardLayout
+      title="Nueva Propiedad"
+      description="Completa la información para publicar tu propiedad."
+      formId="wizard-step-form"
+    >
+      <div className="mt-4">
+        {renderStep()}
       </div>
-
-      {/* Form */}
-      <div className="max-w-3xl">
-        <div className="rounded-lg border border-border bg-card p-6">
-          <PropertyForm
-            action={createPropertyAction}
-            submitLabel="Crear Propiedad"
-          />
-        </div>
-      </div>
-    </div>
+    </WizardLayout>
   );
 }

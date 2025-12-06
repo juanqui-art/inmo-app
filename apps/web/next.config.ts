@@ -1,5 +1,5 @@
-import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /**
@@ -40,7 +40,27 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/storage/v1/object/public/**",
       },
+      {
+        protocol: "https",
+        hostname: "pexsmszavuffgdamwrlj.supabase.co",
+        port: "",
+        pathname: "/storage/v1/object/public/**",
+      },
     ],
+  },
+
+  /**
+   * Experimental Features Configuration
+   * 
+   * Server Actions body size limit increased to support image uploads.
+   * Default is 1MB, we increase to 10MB to allow multiple high-quality images.
+   * 
+   * RELATED: Property creation wizard (apps/web/app/actions/wizard.ts)
+   */
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
   },
 
   /**

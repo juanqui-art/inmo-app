@@ -64,6 +64,7 @@ model Property {
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
   isFeatured      Boolean          @default(false) @map("is_featured")
+  amenities       String[]         @default([])
 
   // Relations
   agent        User          @relation("AgentProperties", fields: [agentId], references: [id], onDelete: Cascade)

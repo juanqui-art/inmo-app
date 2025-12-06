@@ -9,10 +9,10 @@
 
 "use client";
 
-import { LogOut, Settings, User } from "lucide-react";
+import type { SafeUser } from "@/lib/auth";
+import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import type { SafeUser } from "@/lib/auth";
 
 interface UserDropdownProps {
   user: SafeUser;
@@ -57,17 +57,16 @@ export function UserDropdown({ user }: UserDropdownProps) {
                 className="flex items-center gap-3 px-4 py-2 text-oslo-gray-300 hover:bg-oslo-gray-800 hover:text-oslo-gray-100 transition-colors"
                 onClick={() => setIsOpen(false)}
               >
-                <User className="w-4 h-4" />
                 <span>Dashboard</span>
               </Link>
 
               <Link
-                href="/configuracion"
+                href="/perfil"
                 className="flex items-center gap-3 px-4 py-2 text-oslo-gray-300 hover:bg-oslo-gray-800 hover:text-oslo-gray-100 transition-colors"
                 onClick={() => setIsOpen(false)}
               >
-                <Settings className="w-4 h-4" />
-                <span>Configuración</span>
+                <User className="w-4 h-4" />
+                <span>Mi Perfil / Favoritos</span>
               </Link>
             </div>
 
