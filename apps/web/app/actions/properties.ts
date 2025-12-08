@@ -9,21 +9,21 @@
 
 "use server";
 
-import { propertyImageRepository, propertyRepository } from "@repo/database";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { requireOwnership, requireRole } from "@/lib/auth";
 import {
-  canCreateProperty,
-  canUploadImage,
+    canCreateProperty,
+    canUploadImage,
 } from "@/lib/permissions/property-limits";
 import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { deletePropertyImage, uploadPropertyImage } from "@/lib/storage/client";
 import { logger } from "@/lib/utils/logger";
 import {
-  createPropertySchema,
-  updatePropertySchema,
+    createPropertySchema,
+    updatePropertySchema,
 } from "@/lib/validations/property";
+import { propertyImageRepository, propertyRepository } from "@repo/database";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 /**
  * CREATE PROPERTY ACTION
@@ -228,13 +228,87 @@ export async function deletePropertyAction(propertyId: string) {
 }
 
 /**
+ * SAVE UPLOADED PROPERTY IMAGES ACTION
+ * Guarda referencias a imágenes ya subidas a Storage (Presigned URLs)
+ * Reemplaza a uploadPropertyImagesAction para evitar límites de tamaño de body
+ */
+export async function saveUploadedPropertyImagesAction(
+  propertyId: string,
+  imageUrls: string[]
+) {
+  // 1. Verificar autenticación
+  const user = await requireRole(["AGENT", "ADMIN"]);
+
+  try {
+    // 2. Verificar que la propiedad existe
+    const property = await propertyRepository.findById(propertyId);
+    if (!property) {
+      return { error: "Propiedad no encontrada" };
+    }
+
+    // Verificar ownership
+    await requireOwnership(
+      property.agentId,
+      "No tienes permiso para modificar esta propiedad"
+    );
+
+    if (!imageUrls || imageUrls.length === 0) {
+      return { error: "No se enviaron imágenes" };
+    }
+
+    // 3. Check limitations
+    const existingImageCount = await propertyImageRepository.countByProperty(propertyId);
+    const totalAfterUpload = existingImageCount + imageUrls.length;
+
+    const imageCheck = canUploadImage(user.subscriptionTier, totalAfterUpload);
+    if (!imageCheck.allowed) {
+      return {
+        error: imageCheck.reason,
+        upgradeRequired: true,
+        currentLimit: imageCheck.limit,
+      };
+    }
+
+    // 4. Guardar referencias en la BD
+    const savedImages = [];
+    
+    for (let i = 0; i < imageUrls.length; i++) {
+      const url = imageUrls[i];
+      if (!url) continue;
+
+      const image = await propertyImageRepository.create({
+        url,
+        alt: property.title,
+        order: existingImageCount + i,
+        propertyId,
+      });
+      savedImages.push(image);
+    }
+
+    // 5. Revalidar
+    revalidatePath("/dashboard/propiedades");
+    revalidatePath(`/dashboard/propiedades/${propertyId}/editar`);
+
+    return { success: true, count: savedImages.length };
+  } catch (error) {
+    logger.error({ err: error, propertyId }, "Error saving uploaded images");
+    return {
+      error: error instanceof Error ? error.message : "Error al guardar las imágenes",
+    };
+  }
+}
+
+/**
  * UPLOAD PROPERTY IMAGES ACTION
  * Sube imágenes para una propiedad existente
+ * @deprecated Use saveUploadedPropertyImagesAction with client-side uploads instead
  */
 export async function uploadPropertyImagesAction(
   propertyId: string,
   formData: FormData,
 ) {
+  // ... existing implementation kept for backward compatibility if needed, 
+  // but marked deprecated
   // 1. Verificar autenticación
   const user = await requireRole(["AGENT", "ADMIN"]);
 

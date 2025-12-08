@@ -7,18 +7,41 @@
 
 import type { SerializedProperty, SubscriptionTier } from "@repo/database";
 import {
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
+    Button,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+    Checkbox,
+    Input,
+    Label,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    Separator,
+    Textarea
 } from "@repo/ui";
 import { useActionState, useEffect, useState } from "react";
 import { LimitReachedModal } from "../modals/limit-reached-modal";
+import { LocationPickerMap } from "./location-picker-map";
+
+const AMENITIES_LIST = [
+  { id: "pool", label: "Piscina" },
+  { id: "gym", label: "Gimnasio" },
+  { id: "garage", label: "Garaje" },
+  { id: "garden", label: "Jardín" },
+  { id: "terrace", label: "Terraza" },
+  { id: "security", label: "Seguridad 24/7" },
+  { id: "elevator", label: "Ascensor" },
+  { id: "ac", label: "Aire Acondicionado" },
+  { id: "heating", label: "Calefacción" },
+  { id: "internet", label: "Internet / Wifi" },
+  { id: "furnished", label: "Amoblado" },
+  { id: "pets_allowed", label: "Mascotas Permitidas" },
+];
 
 interface PropertyFormState {
   error?: {
@@ -37,6 +60,7 @@ interface PropertyFormState {
     zipCode?: string[];
     latitude?: string[];
     longitude?: string[];
+    amenities?: string[];
     general?: string;
   };
   success?: boolean;
@@ -65,16 +89,28 @@ export function PropertyForm({
     limit: number;
   } | null>(null);
 
+  // Estados locales para mapa y amenities
+  const [latitude, setLatitude] = useState<number>(property?.latitude || -2.9001); // Cuenca default
+  const [longitude, setLongitude] = useState<number>(property?.longitude || -79.0059);
+  const [amenities, setAmenities] = useState<string[]>(property?.amenities || []);
+
+  const handleLocationSelect = (lat: number, lng: number) => {
+    setLatitude(lat);
+    setLongitude(lng);
+  };
+
+  const handleAmenityToggle = (amenityId: string) => {
+    setAmenities(prev => 
+      prev.includes(amenityId)
+        ? prev.filter(a => a !== amenityId)
+        : [...prev, amenityId]
+    );
+  };
+
   useEffect(() => {
     if (state?.upgradeRequired) {
-      // Assuming we can get the current tier from the user session or pass it as prop.
-      // For now, we'll default to FREE if not available, or maybe the action should return it?
-      // The action returns currentLimit.
-      // Let's assume FREE for now or try to get it from props if available.
-      // Ideally the action should return the tier too.
-      // For now, let's just show the modal with the limit.
       setLimitData({
-        currentTier: "FREE", // TODO: Get actual tier
+        currentTier: "FREE", 
         limit: state.currentLimit || 0,
       });
       setLimitModalOpen(true);
@@ -84,329 +120,322 @@ export function PropertyForm({
   return (
     <>
       <form action={formAction} className="space-y-8">
-        {/* Hidden ID for edit */}
+        {/* Hidden inputs for non-standard form fields */}
         {property && <input type="hidden" name="id" value={property.id} />}
+        <input type="hidden" name="latitude" value={latitude} />
+        <input type="hidden" name="longitude" value={longitude} />
+        {amenities.map(amenity => (
+           <input key={amenity} type="hidden" name="amenities" value={amenity} /> 
+        ))}
 
-        {/* SECCIÓN 1: Información Básica */}
-        <div className="space-y-4">
-          <div className="border-b pb-2">
-            <h3 className="text-lg font-semibold">Información Básica</h3>
-            <p className="text-sm text-muted-foreground">
-              Campos obligatorios para publicar la propiedad
-            </p>
-          </div>
-
-          {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title">
-              Título <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="title"
-              name="title"
-              defaultValue={property?.title}
-              placeholder="Casa en venta en zona residencial"
-              required
-            />
-            {state?.error?.title && (
-              <p className="text-sm text-destructive">{state.error.title[0]}</p>
-            )}
-          </div>
-
-          {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">
-              Descripción <span className="text-destructive">*</span>
-            </Label>
-            <Textarea
-              id="description"
-              name="description"
-              defaultValue={property?.description || ""}
-              placeholder="Describe las características de la propiedad... (mínimo 20 caracteres)"
-              rows={5}
-              required
-            />
-            {state?.error?.description && (
-              <p className="text-sm text-destructive">
-                {state.error.description[0]}
-              </p>
-            )}
-          </div>
-
-          {/* Price */}
-          <div className="space-y-2">
-            <Label htmlFor="price">
-              Precio (USD) <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="price"
-              name="price"
-              type="number"
-              step="0.01"
-              defaultValue={property?.price}
-              placeholder="150000"
-              required
-            />
-            {state?.error?.price && (
-              <p className="text-sm text-destructive">{state.error.price[0]}</p>
-            )}
-          </div>
-
-          {/* Transaction Type & Category Row */}
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Transaction Type */}
+        {/* --- SECCIÓN 1: Información Principal --- */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Información Básica</CardTitle>
+            <CardDescription>
+              Detalles principales para publicar tu propiedad
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            
+            {/* Title */}
             <div className="space-y-2">
-              <Label htmlFor="transactionType">
-                Tipo de Transacción <span className="text-destructive">*</span>
+              <Label htmlFor="title">
+                Título <span className="text-destructive">*</span>
               </Label>
-              <Select
-                name="transactionType"
-                defaultValue={property?.transactionType || "SALE"}
+              <Input
+                id="title"
+                name="title"
+                defaultValue={property?.title}
+                placeholder="Ej: Hermosa casa en zona residencial"
+                className="text-lg"
                 required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona operación" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="SALE">Venta</SelectItem>
-                  <SelectItem value="RENT">Arriendo</SelectItem>
-                </SelectContent>
-              </Select>
-              {state?.error?.transactionType && (
-                <p className="text-sm text-destructive">
-                  {state.error.transactionType[0]}
-                </p>
+              />
+              {state?.error?.title && (
+                <p className="text-sm text-destructive">{state.error.title[0]}</p>
               )}
             </div>
 
-            {/* Category */}
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Price */}
+              <div className="space-y-2">
+                <Label htmlFor="price">
+                  Precio (USD) <span className="text-destructive">*</span>
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                  <Input
+                    id="price"
+                    name="price"
+                    type="number"
+                    step="0.01"
+                    defaultValue={property?.price}
+                    placeholder="150000"
+                    className="pl-7"
+                    required
+                  />
+                </div>
+                {state?.error?.price && (
+                  <p className="text-sm text-destructive">{state.error.price[0]}</p>
+                )}
+              </div>
+
+              {/* Status (solo en edición) */}
+              {property && (
+                <div className="space-y-2">
+                  <Label htmlFor="status">Estado</Label>
+                  <Select name="status" defaultValue={property.status}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="AVAILABLE">Disponible</SelectItem>
+                      <SelectItem value="PENDING">Pendiente</SelectItem>
+                      <SelectItem value="SOLD">Vendida</SelectItem>
+                      <SelectItem value="RENTED">Rentada</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {state?.error?.status && (
+                    <p className="text-sm text-destructive">
+                      {state.error.status[0]}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="category">
-                Tipo de Inmueble <span className="text-destructive">*</span>
+              <Label htmlFor="description">
+                Descripción <span className="text-destructive">*</span>
               </Label>
-              <Select
-                name="category"
-                defaultValue={property?.category || "HOUSE"}
+              <Textarea
+                id="description"
+                name="description"
+                defaultValue={property?.description || ""}
+                placeholder="Describe las características, ventajas y detalles únicos de la propiedad..."
+                rows={5}
                 required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="HOUSE">Casa</SelectItem>
-                  <SelectItem value="APARTMENT">Departamento</SelectItem>
-                  <SelectItem value="SUITE">Suite</SelectItem>
-                  <SelectItem value="VILLA">Villa</SelectItem>
-                  <SelectItem value="PENTHOUSE">Penthouse</SelectItem>
-                  <SelectItem value="DUPLEX">Dúplex</SelectItem>
-                  <SelectItem value="LOFT">Loft</SelectItem>
-                  <SelectItem value="LAND">Terreno</SelectItem>
-                  <SelectItem value="COMMERCIAL">Local Comercial</SelectItem>
-                  <SelectItem value="OFFICE">Oficina</SelectItem>
-                  <SelectItem value="WAREHOUSE">Bodega</SelectItem>
-                  <SelectItem value="FARM">Finca/Hacienda</SelectItem>
-                </SelectContent>
-              </Select>
-              {state?.error?.category && (
-                <p className="text-sm text-destructive">
-                  {state.error.category[0]}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-        {/* FIN SECCIÓN 1 */}
-
-        {/* SECCIÓN 2: Características */}
-        <div className="space-y-4">
-          <div className="border-b pb-2">
-            <h3 className="text-lg font-semibold">Características</h3>
-            <p className="text-sm text-muted-foreground">
-              Información adicional sobre la propiedad (opcional)
-            </p>
-          </div>
-
-          {/* Bedrooms, Bathrooms, Area Row */}
-          <div className="grid gap-6 md:grid-cols-3">
-            {/* Bedrooms */}
-            <div className="space-y-2">
-              <Label htmlFor="bedrooms">Dormitorios</Label>
-              <Input
-                id="bedrooms"
-                name="bedrooms"
-                type="number"
-                min="0"
-                defaultValue={property?.bedrooms || undefined}
-                placeholder="3"
               />
-              {state?.error?.bedrooms && (
+              {state?.error?.description && (
                 <p className="text-sm text-destructive">
-                  {state.error.bedrooms[0]}
+                  {state.error.description[0]}
                 </p>
               )}
             </div>
 
-            {/* Bathrooms */}
-            <div className="space-y-2">
-              <Label htmlFor="bathrooms">Baños</Label>
-              <Input
-                id="bathrooms"
-                name="bathrooms"
-                type="number"
-                step="0.5"
-                min="0"
-                defaultValue={property?.bathrooms ?? undefined}
-                placeholder="2.5"
-              />
-              {state?.error?.bathrooms && (
-                <p className="text-sm text-destructive">
-                  {state.error.bathrooms[0]}
-                </p>
-              )}
+            <Separator />
+
+            {/* Category & Transaction */}
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="transactionType">Tipo de Transacción</Label>
+                <Select
+                  name="transactionType"
+                  defaultValue={property?.transactionType || "SALE"}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona operación" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="SALE">Venta</SelectItem>
+                    <SelectItem value="RENT">Arriendo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">Tipo de Inmueble</Label>
+                <Select
+                  name="category"
+                  defaultValue={property?.category || "HOUSE"}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="HOUSE">Casa</SelectItem>
+                    <SelectItem value="APARTMENT">Departamento</SelectItem>
+                    <SelectItem value="SUITE">Suite</SelectItem>
+                    <SelectItem value="VILLA">Villa</SelectItem>
+                    <SelectItem value="PENTHOUSE">Penthouse</SelectItem>
+                    <SelectItem value="DUPLEX">Dúplex</SelectItem>
+                    <SelectItem value="LOFT">Loft</SelectItem>
+                    <SelectItem value="LAND">Terreno</SelectItem>
+                    <SelectItem value="COMMERCIAL">Local Comercial</SelectItem>
+                    <SelectItem value="OFFICE">Oficina</SelectItem>
+                    <SelectItem value="WAREHOUSE">Bodega</SelectItem>
+                    <SelectItem value="FARM">Finca/Hacienda</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* --- SECCIÓN 2: Detalles y Amenidades --- */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Características Detalladas</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            {/* Dimensions Grid */}
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="space-y-2">
+                <Label htmlFor="bedrooms">Dormitorios</Label>
+                <Input
+                  id="bedrooms"
+                  name="bedrooms"
+                  type="number"
+                  min="0"
+                  defaultValue={property?.bedrooms || undefined}
+                  placeholder="Ej: 3"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bathrooms">Baños</Label>
+                <Input
+                  id="bathrooms"
+                  name="bathrooms"
+                  type="number"
+                  step="0.5"
+                  min="0"
+                  defaultValue={property?.bathrooms ?? undefined}
+                  placeholder="Ej: 2.5"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="area">Área (m²)</Label>
+                <Input
+                  id="area"
+                  name="area"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  defaultValue={property?.area ?? undefined}
+                  placeholder="Ej: 120"
+                />
+              </div>
             </div>
 
-            {/* Area */}
-            <div className="space-y-2">
-              <Label htmlFor="area">Área (m²)</Label>
-              <Input
-                id="area"
-                name="area"
-                type="number"
-                step="0.01"
-                min="0"
-                defaultValue={property?.area ?? undefined}
-                placeholder="150"
-              />
-              {state?.error?.area && (
-                <p className="text-sm text-destructive">
-                  {state.error.area[0]}
-                </p>
-              )}
+            <Separator />
+
+            {/* Amenities Grid */}
+            <div className="space-y-4">
+              <Label className="text-base">Amenidades y Servicios</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {AMENITIES_LIST.map((amenity) => (
+                  <div
+                    key={amenity.id}
+                    className="flex flex-row items-center space-x-3 rounded-md border p-4 hover:bg-muted/50 transition-colors"
+                  >
+                    <Checkbox
+                      id={`amenity-${amenity.id}`}
+                      checked={amenities.includes(amenity.id)}
+                      onCheckedChange={() => handleAmenityToggle(amenity.id)}
+                    />
+                    <Label
+                      htmlFor={`amenity-${amenity.id}`}
+                      className="font-normal cursor-pointer flex-1"
+                    >
+                      {amenity.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
-        {/* FIN SECCIÓN 2 */}
+          </CardContent>
+        </Card>
 
-        {/* SECCIÓN 3: Ubicación */}
-        <div className="space-y-4">
-          <div className="border-b pb-2">
-            <h3 className="text-lg font-semibold">Ubicación</h3>
-            <p className="text-sm text-muted-foreground">
-              Si proporcionas ubicación, debes incluir al menos Ciudad y
-              Provincia
-            </p>
-          </div>
-
-          {/* Address */}
-          <div className="space-y-2">
-            <Label htmlFor="address">Dirección</Label>
-            <Input
-              id="address"
-              name="address"
-              defaultValue={property?.address || ""}
-              placeholder="Av. Principal #123"
-            />
-            {state?.error?.address && (
-              <p className="text-sm text-destructive">
-                {state.error.address[0]}
-              </p>
-            )}
-          </div>
-
-          {/* City, State, Zip Row */}
-          <div className="grid gap-6 md:grid-cols-3">
-            {/* City */}
-            <div className="space-y-2">
-              <Label htmlFor="city">Ciudad</Label>
-              <Input
-                id="city"
-                name="city"
-                defaultValue={property?.city || ""}
-                placeholder="Quito"
-              />
-              {state?.error?.city && (
-                <p className="text-sm text-destructive">
-                  {state.error.city[0]}
-                </p>
-              )}
-            </div>
-
-            {/* State */}
-            <div className="space-y-2">
-              <Label htmlFor="state">Provincia</Label>
-              <Input
-                id="state"
-                name="state"
-                defaultValue={property?.state || ""}
-                placeholder="Pichincha"
-              />
-              {state?.error?.state && (
-                <p className="text-sm text-destructive">
-                  {state.error.state[0]}
-                </p>
-              )}
+        {/* --- SECCIÓN 3: Ubicación y Mapa --- */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Ubicación</CardTitle>
+            <CardDescription>
+              Define la dirección exacta y ajusta el pin en el mapa
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="address">Dirección Completa</Label>
+                <Input
+                  id="address"
+                  name="address"
+                  defaultValue={property?.address || ""}
+                  placeholder="Calle Principal 123 y Secundaria"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="city">Ciudad</Label>
+                <Input
+                  id="city"
+                  name="city"
+                  defaultValue={property?.city || ""}
+                  placeholder="Ej: Quito"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="state">Provincia / Estado</Label>
+                <Input
+                  id="state"
+                  name="state"
+                  defaultValue={property?.state || ""}
+                  placeholder="Ej: Pichincha"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="zipCode">Código Postal</Label>
+                <Input
+                  id="zipCode"
+                  name="zipCode"
+                  defaultValue={property?.zipCode || ""}
+                  placeholder="Ej: 170150"
+                />
+              </div>
             </div>
 
-            {/* Zip Code */}
-            <div className="space-y-2">
-              <Label htmlFor="zipCode">Código Postal</Label>
-              <Input
-                id="zipCode"
-                name="zipCode"
-                defaultValue={property?.zipCode || ""}
-                placeholder="170150 o 12345"
-              />
-              {state?.error?.zipCode && (
-                <p className="text-sm text-destructive">
-                  {state.error.zipCode[0]}
-                </p>
-              )}
+            {/* MAPA */}
+            <div className="space-y-3 pt-2">
+              <Label>Ubicación en el Mapa (Arrastra el marcador)</Label>
+              <div className="rounded-md border overflow-hidden">
+                <LocationPickerMap
+                  latitude={latitude}
+                  longitude={longitude}
+                  onLocationSelect={handleLocationSelect}
+                />
+              </div>
+              <div className="flex gap-4 text-xs text-muted-foreground">
+                <span>Lat: {latitude.toFixed(6)}</span>
+                <span>Lng: {longitude.toFixed(6)}</span>
+              </div>
             </div>
-          </div>
-        </div>
-        {/* FIN SECCIÓN 3 */}
-
-        {/* Status (solo para editar) */}
-        {property && (
-          <div className="space-y-2">
-            <Label htmlFor="status">Estado</Label>
-            <Select name="status" defaultValue={property.status}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="AVAILABLE">Disponible</SelectItem>
-                <SelectItem value="PENDING">Pendiente</SelectItem>
-                <SelectItem value="SOLD">Vendida</SelectItem>
-                <SelectItem value="RENTED">Rentada</SelectItem>
-              </SelectContent>
-            </Select>
-            {state?.error?.status && (
-              <p className="text-sm text-destructive">
-                {state.error.status[0]}
-              </p>
-            )}
-          </div>
-        )}
+          </CardContent>
+        </Card>
 
         {/* General Error */}
         {state?.error?.general && (
-          <div className="rounded-md bg-destructive/10 p-3">
-            <p className="text-sm text-destructive">{state.error.general}</p>
+          <div className="rounded-md bg-destructive/10 p-4 border border-destructive/20">
+            <p className="text-sm font-medium text-destructive">{state.error.general}</p>
           </div>
         )}
 
-        {/* Submit Button */}
-        <div className="flex gap-4">
-          <Button type="submit" disabled={isPending}>
-            {isPending ? "Guardando..." : submitLabel}
-          </Button>
+        {/* Sticky Action Bar */}
+        <div className="sticky bottom-0 z-10 -mx-6 -mb-6 p-6 bg-background/80 backdrop-blur-sm border-t flex justify-end gap-4">
           <Button
             type="button"
             variant="outline"
             onClick={() => window.history.back()}
           >
             Cancelar
+          </Button>
+          <Button type="submit" disabled={isPending} size="lg">
+            {isPending ? "Guardando..." : submitLabel}
           </Button>
         </div>
       </form>

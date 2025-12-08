@@ -31,6 +31,7 @@ const nextConfig: NextConfig = {
     "react-map-gl",
     "mapbox-gl",
   ],
+  serverExternalPackages: ["@prisma/client"],
   images: {
     qualities: [75, 90],
     remotePatterns: [

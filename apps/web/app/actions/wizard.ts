@@ -118,7 +118,7 @@ export async function createPropertyFromWizard(
     console.log("[Wizard] Image URLs received:", validatedData.data.imageUrls);
     
     if (validatedData.data.imageUrls && validatedData.data.imageUrls.length > 0) {
-      console.log(`[Wizard] Saving ${validatedData.data.imageUrls.length} images...`);
+      console.log(`[Wizard] Saving ${validatedData.data.imageUrls.length} images for property ${property.id}...`);
       
       for (let i = 0; i < validatedData.data.imageUrls.length; i++) {
         const url = validatedData.data.imageUrls[i];
@@ -129,7 +129,7 @@ export async function createPropertyFromWizard(
           continue;
         }
         
-        console.log(`[Wizard] Saving image ${i + 1}:`, url);
+        console.log(`[Wizard] Attempting to save image ${i + 1}:`, url);
         
         try {
           const savedImage = await propertyImageRepository.create({
@@ -138,9 +138,23 @@ export async function createPropertyFromWizard(
             order: i,
             propertyId: property.id,
           });
-          console.log(`[Wizard] Image ${i + 1} saved successfully:`, savedImage.id);
+          console.log(`[Wizard] Image ${i + 1} saved successfully. ID: ${savedImage.id}, PropertyID: ${savedImage.propertyId}`);
+          
+          // Verify immediate persistence
+          const verifyImage = await propertyImageRepository.findById(savedImage.id);
+          if (verifyImage) {
+             console.log(`[Wizard] Verification successful: Image ${savedImage.id} found in DB.`);
+          } else {
+             console.error(`[Wizard] CRITICAL: Image ${savedImage.id} reported saved but not found in DB immediately after!`);
+          }
+
         } catch (error) {
           console.error(`[Wizard] Error saving image ${i + 1}:`, error);
+          if (error instanceof Error) {
+             console.error(`[Wizard] Error stack:`, error.stack);
+             console.error(`[Wizard] Error name:`, error.name);
+             console.error(`[Wizard] Error message:`, error.message);
+          }
           logger.error(
             { err: error, propertyId: property.id, imageIndex: i },
             "[Property] Error saving image URL"
@@ -149,7 +163,7 @@ export async function createPropertyFromWizard(
         }
       }
       
-      console.log("[Wizard] Finished saving images");
+      console.log("[Wizard] Finished image saving process");
     } else {
       console.log("[Wizard] No image URLs to save");
     }

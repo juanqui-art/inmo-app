@@ -1,4 +1,4 @@
-```typescript
+
 "use client";
 
 import { deletePropertyAction } from "@/app/actions/properties";
@@ -9,7 +9,7 @@ import {
     Badge,
     Button
 } from "@repo/ui";
-import { Bath, Bed, Calendar, Edit, Eye, Heart, Loader2, MapPin, Maximize, Pause, Play, Trash2 } from "lucide-react";
+import { Bath, Bed, Calendar, Edit, Eye, Heart, MapPin, Maximize, Pause, Play, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

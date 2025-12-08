@@ -1,5 +1,6 @@
 "use client";
 
+import { LocationPickerMap } from "@/components/properties/location-picker-map";
 import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,7 +15,6 @@ import {
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { LocationPickerMap } from "./location-picker-map";
 
 const step2Schema = z.object({
   address: z.string().min(5, "La dirección es requerida y debe tener al menos 5 caracteres"),

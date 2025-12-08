@@ -143,16 +143,27 @@ export function Step4() {
       }
     });
 
-    await Promise.all(uploadPromises);
+    const newUrls = await Promise.all(uploadPromises);
     setIsUploading(false);
 
-    // Update store with uploaded URLs
-    const uploadedUrls = images
-      .concat(newImagesToAdd)
+    // Filter successful uploads (non-null)
+    const successfulNewUrls = newUrls.filter((url): url is string => url !== null);
+
+    // Get existing URLs from current state (we need to be careful about state updates, 
+    // but here we can iterate over the previous 'images' we had access to in the closure 
+    // PLUS the new ones we just uploaded)
+    
+    // Better approach: Get the latest valid URLs from the *filtered* list we just created
+    // We know 'images' (from closure) contains the old images.
+    const existingUrls = images
       .filter(img => img.url && !img.error)
       .map(img => img.url!);
     
-    updateFormData({ imageUrls: uploadedUrls });
+    const allUrls = [...existingUrls, ...successfulNewUrls];
+    
+    // Update store
+    console.log("[ImagesStep] Updating store with URLs:", allUrls);
+    updateFormData({ imageUrls: allUrls });
   }, [images, updateFormData]);
 
   const removeFile = (index: number) => {

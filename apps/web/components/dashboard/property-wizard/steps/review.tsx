@@ -4,7 +4,6 @@ import { createPropertyFromWizard } from "@/app/actions/wizard";
 import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { Card } from "@repo/ui";
 import { Bath, BedDouble, CheckCircle2, Image as ImageIcon, MapPin, Ruler } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 // Helper for formatting price if the utility doesn't exist or is not exported
@@ -138,22 +137,21 @@ export function Step5() {
             </span>
           </h4>
           
-          {formData.images.length > 0 ? (
+          {formData.imageUrls && formData.imageUrls.length > 0 ? (
             <div className="grid grid-cols-3 gap-2">
-              {formData.images.slice(0, 6).map((file, index) => (
+              {formData.imageUrls.slice(0, 6).map((url, index) => (
                 <div key={index} className="relative aspect-square rounded-md overflow-hidden bg-muted">
-                  <Image
-                    src={URL.createObjectURL(file)}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
                     alt={`Preview ${index}`}
-                    fill
-                    className="object-cover"
-                    onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
+                    className="object-cover w-full h-full"
                   />
                 </div>
               ))}
-              {formData.images.length > 6 && (
+              {formData.imageUrls.length > 6 && (
                 <div className="flex items-center justify-center bg-muted rounded-md text-sm font-medium text-muted-foreground">
-                  +{formData.images.length - 6} más
+                  +{formData.imageUrls.length - 6} más
                 </div>
               )}
             </div>

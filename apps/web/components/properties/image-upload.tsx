@@ -10,6 +10,9 @@
 
 "use client";
 
+import { saveUploadedPropertyImagesAction } from "@/app/actions/properties";
+import { generatePresignedUploadUrl, getPublicImageUrl } from "@/app/actions/upload";
+import { validateImages } from "@/lib/storage/validation";
 import type { SubscriptionTier } from "@repo/database";
 import { Button } from "@repo/ui";
 import imageCompression from "browser-image-compression";
@@ -17,8 +20,6 @@ import { ImagePlus, Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { uploadPropertyImagesAction } from "@/app/actions/properties";
-import { validateImages } from "@/lib/storage/validation";
 import { LimitReachedModal } from "../modals/limit-reached-modal";
 
 interface ImageUploadProps {
@@ -109,21 +110,69 @@ export function ImageUpload({
     }
   };
 
-  // Simular progreso de subida
-  const simulateProgress = (fileIndex: number) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 30;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
+  // Upload individual file helper
+  const uploadSingleFile = async (file: File, index: number): Promise<string | null> => {
+    try {
+      // 1. Get presigned URL
+      const presignedResult = await generatePresignedUploadUrl(
+        file.name,
+        file.type,
+        file.size
+      );
+
+      if (!presignedResult.success || !presignedResult.uploadUrl || !presignedResult.path) {
+          // If upgrade required, we handle it in the main loop or here
+          if (presignedResult.upgradeRequired) {
+            setLimitData({
+                currentTier: "FREE", 
+                limit: presignedResult.currentLimit || 0
+            });
+            setLimitModalOpen(true);
+            throw new Error(presignedResult.error || "Upgrade requerida");
+          }
+        throw new Error(presignedResult.error || "Error al generar URL");
       }
-      setUploadProgress((prev) => ({
-        ...prev,
-        [fileIndex]: Math.min(progress, 100),
-      }));
-    }, 200);
-    return interval;
+
+      // 2. Upload to Storage
+      // Use XHR or fetch with progress simulation
+      // Here we simulate progress for UX consistency
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+            const current = prev[index] || 0;
+            if (current >= 90) return prev;
+            return { ...prev, [index]: current + 10 };
+        });
+      }, 200);
+
+      const uploadResponse = await fetch(presignedResult.uploadUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+          'x-upsert': 'true',
+        },
+      });
+      
+      clearInterval(progressInterval);
+
+      if (!uploadResponse.ok) {
+        throw new Error("Fallo al subir archivo");
+      }
+
+      setUploadProgress(prev => ({ ...prev, [index]: 100 }));
+
+      // 3. Get public URL
+      const publicUrlResult = await getPublicImageUrl(presignedResult.path);
+      
+      if (!publicUrlResult.success || !publicUrlResult.publicUrl) {
+        throw new Error("Error al obtener URL pública");
+      }
+
+      return publicUrlResult.publicUrl;
+    } catch (error) {
+      console.error(`Error uploading file ${index}:`, error);
+      return null;
+    }
   };
 
   // Subir imágenes
@@ -142,21 +191,29 @@ export function ImageUpload({
       );
       setIsCompressing(false);
 
-      // Paso 2: Iniciar upload
+      // Paso 2: Iniciar upload en paralelo (Client-side directly to Storage)
       setIsUploading(true);
-      const progressIntervals = selectedFiles.map((_, index) =>
-        simulateProgress(index),
+      
+      const uploadPromises = compressedFiles.map((file, index) => 
+        uploadSingleFile(file, index)
       );
 
-      const formData = new FormData();
-      compressedFiles.forEach((file) => {
-        formData.append("images", file);
-      });
+      const publicUrls = await Promise.all(uploadPromises);
+      
+      // Filter successful uploads
+      const successfulUrls = publicUrls.filter((url): url is string => url !== null);
+      
+      if (successfulUrls.length === 0) {
+        throw new Error("No se pudo subir ninguna imagen");
+      }
+      
+      if (successfulUrls.length < compressedFiles.length) {
+          console.warn(`Only ${successfulUrls.length}/${compressedFiles.length} images uploaded successfully`);
+          // We continue saving the ones that succeeded
+      }
 
-      const result = await uploadPropertyImagesAction(propertyId, formData);
-
-      // Limpiar intervalos
-      progressIntervals.forEach((interval) => clearInterval(interval));
+      // Paso 3: Guardar referencias en BD
+      const result = await saveUploadedPropertyImagesAction(propertyId, successfulUrls);
 
       if (result.error) {
         if (result.upgradeRequired) {
@@ -167,18 +224,10 @@ export function ImageUpload({
           setLimitModalOpen(true);
         }
         setError(result.error);
-        setUploadProgress({});
       } else {
-        // Asegurar que todos muestren 100%
-        const finalProgress: Record<number, number> = {};
-        selectedFiles.forEach((_, index) => {
-          finalProgress[index] = 100;
-        });
-        setUploadProgress(finalProgress);
-
         // Mostrar éxito
         setSuccess(true);
-
+        
         // Limpiar después de 1s
         setTimeout(() => {
           setSelectedFiles([]);
@@ -190,8 +239,9 @@ export function ImageUpload({
         // Limpiar mensaje de éxito después de 3s
         setTimeout(() => setSuccess(false), 3000);
       }
-    } catch (_err) {
-      setError("Error inesperado al subir las imágenes");
+    } catch (err: any) {
+        console.error(err);
+      setError(err.message || "Error inesperado al subir las imágenes");
       setUploadProgress({});
     } finally {
       setIsCompressing(false);
