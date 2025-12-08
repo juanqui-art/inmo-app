@@ -92,7 +92,7 @@ export function PropertyForm({
   // Estados locales para mapa y amenities
   const [latitude, setLatitude] = useState<number>(property?.latitude || -2.9001); // Cuenca default
   const [longitude, setLongitude] = useState<number>(property?.longitude || -79.0059);
-  const [amenities, setAmenities] = useState<string[]>(property?.amenities || []);
+  const [amenities, setAmenities] = useState<string[]>([]);
 
   const handleLocationSelect = (lat: number, lng: number) => {
     setLatitude(lat);

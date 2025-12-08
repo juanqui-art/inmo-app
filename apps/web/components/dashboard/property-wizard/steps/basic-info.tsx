@@ -34,7 +34,7 @@ type Step1Values = z.infer<typeof step1Schema>;
 export function Step1() {
   const { formData, updateFormData, setStep } = usePropertyWizardStore();
 
-  const form = useForm<Step1Values>({
+  const form = useForm({
     resolver: zodResolver(step1Schema),
     defaultValues: {
       title: formData.title,

@@ -31,7 +31,22 @@ const nextConfig: NextConfig = {
     "react-map-gl",
     "mapbox-gl",
   ],
-  serverExternalPackages: ["@prisma/client"],
+  serverExternalPackages: ["@prisma/client", "pino", "pino-pretty"],
+
+  /**
+   * Webpack Configuration
+   * Exclude test files from dependencies to prevent build errors
+   */
+  webpack: (config) => {
+    // Exclude test files from all node_modules
+    config.module.rules.push({
+      test: /\.test\.(js|ts|tsx)$/,
+      include: /node_modules/,
+      use: 'null-loader',
+    });
+
+    return config;
+  },
   images: {
     qualities: [75, 90],
     remotePatterns: [
