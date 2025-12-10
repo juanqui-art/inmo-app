@@ -3,6 +3,7 @@
 import { env } from "@repo/env";
 import { MapPin } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { useTheme } from "next-themes";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Map, { GeolocateControl, MapRef, Marker, NavigationControl } from "react-map-gl/mapbox";
 
@@ -13,12 +14,18 @@ interface LocationPickerMapProps {
 }
 
 export function LocationPickerMap({ latitude, longitude, onLocationSelect }: LocationPickerMapProps) {
+  const { resolvedTheme } = useTheme();
   const mapRef = useRef<MapRef>(null);
   const [viewState, setViewState] = useState({
     latitude: latitude || -2.9,
     longitude: longitude || -79.0,
     zoom: 13,
   });
+
+  // Calculate map style based on theme
+  const mapStyle = resolvedTheme === "dark" 
+    ? "mapbox://styles/mapbox/dark-v11" 
+    : "mapbox://styles/mapbox/streets-v12";
 
   // Update view state if props change significantly (e.g. initial load or external update)
   useEffect(() => {
@@ -60,7 +67,7 @@ export function LocationPickerMap({ latitude, longitude, onLocationSelect }: Loc
         {...viewState}
         onMove={evt => setViewState(evt.viewState)}
         style={{ width: "100%", height: "100%" }}
-        mapStyle="mapbox://styles/mapbox/streets-v12"
+        mapStyle={mapStyle}
         mapboxAccessToken={mapboxToken}
         onClick={handleMapClick}
       >

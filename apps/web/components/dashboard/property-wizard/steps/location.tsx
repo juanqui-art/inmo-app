@@ -1,5 +1,6 @@
 "use client";
 
+import { AddressAutocomplete } from "@/components/properties/address-autocomplete";
 import { LocationPickerMap } from "@/components/properties/location-picker-map";
 import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,14 +11,16 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-    Input
+    Input,
 } from "@repo/ui";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const step2Schema = z.object({
-  address: z.string().min(5, "La dirección es requerida y debe tener al menos 5 caracteres"),
+  address: z
+    .string()
+    .min(5, "La dirección es requerida y debe tener al menos 5 caracteres"),
   city: z.string().min(2, "La ciudad es requerida"),
   state: z.string().min(2, "El estado/provincia es requerido"),
   zipCode: z.string().optional(),
@@ -64,18 +67,72 @@ export function Step2() {
     form.setValue("longitude", lng, { shouldValidate: true });
   };
 
+  const handleAddressSelect = (data: {
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    latitude: number;
+    longitude: number;
+  }) => {
+    form.setValue("address", data.address);
+    // Only set city/state/zip if they have content, to avoid clearing user data with empty strings if API returns nothing
+    if (data.city) form.setValue("city", data.city);
+    if (data.state) form.setValue("state", data.state);
+    if (data.zipCode) form.setValue("zipCode", data.zipCode);
+    
+    form.setValue("latitude", data.latitude);
+    form.setValue("longitude", data.longitude);
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">Ubicación de la Propiedad</h2>
         <p className="text-sm text-muted-foreground">
-          Ingresa la dirección y marca la ubicación exacta en el mapa.
+          Busca la dirección para autocompletar o usa el mapa para mayor
+          precisión.
         </p>
       </div>
 
+      {/* 1. Smart Search */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+          Buscar ubicación
+        </label>
+        <AddressAutocomplete onAddressSelect={handleAddressSelect} />
+      </div>
+
       <Form {...form}>
-        <form id="wizard-step-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
+        <form
+          id="wizard-step-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8"
+        >
+          {/* 2. Map Visualizer */}
+          <div className="space-y-2 rounded-lg border p-1 bg-muted/20">
+            <FormLabel className="px-2 pt-2 block">
+              Confirmar en el Mapa
+            </FormLabel>
+            <LocationPickerMap
+              latitude={form.watch("latitude")}
+              longitude={form.watch("longitude")}
+              onLocationSelect={handleLocationSelect}
+            />
+            <p className="text-xs text-muted-foreground px-2 pb-2">
+              Arrastra el marcador rojo para afinar la ubicación exacta de la
+              entrada.
+            </p>
+          </div>
+
+          {/* 3. Manual Details (Verification) */}
+          <div className="grid gap-6 md:grid-cols-2 pt-4 border-t">
+            <div className="col-span-2">
+              <h3 className="text-sm font-medium mb-4">
+                Detalles de la dirección (Editables)
+              </h3>
+            </div>
+
             {/* Address */}
             <FormField
               control={form.control as any}
@@ -84,7 +141,10 @@ export function Step2() {
                 <FormItem className="col-span-2">
                   <FormLabel>Dirección</FormLabel>
                   <FormControl>
-                    <Input placeholder="Calle Principal 123 y Secundaria" {...field} />
+                    <Input
+                      placeholder="Calle Principal 123 y Secundaria"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -135,44 +195,24 @@ export function Step2() {
                 </FormItem>
               )}
             />
-          </div>
 
-          {/* Map */}
-          <div className="space-y-2">
-            <FormLabel>Ubicación en el Mapa</FormLabel>
-            <LocationPickerMap
-              latitude={form.watch("latitude")}
-              longitude={form.watch("longitude")}
-              onLocationSelect={handleLocationSelect}
-            />
-            <div className="grid grid-cols-2 gap-4">
-               <FormField
-                control={form.control as any}
-                name="latitude"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs text-muted-foreground">Latitud</FormLabel>
-                    <FormControl>
-                      <Input {...field} readOnly className="bg-muted" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                control={form.control as any}
-                name="longitude"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs text-muted-foreground">Longitud</FormLabel>
-                    <FormControl>
-                      <Input {...field} readOnly className="bg-muted" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+             {/* Hidden Lat/Lng fields to ensure they are submitted but visible for debug if needed */}
+             <div className="hidden">
+                <FormField
+                  control={form.control as any}
+                  name="latitude"
+                  render={({ field }) => (
+                    <input type="hidden" {...field} />
+                  )}
+                />
+                 <FormField
+                  control={form.control as any}
+                  name="longitude"
+                  render={({ field }) => (
+                    <input type="hidden" {...field} />
+                  )}
+                />
+             </div>
           </div>
         </form>
       </Form>

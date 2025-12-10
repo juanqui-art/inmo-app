@@ -1,40 +1,69 @@
-"use client";
+import { NewPropertyClient } from "@/components/dashboard/property-wizard/new-property-client";
+import { requireRole } from "@/lib/auth";
+import { canCreateProperty, getImageLimit } from "@/lib/permissions/property-limits";
+import { db } from "@repo/database";
+import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@repo/ui";
+import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 
-import { WizardLayout } from "@/components/dashboard/property-wizard/wizard-layout";
-import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
+export default async function NewPropertyPage() {
+  // 1. Verify Authentication & Role
+  const user = await requireRole(["AGENT", "ADMIN"]);
 
-import { Step1 } from "@/components/dashboard/property-wizard/steps/basic-info";
-import { Step3 } from "@/components/dashboard/property-wizard/steps/features";
-import { Step4 } from "@/components/dashboard/property-wizard/steps/images";
-import { Step2 } from "@/components/dashboard/property-wizard/steps/location";
-import { Step5 } from "@/components/dashboard/property-wizard/steps/review";
+  // 2. Check Limits
+  const permission = await canCreateProperty(user.id);
+  
+  // 2.1 Get specifically the image limit for this user's tier
+  // We need to fetch the user again or rely on canCreateProperty? canCreateProperty mostly checks count.
+  // Converting requireRole result to have subscriptionTier if available?
+  // requireRole returns User from auth/session, we might need DB user for tier if not in session.
+  // Actually requireRole often returns enough info, but let's be safe and fetch simple tier if needed.
+  // Wait, I can trust canCreateProperty logic or just fetch simple tier.
+  // Optimizing: reuse the user object if it has tier, or simple fetch.
+  // Let's do a quick fetch to be 100% sure of current tier.
+  const dbUser = await db.user.findUnique({ 
+    where: { id: user.id },
+    select: { subscriptionTier: true }
+  });
+  
+  const imageLimit = getImageLimit(dbUser?.subscriptionTier || "FREE");
 
-// Placeholder components for steps
-
-
-export default function NewPropertyPage() {
-  const { currentStep } = usePropertyWizardStore();
-
-  const renderStep = () => {
-    switch (currentStep) {
-      case 1: return <Step1 />;
-      case 2: return <Step2 />;
-      case 3: return <Step3 />;
-      case 4: return <Step4 />;
-      case 5: return <Step5 />;
-      default: return <Step1 />;
-    }
-  };
-
-  return (
-    <WizardLayout
-      title="Nueva Propiedad"
-      description="Completa la información para publicar tu propiedad."
-      formId="wizard-step-form"
-    >
-      <div className="mt-4">
-        {renderStep()}
+  if (!permission.allowed) {
+    return (
+      <div className="container max-w-2xl py-20">
+        <Card className="border-destructive/20 shadow-lg">
+          <CardHeader className="text-center pb-2">
+            <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
+              <AlertCircle className="w-6 h-6 text-destructive" />
+            </div>
+            <CardTitle className="text-2xl">Límite de Propiedades Alcanzado</CardTitle>
+            <CardDescription className="text-lg pt-2">
+              {permission.reason}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center text-muted-foreground">
+            <p>
+              Tu plan actual tiene un límite de <strong>{permission.limit} {permission.limit === 1 ? 'propiedad' : 'propiedades'}</strong>.
+              Para seguir publicando, necesitas actualizar tu suscripción.
+            </p>
+          </CardContent>
+          <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center pt-6">
+            <Button asChild variant="default" size="lg" className="w-full sm:w-auto">
+              <Link href="/dashboard?upgrade=true">
+                Actualizar Plan ahora
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+              <Link href="/dashboard/propiedades">
+                Gestionar mis propiedades
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
-    </WizardLayout>
-  );
+    );
+  }
+
+  // 3. Render Wizard if allowed
+  return <NewPropertyClient maxImages={imageLimit} />;
 }

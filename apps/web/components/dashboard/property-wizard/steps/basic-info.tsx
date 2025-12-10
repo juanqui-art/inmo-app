@@ -23,7 +23,7 @@ import { z } from "zod";
 
 const step1Schema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres"),
-  description: z.string().min(20, "La descripción debe tener al menos 20 caracteres"),
+  description: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
   price: z.coerce.number().min(1, "El precio es requerido"),
   transactionType: z.enum(["SALE", "RENT"]),
   category: z.string().min(1, "Selecciona una categoría"),
@@ -75,7 +75,10 @@ export function Step1() {
                 <FormControl>
                   <Input placeholder="Ej: Casa moderna en el centro" {...field} />
                 </FormControl>
-                <FormMessage />
+                <div className="flex justify-between items-center text-xs">
+                  <FormMessage />
+                  {!form.formState.errors.title && <span className="text-muted-foreground">Mínimo 5 caracteres</span>}
+                </div>
               </FormItem>
             )}
           />
@@ -171,7 +174,12 @@ export function Step1() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+                <div className="flex justify-between items-center text-xs">
+                  <FormMessage />
+                  <span className={field.value?.length >= 10 ? "text-green-500" : "text-muted-foreground"}>
+                    {field.value?.length || 0} / 10 caracteres
+                  </span>
+                </div>
               </FormItem>
             )}
           />

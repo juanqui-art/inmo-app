@@ -15,7 +15,8 @@ interface UploadedImage {
 }
 
 export function Step4() {
-  const { formData, updateFormData, nextStep } = usePropertyWizardStore();
+  const { formData, updateFormData, nextStep, limits } = usePropertyWizardStore();
+  const maxImages = limits.maxImages;
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -234,7 +235,7 @@ export function Step4() {
         className={`
           border-2 border-dashed rounded-lg p-10 text-center cursor-pointer transition-colors
           ${isDragActive ? "border-primary bg-primary/10" : "border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/50"}
-          ${isUploading || images.length >= 10 ? "opacity-50 cursor-not-allowed" : ""}
+          ${isUploading || images.length >= maxImages ? "opacity-50 cursor-not-allowed" : ""}
         `}
       >
         <input {...getInputProps()} />
@@ -252,12 +253,12 @@ export function Step4() {
                 ? "Subiendo imágenes..." 
                 : isDragActive 
                   ? "Suelta las imágenes aquí" 
-                  : images.length >= 10
-                    ? "Límite de 10 imágenes alcanzado"
+                  : images.length >= maxImages
+                    ? `Límite de ${maxImages} imágenes alcanzado`
                     : "Haz clic o arrastra imágenes aquí"}
             </p>
             <p className="text-xs text-muted-foreground">
-              JPG, PNG, WEBP hasta 5MB (Máx 10 imágenes)
+              JPG, PNG, WEBP hasta 5MB por imagen (Máx {maxImages} en total)
             </p>
           </div>
         </div>

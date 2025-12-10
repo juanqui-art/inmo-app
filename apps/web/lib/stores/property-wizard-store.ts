@@ -37,6 +37,10 @@ interface WizardState {
   prevStep: () => void;
   updateFormData: (data: Partial<PropertyFormData>) => void;
   resetWizard: () => void;
+  limits: {
+    maxImages: number;
+  };
+  setLimits: (limits: { maxImages: number }) => void;
 }
 
 const initialFormData: PropertyFormData = {
@@ -65,6 +69,10 @@ export const usePropertyWizardStore = create<WizardState>()(
       currentStep: 1,
       totalSteps: 5,
       formData: initialFormData,
+      limits: {
+        maxImages: 5, // Default safe limit
+      },
+      setLimits: (limits) => set((state) => ({ limits: { ...state.limits, ...limits } })),
       setStep: (step) => set({ currentStep: step }),
       nextStep: () => set((state) => ({ 
         currentStep: Math.min(state.currentStep + 1, state.totalSteps) 
@@ -80,6 +88,7 @@ export const usePropertyWizardStore = create<WizardState>()(
         set({
           currentStep: 1,
           formData: initialFormData,
+          limits: { maxImages: 5 },
         }),
     }),
     {
@@ -89,7 +98,8 @@ export const usePropertyWizardStore = create<WizardState>()(
         formData: {
             ...state.formData,
             images: [] // Don't persist File objects
-        }
+        },
+        limits: state.limits, // Persist limits so they survive reload if not re-initialized immediately
       }),
     }
   )
