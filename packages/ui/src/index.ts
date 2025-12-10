@@ -15,6 +15,17 @@ export {
 } from "./components/card";
 export { Checkbox } from "./components/checkbox";
 export {
+    Command,
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandSeparator,
+    CommandShortcut
+} from "./components/command";
+export {
     Dialog,
     DialogClose,
     DialogContent,
@@ -51,6 +62,7 @@ export {
 export { Input, type InputProps } from "./components/input";
 export { Label } from "./components/label";
 export { PasswordInput } from "./components/password-input";
+export { Popover, PopoverContent, PopoverTrigger } from "./components/popover";
 export {
     Select,
     SelectContent,
