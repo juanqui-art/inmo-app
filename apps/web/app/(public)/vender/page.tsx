@@ -43,19 +43,40 @@ export default async function VenderPage() {
 
   const tiers = pricingTiers.map((tier) => {
     if (user) {
-      if (tier.name === "FREE") {
+      // Helper to check if this is the current plan
+      const isCurrentPlan = user.user_metadata?.subscription_tier === tier.name;
+      // Helper to check if this plan is "lower" than current (e.g., FREE < BASIC)
+      const isLowerPlan = 
+        (user.user_metadata?.subscription_tier === "PRO" && tier.name !== "PRO") ||
+        (user.user_metadata?.subscription_tier === "BASIC" && tier.name === "FREE");
+
+      if (isCurrentPlan) {
         return {
           ...tier,
-          ctaText: "Publicar ahora",
-          ctaUrl: "/dashboard/propiedades/nueva",
+          ctaText: "Tu Plan Actual",
+          ctaUrl: "/dashboard",
+          buttonVariant: "outline" as const, // Visual cue
+          disabled: true, // Optional: might need to handle this in PricingCard
         };
       }
+
+      if (isLowerPlan) {
+        return {
+          ...tier,
+          ctaText: "Incluido en tu plan",
+          ctaUrl: "#",
+          disabled: true,
+        };
+      }
+
+      // Upgrade path
       return {
         ...tier,
-        ctaText: "Elegir plan",
+        ctaText: "Mejorar Plan",
         ctaUrl: `/dashboard?upgrade=${tier.name.toLowerCase()}`,
       };
     }
+    // Create 'buttonVariant' property for non-logged users too if needed, or rely on default
     return tier;
   });
 
@@ -84,10 +105,10 @@ export default async function VenderPage() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="#planes"
+              href={user ? "/dashboard" : "/signup?plan=free"}
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-gray-100 text-indigo-600 font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105 hover:-translate-y-1"
             >
-              <span>Comenzar gratis</span>
+              <span>{user ? "Ir a mi Dashboard" : "Comenzar gratis"}</span>
               <ArrowRight className="w-5 h-5" />
             </Link>
 
