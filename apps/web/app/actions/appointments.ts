@@ -15,6 +15,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { validateAppointmentDateTime } from "@/lib/constants/availability";
+import { validateCSRFToken, isCSRFError } from "@/lib/csrf";
 import {
   sendAppointmentCancelledEmail,
   sendAppointmentConfirmedEmail,
@@ -223,12 +224,30 @@ export async function createAppointmentAction(formData: {
 export async function updateAppointmentStatusAction(data: {
   id: string;
   status: "CONFIRMED" | "CANCELLED";
+  csrfToken?: string | null;
 }) {
   try {
-    // 1. Validar input
+    // 1. CSRF Protection (critical state-changing operation)
+    if (data.csrfToken) {
+      try {
+        await validateCSRFToken(data.csrfToken);
+      } catch (error) {
+        if (isCSRFError(error)) {
+          throw new Error(error.message);
+        }
+        throw error;
+      }
+    } else {
+      logger.warn(
+        { appointmentId: data.id, status: data.status },
+        "updateAppointmentStatusAction called without CSRF token"
+      );
+    }
+
+    // 2. Validar input
     const validatedData = updateAppointmentStatusSchema.parse(data);
 
-    // 2. Obtener usuario actual
+    // 3. Obtener usuario actual
     const user = await getCurrentUser();
     if (!user) {
       throw new Error("Authentication required");

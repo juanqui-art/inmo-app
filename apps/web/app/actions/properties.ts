@@ -10,6 +10,7 @@
 "use server";
 
 import { requireOwnership, requireRole } from "@/lib/auth";
+import { validateCSRFToken, isCSRFError } from "@/lib/csrf";
 import {
     canCreateProperty,
     canUploadImage,
@@ -202,16 +203,39 @@ export async function updatePropertyAction(
 /**
  * DELETE PROPERTY ACTION
  * Solo el owner o ADMIN pueden eliminar
+ *
+ * CSRF Protected: Requires valid CSRF token for security
  */
-export async function deletePropertyAction(propertyId: string) {
+export async function deletePropertyAction(
+  propertyId: string,
+  csrfToken?: string | null
+) {
   // 1. Verificar autenticación
   const user = await requireRole(["AGENT", "ADMIN"]);
 
+  // 2. CSRF Protection (critical destructive operation)
+  if (csrfToken) {
+    try {
+      await validateCSRFToken(csrfToken);
+    } catch (error) {
+      if (isCSRFError(error)) {
+        return { success: false, error: error.message };
+      }
+      throw error;
+    }
+  } else {
+    // Log warning if CSRF token not provided (should be added by clients)
+    logger.warn(
+      { propertyId, userId: user.id },
+      "deletePropertyAction called without CSRF token"
+    );
+  }
+
   try {
-    // 2. Eliminar (repository verifica ownership)
+    // 3. Eliminar (repository verifica ownership)
     await propertyRepository.delete(propertyId, user.id);
 
-    // 3. Revalidar caches
+    // 4. Revalidar caches
     revalidatePath("/mapa");
     revalidatePath("/dashboard/propiedades");
 

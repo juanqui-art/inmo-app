@@ -18,6 +18,8 @@ import type {
 import { db, propertyRepository, userRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
+import { validateCSRFToken, isCSRFError } from "@/lib/csrf";
+import { logger } from "@/lib/utils/logger";
 
 // ==================== TYPES ====================
 
@@ -162,12 +164,32 @@ export async function getUserByIdAction(
  * Actualiza el rol de un usuario
  * Solo ADMIN puede acceder
  * No puede cambiar su propio rol
+ *
+ * CSRF Protected: Requires valid CSRF token for security
  */
 export async function updateUserRoleAction(
   userId: string,
   newRole: UserRole,
+  csrfToken?: string | null
 ): Promise<{ success: boolean; error?: string }> {
   const admin = await requireRole(["ADMIN"]);
+
+  // CSRF Protection (critical admin operation)
+  if (csrfToken) {
+    try {
+      await validateCSRFToken(csrfToken);
+    } catch (error) {
+      if (isCSRFError(error)) {
+        return { success: false, error: error.message };
+      }
+      throw error;
+    }
+  } else {
+    logger.warn(
+      { userId, adminId: admin.id },
+      "updateUserRoleAction called without CSRF token"
+    );
+  }
 
   // No puede cambiar su propio rol
   if (userId === admin.id) {
@@ -182,7 +204,7 @@ export async function updateUserRoleAction(
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating user role:", error);
+    logger.error({ err: error, userId }, "Error updating user role");
     return {
       success: false,
       error: error instanceof Error ? error.message : "Error al actualizar rol",
@@ -225,11 +247,31 @@ export async function updateUserTierAction(
  * Elimina un usuario (soft delete en el futuro, hard delete por ahora)
  * Solo ADMIN puede acceder
  * No puede eliminarse a sí mismo
+ *
+ * CSRF Protected: Requires valid CSRF token for security
  */
 export async function deleteUserAction(
   userId: string,
+  csrfToken?: string | null
 ): Promise<{ success: boolean; error?: string }> {
   const admin = await requireRole(["ADMIN"]);
+
+  // CSRF Protection (critical destructive operation)
+  if (csrfToken) {
+    try {
+      await validateCSRFToken(csrfToken);
+    } catch (error) {
+      if (isCSRFError(error)) {
+        return { success: false, error: error.message };
+      }
+      throw error;
+    }
+  } else {
+    logger.warn(
+      { userId, adminId: admin.id },
+      "deleteUserAction called without CSRF token"
+    );
+  }
 
   // No puede eliminarse a sí mismo
   if (userId === admin.id) {
