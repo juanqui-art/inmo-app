@@ -30,7 +30,7 @@
 import { FAQAccordion } from "@/components/faq/faq-accordion";
 import { HeroBackground } from "@/components/home/hero-background";
 import { PricingCard } from "@/components/pricing/pricing-card";
-import { pricingTiers } from "@/lib/pricing/tiers";
+import { getTierRank, pricingTiers } from "@/lib/pricing/tiers";
 import { createClient } from "@/lib/supabase/server";
 import { ArrowRight, CheckCircle, Home, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
@@ -45,10 +45,12 @@ export default async function VenderPage() {
     if (user) {
       // Helper to check if this is the current plan
       const isCurrentPlan = user.user_metadata?.subscription_tier === tier.name;
-      // Helper to check if this plan is "lower" than current (e.g., FREE < BASIC)
-      const isLowerPlan = 
-        (user.user_metadata?.subscription_tier === "PRO" && tier.name !== "PRO") ||
-        (user.user_metadata?.subscription_tier === "BASIC" && tier.name === "FREE");
+      // Helper to check if this plan is "lower" than current
+      const currentTierRank = getTierRank(
+        user.user_metadata?.subscription_tier || "FREE",
+      );
+      const targetTierRank = getTierRank(tier.name);
+      const isLowerPlan = currentTierRank > targetTierRank;
 
       if (isCurrentPlan) {
         return {

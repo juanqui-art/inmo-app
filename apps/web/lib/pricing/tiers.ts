@@ -117,3 +117,23 @@ export function getTierByName(
 export function getHighlightedTier(): PricingTier | undefined {
   return pricingTiers.find((tier) => tier.highlighted);
 }
+
+/**
+ * TIER RANKS - Jerarquía de planes
+ * Usado para determinar upgrades/downgrades
+ */
+export const TIER_RANKS = {
+  FREE: 0,
+  PLUS: 1,
+  AGENT: 2,
+  PRO: 3,
+} as const;
+
+export type TierName = keyof typeof TIER_RANKS;
+
+/**
+ * Helper: Obtener rango numérico de un tier
+ */
+export function getTierRank(name: string): number {
+  return TIER_RANKS[name as TierName] ?? -1;
+}
