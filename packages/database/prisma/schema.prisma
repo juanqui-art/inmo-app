@@ -147,7 +147,8 @@ enum UserRole {
 
 enum SubscriptionTier {
   FREE
-  BASIC
+  PLUS
+  AGENT
   PRO
 }
 

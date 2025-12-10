@@ -200,21 +200,77 @@ Con modelo de comisiones (3% por transacción):
 
 ---
 
-## 💳 Freemium Model (Aprobado)
+## 💳 Freemium Model (Actualizado Dic 5, 2025)
 
-**Status:** ✅ Decisiones finalizadas (Nov 20, 2025) - Listo para Sprint 1
+**Status:** ✅ Decisiones REVISADAS - Nueva Estrategia de Segmentación B2C/B2B
 
-**Modelo de negocio**: Freemium con 3 tiers (FREE/BASIC/PRO)
+**Modelo de negocio**: Freemium con 4 tiers (FREE/PLUS/AGENT/PRO)
 
-### Pricing Aprobado (Ecuador - USD)
+### Pricing Actualizado (Ecuador - USD)
 
 ```
-FREE:   $0/mes     (1 propiedad, 5 imágenes, sin destacados)
-BASIC:  $4.99/mes  (3 propiedades, 10 imágenes, 3 destacados/mes)
-PRO:    $14.99/mes (10 propiedades, 20 imágenes, destacados ilimitados)
+FREE:   $0/mes     (1 propiedad, 6 fotos, sin destacados)
+PLUS:   $9.99/mes  (3 propiedades, 25 fotos, 1 destacado permanente)  ← B2C
+AGENT:  $29.99/mes (10 propiedades, 20 fotos, 5 destacados, CRM Lite) ← B2B
+PRO:    $59.99/mes (20 propiedades, 25 fotos, ∞ destacados, CRM Full) ← B2B
 ```
 
-### Decisiones Clave
+### Cambios Clave vs Anterior
+
+**❌ ELIMINADO:** BASIC ($4.99) - Tier ambiguo sin propuesta de valor clara
+**✅ NUEVO:** PLUS ($9.99) - Enfocado 100% en dueños B2C (venta rápida)
+**✅ NUEVO:** AGENT ($29.99) - Bridge para agentes pequeños con CRM básico
+**✅ AJUSTADO:** PRO ($59.99) - Premium B2B con herramientas profesionales
+
+### Segmentación Clara
+
+**FREE (Lead Magnet):**
+- Target: Probar plataforma (dueños y agentes curiosos)
+- Limits: 1 propiedad, 6 fotos, sin destacado
+- Estrategia: Frustración controlada → upgrade
+
+**PLUS (B2C - Dueños):**
+- Target: Dueño particular vendiendo su casa/depto
+- Limits: 3 propiedades, 25 fotos HD, 1 destacado permanente
+- Value prop: "Vende más rápido con máxima visibilidad"
+- LTV esperado: $20-30 (2-3 meses hasta vender, luego cancela)
+
+**AGENT (B2B Core - Agentes Pequeños):**
+- Target: Agente freelance/pequeño (2-10 propiedades activas)
+- Limits: 10 propiedades, 20 fotos, 5 destacados permanentes
+- Features: CRM Lite (leads, estados, notas, analytics básico)
+- Value prop: "Gestiona tu negocio + no pierdas leads"
+- LTV esperado: $360/año (retención 80%)
+
+**PRO (B2B Premium - Agentes Profesionales):**
+- Target: Agencia/agente profesional (10-50 propiedades)
+- Limits: 20 propiedades, 25 fotos, destacados ilimitados
+- Features: CRM completo + Analytics avanzado + Smart data local
+- Value prop: "Herramientas profesionales + data de mercado"
+- LTV esperado: $720/año (retención 85%)
+
+### Mecánica de Destacados
+
+**Sistema:** Destacados permanentes (NO créditos mensuales)
+- Usuario marca N propiedades como destacadas
+- Permanecen destacadas mientras tenga suscripción activa
+- Puede cambiar cuál(es) destacar en cualquier momento
+- Simple de implementar (flag `isFeatured` en DB)
+
+### Integración WhatsApp
+
+**Fase MVP (Opción 1):** Sin WhatsApp Business API
+- Click-to-WhatsApp (abre app del usuario)
+- Entrada manual de leads en CRM
+- $0 de costo adicional
+- Lanzamiento rápido (1 semana)
+
+**Fase Growth (Futuro):** WhatsApp Business API opcional
+- AGENT+: $39.99 (con automation WhatsApp)
+- PRO: Incluye WhatsApp API + Chatbot
+- Costo: ~$3-5/mes por agente
+
+### Decisiones Clave Mantenidas
 
 **Expiración de publicaciones**: Auto-renovación ilimitada
 - Las propiedades NO expiran automáticamente
@@ -222,19 +278,21 @@ PRO:    $14.99/mes (10 propiedades, 20 imágenes, destacados ilimitados)
 - Simple, flexible, y generoso para lanzamiento
 
 **Nomenclatura**:
-- Código: `FREE`, `BASIC`, `PRO` (enum SubscriptionTier)
-- UI: "Gratuito", "Básico", "Pro" (traducido)
+- Código: `FREE`, `PLUS`, `AGENT`, `PRO` (enum SubscriptionTier)
+- UI: "Gratuito", "Plus", "Agente", "Pro" (traducido)
 
-**Mercado objetivo**: Cuenca/Azuay (Ecuador) → Expansión nacional en 12-18 meses
+**Mercado objetivo**: Todo Ecuador, marketing focalizado en Cuenca/Azuay
 
 **Próximos pasos**:
-1. Sprint 1-2: Schema + Permissions (2 semanas)
-2. Sprint 3-4: Stripe Integration (2 semanas)
-3. Sprint 5-6: UI + Beta Testing (2 semanas)
+1. Sprint 1: Actualizar schema + permissions (1 semana)
+2. Sprint 2: Actualizar UI pricing + dashboard (1 semana)
+3. Sprint 3-4: Stripe Integration (2 semanas)
+4. Sprint 5-6: Beta Testing (2 semanas)
 
 **Referencias técnicas**:
-- Schema changes: Ver `TECHNICAL_SPEC.md` sección "Database Schema"
+- Schema changes: `packages/database/prisma/schema.prisma`
 - Permission helpers: `apps/web/lib/permissions/property-limits.ts`
+- Pricing config: `apps/web/lib/pricing/tiers.ts`
 - Server Actions: Validación en `createPropertyAction`
 
 ---

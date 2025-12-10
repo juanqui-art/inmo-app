@@ -29,7 +29,12 @@ export function LimitReachedModal({
   currentTier,
   limit,
 }: LimitReachedModalProps) {
-  const nextTier = currentTier === "FREE" ? "BASIC" : "PRO";
+  const nextTier =
+    currentTier === "FREE"
+      ? "PLUS"
+      : currentTier === "PLUS"
+        ? "AGENT"
+        : "PRO";
   const nextTierFeatures = getTierFeatures(nextTier);
 
   const titles = {

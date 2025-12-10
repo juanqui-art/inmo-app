@@ -14,7 +14,7 @@ export async function upgradeSubscriptionAction(formData: FormData) {
   const user = await requireAuth();
   const plan = formData.get("plan") as string;
 
-  if (!plan || !["BASIC", "PRO"].includes(plan)) {
+  if (!plan || !["PLUS", "AGENT", "PRO"].includes(plan)) {
     return { error: "Plan inválido" };
   }
 
@@ -26,7 +26,7 @@ export async function upgradeSubscriptionAction(formData: FormData) {
     await db.user.update({
       where: { id: user.id },
       data: {
-        subscriptionTier: plan as "BASIC" | "PRO",
+        subscriptionTier: plan as "PLUS" | "AGENT" | "PRO",
         // Promote CLIENT to AGENT when they subscribe (sellers need AGENT role)
         role: user.role === "CLIENT" ? "AGENT" : user.role,
       },

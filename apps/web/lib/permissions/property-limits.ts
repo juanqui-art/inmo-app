@@ -3,6 +3,8 @@
  *
  * Helpers to enforce subscription tier limits for properties, images, and features.
  * Used in Server Actions to validate user permissions before operations.
+ *
+ * Updated: Dic 5, 2025 - New tier structure (FREE/PLUS/AGENT/PRO)
  */
 
 import type { SubscriptionTier } from "@repo/database";
@@ -15,10 +17,12 @@ export function getPropertyLimit(tier: SubscriptionTier): number {
   switch (tier) {
     case "FREE":
       return 1;
-    case "BASIC":
+    case "PLUS":
       return 3;
-    case "PRO":
+    case "AGENT":
       return 10;
+    case "PRO":
+      return 20;
     default:
       return 1; // Fallback to most restrictive
   }
@@ -30,26 +34,30 @@ export function getPropertyLimit(tier: SubscriptionTier): number {
 export function getImageLimit(tier: SubscriptionTier): number {
   switch (tier) {
     case "FREE":
-      return 5;
-    case "BASIC":
-      return 10;
-    case "PRO":
+      return 6;
+    case "PLUS":
+      return 25;
+    case "AGENT":
       return 20;
+    case "PRO":
+      return 25;
     default:
-      return 5; // Fallback to most restrictive
+      return 6; // Fallback to most restrictive
   }
 }
 
 /**
- * Get featured properties limit per month
+ * Get featured properties limit (permanent highlights)
  * @returns Number of featured slots, or null for unlimited
  */
 export function getFeaturedLimit(tier: SubscriptionTier): number | null {
   switch (tier) {
     case "FREE":
       return 0; // No featured properties
-    case "BASIC":
-      return 3; // 3 featured per month
+    case "PLUS":
+      return 1; // 1 permanent featured
+    case "AGENT":
+      return 5; // 5 permanent featured
     case "PRO":
       return null; // Unlimited
     default:
@@ -112,7 +120,7 @@ export function canUploadImage(
 }
 
 /**
- * Check if user can feature a property
+ * Check if user can feature a property (permanent highlight)
  * @returns Object with permission status, reason, and limit
  */
 export async function canFeatureProperty(
@@ -134,11 +142,17 @@ export async function canFeatureProperty(
     return { allowed: true, limit: null };
   }
 
-  // Count properties featured in the current month
-  // Note: This assumes we have a way to track when a property was featured.
-  // For now, we'll count properties with isFeatured=true, assuming that's how it works.
-  // Ideally, we should have a 'FeaturedLog' or check 'featuredAt' timestamp if it exists.
-  // Checking schema... Property model usually has isFeatured boolean.
+  // If limit is 0, featured properties are not allowed
+  if (limit === 0) {
+    return {
+      allowed: false,
+      reason:
+        "Tu plan no incluye propiedades destacadas. Actualiza a PLUS, AGENT o PRO para destacar propiedades.",
+      limit: 0,
+    };
+  }
+
+  // Count currently featured properties (permanent highlights)
   const currentFeaturedCount = await db.property.count({
     where: {
       agentId: userId,
@@ -164,8 +178,10 @@ export function getTierDisplayName(tier: SubscriptionTier): string {
   switch (tier) {
     case "FREE":
       return "Gratuito";
-    case "BASIC":
-      return "Básico";
+    case "PLUS":
+      return "Plus";
+    case "AGENT":
+      return "Agente";
     case "PRO":
       return "Pro";
     default:
@@ -188,12 +204,16 @@ export function getTierFeatures(tier: SubscriptionTier) {
     hasFeatured: featuredLimit !== 0,
     hasUnlimitedFeatured: featuredLimit === null,
     hasAnalytics: tier !== "FREE",
+    hasCRM: tier === "AGENT" || tier === "PRO",
+    hasCRMFull: tier === "PRO",
     support:
       tier === "PRO"
         ? "WhatsApp (12h)"
-        : tier === "BASIC"
+        : tier === "AGENT"
           ? "Email (24h)"
-          : "Email (72h)",
+          : tier === "PLUS"
+            ? "Email (48h)"
+            : "Email (72h)",
   };
 }
 
@@ -207,8 +227,9 @@ export function getTierPricing(tier: SubscriptionTier): {
 } {
   const prices: Record<SubscriptionTier, number> = {
     FREE: 0,
-    BASIC: 4.99,
-    PRO: 14.99,
+    PLUS: 9.99,
+    AGENT: 29.99,
+    PRO: 59.99,
   };
 
   return {

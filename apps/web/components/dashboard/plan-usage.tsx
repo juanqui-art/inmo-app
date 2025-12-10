@@ -5,7 +5,7 @@ import { Zap } from "lucide-react";
 import Link from "next/link";
 
 interface PlanUsageProps {
-  tier: "FREE" | "BASIC" | "PRO";
+  tier: "FREE" | "PLUS" | "AGENT" | "PRO";
   propertyCount: number;
   propertyLimit: number;
   imageLimit: number;
@@ -31,7 +31,9 @@ export function PlanUsage({
         </div>
         {tier !== "PRO" && (
           <Link
-            href={`/dashboard?upgrade=${tier === "FREE" ? "basic" : "pro"}`}
+            href={`/dashboard?upgrade=${
+              tier === "FREE" ? "plus" : tier === "PLUS" ? "agent" : "pro"
+            }`}
             className="text-xs font-medium text-primary hover:underline"
           >
             Mejorar

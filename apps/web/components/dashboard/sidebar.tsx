@@ -21,7 +21,7 @@ interface SidebarProps {
     role: "CLIENT" | "AGENT" | "ADMIN";
   };
   usageStats?: {
-    tier: "FREE" | "BASIC" | "PRO";
+    tier: "FREE" | "PLUS" | "AGENT" | "PRO";
     propertyCount: number;
     propertyLimit: number;
     imageLimit: number;

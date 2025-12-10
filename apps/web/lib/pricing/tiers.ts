@@ -1,12 +1,13 @@
 /**
  * PRICING TIERS - Definición de planes
  *
- * Source: docs/business/DECISIONS_APPROVED.md
+ * Source: CLAUDE.md - Freemium Model (Actualizado Dic 5, 2025)
  *
  * Decisiones clave:
- * - FREE: 1 propiedad, 5 imágenes, sin expiración
- * - BASIC: 3 propiedades, 10 imágenes, 3 destacados/mes
- * - PRO: 10 propiedades, 20 imágenes, destacados ilimitados
+ * - FREE: 1 propiedad, 6 imágenes, sin destacados
+ * - PLUS: 3 propiedades, 25 imágenes, 1 destacado permanente (B2C)
+ * - AGENT: 10 propiedades, 20 imágenes, 5 destacados, CRM Lite (B2B)
+ * - PRO: 20 propiedades, 25 imágenes, destacados ilimitados, CRM Full (B2B)
  */
 
 import type { PricingTier } from "@/components/pricing/pricing-card";
@@ -21,9 +22,10 @@ export const pricingTiers: PricingTier[] = [
     description: "Perfecto para empezar a publicar tu primera propiedad",
     features: [
       "1 propiedad activa",
-      "5 imágenes por propiedad",
+      "6 imágenes por propiedad",
       "Publicación sin expiración",
       "Búsqueda y mapas",
+      "Formulario de contacto básico",
       "Soporte por email (72h)",
     ],
     ctaText: "Comenzar gratis",
@@ -31,39 +33,68 @@ export const pricingTiers: PricingTier[] = [
     highlighted: false,
   },
   {
-    name: "BASIC",
-    displayName: "Básico",
-    price: 4.99,
+    name: "PLUS",
+    displayName: "Plus",
+    price: 9.99,
     currency: "$",
     period: "por mes",
-    description: "Ideal para agentes pequeños o particulares con varias propiedades",
+    description: "Ideal para dueños que quieren vender rápido",
     features: [
       "3 propiedades activas",
-      "10 imágenes por propiedad",
-      "3 destacados por mes",
+      "25 imágenes HD por propiedad",
+      "1 destacado permanente",
+      "Badge 'Publicación Premium'",
+      "Video tour (opcional)",
+      "Click-to-WhatsApp",
+      "Publicación sin expiración",
+      "Soporte por email (48h)",
+    ],
+    ctaText: "Vender rápido",
+    ctaUrl: "/signup?plan=plus&redirect=/dashboard",
+    highlighted: true,
+  },
+  {
+    name: "AGENT",
+    displayName: "Agente",
+    price: 29.99,
+    currency: "$",
+    period: "por mes",
+    description: "Para agentes pequeños que gestionan su negocio",
+    features: [
+      "10 propiedades activas",
+      "20 imágenes por propiedad",
+      "5 destacados permanentes",
+      "CRM Lite (leads, estados, notas)",
       "Analytics básico",
+      "Landing page personal",
+      "Badge 'Agente Verificado'",
+      "Click-to-WhatsApp",
       "Publicación sin expiración",
       "Soporte por email (24h)",
     ],
-    ctaText: "Comenzar prueba",
-    ctaUrl: "/signup?plan=basic&redirect=/dashboard",
-    highlighted: true,
+    ctaText: "Gestionar negocio",
+    ctaUrl: "/signup?plan=agent&redirect=/dashboard",
+    highlighted: false,
   },
   {
     name: "PRO",
     displayName: "Pro",
-    price: 14.99,
+    price: 59.99,
     currency: "$",
     period: "por mes",
-    description: "Para inmobiliarias y agentes profesionales",
+    description: "Para agentes profesionales y agencias",
     features: [
-      "10 propiedades activas",
-      "20 imágenes por propiedad",
+      "20 propiedades activas",
+      "25 imágenes HD + video por propiedad",
       "Destacados ilimitados",
-      "Analytics avanzado",
+      "CRM Completo (pipeline, tags, export)",
+      "Analytics avanzado + ROI",
+      "Smart Analytics (data local)",
+      "Reportes semanales por email",
+      "Landing page personal",
       "Badge 'Agente Verificado'",
       "Publicación sin expiración",
-      "Soporte WhatsApp (12h)",
+      "Soporte prioritario WhatsApp (12h)",
     ],
     ctaText: "Escalar ahora",
     ctaUrl: "/signup?plan=pro&redirect=/dashboard",
@@ -74,7 +105,9 @@ export const pricingTiers: PricingTier[] = [
 /**
  * Helper: Obtener tier por nombre
  */
-export function getTierByName(name: "FREE" | "BASIC" | "PRO"): PricingTier | undefined {
+export function getTierByName(
+  name: "FREE" | "PLUS" | "AGENT" | "PRO",
+): PricingTier | undefined {
   return pricingTiers.find((tier) => tier.name === name);
 }
 

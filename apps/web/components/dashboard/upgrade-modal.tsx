@@ -18,7 +18,7 @@ export function UpgradeModal() {
   if (!upgradeParam) return null;
 
   const planName = upgradeParam.toUpperCase();
-  const tier = getTierByName(planName as "BASIC" | "PRO");
+  const tier = getTierByName(planName as "PLUS" | "AGENT" | "PRO");
 
   // Si el plan no es válido, no mostrar nada
   if (!tier) return null;
