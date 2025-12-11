@@ -70,7 +70,8 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
   // 3. Determinar rol según origen del signup
   // - Si viene con plan (desde /vender) → AGENT (puede publicar propiedades)
   // - Si viene sin plan (signup normal) → CLIENT (solo navegar, favoritos, citas)
-  const hasPlan = rawData.plan && ["FREE", "BASIC", "PRO"].includes(rawData.plan.toUpperCase());
+  const validPlans = ["FREE", "PLUS", "AGENT", "PRO"];
+  const hasPlan = rawData.plan && validPlans.includes(rawData.plan.toUpperCase());
   const role = hasPlan ? "AGENT" : "CLIENT";
 
   // 4. Crear cliente de Supabase
@@ -110,15 +111,33 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
   revalidatePath("/", "layout");
 
   // 7. Redirigir según parámetro explícito o rol
+  // 7. Esperar a que el trigger de base de datos cree el usuario (Poll DB)
+  // Fixes race condition: Redirecting to dashboard before DB user exists logs them out
+  const { userRepository } = await import("@repo/database");
+  let retries = 0;
+  let dbUser = null;
+  
+  while (retries < 6) { // 3 seconds max (6 * 500ms)
+    dbUser = await userRepository.findById(data.user.id);
+    if (dbUser) break;
+    
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    retries++;
+  }
+
+  // 8. Redirigir según parámetro explícito o rol
   const redirectParam = rawData.redirect;
   if (redirectParam?.startsWith("/")) {
     return redirect(redirectParam);
   }
 
-  // Redirigir según rol asignado
-  if (role === "AGENT") {
+  // Redirigir según rol asignado (usando el de DB si existe, o fallback al calculado)
+  const finalRole = dbUser?.role || role;
+
+  if (finalRole === "AGENT") {
     // AGENT con plan pago → dashboard con modal de upgrade
-    if (rawData.plan && ["BASIC", "PRO"].includes(rawData.plan.toUpperCase())) {
+    const paidPlans = ["PLUS", "AGENT", "PRO"];
+    if (rawData.plan && paidPlans.includes(rawData.plan.toUpperCase())) {
       return redirect(`/dashboard?upgrade=${rawData.plan.toLowerCase()}`);
     }
     // AGENT con plan FREE → directo a crear propiedad
@@ -240,9 +259,10 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
 
   // 5.6 UPGRADE ROLE if plan selected (e.g. CLIENT logging in from /vender)
   const selectedPlan = formData.get("plan") as string | null;
+  const validLoginPlans = ["FREE", "PLUS", "AGENT", "PRO"];
   if (
     selectedPlan &&
-    ["FREE", "BASIC", "PRO"].includes(selectedPlan.toUpperCase()) &&
+    validLoginPlans.includes(selectedPlan.toUpperCase()) &&
     dbUser.role === "CLIENT"
   ) {
     // Upgrade to AGENT

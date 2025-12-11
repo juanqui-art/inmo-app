@@ -10,12 +10,14 @@
  *
  * Parámetros URL:
  * - code: Código de autorización de OAuth (requerido)
- * - plan: "free" | "basic" | "pro" (opcional, desde /vender)
+ * - plan: "free" | "plus" | "agent" | "pro" (opcional, desde /vender)
  * - returnUrl: URL a redirigir después del auth (opcional)
  *
  * Flujo de roles (consistente con signupAction):
  * - Sin plan → CLIENT → returnUrl o /perfil
  * - Con plan → AGENT → /dashboard (con upgrade si es pago)
+ *
+ * UPDATED: Dec 2025 - Migrated from 3-tier (FREE/BASIC/PRO) to 4-tier (FREE/PLUS/AGENT/PRO)
  */
 
 import { createClient } from "@/lib/supabase/server";
@@ -48,7 +50,9 @@ export async function GET(request: Request) {
     }
 
     // Determinar rol según plan (misma lógica que signupAction)
-    const hasPlan = plan && ["free", "basic", "pro"].includes(plan.toLowerCase());
+    // Valid plans: FREE, PLUS, AGENT, PRO (updated Dec 2025)
+    const validPlans = ["free", "plus", "agent", "pro"];
+    const hasPlan = plan && validPlans.includes(plan.toLowerCase());
     const role = hasPlan ? "AGENT" : "CLIENT";
 
     // Verificar si el usuario ya existe en DB
@@ -61,7 +65,7 @@ export async function GET(request: Request) {
       // UPGRADE ROLE if plan selected (e.g. CLIENT logging in from /vender via Google)
       if (
         plan &&
-        ["free", "basic", "pro"].includes(plan.toLowerCase()) &&
+        validPlans.includes(plan.toLowerCase()) &&
         userRole === "CLIENT"
       ) {
         // Upgrade to AGENT
@@ -98,7 +102,8 @@ export async function GET(request: Request) {
           return NextResponse.redirect(`${origin}/admin`);
         case "AGENT":
           // AGENT con plan pago → dashboard con modal de upgrade
-          if (plan && ["basic", "pro"].includes(plan.toLowerCase())) {
+          const paidPlans = ["plus", "agent", "pro"];
+          if (plan && paidPlans.includes(plan.toLowerCase())) {
             return NextResponse.redirect(
               `${origin}/dashboard?upgrade=${plan.toLowerCase()}&authSuccess=true`
             );
@@ -126,13 +131,22 @@ export async function GET(request: Request) {
       },
     });
 
-    // Esperar un momento para que el trigger de DB procese
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Esperar a que el trigger de DB cree el usuario (polling, max 3s)
+    // Fixes race condition: Redirecting before DB user exists
+    let dbUser = null;
+    let retries = 0;
+    while (retries < 6) { // 6 * 500ms = 3 seconds max
+      dbUser = await userRepository.findById(data.user.id);
+      if (dbUser) break;
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      retries++;
+    }
 
     // Redirigir según rol asignado
     if (role === "AGENT") {
       // AGENT con plan pago → dashboard con modal de upgrade
-      if (plan && ["basic", "pro"].includes(plan.toLowerCase())) {
+      const paidPlansForNew = ["plus", "agent", "pro"];
+      if (plan && paidPlansForNew.includes(plan.toLowerCase())) {
         return NextResponse.redirect(
           `${origin}/dashboard?upgrade=${plan.toLowerCase()}&authSuccess=true`
         );
