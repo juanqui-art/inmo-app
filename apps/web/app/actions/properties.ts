@@ -22,7 +22,7 @@ import {
     createPropertySchema,
     updatePropertySchema,
 } from "@/lib/validations/property";
-import { propertyImageRepository, propertyRepository } from "@repo/database";
+import { db, propertyImageRepository, propertyRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -280,42 +280,66 @@ export async function saveUploadedPropertyImagesAction(
       return { error: "No se enviaron imágenes" };
     }
 
-    // 3. Check limitations
-    const existingImageCount = await propertyImageRepository.countByProperty(propertyId);
-    const totalAfterUpload = existingImageCount + imageUrls.length;
-
-    const imageCheck = canUploadImage(user.subscriptionTier, totalAfterUpload);
-    if (!imageCheck.allowed) {
-      return {
-        error: imageCheck.reason,
-        upgradeRequired: true,
-        currentLimit: imageCheck.limit,
-      };
-    }
-
-    // 4. Guardar referencias en la BD
-    const savedImages = [];
-    
-    for (let i = 0; i < imageUrls.length; i++) {
-      const url = imageUrls[i];
-      if (!url) continue;
-
-      const image = await propertyImageRepository.create({
-        url,
-        alt: property.title,
-        order: existingImageCount + i,
-        propertyId,
+    // 3-4. TRANSACTION: Check limits + Create images atomically
+    // RACE CONDITION PROTECTION: Prevents concurrent uploads from exceeding limits
+    // - Count existing images
+    // - Validate total doesn't exceed tier limit
+    // - Create all images in single atomic operation
+    // If any step fails, entire operation is rolled back
+    const result = await db.$transaction(async (tx) => {
+      // Count existing images inside transaction
+      const existingImageCount = await tx.propertyImage.count({
+        where: { propertyId },
       });
-      savedImages.push(image);
-    }
+
+      const totalAfterUpload = existingImageCount + imageUrls.length;
+
+      // Check tier limitations
+      const imageCheck = canUploadImage(user.subscriptionTier, totalAfterUpload);
+      if (!imageCheck.allowed) {
+        // Create error object with limit info for client handling
+        const error: any = new Error(imageCheck.reason || "Límite de imágenes excedido");
+        error.limit = imageCheck.limit; // Attach limit for error handling
+        throw error;
+      }
+
+      // Prepare images to create
+      const imagesToCreate = imageUrls
+        .filter(url => url) // Filter out empty URLs
+        .map((url, index) => ({
+          url,
+          alt: property.title,
+          order: existingImageCount + index,
+          propertyId,
+        }));
+
+      if (imagesToCreate.length === 0) {
+        throw new Error("No hay imágenes válidas para guardar");
+      }
+
+      // Create all images atomically (all-or-nothing)
+      return tx.propertyImage.createMany({
+        data: imagesToCreate,
+      });
+    });
 
     // 5. Revalidar
     revalidatePath("/dashboard/propiedades");
     revalidatePath(`/dashboard/propiedades/${propertyId}/editar`);
 
-    return { success: true, count: savedImages.length };
+    return { success: true, count: result.count };
   } catch (error) {
     logger.error({ err: error, propertyId }, "Error saving uploaded images");
+
+    // Handle tier limit errors with upgrade prompt
+    if (error instanceof Error && error.message.includes("Límite de imágenes excedido")) {
+      return {
+        error: error.message,
+        upgradeRequired: true,
+        currentLimit: (error as any).limit, // Extract limit from error
+      };
+    }
+
     return {
       error: error instanceof Error ? error.message : "Error al guardar las imágenes",
     };
