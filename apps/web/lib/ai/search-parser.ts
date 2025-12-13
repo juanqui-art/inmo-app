@@ -9,6 +9,7 @@
  */
 
 import OpenAI from "openai";
+import { logger } from "@/lib/utils/logger";
 import {
   getAvailableCitiesForPrompt,
   validateLocation,
@@ -257,7 +258,10 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
         .trim();
       parsedFilters = JSON.parse(cleanedContent);
     } catch (parseError) {
-      console.error("Failed to parse OpenAI response:", content);
+      logger.error(
+        { err: parseError, query, content },
+        "[AI] Failed to parse OpenAI response"
+      );
       return {
         success: false,
         filters: {},
@@ -275,8 +279,9 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
     // VALIDATION: Validate price ranges ($10k - $1M for Ecuador market)
     if (filters.minPrice !== undefined && filters.minPrice !== null) {
       if (filters.minPrice < 10000 || filters.minPrice > 1000000) {
-        console.warn(
-          `Price validation: minPrice ${filters.minPrice} outside acceptable range [$10k-$1M], setting to null`,
+        logger.warn(
+          { query, minPrice: filters.minPrice },
+          "[AI] Price validation: minPrice outside acceptable range [$10k-$1M], setting to null"
         );
         filters.minPrice = undefined;
       }
@@ -284,8 +289,9 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
 
     if (filters.maxPrice !== undefined && filters.maxPrice !== null) {
       if (filters.maxPrice < 10000 || filters.maxPrice > 1000000) {
-        console.warn(
-          `Price validation: maxPrice ${filters.maxPrice} outside acceptable range [$10k-$1M], setting to null`,
+        logger.warn(
+          { query, maxPrice: filters.maxPrice },
+          "[AI] Price validation: maxPrice outside acceptable range [$10k-$1M], setting to null"
         );
         filters.maxPrice = undefined;
       }
@@ -297,8 +303,9 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
       filters.bedrooms !== null &&
       (filters.bedrooms < 0 || filters.bedrooms > 10)
     ) {
-      console.warn(
-        `Bedroom validation: ${filters.bedrooms} outside acceptable range [0-10], setting to null`,
+      logger.warn(
+        { query, bedrooms: filters.bedrooms },
+        "[AI] Bedroom validation: outside acceptable range [0-10], setting to null"
       );
       filters.bedrooms = undefined;
     }
@@ -308,8 +315,9 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
       filters.bathrooms !== null &&
       (filters.bathrooms < 0 || filters.bathrooms > 10)
     ) {
-      console.warn(
-        `Bathroom validation: ${filters.bathrooms} outside acceptable range [0-10], setting to null`,
+      logger.warn(
+        { query, bathrooms: filters.bathrooms },
+        "[AI] Bathroom validation: outside acceptable range [0-10], setting to null"
       );
       filters.bathrooms = undefined;
     }
@@ -325,8 +333,14 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
       if (!locationValidation.isValid) {
         // Location doesn't exist - severely penalize confidence
         finalConfidence = Math.min(confidence, 20);
-        console.warn(
-          `⚠️  Location validation failed: "${filters.city}" not in inventory. ${locationValidation.message}`,
+        logger.warn(
+          {
+            query,
+            requestedCity: filters.city,
+            message: locationValidation.message,
+            suggestedCities: locationValidation.suggestedCities
+          },
+          "[AI] Location validation failed: city not in inventory"
         );
       } else if (
         locationValidation.matchedCity &&
@@ -338,20 +352,19 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
           locationValidation.confidence || 85,
         );
         // Update city to matched city
+        const originalCity = filters.city;
         filters.city = locationValidation.matchedCity;
-        console.log(
-          `✓ Location fuzzy-matched: "${filters.city}" → "${locationValidation.matchedCity}"`,
+        logger.debug(
+          { query, originalCity, matchedCity: locationValidation.matchedCity },
+          "[AI] Location fuzzy-matched"
         );
       }
     }
 
-    console.log("🧠 AI Parse Result:", {
-      query,
-      confidence: finalConfidence,
-      reasoning,
-      filters,
-      locationValidation,
-    });
+    logger.debug(
+      { query, confidence: finalConfidence, reasoning, filters, locationValidation },
+      "[AI] Parse result"
+    );
 
     return {
       success: true,
@@ -361,7 +374,10 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
       locationValidation,
     };
   } catch (error) {
-    console.error("Error in parseSearchQuery:", error);
+    logger.error(
+      { err: error, query },
+      "[AI] Error in parseSearchQuery"
+    );
     return {
       success: false,
       filters: {},

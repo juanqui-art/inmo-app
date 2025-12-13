@@ -6,6 +6,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/utils/logger";
 
 const BUCKET_NAME = "property-images";
 
@@ -48,7 +49,10 @@ export async function uploadPropertyImage(
     });
 
   if (error) {
-    console.error("Error uploading image:", error);
+    logger.error(
+      { err: error, propertyId, fileName, fileSize: file.size },
+      "[Storage] Error uploading image"
+    );
     throw new Error("Error al subir la imagen");
   }
 
@@ -76,7 +80,10 @@ export async function deletePropertyImage(path: string): Promise<void> {
   const { error } = await supabase.storage.from(BUCKET_NAME).remove([filePath]);
 
   if (error) {
-    console.error("Error deleting image:", error);
+    logger.error(
+      { err: error, path, filePath },
+      "[Storage] Error deleting image"
+    );
     throw new Error("Error al eliminar la imagen");
   }
 }
