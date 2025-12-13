@@ -142,6 +142,24 @@ rm -rf apps/web/.next
 bun run build  # Rebuilds everything
 ```
 
+**Server congelado / dev no inicia:**
+```bash
+# SOLUCIÓN RÁPIDA (90% de los casos)
+bun run clean:cache && bun run dev
+
+# Si persiste (reset completo)
+bun run reset
+```
+
+**Mantenimiento preventivo (cada 2-3 semanas):**
+```bash
+# Limpieza de cachés para evitar problemas
+bun run clean:cache
+
+# Ver guía completa
+cat docs/CACHE_MAINTENANCE.md
+```
+
 **Direct development (skip root scripts):**
 ```bash
 # If you need to skip root orchestration
