@@ -75,10 +75,14 @@ model Property {
   views        PropertyView[]
 
   @@index([transactionType, status])
+  @@index([transactionType]) // Standalone for filtered queries
+  @@index([status]) // Standalone for status-only queries
   @@index([category])
   @@index([city, state])
+  @@index([address]) // Text search optimization
   @@index([price])
   @@index([agentId])
+  @@index([createdAt]) // Recent properties queries
   @@index([latitude, longitude]) // Geospatial index for map queries (10-50x faster)
   @@map("properties")
 }
@@ -134,6 +138,8 @@ model Appointment {
   @@index([propertyId])
   @@index([agentId])
   @@index([scheduledAt])
+  @@index([agentId, scheduledAt]) // Composite for efficient slot availability queries
+  @@index([status]) // Status filtering
   @@map("appointments")
 }
 
