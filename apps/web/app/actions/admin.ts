@@ -234,7 +234,10 @@ export async function updateUserTierAction(
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating user tier:", error);
+    logger.error(
+      { err: error, userId, newTier, adminId: admin.id },
+      "[Admin] Error updating user tier"
+    );
     return {
       success: false,
       error:
@@ -285,7 +288,10 @@ export async function deleteUserAction(
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting user:", error);
+    logger.error(
+      { err: error, userId, adminId: admin.id },
+      "[Admin] Error deleting user"
+    );
     return {
       success: false,
       error:
@@ -388,7 +394,10 @@ export async function updatePropertyStatusAction(
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating property status:", error);
+    logger.error(
+      { err: error, propertyId, newStatus, adminId: admin.id },
+      "[Admin] Error updating property status"
+    );
     return {
       success: false,
       error:
@@ -413,7 +422,10 @@ export async function deletePropertyAction(
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting property:", error);
+    logger.error(
+      { err: error, propertyId, adminId: admin.id },
+      "[Admin] Error deleting property"
+    );
     return {
       success: false,
       error:

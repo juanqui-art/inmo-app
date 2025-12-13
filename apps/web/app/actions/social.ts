@@ -28,6 +28,7 @@
 
 import type { SharePlatform } from "@prisma/client";
 import { db } from "@repo/database";
+import { logger } from "@/lib/utils/logger";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
@@ -66,7 +67,10 @@ export async function trackPropertyShare(
 
     return { success: true };
   } catch (error) {
-    console.error("Failed to track share:", error);
+    logger.error(
+      { err: error, propertyId, platform },
+      "[Social] Failed to track share"
+    );
     // Don't throw - tracking failure shouldn't break sharing
     return { success: false };
   }
@@ -105,7 +109,10 @@ export async function trackPropertyView(
 
     return { success: true };
   } catch (error) {
-    console.error("Failed to track view:", error);
+    logger.error(
+      { err: error, propertyId },
+      "[Social] Failed to track view"
+    );
     return { success: false };
   }
 }
@@ -130,7 +137,10 @@ export async function getPropertyShareCount(
 
     return count;
   } catch (error) {
-    console.error("Failed to get share count:", error);
+    logger.error(
+      { err: error, propertyId },
+      "[Social] Failed to get share count"
+    );
     return 0;
   }
 }
@@ -150,7 +160,10 @@ export async function getPropertyViewCount(
 
     return count;
   } catch (error) {
-    console.error("Failed to get view count:", error);
+    logger.error(
+      { err: error, propertyId },
+      "[Social] Failed to get view count"
+    );
     return 0;
   }
 }
@@ -199,7 +212,10 @@ export async function getPropertySocialStats(propertyId: string): Promise<{
 
     return { totalShares, totalViews, sharesByPlatform };
   } catch (error) {
-    console.error("Failed to get social stats:", error);
+    logger.error(
+      { err: error, propertyId },
+      "[Social] Failed to get social stats"
+    );
     return {
       totalShares: 0,
       totalViews: 0,
@@ -264,7 +280,10 @@ export async function getTrendingProperties(limit = 10) {
 
     return trending;
   } catch (error) {
-    console.error("Failed to get trending properties:", error);
+    logger.error(
+      { err: error, limit },
+      "[Social] Failed to get trending properties"
+    );
     return [];
   }
 }

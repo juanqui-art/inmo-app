@@ -1,6 +1,7 @@
 "use server";
 
 import { requireAuth } from "@/lib/auth";
+import { logger } from "@/lib/utils/logger";
 import { db } from "@repo/database/src/client";
 import { revalidatePath } from "next/cache";
 
@@ -35,7 +36,10 @@ export async function upgradeSubscriptionAction(formData: FormData) {
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    console.error("Error upgrading subscription:", error);
+    logger.error(
+      { err: error, userId: user.id, plan },
+      "[Subscription] Error upgrading subscription"
+    );
     return { error: "Error al procesar la suscripción" };
   }
 }
