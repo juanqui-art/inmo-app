@@ -18,6 +18,7 @@ import { userRepository } from "@repo/database";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/utils/logger";
 
 /**
  * Internal implementation of getCurrentUser
@@ -91,13 +92,15 @@ export async function requireRole(allowedRoles: string[]) {
 
   if (!allowedRoles.includes(user.role)) {
     // Logging de seguridad (segunda capa - después del proxy)
-    console.warn("[SECURITY] Role mismatch in Server Component", {
-      userId: user.id,
-      userRole: user.role,
-      requiredRoles: allowedRoles,
-      timestamp: new Date().toISOString(),
-      layer: "server-component",
-    });
+    logger.warn(
+      {
+        userId: user.id,
+        userRole: user.role,
+        requiredRoles: allowedRoles,
+        layer: "server-component",
+      },
+      "[SECURITY] Role mismatch in Server Component",
+    );
 
     // Redirigir a ruta por defecto según rol
     switch (user.role) {
@@ -156,13 +159,15 @@ export async function requireOwnership(
     const user = await getCurrentUser();
 
     // Logging de seguridad para intentos de acceso no autorizado
-    console.warn("[SECURITY] Ownership check failed", {
-      userId: user?.id,
-      userRole: user?.role,
-      resourceOwnerId,
-      timestamp: new Date().toISOString(),
-      layer: "server-action",
-    });
+    logger.warn(
+      {
+        userId: user?.id,
+        userRole: user?.role,
+        resourceOwnerId,
+        layer: "server-action",
+      },
+      "[SECURITY] Ownership check failed",
+    );
 
     throw new Error(errorMessage);
   }
