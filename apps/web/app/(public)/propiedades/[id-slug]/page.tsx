@@ -115,6 +115,9 @@ export default async function PropertyDetailPage(
   const bedrooms = property.bedrooms;
   const bathrooms = property.bathrooms;
   const area = property.area;
+  // Map coordinates
+  const latitude = property.latitude;
+  const longitude = property.longitude;
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-white via-oslo-gray-50/30 to-white dark:bg-gradient-to-b dark:from-oslo-gray-1100 dark:via-oslo-gray-1000 dark:to-oslo-gray-1100">
@@ -135,7 +138,10 @@ export default async function PropertyDetailPage(
             {property.title}
           </h1>
           <p className="text-lg text-oslo-gray-600 dark:text-oslo-gray-300 flex items-center gap-2">
-            📍 {property.address}
+            <span className="text-primary">
+               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            {property.address}
             {property.city && `, ${property.city}`}
           </p>
         </div>
@@ -180,6 +186,9 @@ export default async function PropertyDetailPage(
                 city={property.city}
                 state={property.state}
                 zipCode={property.zipCode}
+                latitude={latitude}
+                longitude={longitude}
+                title={property.title}
               />
             </div>
           </div>

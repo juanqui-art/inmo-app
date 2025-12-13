@@ -9,7 +9,7 @@
  * - Se integra en la página de detalles de propiedad
  */
 
-import { Button } from "@repo/ui";
+import { cn } from "@repo/ui";
 import { Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -18,11 +18,13 @@ import { AppointmentDialog } from "./appointment-dialog";
 interface AppointmentButtonProps {
   propertyId: string;
   isAuthenticated?: boolean;
+  compact?: boolean; // Para usar en modales con espacio limitado
 }
 
 export function AppointmentButton({
   propertyId,
   isAuthenticated = false,
+  compact = false,
 }: AppointmentButtonProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
@@ -39,14 +41,34 @@ export function AppointmentButton({
 
   return (
     <>
-      <Button
+      <button
         onClick={handleClick}
-        variant="default"
-        className="w-full flex items-center justify-center gap-2"
+        aria-label={
+          isAuthenticated
+            ? "Abrir formulario para agendar una visita"
+            : "Iniciar sesión para agendar una visita"
+        }
+        aria-haspopup="dialog"
+        aria-expanded={isDialogOpen}
+        className={cn(
+          "w-full inline-flex items-center justify-center gap-2 h-12 text-base font-semibold rounded-lg transition-all duration-300 motion-safe:active:scale-[0.98]",
+          compact ? "text-xs sm:text-sm h-11 sm:h-10 gap-1" : "", // h-11 = 44px (mobile-safe)
+          // Use indigo color scheme to match the email button in PropertyFloatingActionCard
+          "bg-indigo-600 hover:bg-indigo-700 text-white"
+        )}
       >
-        <Calendar className="w-4 h-4" />
-        {isAuthenticated ? "Agendar una visita" : "Agendar (Inicia sesión)"}
-      </Button>
+        <Calendar className={compact ? "w-3 h-3 sm:w-4 sm:h-4" : "w-5 h-5"} aria-hidden="true" />
+        {compact ? (
+          <>
+            <span className="hidden sm:inline">{isAuthenticated ? "Agendar" : "Inicia sesión"}</span>
+            <span className="sm:hidden">
+              <Calendar className="w-4 h-4" />
+            </span>
+          </>
+        ) : (
+          <span>{isAuthenticated ? "Agendar una visita" : "Agendar (Inicia sesión)"}</span>
+        )}
+      </button>
 
       <AppointmentDialog
         propertyId={propertyId}

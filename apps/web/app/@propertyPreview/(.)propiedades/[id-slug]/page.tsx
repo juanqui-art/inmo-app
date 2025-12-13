@@ -1,34 +1,40 @@
 "use client";
 
+import { checkAuthStatusAction } from "@/app/actions/auth";
 import {
     checkIfFavoriteAction,
     toggleFavoriteAction,
 } from "@/app/actions/favorites";
 import { getPropertyPreviewAction } from "@/app/actions/properties";
+import { AppointmentButton } from "@/components/appointments/appointment-button";
+import { ModalMap } from "@/components/map/modal-map";
+import { StreetViewEmbed } from "@/components/map/street-view-embed";
 import { ModalCarousel } from "@/components/properties/modal-carousel";
+import { PropertyModalSkeleton } from "@/components/properties/property-modal-skeleton";
+import { PropertyShareMenu } from "@/components/shared/property-share-menu";
+import { WhatsAppButton } from "@/components/shared/whatsapp-button";
+
 import {
+    Badge,
+    Button,
     Dialog,
     DialogContent,
     DialogTitle,
+    Separator,
+    cn
 } from "@repo/ui";
-import { Badge } from "@repo/ui/components/ui/badge";
-import { Button } from "@repo/ui/components/ui/button";
-import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
-import { Separator } from "@repo/ui/components/ui/separator";
 import {
+    ArrowUpRight,
     Bath,
     Bed,
     Calendar,
     Car,
     Heart,
-    Loader2,
     MapPin,
     Maximize,
-    Share2,
     User
 } from "lucide-react";
 import { motion } from "motion/react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -45,6 +51,8 @@ interface PropertyPreviewData {
   area: number;
   parking?: number;
   yearBuilt?: number;
+  latitude: number | null;
+  longitude: number | null;
   images: { url: string; alt: string | null }[];
   agent: {
     name: string | null;
@@ -66,6 +74,8 @@ export default function PropertyPreviewModal({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showStreetView, setShowStreetView] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   // Extract ID from id-slug parameter
@@ -81,10 +91,11 @@ export default function PropertyPreviewModal({
         const resolvedParams = await params;
         const propertyId = extractId(resolvedParams["id-slug"]);
 
-        // Fetch property and favorite status in parallel
-        const [propertyResult, favoriteResult] = await Promise.all([
+        // Fetch property, favorite status, and user auth in parallel
+        const [propertyResult, favoriteResult, authStatus] = await Promise.all([
           getPropertyPreviewAction(propertyId),
           checkIfFavoriteAction(propertyId),
+          checkAuthStatusAction(),
         ]);
 
         if (!isMounted) return;
@@ -96,6 +107,7 @@ export default function PropertyPreviewModal({
 
         setProperty(propertyResult.data as unknown as PropertyPreviewData); // Temporary cast until types align completely
         setIsFavorite(favoriteResult.success && favoriteResult.isFavorite);
+        setIsAuthenticated(authStatus.isAuthenticated);
       } catch {
         if (isMounted) setError("Error al cargar la propiedad");
       } finally {
@@ -129,11 +141,7 @@ export default function PropertyPreviewModal({
     });
   };
 
-  const handleShare = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    toast.success("Enlace copiado al portapapeles");
-  };
+
 
   const formattedPrice = property
     ? new Intl.NumberFormat("es-EC", {
@@ -145,15 +153,18 @@ export default function PropertyPreviewModal({
 
   return (
     <Dialog open={true} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-full max-w-5xl p-0 overflow-hidden sm:rounded-2xl max-h-[92vh] flex flex-col md:flex-row gap-0 bg-background border-border shadow-2xl">
+      {/* 
+        Adjusted styles for consistency and navbar spacing:
+        1. max-h-[85vh]: Reduced from 92vh to ensure it doesn't cover navbar
+        2. mt-12: Adds extra top margin to push it visually below navbar area if needed
+      */}
+      <DialogContent className="w-full max-w-5xl p-0 overflow-hidden sm:rounded-2xl h-[85vh] mt-12 flex flex-col md:flex-row gap-0 bg-background border-border shadow-2xl">
         <DialogTitle className="sr-only">
           {property ? property.title : "Vista previa de propiedad"}
         </DialogTitle>
         
         {isLoading ? (
-          <div className="w-full h-[60vh] flex items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
+          <PropertyModalSkeleton />
         ) : error ? (
            <div className="w-full h-[40vh] flex flex-col items-center justify-center gap-4">
             <p className="text-destructive font-medium">{error}</p>
@@ -164,31 +175,30 @@ export default function PropertyPreviewModal({
         ) : property ? (
           <>
             {/* Left Column: Image Carousel */}
-            <div className="w-full md:w-[55%] lg:w-[60%] bg-muted dark:bg-black/20 h-[40vh] md:h-auto md:max-h-[92vh] flex flex-col relative">
+            <div className="w-full md:w-[55%] lg:w-[60%] bg-muted dark:bg-black/20 h-[40vh] md:h-auto md:max-h-full flex flex-col relative">
               <div className="flex-1 overflow-hidden relative">
                  <ModalCarousel images={property.images} title={property.title} />
                  
                  {/* Floating Actions on Image */}
-                 <div className="absolute top-4 right-4 flex gap-2 z-20">
+                 <div className="absolute top-4 right-4 md:right-8 flex flex-col items-end gap-2 z-20">
+                    {/* Favorite Button */}
                     <Button 
                       size="icon" 
                       variant="secondary" 
-                      className="h-9 w-9 bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border-0 rounded-full"
-                      onClick={handleShare}
-                      title="Compartir"
-                    >
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      size="icon" 
-                      variant="secondary" 
-                      className="h-9 w-9 bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border-0 rounded-full"
+                      className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-sm hover:bg-white/40"
                       onClick={handleFavoriteToggle}
                       disabled={isPending}
                       title={isFavorite ? "Quitar de favoritos" : "Guardar"}
                     >
-                       <Heart className={`h-4 w-4 transition-colors ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
+                       <Heart className={cn("h-5 w-5 transition-colors", isFavorite ? "fill-red-500 text-red-500" : "text-white")} />
                     </Button>
+
+                    {/* Share Button */}
+                    <PropertyShareMenu
+                      propertyId={property.id}
+                      propertyTitle={property.title}
+                      buttonClassName="w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/40 text-white shadow-sm"
+                    />
                  </div>
                  
                  {property.status && (
@@ -200,8 +210,8 @@ export default function PropertyPreviewModal({
             </div>
 
             {/* Right Column: Details */}
-            <div className="w-full md:w-[45%] lg:w-[40%] flex flex-col h-full bg-background relative z-10">
-              <ScrollArea className="flex-1">
+            <div className="w-full md:w-[45%] lg:w-[40%] flex flex-col flex-1 md:h-full min-h-0 overflow-hidden bg-background relative z-10">
+              <div className="flex-1 overflow-y-auto">
                 <div className="p-6 space-y-6">
                   {/* Header */}
                   <div className="space-y-2">
@@ -303,15 +313,51 @@ export default function PropertyPreviewModal({
                      )}
                   </motion.div>
 
+                  {/* Mini Map */}
+                  {property.latitude && property.longitude && (
+                     <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.45 }}
+                        className="w-full h-80 rounded-xl overflow-hidden border border-border border-t-0 relative group"
+                     >
+                        {showStreetView ? (
+                           <StreetViewEmbed 
+                              latitude={property.latitude} 
+                              longitude={property.longitude} 
+                              onClose={() => setShowStreetView(false)}
+                           />
+                        ) : (
+                           <>
+                              <ModalMap 
+                                 latitude={property.latitude} 
+                                 longitude={property.longitude} 
+                                 title={property.title} 
+                              />
+                              <Button 
+                                 size="sm" 
+                                 variant="secondary"
+                                 className="absolute bottom-4 right-4 z-10 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                 onClick={() => setShowStreetView(true)}
+                              >
+                                 Ver Calle
+                              </Button>
+                           </>
+                        )}
+                     </motion.div>
+                  )}
+
                   {/* Agent Card */}
                   {property.agent && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.5 }}
-                      className="mt-4 p-4 rounded-xl border border-border/60 bg-gradient-to-br from-background to-muted/30"
+                      className="mt-4 p-4 rounded-xl border border-border/60 bg-gradient-to-br from-background to-muted/30 space-y-4"
                     >
-                      <h3 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-3">Agente Inmobiliario</h3>
+                      <h3 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Agente Inmobiliario</h3>
+
+                      {/* Agent Info */}
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg overflow-hidden relative">
                            {property.agent.image ? (
@@ -325,25 +371,39 @@ export default function PropertyPreviewModal({
                           <p className="text-sm text-muted-foreground truncate">{property.agent.email}</p>
                         </div>
                       </div>
+
+                      {/* Appointment Button */}
+                      <AppointmentButton
+                        propertyId={property.id}
+                        isAuthenticated={isAuthenticated}
+                      />
                     </motion.div>
                   )}
+                  
+                  {/* Spacer to avoid footer overlap */}
+                  <div className="h-24 md:h-20" />
                 </div>
-              </ScrollArea>
+              </div>
               
               {/* Footer Actions */}
               <div className="p-4 border-t border-border bg-background/95 backdrop-blur-sm sticky bottom-0 z-10 w-full mt-auto">
                  <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline" className="w-full" asChild>
-                       <Link href={`/propiedades/${property.id}`} prefetch={false}>
+                    {/* Ver completa */}
+                    <Button variant="outline" className="w-full shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200" asChild>
+                       <a href={`/propiedades/${property.id}`}>
                           Ver completa
-                       </Link>
+                          <ArrowUpRight className="ml-2 h-4 w-4" />
+                       </a>
                     </Button>
-                    <Button className="w-full" onClick={() => {
-                        // Logic to open contact form or similar
-                        toast.info("Función de contacto rápido próximamente");
-                    }}>
-                       Contactar
-                    </Button>
+
+                    {/* WhatsApp */}
+                    <WhatsAppButton
+                      phone={property.agent?.phone}
+                      propertyTitle={property.title}
+                      propertyId={property.id}
+                      compact={true}
+                      className="shadow-md hover:shadow-lg"
+                    />
                  </div>
               </div>
             </div>

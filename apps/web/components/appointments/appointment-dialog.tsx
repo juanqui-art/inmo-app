@@ -5,11 +5,20 @@
  *
  * Modal/Dialog para mostrar el formulario de cita
  * - Se abre al hacer click en "Agendar Visita"
- * - Muestra el formulario de cita
- * - Se cierra al completar o cancelar
+ * - Usa Dialog de Radix UI para accesibilidad completa
+ * - Focus trap, ESC handler, ARIA attributes
+ * - Warning de cambios sin guardar
  */
 
-import { X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  Button,
+} from "@repo/ui";
+import { useState } from "react";
 import { AppointmentForm } from "./appointment-form";
 
 interface AppointmentDialogProps {
@@ -23,53 +32,86 @@ export function AppointmentDialog({
   isOpen,
   onClose,
 }: AppointmentDialogProps) {
-  if (!isOpen) return null;
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showConfirmClose, setShowConfirmClose] = useState(false);
+  const [formSuccess, setFormSuccess] = useState(false);
 
   const handleFormSuccess = () => {
-    // Esperar un poco para que el usuario vea el mensaje de éxito
+    setFormSuccess(true);
+    setHasUnsavedChanges(false);
+    // Auto-cerrar después de 1.5s (pero permitir cerrar antes con botón)
     setTimeout(() => {
       onClose();
+      setFormSuccess(false);
     }, 1500);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      // Intentando cerrar
+      if (hasUnsavedChanges && !formSuccess) {
+        setShowConfirmClose(true);
+      } else {
+        onClose();
+        setFormSuccess(false);
+      }
+    }
+  };
+
+  const confirmClose = () => {
+    setShowConfirmClose(false);
+    setHasUnsavedChanges(false);
+    setFormSuccess(false);
+    onClose();
   };
 
   return (
     <>
-      {/* Overlay */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
-        onClick={onClose}
-        role="presentation"
-      />
+      {/* Main Dialog */}
+      <Dialog open={isOpen && !showConfirmClose} onOpenChange={handleOpenChange}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Agendar una visita</DialogTitle>
+            <DialogDescription>
+              Selecciona una fecha y hora disponible para visitar la propiedad.
+              El agente confirmará tu cita en breve.
+            </DialogDescription>
+          </DialogHeader>
 
-      {/* Dialog */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div
-          className="bg-white dark:bg-oslo-gray-900 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div className="sticky top-0 flex items-center justify-between p-6 border-b border-oslo-gray-200 dark:border-oslo-gray-800 bg-white dark:bg-oslo-gray-900">
-            <h2 className="text-xl font-semibold text-oslo-gray-950 dark:text-white">
-              Agendar una visita
-            </h2>
-            <button
-              onClick={onClose}
-              className="p-1 hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-800 rounded-md transition-colors"
-              aria-label="Close dialog"
+          <AppointmentForm
+            propertyId={propertyId}
+            onSuccess={handleFormSuccess}
+            onFormChange={() => setHasUnsavedChanges(true)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmation Dialog para cambios sin guardar */}
+      <Dialog open={showConfirmClose} onOpenChange={setShowConfirmClose}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>¿Descartar cambios?</DialogTitle>
+            <DialogDescription>
+              Tienes cambios sin guardar. ¿Estás seguro de que quieres cerrar sin agendar la cita?
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex gap-3 justify-end mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowConfirmClose(false)}
             >
-              <X className="w-5 h-5 text-oslo-gray-500 dark:text-oslo-gray-400" />
-            </button>
+              Continuar editando
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmClose}
+            >
+              Descartar cambios
+            </Button>
           </div>
-
-          {/* Content */}
-          <div className="p-6">
-            <AppointmentForm
-              propertyId={propertyId}
-              onSuccess={handleFormSuccess}
-            />
-          </div>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -2,10 +2,12 @@
 
 import { cn } from "@repo/ui";
 import gsap from "gsap";
-import { Mail, Phone } from "lucide-react";
+import { Mail } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import { AppointmentButton } from "@/components/appointments/appointment-button";
+import { AgentAvatar } from "@/components/shared/agent-avatar";
+import { WhatsAppButton } from "@/components/shared/whatsapp-button";
 
 interface PropertyFloatingActionCardProps {
   price: string;
@@ -57,91 +59,59 @@ export function PropertyFloatingActionCard({
         </p>
       </div>
 
-      {/* CTA Buttons */}
-      <div className="space-y-3 mb-6">
-        <a
-          href={agentEmail ? `mailto:${agentEmail}` : "#"}
-          className={cn(
-            "w-full inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white h-12 text-base font-semibold rounded-lg transition-all duration-300 active:scale-[0.98]",
-            !agentEmail && "opacity-50 cursor-not-allowed pointer-events-none",
-          )}
-        >
-          Contactar Agente
-        </a>
+      {/* Agent & Actions Wrapper */}
+      <div className="space-y-4">
+        
+        {/* Agent Block (Modal Style) */}
+        {agentName && (
+          <div className="p-4 rounded-xl border border-oslo-gray-200/60 dark:border-oslo-gray-700/60 bg-gradient-to-br from-white to-oslo-gray-50/50 dark:from-oslo-gray-900 dark:to-oslo-gray-800/50 space-y-4">
+             <h3 className="font-semibold text-xs uppercase tracking-wider text-oslo-gray-500 dark:text-oslo-gray-400">
+                Agente Inmobiliario
+             </h3>
 
-        <AppointmentButton
-          propertyId={propertyId}
-          isAuthenticated={isAuthenticated}
-        />
-      </div>
+             {/* Agent Info */}
+             <div className="flex items-center gap-3">
+               <div className="flex-shrink-0">
+                 <AgentAvatar name={agentName} size="md" />
+               </div>
+               <div className="flex-1 min-w-0">
+                 <p className="font-medium text-oslo-gray-900 dark:text-oslo-gray-100 truncate">
+                   {agentName}
+                 </p>
+                 {agentEmail && (
+                    <p className="text-sm text-oslo-gray-500 dark:text-oslo-gray-400 truncate">
+                      {agentEmail}
+                    </p>
+                 )}
+               </div>
+             </div>
 
-      {/* Agent Card */}
-      {agentName && (
-        <div className="pt-6 border-t border-oslo-gray-200 dark:border-oslo-gray-800">
-          <p className="text-xs text-oslo-gray-600 dark:text-oslo-gray-400 uppercase font-semibold mb-4">
-            Agente de Venta
-          </p>
-
-          <div className="flex items-start gap-4">
-            {/* Agent Avatar */}
-            <div className="flex-shrink-0">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
-                {agentName.charAt(0).toUpperCase()}
-              </div>
-            </div>
-
-            {/* Agent Info */}
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-oslo-gray-950 dark:text-white truncate">
-                {agentName}
-              </h3>
-
-              {agentEmail && (
-                <a
-                  href={`mailto:${agentEmail}`}
-                  className="flex items-center gap-1 text-xs text-oslo-gray-600 dark:text-oslo-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 mt-1 truncate transition-colors"
-                  title={agentEmail}
-                >
-                  <Mail className="w-3 h-3 flex-shrink-0" />
-                  <span className="truncate">{agentEmail}</span>
-                </a>
-              )}
-
-              {agentPhone && (
-                <a
-                  href={`tel:${agentPhone}`}
-                  className="flex items-center gap-1 text-xs text-oslo-gray-600 dark:text-oslo-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 mt-1 transition-colors"
-                >
-                  <Phone className="w-3 h-3 flex-shrink-0" />
-                  <span>{agentPhone}</span>
-                </a>
-              )}
-            </div>
+             {/* Appointment Button (Inside Agent Block) */}
+             <AppointmentButton
+               propertyId={propertyId}
+               isAuthenticated={isAuthenticated}
+             />
           </div>
+        )}
 
-          {/* Quick Contact Buttons */}
-          <div className="mt-4 flex gap-2">
-            {agentPhone && (
-              <a
-                href={`tel:${agentPhone}`}
-                className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium rounded-lg bg-oslo-gray-100 dark:bg-oslo-gray-800 text-oslo-gray-700 dark:text-oslo-gray-300 hover:bg-oslo-gray-200 dark:hover:bg-oslo-gray-700 transition-colors"
-              >
-                <Phone className="w-3 h-3" />
-                Llamar
-              </a>
-            )}
-            {agentEmail && (
-              <a
-                href={`mailto:${agentEmail}`}
-                className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium rounded-lg bg-oslo-gray-100 dark:bg-oslo-gray-800 text-oslo-gray-700 dark:text-oslo-gray-300 hover:bg-oslo-gray-200 dark:hover:bg-oslo-gray-700 transition-colors"
-              >
-                <Mail className="w-3 h-3" />
-                Email
-              </a>
-            )}
-          </div>
+        {/* Secondary Actions */}
+        <div className="space-y-3 pt-2">
+            {/* WhatsApp Button */}
+            <WhatsAppButton phone={agentPhone} />
+
+            {/* Email Button */}
+            <a
+              href={agentEmail ? `mailto:${agentEmail}` : "#"}
+              className={cn(
+                "w-full inline-flex items-center justify-center bg-white dark:bg-oslo-gray-800 border border-oslo-gray-200 dark:border-oslo-gray-700 hover:bg-oslo-gray-50 dark:hover:bg-oslo-gray-700 text-oslo-gray-900 dark:text-white h-12 text-base font-medium rounded-lg transition-all duration-200 active:scale-[0.98]",
+                !agentEmail && "opacity-50 cursor-not-allowed pointer-events-none",
+              )}
+            >
+              <Mail className="w-4 h-4 mr-2 text-oslo-gray-500" />
+              Contactar por Correo
+            </a>
         </div>
-      )}
+      </div>
     </div>
   );
 }

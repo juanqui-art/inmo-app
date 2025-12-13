@@ -1,12 +1,12 @@
 "use client";
 
-import { cn } from "@repo/ui";
-import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
-import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { PropertyImageFallback } from "@/components/map/property-image-fallback";
 import { PropertyShareMenu } from "@/components/shared/property-share-menu";
+import { cn } from "@repo/ui";
+import useEmblaCarousel from "embla-carousel-react";
+import { Heart, Image as ImageIcon } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PropertyLightboxGallery } from "./property-lightbox-gallery";
 
 interface PropertyHeroCarouselProps {
@@ -64,7 +64,6 @@ export function PropertyHeroCarousel({
   });
 
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
   const [isAutoplay, setIsAutoplay] = useState(true);
   const [showLightbox, setShowLightbox] = useState(false);
   const autoplayTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -72,8 +71,6 @@ export function PropertyHeroCarousel({
   // Initialize carousel
   useEffect(() => {
     if (!emblaApi) return;
-
-    setScrollSnaps(emblaApi.scrollSnapList());
 
     const onSelect = () => {
       setSelectedIndex(emblaApi.selectedScrollSnap());
@@ -111,14 +108,6 @@ export function PropertyHeroCarousel({
     setIsAutoplay(false);
   }, [emblaApi]);
 
-  const goToSlide = useCallback(
-    (index: number) => {
-      if (emblaApi) emblaApi.scrollTo(index);
-      setIsAutoplay(false);
-    },
-    [emblaApi],
-  );
-
   const handleMouseEnter = () => setIsAutoplay(false);
   const handleMouseLeave = () => setIsAutoplay(true);
 
@@ -143,7 +132,7 @@ export function PropertyHeroCarousel({
   return (
     <>
       <div
-        className="relative h-[calc(100vh-18rem)] w-full bg-oslo-gray-100 dark:bg-oslo-gray-900 overflow-hidden"
+        className="relative h-[calc(100vh-18rem)] w-full bg-black overflow-hidden"
         style={{ aspectRatio: "16/9" }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -157,15 +146,30 @@ export function PropertyHeroCarousel({
         >
           <div className="flex h-full w-full">
             {displayImages.map((image, index) => (
-              <div key={image.id} className="relative flex-[0_0_100%]">
-                <Image
-                  src={image.url}
-                  alt={image.alt || `${propertyTitle} - Image ${index + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="100vw"
-                  priority={index === 0}
-                />
+              <div key={image.id} className="relative flex-[0_0_100%] flex items-center justify-center overflow-hidden bg-black">
+                {/* Ambilight Background (Blurred) */}
+                <div className="absolute inset-0 z-0">
+                   <Image
+                      src={image.url}
+                      alt=""
+                      fill
+                      className="object-cover blur-2xl scale-110 opacity-60 dark:opacity-40"
+                      aria-hidden="true"
+                   />
+                   <div className="absolute inset-0 bg-black/20" /> 
+                </div>
+
+                {/* Main Image */}
+                <div className="relative z-10 w-full h-full">
+                  <Image
+                    src={image.url}
+                    alt={image.alt || `${propertyTitle} - Image ${index + 1}`}
+                    fill
+                    className="object-contain"
+                    sizes="100vw"
+                    priority={index === 0}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -174,22 +178,8 @@ export function PropertyHeroCarousel({
         {/* Dark Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
 
-        {/* Top-Right Controls: Counter, Share, Favorite */}
-        <div className="absolute top-4 right-4 flex flex-col items-end gap-2 z-20">
-          {/* Image Counter */}
-          <div className="bg-black/50 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur">
-            {selectedIndex + 1} / {displayImages.length}
-          </div>
-
-          {/* Share Button */}
-          {propertyId && (
-            <PropertyShareMenu
-              propertyId={propertyId}
-              propertyTitle={propertyTitle}
-              buttonClassName="w-10 h-10"
-            />
-          )}
-
+        {/* Top-Right Controls: Actions (Favorite above Share to match Card) */}
+        <div className="absolute top-4 right-4 md:right-8 flex flex-col items-end gap-2 z-20">
           {/* Favorite Button */}
           {onFavoriteToggle && (
             <button
@@ -198,71 +188,42 @@ export function PropertyHeroCarousel({
                 e.stopPropagation();
                 onFavoriteToggle();
               }}
-              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-sm hover:bg-white/40"
               aria-label={
                 isFavorite ? "Remove from favorites" : "Add to favorites"
               }
             >
               <Heart
-                className={`w-5 h-5 transition-colors ${
+                className={cn(
+                  "w-5 h-5 transition-colors",
                   isFavorite ? "fill-red-500 text-red-500" : "text-white"
-                }`}
+                )}
               />
             </button>
           )}
+
+          {/* Share Button */}
+          {propertyId && (
+            <PropertyShareMenu
+              propertyId={propertyId}
+              propertyTitle={propertyTitle}
+              buttonClassName="w-10 h-10 bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/40 text-white shadow-sm"
+            />
+          )}
         </div>
 
-        {/* Navigation Arrows */}
-        {displayImages.length > 1 && (
-          <>
-            <button
-              onClick={scrollPrev}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/20 hover:bg-white/40 text-white transition-all duration-300 hover:scale-110 focus:ring-2 focus:ring-white focus:outline-none"
-              aria-label="Previous image"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-
-            <button
-              onClick={scrollNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/20 hover:bg-white/40 text-white transition-all duration-300 hover:scale-110 focus:ring-2 focus:ring-white focus:outline-none"
-              aria-label="Next image"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </>
-        )}
-
-        {/* Dots Navigation */}
-        {displayImages.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-            {scrollSnaps.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={cn(
-                  "transition-all duration-300 rounded-full",
-                  selectedIndex === index
-                    ? "bg-white w-8 h-2"
-                    : "bg-white/50 hover:bg-white/75 w-2 h-2",
-                )}
-                aria-label={`Go to image ${index + 1}`}
-                aria-current={selectedIndex === index}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* View Full Gallery Button */}
-        {displayImages.length > 1 && (
+        {/* Bottom-Right: Image Counter / Gallery Button */}
+        <div className="absolute bottom-4 right-4 md:right-8 z-20">
           <button
             onClick={() => setShowLightbox(true)}
-            className="absolute bottom-4 right-4 bg-white/20 hover:bg-white/40 text-white px-4 py-2 rounded-lg backdrop-blur transition-all duration-300 text-sm font-medium focus:ring-2 focus:ring-white focus:outline-none"
-            aria-label="View full gallery"
+            className="bg-white/20 text-white px-3.5 py-2 rounded-full text-sm font-medium backdrop-blur-md flex items-center gap-2 border border-white/30 shadow-sm transition-all hover:bg-white/40 hover:scale-105 active:scale-95 cursor-pointer"
+            aria-label="Ver galería completa"
           >
-            Ver galería completa
+            <span className="font-bold">{selectedIndex + 1} / {displayImages.length}</span>
+            <div className="w-px h-3.5 bg-white/40" />
+            <ImageIcon className="w-4 h-4 opacity-90" />
           </button>
-        )}
+        </div>
       </div>
 
       {/* Lightbox Modal */}
