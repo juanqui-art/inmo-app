@@ -9,6 +9,7 @@
 
 "use client";
 
+import { AgentAvatar } from "@/components/shared/agent-avatar";
 import type { SafeUser } from "@/lib/auth";
 import { LogOut, User } from "lucide-react";
 import Link from "next/link";
@@ -26,11 +27,16 @@ export function UserDropdown({ user }: UserDropdownProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-10 h-10 rounded-full transition-all overflow-hidden bg-white/20 hover:bg-white/30 hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] border border-white/40"
+        className="flex items-center justify-center rounded-full transition-all hover:scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] focus:outline-none"
         aria-label="Menú de usuario"
         aria-expanded={isOpen}
       >
-        <User className="w-5 h-5 text-white" />
+        <AgentAvatar
+          name={user?.name || user?.email}
+          image={user?.avatar}
+          size="md"
+          isVerified={false}
+        />
       </button>
 
       {/* Dropdown Menu */}

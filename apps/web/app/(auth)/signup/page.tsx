@@ -19,7 +19,7 @@ import { SignupForm } from "@/components/auth/signup-form";
 import Link from "next/link";
 import { Suspense } from "react";
 
-/** Plan display configuration */
+/** Plan display configuration - Matches tiers.ts (FREE/PLUS/AGENT/PRO) */
 const PLAN_CONFIG: Record<
   string,
   { name: string; color: string; bgColor: string }
@@ -29,10 +29,15 @@ const PLAN_CONFIG: Record<
     color: "text-emerald-600 dark:text-emerald-400",
     bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
   },
-  basic: {
-    name: "Básico",
+  plus: {
+    name: "Plus",
     color: "text-indigo-600 dark:text-indigo-400",
     bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
+  },
+  agent: {
+    name: "Agente",
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-100 dark:bg-blue-900/30",
   },
   pro: {
     name: "Pro",

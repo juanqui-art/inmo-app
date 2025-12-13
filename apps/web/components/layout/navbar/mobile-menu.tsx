@@ -12,6 +12,7 @@
 
 "use client";
 
+import { AgentAvatar } from "@/components/shared/agent-avatar";
 import type { SafeUser } from "@/lib/auth";
 import { Heart, Home as HomeIcon, LogOut, PlusCircle, Search, Settings, User, X } from "lucide-react";
 import Link from "next/link";
@@ -73,9 +74,7 @@ export function MobileMenu({
           {/* User Greeting (if auth) */}
           {isAuthenticated && user && (
             <div className="mb-6 flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
-              <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">
-                {user.email?.[0]?.toUpperCase()}
-              </div>
+              <AgentAvatar name={user.email} size="md" isVerified={false} />
               <div className="flex-1 min-w-0">
                 <p className="text-white font-medium truncate">Hola, {user.email}</p>
                 <p className="text-white/50 text-sm">Bienvenido de vuelta</p>

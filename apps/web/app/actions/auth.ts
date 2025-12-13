@@ -345,3 +345,23 @@ export async function getUser() {
 
   return user;
 }
+
+/**
+ * CHECK AUTH STATUS - Verificar si el usuario está autenticado
+ *
+ * @returns { isAuthenticated: boolean }
+ *
+ * @example
+ * const { isAuthenticated } = await checkAuthStatusAction();
+ */
+export async function checkAuthStatusAction() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return {
+    isAuthenticated: !!user,
+  };
+}

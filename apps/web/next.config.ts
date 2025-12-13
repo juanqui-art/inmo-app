@@ -103,14 +103,14 @@ const nextConfig: NextConfig = {
     const devCSP = [
       "default-src 'self'",
       // Allow unsafe-eval and unsafe-inline for Fast Refresh and HMR
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://api.mapbox.com https://accounts.google.com https://www.googletagmanager.com",
-      "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://api.mapbox.com https://accounts.google.com https://www.googletagmanager.com https://maps.googleapis.com https://*.googleapis.com",
+      "style-src 'self' 'unsafe-inline' https://api.mapbox.com https://fonts.googleapis.com",
       // Allow all HTTPS images for easier development
-      "img-src 'self' data: blob: https://*",
-      "font-src 'self' data:",
+      "img-src 'self' data: blob: https://* https://maps.gstatic.com https://maps.googleapis.com https://*.googleapis.com https://streetviewpixels-pa.googleapis.com https://lh3.googleusercontent.com https://*.ggpht.com",
+      "font-src 'self' data: https://fonts.gstatic.com",
       // Allow all WebSocket and HTTP connections for HMR
-      "connect-src 'self' ws: wss: http: https:",
-      "frame-src 'self' https://accounts.google.com",
+      "connect-src 'self' ws: wss: http: https: https://maps.googleapis.com https://*.googleapis.com",
+      "frame-src 'self' https://accounts.google.com https://www.google.com",
       "worker-src 'self' blob:",
       "child-src 'self' blob:",
       "object-src 'none'",
@@ -123,15 +123,15 @@ const nextConfig: NextConfig = {
     const prodCSP = [
       "default-src 'self'",
       // Scripts: Only from self, Vercel Analytics, Mapbox, and Google OAuth
-      "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://api.mapbox.com https://accounts.google.com https://www.googletagmanager.com",
+      "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://api.mapbox.com https://accounts.google.com https://www.googletagmanager.com https://maps.googleapis.com https://*.googleapis.com",
       // Styles: Self, inline (Tailwind), and Mapbox
-      "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
+      "style-src 'self' 'unsafe-inline' https://api.mapbox.com https://fonts.googleapis.com",
       // Images: Supabase storage, Mapbox tiles, Unsplash
-      "img-src 'self' data: blob: https://*.supabase.co https://*.tiles.mapbox.com https://api.mapbox.com https://images.unsplash.com",
-      "font-src 'self' data:",
+      "img-src 'self' data: blob: https://*.supabase.co https://*.tiles.mapbox.com https://api.mapbox.com https://images.unsplash.com https://maps.gstatic.com https://maps.googleapis.com https://*.googleapis.com https://streetviewpixels-pa.googleapis.com https://lh3.googleusercontent.com https://*.ggpht.com",
+      "font-src 'self' data: https://fonts.gstatic.com",
       // API connections: Supabase, Mapbox, OpenAI, Vercel Analytics, Google
-      "connect-src 'self' https://*.supabase.co https://api.mapbox.com https://events.mapbox.com https://api.openai.com https://vitals.vercel-insights.com https://accounts.google.com wss://*.supabase.co",
-      "frame-src 'self' https://accounts.google.com",
+      "connect-src 'self' https://*.supabase.co https://api.mapbox.com https://events.mapbox.com https://api.openai.com https://vitals.vercel-insights.com https://accounts.google.com wss://*.supabase.co https://maps.googleapis.com https://*.googleapis.com",
+      "frame-src 'self' https://accounts.google.com https://www.google.com",
       "worker-src 'self' blob:",
       "child-src 'self' blob:",
       "object-src 'none'",

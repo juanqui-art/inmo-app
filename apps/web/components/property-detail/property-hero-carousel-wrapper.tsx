@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { toggleFavoriteAction } from "@/app/actions/favorites";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useCallback } from "react";
 import { PropertyHeroCarousel } from "./property-hero-carousel";
 
 interface PropertyHeroCarouselWrapperProps {
@@ -25,48 +25,36 @@ export function PropertyHeroCarouselWrapper({
   images,
   propertyTitle,
   propertyId,
-  initialIsFavorite,
+  // initialIsFavorite - Removed as we now use global store state
   isAuthenticated,
 }: PropertyHeroCarouselWrapperProps) {
-  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const handleFavoriteToggle = useCallback(async () => {
     // Require authentication
     if (!isAuthenticated) {
-      // In a real app, redirect to login page
-      // For now, just return silently
-      console.warn("User must be authenticated to favorite properties");
-      return;
+      // In a real app, redirect to login page or show auth modal
+      // For now, let the store handle it (it emits an event) or just return
+      // Since the store handles auth requirement via event, we might want to simply call it
+      // regardless, BUT the current store implementation of toggleFavorite calls toggleFavoriteAction
+      // which returns "Authentication required" error if not auth.
+      
+      // However, current wrapper had this check. Let's redirect to login manually or rely on store.
+      // The store emits 'favorites:auth-required'.
+      // If we just call toggleFavorite, the store attempts the action.
+      // Let's call toggleFavorite and let the store handle the logic/toasts/redirects.
+      await toggleFavorite(propertyId);
+    } else {
+      await toggleFavorite(propertyId);
     }
-
-    try {
-      // Optimistic update
-      setIsFavorite((prev) => !prev);
-
-      // Call Server Action
-      const result = await toggleFavoriteAction(propertyId);
-
-      if (!result.success) {
-        // Revert on failure
-        setIsFavorite((prev) => !prev);
-        console.error("Failed to toggle favorite:", result.error);
-      } else {
-        // Confirm the result from server
-        setIsFavorite(result.isFavorite || false);
-      }
-    } catch (error) {
-      // Revert on error
-      setIsFavorite((prev) => !prev);
-      console.error("Error toggling favorite:", error);
-    }
-  }, [propertyId, isAuthenticated]);
+  }, [propertyId, isAuthenticated, toggleFavorite]);
 
   return (
     <PropertyHeroCarousel
       images={images}
       propertyTitle={propertyTitle}
       propertyId={propertyId}
-      isFavorite={isFavorite}
+      isFavorite={isFavorite(propertyId)}
       onFavoriteToggle={handleFavoriteToggle}
     />
   );

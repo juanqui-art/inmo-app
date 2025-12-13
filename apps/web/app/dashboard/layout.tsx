@@ -9,8 +9,8 @@
 
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { UserMenu } from "@/components/dashboard/user-menu";
+import { ResponsiveToaster } from "@/components/ui/responsive-toaster";
 import { requireRole } from "@/lib/auth";
-import { Toaster } from "sonner";
 
 import {
     getImageLimit,
@@ -64,7 +64,7 @@ export default async function DashboardLayout({
       </div>
 
       {/* Toast Notifications */}
-      <Toaster position="bottom-right" richColors />
+      <ResponsiveToaster />
     </div>
   );
 }

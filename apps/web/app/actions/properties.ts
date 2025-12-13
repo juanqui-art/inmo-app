@@ -10,7 +10,7 @@
 "use server";
 
 import { requireOwnership, requireRole } from "@/lib/auth";
-import { validateCSRFToken, isCSRFError } from "@/lib/csrf";
+import { isCSRFError, validateCSRFToken } from "@/lib/csrf";
 import {
     canCreateProperty,
     canUploadImage,
@@ -650,10 +650,13 @@ export interface PropertyPreviewData {
   bedrooms: number;
   bathrooms: number;
   area: number;
+  latitude: number | null;
+  longitude: number | null;
   images: { url: string; alt: string | null }[];
   agent: {
     name: string | null;
     email: string;
+    phone?: string | null;
   } | null;
 }
 
@@ -686,6 +689,8 @@ export async function getPropertyPreviewAction(propertyId: string): Promise<{
       bedrooms: property.bedrooms ?? 0,
       bathrooms: property.bathrooms ?? 0,
       area: property.area ?? 0,
+      latitude: property.latitude,
+      longitude: property.longitude,
       images: property.images.map((img) => ({
         url: img.url,
         alt: img.alt,
@@ -694,6 +699,7 @@ export async function getPropertyPreviewAction(propertyId: string): Promise<{
         ? {
             name: property.agent.name,
             email: property.agent.email,
+            phone: property.agent.phone,
           }
         : null,
     };

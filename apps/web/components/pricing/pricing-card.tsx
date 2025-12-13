@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * PRICING CARD Component
  *
@@ -31,6 +33,7 @@ interface PricingCardProps {
 }
 
 export function PricingCard({ tier, compact = false }: PricingCardProps) {
+
   return (
     <div
       className={`group relative flex flex-col p-8 rounded-2xl border transition-all duration-500 ${
@@ -104,7 +107,8 @@ export function PricingCard({ tier, compact = false }: PricingCardProps) {
       {/* CTA Button */}
       <Link
         href={tier.ctaUrl}
-        className={`relative block text-center px-6 py-3.5 rounded-xl font-bold transition-all duration-300 overflow-hidden z-10 ${
+        prefetch={true}
+        className={`relative block w-full text-center px-6 py-3.5 rounded-xl font-bold transition-all duration-300 overflow-hidden z-10 ${
           tier.highlighted
             ? "bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 text-white hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 shadow-lg hover:shadow-xl hover:shadow-indigo-500/50 dark:hover:shadow-indigo-400/30"
             : "bg-oslo-gray-900 dark:bg-oslo-gray-100 text-white dark:text-oslo-gray-900 hover:bg-oslo-gray-800 dark:hover:bg-oslo-gray-200 shadow-md hover:shadow-lg"

@@ -42,25 +42,25 @@
 "use client";
 
 // No external Button component needed
+import { trackPropertyShare } from "@/app/actions/social";
+import {
+    canUseNativeShare,
+    formatPropertyShareData,
+    type SharePlatform as SharePlatformType,
+    shareProperty,
+    shareViaSystem,
+} from "@/lib/social/share-utils";
 import type { Property } from "@prisma/client";
 import { SocialIcon } from "@repo/ui";
 import {
-  Check,
-  Link as LinkIcon,
-  Mail,
-  MessageCircle,
-  Share2,
+    Check,
+    Link as LinkIcon,
+    Mail,
+    MessageCircle,
+    Share2,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { trackPropertyShare } from "@/app/actions/social";
-import {
-  canUseNativeShare,
-  formatPropertyShareData,
-  type SharePlatform as SharePlatformType,
-  shareProperty,
-  shareViaSystem,
-} from "@/lib/social/share-utils";
 
 interface SocialShareButtonProps {
   property: Property & { images?: { url: string }[] };
@@ -83,6 +83,8 @@ export function SocialShareButton({
   // Format share data
   const shareData = formatPropertyShareData(property);
 
+  const [isSharing, setIsSharing] = useState(false);
+
   /**
    * Handle share click
    *
@@ -90,14 +92,27 @@ export function SocialShareButton({
    * 2. Open custom popover (desktop)
    */
   const handleShareClick = async () => {
+    // Prevent multiple clicks
+    if (isSharing) return;
+
     // Try native share on mobile first
     if (canUseNativeShare()) {
-      const success = await shareViaSystem(shareData);
-      if (success) {
-        // Track share (platform unknown for native)
-        await trackPropertyShare(property.id, "COPY_LINK");
-        return;
+      setIsSharing(true);
+      try {
+        const success = await shareViaSystem(shareData);
+        if (success) {
+          // Track share (platform unknown for native)
+          await trackPropertyShare(property.id, "COPY_LINK");
+        }
+      } catch (error) {
+        // Already handled in shareViaSystem, but double check safe guards
+        console.error("Share error intercept", error);
+      } finally {
+        setIsSharing(false);
       }
+      // If success is false (cancelled or failed), we still return.
+      // We do NOT want to open the desktop popover on mobile if the user cancels the native sheet.
+      return;
     }
 
     // Fallback to custom popover
@@ -176,64 +191,66 @@ export function SocialShareButton({
           />
 
           {/* Popover Content */}
-          <div className="absolute right-0 top-full mt-2 z-50 w-64 rounded-lg border border-oslo-gray-300 dark:border-oslo-gray-700 bg-white dark:bg-oslo-gray-1000 p-3 shadow-lg">
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-oslo-gray-900 dark:text-oslo-gray-50 mb-3">
+          <div className="absolute right-0 top-full mt-2 z-50 w-72 origin-top-right rounded-2xl border border-white/20 bg-white/80 dark:bg-oslo-gray-950/80 p-4 shadow-2xl backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10 animate-in fade-in zoom-in-95 duration-200">
+            <div className="space-y-1">
+              <h3 className="mb-3 px-2 text-sm font-medium text-oslo-gray-900 dark:text-oslo-gray-100">
                 Compartir propiedad
-              </p>
+              </h3>
 
-              {/* WhatsApp */}
-              <button
-                onClick={() => handlePlatformShare("WHATSAPP")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
-              >
-                <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-                  <MessageCircle className="h-4 w-4 text-white" />
-                </div>
-                <span className="text-sm font-medium">WhatsApp</span>
-              </button>
+              <div className="grid grid-cols-1 gap-1">
+                {/* WhatsApp */}
+                <button
+                  onClick={() => handlePlatformShare("WHATSAPP")}
+                  className="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-oslo-gray-700 dark:text-oslo-gray-200 transition-all hover:bg-green-50 dark:hover:bg-green-900/20 active:scale-[0.98]"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white shadow-sm transition-transform group-hover:scale-110">
+                    <MessageCircle className="h-4 w-4" />
+                  </div>
+                  <span>WhatsApp</span>
+                </button>
 
-              {/* Facebook */}
-              <button
-                onClick={() => handlePlatformShare("FACEBOOK")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
-              >
-                <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
-                  <SocialIcon name="facebook" className="h-4 w-4 text-white" />
-                </div>
-                <span className="text-sm font-medium">Facebook</span>
-              </button>
+                {/* Facebook */}
+                <button
+                  onClick={() => handlePlatformShare("FACEBOOK")}
+                  className="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-oslo-gray-700 dark:text-oslo-gray-200 transition-all hover:bg-blue-50 dark:hover:bg-blue-900/20 active:scale-[0.98]"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-sm transition-transform group-hover:scale-110">
+                    <SocialIcon name="facebook" className="h-4 w-4" />
+                  </div>
+                  <span>Facebook</span>
+                </button>
 
-              {/* Email */}
-              <button
-                onClick={() => handlePlatformShare("EMAIL")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
-              >
-                <div className="w-8 h-8 rounded-full bg-oslo-gray-600 flex items-center justify-center">
-                  <Mail className="h-4 w-4 text-white" />
-                </div>
-                <span className="text-sm font-medium">Email</span>
-              </button>
+                {/* Email */}
+                <button
+                  onClick={() => handlePlatformShare("EMAIL")}
+                  className="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-oslo-gray-700 dark:text-oslo-gray-200 transition-all hover:bg-orange-50 dark:hover:bg-orange-900/20 active:scale-[0.98]"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white shadow-sm transition-transform group-hover:scale-110">
+                    <Mail className="h-4 w-4" />
+                  </div>
+                  <span>Email</span>
+                </button>
 
-              {/* Divider */}
-              <div className="border-t my-2" />
+                {/* Divider */}
+                <div className="my-2 border-t border-oslo-gray-200/50 dark:border-oslo-gray-700/50" />
 
-              {/* Copy Link */}
-              <button
-                onClick={() => handlePlatformShare("COPY_LINK")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-900 transition-colors"
-              >
-                <div className="w-8 h-8 rounded-full bg-oslo-gray-200 dark:bg-oslo-gray-800 flex items-center justify-center">
-                  {copied ? (
-                    <Check className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <LinkIcon className="h-4 w-4 text-oslo-gray-700 dark:text-oslo-gray-300" />
-                  )}
-                </div>
-                <span className="text-sm font-medium">
-                  {copied ? "¡Copiado!" : "Copiar enlace"}
-                </span>
-              </button>
+                {/* Copy Link */}
+                <button
+                  onClick={() => handlePlatformShare("COPY_LINK")}
+                  className="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-oslo-gray-700 dark:text-oslo-gray-200 transition-all hover:bg-oslo-gray-100 dark:hover:bg-oslo-gray-800 active:scale-[0.98]"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-oslo-gray-100 dark:bg-oslo-gray-800 text-oslo-gray-600 dark:text-oslo-gray-400 shadow-sm transition-transform group-hover:scale-110">
+                    {copied ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <LinkIcon className="h-4 w-4" />
+                    )}
+                  </div>
+                  <span className="flex-1 text-left">
+                    {copied ? "¡Copiado!" : "Copiar enlace"}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </>

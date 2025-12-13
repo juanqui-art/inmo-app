@@ -60,6 +60,11 @@ const clientSchema = z.object({
     )
     .optional(),
 
+  NEXT_PUBLIC_GOOGLE_MAPS_KEY: z
+    .string()
+    .min(1, "NEXT_PUBLIC_GOOGLE_MAPS_KEY is required for Street View")
+    .optional(),
+
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z
     .string()
     .min(1, "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is required")
@@ -68,7 +73,7 @@ const clientSchema = z.object({
       "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY must be a valid Stripe publishable key",
     )
     .optional(),
-
+  
   // Sentry (public DSN for client-side error tracking)
   NEXT_PUBLIC_SENTRY_DSN: z
     .string()
@@ -214,6 +219,7 @@ const parseEnv = (): Env => {
       NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
       NEXT_PUBLIC_MAPBOX_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
+      NEXT_PUBLIC_GOOGLE_MAPS_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY,
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
         process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     });
@@ -250,6 +256,7 @@ const parseEnv = (): Env => {
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_MAPBOX_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
+    NEXT_PUBLIC_GOOGLE_MAPS_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY,
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     DATABASE_URL: process.env.DATABASE_URL,

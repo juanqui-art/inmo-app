@@ -72,7 +72,10 @@ export function PublicFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gradient-to-b from-oslo-gray-950 to-oslo-gray-900 text-oslo-gray-300 border-t border-oslo-gray-800">
+    <footer
+      className="bg-gradient-to-b from-oslo-gray-950 to-oslo-gray-900 text-oslo-gray-300 border-t border-oslo-gray-800"
+      suppressHydrationWarning
+    >
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">

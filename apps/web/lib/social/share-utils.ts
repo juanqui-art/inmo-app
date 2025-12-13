@@ -22,8 +22,8 @@
  * - https://developer.twitter.com/en/docs/twitter-for-websites/tweet-button/guides/web-intent
  */
 
-import type { Property } from "@prisma/client";
 import { env } from "@/lib/env";
+import type { Property } from "@prisma/client";
 
 export type SharePlatform =
   | "FACEBOOK"
@@ -284,7 +284,12 @@ export async function shareViaSystem(shareData: ShareData): Promise<boolean> {
     return true;
   } catch (error) {
     // User cancelled or error occurred
-    console.error("Native share failed:", error);
+    if (
+      (error as Error).name !== "AbortError" &&
+      (error as Error).name !== "InvalidStateError"
+    ) {
+      console.error("Native share failed:", error);
+    }
     return false;
   }
 }

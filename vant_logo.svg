@@ -1,0 +1,49 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background: Zinc 950 (Dark Theme) -->
+  <rect width="512" height="512" fill="#09090b"/>
+  
+  <!-- Definitions for gradients or glow effects -->
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Network Structure Group -->
+  <g filter="url(#glow)">
+    <!-- Main V Shape Lines -->
+    <!-- Style: Neon Green (#22c55e - Tailwind Green-500 equivalent, but brighter for neon effect) -->
+    <path d="M140 120 L256 420 L372 120" stroke="#00FF94" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Internal Network Connections (Golden Ratio approximated placements) -->
+    <!-- Cross connection 1 -->
+    <path d="M140 120 L312 280" stroke="#00FF94" stroke-width="4" stroke-opacity="0.8"/>
+    <!-- Cross connection 2 -->
+    <path d="M372 120 L200 280" stroke="#00FF94" stroke-width="4" stroke-opacity="0.8"/>
+    <!-- Horizontal Bridge -->
+    <path d="M200 280 L312 280" stroke="#00FF94" stroke-width="4" stroke-opacity="0.8"/>
+    <!-- Vertical Spine (Partial) -->
+    <path d="M256 420 L256 280" stroke="#00FF94" stroke-width="4" stroke-opacity="0.6"/>
+
+    <!-- Nodes (Circles at intersections) -->
+    <!-- Top Left -->
+    <circle cx="140" cy="120" r="8" fill="#09090b" stroke="#00FF94" stroke-width="4"/>
+    <!-- Top Right -->
+    <circle cx="372" cy="120" r="8" fill="#09090b" stroke="#00FF94" stroke-width="4"/>
+    <!-- Bottom Tip -->
+    <circle cx="256" cy="420" r="8" fill="#09090b" stroke="#00FF94" stroke-width="4"/>
+    <!-- Mid Intersection Left -->
+    <circle cx="200" cy="280" r="6" fill="#00FF94"/>
+    <!-- Mid Intersection Right -->
+    <circle cx="312" cy="280" r="6" fill="#00FF94"/>
+    <!-- Center Top Node (Implicit in some flows) -->
+    <circle cx="256" cy="200" r="4" fill="#00FF94" fill-opacity="0.8"/>
+  </g>
+  
+  <!-- Text Label (Optional, for context) -->
+  <text x="256" y="480" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="48" letter-spacing="4" fill="white">VANT</text>
+</svg>

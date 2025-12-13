@@ -84,8 +84,8 @@ export function PropertyLightboxGallery({
       aria-label="Image gallery lightbox"
     >
       {/* Main Image */}
-      <div className="relative w-full h-full max-w-6xl max-h-screen flex items-center justify-center p-4">
-        <div className="relative w-full aspect-video" data-lightbox-image>
+      <div className="relative w-full h-full flex items-center justify-center p-0 md:p-4">
+        <div className="relative w-full h-full" data-lightbox-image>
           <Image
             src={currentImage.url}
             alt={
@@ -93,7 +93,7 @@ export function PropertyLightboxGallery({
             }
             fill
             className="object-contain"
-            sizes="(max-width: 1536px) 100vw, 1536px"
+            sizes="100vw"
             priority
           />
         </div>

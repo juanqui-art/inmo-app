@@ -44,11 +44,11 @@ export default async function VenderPage() {
   const tiers = pricingTiers.map((tier) => {
     if (user) {
       // Helper to check if this is the current plan
-      const isCurrentPlan = user.user_metadata?.subscription_tier === tier.name;
+      // Note: plan is stored in user_metadata.plan (set during signup in auth.ts)
+      const userPlan = (user.user_metadata?.plan as string)?.toUpperCase() || "FREE";
+      const isCurrentPlan = userPlan === tier.name;
       // Helper to check if this plan is "lower" than current
-      const currentTierRank = getTierRank(
-        user.user_metadata?.subscription_tier || "FREE",
-      );
+      const currentTierRank = getTierRank(userPlan);
       const targetTierRank = getTierRank(tier.name);
       const isLowerPlan = currentTierRank > targetTierRank;
 
@@ -107,7 +107,7 @@ export default async function VenderPage() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href={user ? "/dashboard" : "/signup?plan=free"}
+              href={user ? "/dashboard" : "#planes"}
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-gray-100 text-indigo-600 font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105 hover:-translate-y-1"
             >
               <span>{user ? "Ir a mi Dashboard" : "Comenzar gratis"}</span>
@@ -134,7 +134,7 @@ export default async function VenderPage() {
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-emerald-400" />
-              <span>Escala a 3 propiedades por $4.99/mes</span>
+              <span>Escala a 3 propiedades por $9.99/mes</span>
             </div>
           </div>
         </div>
@@ -285,11 +285,11 @@ export default async function VenderPage() {
             items={[
               {
                 question: "¿Qué incluye el plan gratuito?",
-                answer: "El plan gratuito incluye 1 propiedad activa sin expiración, hasta 5 imágenes por propiedad, búsqueda con IA, y acceso completo al dashboard. Es perfecto para comenzar sin compromiso.",
+                answer: "El plan gratuito incluye 1 propiedad activa sin expiración, hasta 6 imágenes por propiedad, búsqueda con IA, y acceso completo al dashboard. Es perfecto para comenzar sin compromiso.",
               },
               {
                 question: "¿Qué pasa si necesito publicar más de 1 propiedad?",
-                answer: "Puedes escalar fácilmente al plan Básico ($4.99/mes) para publicar hasta 3 propiedades, o al plan Pro ($14.99/mes) para hasta 10 propiedades. Todos los planes incluyen las mismas herramientas profesionales.",
+                answer: "Puedes escalar fácilmente al plan Plus ($9.99/mes) para publicar hasta 3 propiedades, al plan Agente ($29.99/mes) para hasta 10, o al plan Pro ($59.99/mes) para hasta 20 propiedades. Todos los planes incluyen las mismas herramientas profesionales.",
               },
               {
                 question: "¿Puedo cancelar en cualquier momento?",
@@ -429,11 +429,11 @@ export default async function VenderPage() {
 export const metadata = {
   title: "Publica tu Propiedad Gratis | InmoApp",
   description:
-    "Comienza con 1 propiedad gratis, sin expiración. Planes desde $4.99/mes. Sin comisiones por transacción. Escala cuando necesites más.",
+    "Comienza con 1 propiedad gratis, sin expiración. Planes desde $9.99/mes. Sin comisiones por transacción. Escala cuando necesites más.",
   openGraph: {
     title: "Publica tu Propiedad Gratis | InmoApp",
     description:
-      "Plan gratuito real. 1 propiedad sin expiración. Planes desde $4.99/mes",
+      "Plan gratuito real. 1 propiedad sin expiración. Planes desde $9.99/mes",
     type: "website",
   },
 };

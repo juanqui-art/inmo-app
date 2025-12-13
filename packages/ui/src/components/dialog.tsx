@@ -56,8 +56,8 @@ const DialogContent = React.forwardRef<
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-oslo-gray-900 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-oslo-gray-700 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-oslo-gray-800 data-[state=open]:text-oslo-gray-50">
-        <X className="h-4 w-4" />
+      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-full p-2 opacity-70 ring-offset-oslo-gray-900 transition-all hover:opacity-100 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-oslo-gray-700 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:text-oslo-gray-50">
+        <X className="h-5 w-5" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
@@ -121,14 +121,7 @@ const DialogDescription = React.forwardRef<
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export {
-  Dialog,
-  DialogPortal,
-  DialogOverlay,
-  DialogTrigger,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
+    Dialog, DialogClose,
+    DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger
 };
+
