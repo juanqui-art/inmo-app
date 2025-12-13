@@ -23,6 +23,7 @@
  */
 
 import { env } from "@/lib/env";
+import { logger } from "@/lib/utils/logger";
 import type { Property } from "@prisma/client";
 
 export type SharePlatform =
@@ -221,7 +222,10 @@ export async function copyLinkToClipboard(url: string): Promise<boolean> {
 
     return success;
   } catch (error) {
-    console.error("Failed to copy link:", error);
+    logger.error(
+      { err: error },
+      "[Social] Failed to copy link to clipboard"
+    );
     return false;
   }
 }
@@ -288,7 +292,10 @@ export async function shareViaSystem(shareData: ShareData): Promise<boolean> {
       (error as Error).name !== "AbortError" &&
       (error as Error).name !== "InvalidStateError"
     ) {
-      console.error("Native share failed:", error);
+      logger.error(
+        { err: error, shareData },
+        "[Social] Native share failed"
+      );
     }
     return false;
   }
