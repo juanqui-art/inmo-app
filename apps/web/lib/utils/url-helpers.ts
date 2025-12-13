@@ -15,6 +15,7 @@
  */
 
 import mapboxgl from "mapbox-gl";
+import { logger } from "@/lib/utils/logger";
 
 /**
  * Map viewport parameters that can be encoded in URL
@@ -603,12 +604,12 @@ export function parseFilterParams(
 
   // Optional: Log errors for debugging purposes during development
   if (process.env.NODE_ENV === "development") {
-    console.error(
-      "Zod validation error in parseFilterParams:",
-      "Raw params:",
-      rawParams,
-      "Validation errors:",
-      result.error.flatten(),
+    logger.error(
+      {
+        rawParams,
+        errors: result.error.flatten(),
+      },
+      "[URL] Zod validation error in parseFilterParams",
     );
   }
 
