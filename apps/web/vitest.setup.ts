@@ -132,3 +132,9 @@ vi.mock("@/lib/csrf", () => ({
   validateCSRFToken: vi.fn(),
   isCSRFError: vi.fn((error: any) => error?.name === "CSRFError"),
 }));
+
+// Mock rate limiting functions
+vi.mock("@/lib/rate-limit", () => ({
+  enforceRateLimit: vi.fn(),
+  isRateLimitError: vi.fn((error: any) => error?.name === "RateLimitError"),
+}));

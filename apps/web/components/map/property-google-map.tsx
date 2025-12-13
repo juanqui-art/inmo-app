@@ -37,6 +37,7 @@ export function PropertyGoogleMap({ latitude, longitude, title }: PropertyGoogle
   const [activeCategory, setActiveCategory] = useState<PlaceCategory | null>(null);
   const [placesCache, setPlacesCache] = useState<Record<string, PlaceResult[]>>({});
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [isStreetViewVisible, setIsStreetViewVisible] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -70,6 +71,8 @@ export function PropertyGoogleMap({ latitude, longitude, title }: PropertyGoogle
             defaultZoom={15}
             mapId={mapId} 
             disableDefaultUI={true}
+            streetViewControl={true} // Enable default Pegman
+            streetViewControlOptions={{ position: 9 }} // 9 = BOTTOM_RIGHT
             gestureHandling={'cooperative'}
             className="w-full h-full"
             renderingType={'VECTOR'}
@@ -89,20 +92,44 @@ export function PropertyGoogleMap({ latitude, longitude, title }: PropertyGoogle
                 setPlacesCache={setPlacesCache}
             />
 
-            {/* Custom Controls inside Map Context */}
-            <MapControls />
+            {/* Listen for Street View visibility changes */}
+            <StreetViewEvents onVisibilityChange={setIsStreetViewVisible} />
+
+            {/* Custom Controls inside Map Context - Hidden in Street View */}
+            {!isStreetViewVisible && <MapControls />}
 
           </Map>
           
-          {/* Filter Chips (Outside Map Context but positioned absolutely) */}
-          <MapFilterChips 
-            activeCategory={activeCategory} 
-            onCategoryChange={setActiveCategory} 
-          />
+          {/* Filter Chips (Outside Map Context but positioned absolutely) - Hidden in Street View */}
+          {!isStreetViewVisible && (
+            <MapFilterChips 
+              activeCategory={activeCategory} 
+              onCategoryChange={setActiveCategory} 
+            />
+          )}
         </APIProvider>
       </div>
     </div>
   );
+}
+
+// Internal component to listen for Street View visibility events
+function StreetViewEvents({ onVisibilityChange }: { onVisibilityChange: (visible: boolean) => void }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map) return;
+    const streetView = map.getStreetView();
+    if (!streetView) return;
+
+    const listener = streetView.addListener("visible_changed", () => {
+      onVisibilityChange(streetView.getVisible());
+    });
+
+    return () => listener.remove();
+  }, [map, onVisibilityChange]);
+
+  return null;
 }
 
 // Internal component to handle Places API logic inside the Map context

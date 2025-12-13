@@ -50,7 +50,7 @@ export function MapControls() {
       </div>
 
       {/* Bottom Right - Zoom Controls */}
-      <div className="absolute bottom-4 right-4 z-10 flex flex-col gap-2">
+      <div className="absolute bottom-24 right-4 z-10 flex flex-col gap-2">
         <button
            onClick={() => handleZoom(1)}
            className={cn(buttonClass)}
