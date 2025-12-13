@@ -13,8 +13,11 @@ process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/test";
 const dbMock = {
   user: {
     findUnique: vi.fn(),
+    findMany: vi.fn(),
     create: vi.fn(),
     update: vi.fn(),
+    count: vi.fn(),
+    groupBy: vi.fn(),
   },
   property: {
     create: vi.fn(),
@@ -23,10 +26,19 @@ const dbMock = {
     count: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
+    groupBy: vi.fn(),
   },
   propertyImage: {
     createMany: vi.fn(),
     deleteMany: vi.fn(),
+  },
+  appointment: {
+    findMany: vi.fn(),
+    count: vi.fn(),
+    groupBy: vi.fn(),
+  },
+  favorite: {
+    count: vi.fn(),
   },
 };
 
@@ -51,6 +63,7 @@ vi.mock("@repo/database", () => {
       findById: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
     },
     FavoriteRepository: vi.fn(() => ({
       toggleFavorite: vi.fn(),
@@ -112,4 +125,10 @@ vi.mock("@/lib/permissions/property-limits", () => ({
   getTierDisplayName: vi.fn(),
   getTierFeatures: vi.fn(),
   getTierPricing: vi.fn(),
+}));
+
+// Mock CSRF protection functions
+vi.mock("@/lib/csrf", () => ({
+  validateCSRFToken: vi.fn(),
+  isCSRFError: vi.fn((error: any) => error?.name === "CSRFError"),
 }));
