@@ -19,6 +19,7 @@ vi.mock("../client", () => ({
       delete: vi.fn(),
       groupBy: vi.fn(),
     },
+    $transaction: vi.fn(),
   },
 }));
 
@@ -83,6 +84,25 @@ describe("AppointmentRepository", () => {
     // Reset all mocks before each test
     vi.clearAllMocks();
 
+    // Mock $transaction to execute the callback with a mock transaction client
+    // The transaction client (tx) has the same API as db
+    vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
+      // Create a mock transaction client with the same methods
+      const mockTx = {
+        appointment: {
+          create: db.appointment.create,
+          findUnique: db.appointment.findUnique,
+          findFirst: db.appointment.findFirst,
+          findMany: db.appointment.findMany,
+          update: db.appointment.update,
+          delete: db.appointment.delete,
+          groupBy: db.appointment.groupBy,
+        },
+      };
+      // Execute the callback with the mock transaction client
+      return callback(mockTx);
+    });
+
     // Create a fresh repository instance
     repository = new AppointmentRepository();
   });
@@ -96,12 +116,24 @@ describe("AppointmentRepository", () => {
         agentId: mockAgentId,
         scheduledAt: mockScheduledAt,
       };
+      // Mock no conflicts (findFirst returns null)
+      vi.mocked(db.appointment.findFirst).mockResolvedValue(null);
       vi.mocked(db.appointment.create).mockResolvedValue(mockAppointmentDetail);
 
       // Act
       const result = await repository.createAppointment(appointmentData);
 
       // Assert
+      // Verify conflict check was called
+      expect(db.appointment.findFirst).toHaveBeenCalledWith({
+        where: {
+          propertyId: mockPropertyId,
+          scheduledAt: mockScheduledAt,
+          status: {
+            in: ["PENDING", "CONFIRMED"],
+          },
+        },
+      });
       // Note: sanitizeOptional converts undefined to null
       expect(db.appointment.create).toHaveBeenCalledWith({
         data: {
@@ -127,6 +159,8 @@ describe("AppointmentRepository", () => {
         scheduledAt: mockScheduledAt,
         notes: "Prefiero en la mañana",
       };
+      // Mock no conflicts
+      vi.mocked(db.appointment.findFirst).mockResolvedValue(null);
       vi.mocked(db.appointment.create).mockResolvedValue(mockAppointmentDetail);
 
       // Act
@@ -150,6 +184,8 @@ describe("AppointmentRepository", () => {
         agentId: mockAgentId,
         scheduledAt: mockScheduledAt,
       };
+      // Mock no conflicts
+      vi.mocked(db.appointment.findFirst).mockResolvedValue(null);
       vi.mocked(db.appointment.create).mockResolvedValue(mockAppointmentDetail);
 
       // Act
@@ -168,6 +204,8 @@ describe("AppointmentRepository", () => {
     it("should handle database errors", async () => {
       // Arrange
       const error = new Error("Database connection failed");
+      // Mock no conflicts, but create fails
+      vi.mocked(db.appointment.findFirst).mockResolvedValue(null);
       vi.mocked(db.appointment.create).mockRejectedValue(error);
 
       // Act & Assert
@@ -179,6 +217,45 @@ describe("AppointmentRepository", () => {
           scheduledAt: mockScheduledAt,
         })
       ).rejects.toThrow("Database connection failed");
+    });
+
+    it("should prevent double-booking (race condition protection)", async () => {
+      // Arrange
+      const appointmentData = {
+        userId: mockUserId,
+        propertyId: mockPropertyId,
+        agentId: mockAgentId,
+        scheduledAt: mockScheduledAt,
+      };
+      // Mock existing appointment at the same time slot
+      const existingAppointment = {
+        id: "existing-apt-123",
+        propertyId: mockPropertyId,
+        scheduledAt: mockScheduledAt,
+        status: "PENDING" as AppointmentStatus,
+      };
+      vi.mocked(db.appointment.findFirst).mockResolvedValue(
+        existingAppointment as any
+      );
+
+      // Act & Assert
+      await expect(
+        repository.createAppointment(appointmentData)
+      ).rejects.toThrow("Este horario ya está reservado");
+
+      // Verify conflict check was called
+      expect(db.appointment.findFirst).toHaveBeenCalledWith({
+        where: {
+          propertyId: mockPropertyId,
+          scheduledAt: mockScheduledAt,
+          status: {
+            in: ["PENDING", "CONFIRMED"],
+          },
+        },
+      });
+
+      // Verify appointment was NOT created when conflict exists
+      expect(db.appointment.create).not.toHaveBeenCalled();
     });
   });
 

@@ -99,6 +99,11 @@ export class AppointmentRepository {
    *
    * SANITIZATION: User-provided notes field is sanitized to prevent XSS attacks
    * - notes: Plain text only (no HTML allowed)
+   *
+   * RACE CONDITION PROTECTION:
+   * - Uses Serializable transaction to prevent double-booking
+   * - Checks for existing appointments at the same time slot BEFORE creating
+   * - Atomic check + insert prevents concurrent booking conflicts
    */
   async createAppointment(data: {
     userId: string;
@@ -107,17 +112,43 @@ export class AppointmentRepository {
     scheduledAt: Date;
     notes?: string;
   }) {
-    return db.appointment.create({
-      data: {
-        userId: data.userId,
-        propertyId: data.propertyId,
-        agentId: data.agentId,
-        scheduledAt: data.scheduledAt,
-        notes: sanitizeOptional(data.notes, sanitizePlainText), // Sanitize notes (Defense in Depth - Layer 2)
-        status: "PENDING",
+    return db.$transaction(
+      async (tx) => {
+        // Check for conflicting appointments in the SAME transaction
+        // This prevents race condition where two users book simultaneously
+        const existingAppointment = await tx.appointment.findFirst({
+          where: {
+            propertyId: data.propertyId,
+            scheduledAt: data.scheduledAt,
+            status: {
+              in: ["PENDING", "CONFIRMED"],
+            },
+          },
+        });
+
+        if (existingAppointment) {
+          throw new Error(
+            "Este horario ya está reservado. Por favor, selecciona otro horario.",
+          );
+        }
+
+        // Create appointment only if no conflict exists
+        return tx.appointment.create({
+          data: {
+            userId: data.userId,
+            propertyId: data.propertyId,
+            agentId: data.agentId,
+            scheduledAt: data.scheduledAt,
+            notes: sanitizeOptional(data.notes, sanitizePlainText), // Sanitize notes (Defense in Depth - Layer 2)
+            status: "PENDING",
+          },
+          select: appointmentDetailSelect,
+        });
       },
-      select: appointmentDetailSelect,
-    });
+      {
+        isolationLevel: "Serializable", // Highest isolation level prevents phantom reads
+      },
+    );
   }
 
   /**
