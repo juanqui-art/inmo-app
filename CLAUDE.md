@@ -126,6 +126,15 @@ cd packages/database && bunx prisma generate
 bun run db:gen
 ```
 
+**Prisma error: Cannot find module @prisma/fetch-engine:**
+```bash
+# Prisma installation corrupted
+bun run clean:prisma
+# Or manually:
+# rm -rf node_modules/@prisma node_modules/.prisma
+# bun install --force
+```
+
 **Package not found:**
 1. Check `transpilePackages` in `next.config.ts`
 2. Restart dev server

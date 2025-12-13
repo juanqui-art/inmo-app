@@ -24,6 +24,7 @@
     "postinstall": "bun run db:gen",
     "clean:cache": "rm -rf apps/web/.next apps/web/.turbo && find . -name '*.tsbuildinfo' -type f -delete && find . -name '.turbo' -type d -exec rm -rf {} + 2>/dev/null || true",
     "clean:deps": "rm -rf node_modules apps/web/node_modules bun.lock",
+    "clean:prisma": "rm -rf node_modules/@prisma node_modules/.prisma node_modules/prisma && bun install --force",
     "clean:all": "bun run clean:cache && bun run clean:deps",
     "fresh": "bun run clean:all && bun install",
     "reset": "bun run clean:all && bun install && bun run dev",

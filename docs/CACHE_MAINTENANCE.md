@@ -231,6 +231,34 @@ bunx next dev --no-turbo
 bun run clean:cache
 ```
 
+### "Error: Cannot find module @prisma/fetch-engine"
+
+```bash
+# ERROR COMPLETO:
+# Error: Cannot find module '/path/to/node_modules/@prisma/fetch-engine/dist/index.js'
+# Please verify that the package.json has a valid "main" entry
+
+# CAUSA: Prisma instalado parcialmente o corrupto
+
+# SOLUCIÓN RÁPIDA:
+bun run clean:prisma
+# = Elimina @prisma, .prisma, prisma + reinstala forzadamente
+
+# SOLUCIÓN MANUAL (si clean:prisma falla):
+rm -rf node_modules/@prisma node_modules/.prisma node_modules/prisma
+bun install --force
+bun run build  # Verificar que funciona
+```
+
+**¿Por qué pasa esto?**
+- Instalación interrumpida (Ctrl+C durante `bun install`)
+- Caché de Bun corrupto
+- Archivos viejos no actualizados durante reinstalación
+
+**Prevención:**
+- Nunca interrumpir `bun install` con Ctrl+C
+- Usar `bun install --force` después de problemas de instalación
+
 ## 📝 Notas Importantes
 
 1. **`bun.lock` NO es un problema** - Solo eliminarlo en casos extremos
