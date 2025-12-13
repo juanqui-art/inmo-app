@@ -8,6 +8,18 @@ process.env.NEXT_PUBLIC_SITE_URL = "http://localhost:3000";
 process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/test";
 // NOTE: NODE_ENV is automatically set to "test" by vitest
 
+// Mock @repo/env to skip validation in tests
+vi.mock("@repo/env", () => ({
+  env: {
+    NODE_ENV: "test",
+    NEXT_PUBLIC_SUPABASE_URL: "https://test.supabase.co",
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
+    NEXT_PUBLIC_SITE_URL: "http://localhost:3000",
+    DATABASE_URL: "postgresql://test:test@localhost:5432/test",
+    DIRECT_URL: "postgresql://test:test@localhost:5432/test",
+  },
+}));
+
 // Mock database repositories BEFORE they're imported
 vi.mock("@repo/database", () => {
   return {
