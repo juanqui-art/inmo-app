@@ -16,6 +16,7 @@
  */
 
 import { checkIfFavoriteAction } from "@/app/actions/favorites";
+import { MortgageCalculator } from "@/components/property-detail/mortgage-calculator";
 import { PropertyDescriptionCard } from "@/components/property-detail/property-description-card";
 import { PropertyFloatingActionCard } from "@/components/property-detail/property-floating-action-card";
 import { PropertyHeroCarouselWrapper } from "@/components/property-detail/property-hero-carousel-wrapper";
@@ -190,6 +191,9 @@ export default async function PropertyDetailPage(
                 longitude={longitude}
                 title={property.title}
               />
+              <div className="pt-4">
+                <MortgageCalculator price={property.price} />
+              </div>
             </div>
           </div>
 

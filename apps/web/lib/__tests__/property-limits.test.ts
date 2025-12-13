@@ -42,26 +42,34 @@ describe("Property Limits - Freemium Model", () => {
       expect(getPropertyLimit("FREE")).toBe(1);
     });
 
-    it("should return 3 for BASIC tier", () => {
-      expect(getPropertyLimit("BASIC")).toBe(3);
+    it("should return 3 for PLUS tier", () => {
+      expect(getPropertyLimit("PLUS")).toBe(3);
     });
 
-    it("should return 10 for PRO tier", () => {
-      expect(getPropertyLimit("PRO")).toBe(10);
+    it("should return 10 for AGENT tier", () => {
+      expect(getPropertyLimit("AGENT")).toBe(10);
+    });
+
+    it("should return 20 for PRO tier", () => {
+      expect(getPropertyLimit("PRO")).toBe(20);
     });
   });
 
   describe("getImageLimit", () => {
-    it("should return 5 for FREE tier", () => {
-      expect(getImageLimit("FREE")).toBe(5);
+    it("should return 6 for FREE tier", () => {
+      expect(getImageLimit("FREE")).toBe(6);
     });
 
-    it("should return 10 for BASIC tier", () => {
-      expect(getImageLimit("BASIC")).toBe(10);
+    it("should return 25 for PLUS tier", () => {
+      expect(getImageLimit("PLUS")).toBe(25);
     });
 
-    it("should return 20 for PRO tier", () => {
-      expect(getImageLimit("PRO")).toBe(20);
+    it("should return 20 for AGENT tier", () => {
+      expect(getImageLimit("AGENT")).toBe(20);
+    });
+
+    it("should return 25 for PRO tier", () => {
+      expect(getImageLimit("PRO")).toBe(25);
     });
   });
 
@@ -70,8 +78,12 @@ describe("Property Limits - Freemium Model", () => {
       expect(getFeaturedLimit("FREE")).toBe(0);
     });
 
-    it("should return 3 for BASIC tier", () => {
-      expect(getFeaturedLimit("BASIC")).toBe(3);
+    it("should return 1 for PLUS tier", () => {
+      expect(getFeaturedLimit("PLUS")).toBe(1);
+    });
+
+    it("should return 5 for AGENT tier", () => {
+      expect(getFeaturedLimit("AGENT")).toBe(5);
     });
 
     it("should return null for PRO tier (unlimited)", () => {
@@ -112,10 +124,10 @@ describe("Property Limits - Freemium Model", () => {
       expect(result.reason).toContain("límite");
     });
 
-    it("should allow creation when under BASIC limit (2/3)", async () => {
+    it("should allow creation when under PLUS limit (2/3)", async () => {
       mockUserFindUnique.mockResolvedValue({
         id: "user-123",
-        subscriptionTier: "BASIC",
+        subscriptionTier: "PLUS",
       } as any);
 
       mockPropertyCount.mockResolvedValue(2);
@@ -126,10 +138,10 @@ describe("Property Limits - Freemium Model", () => {
       expect(result.limit).toBe(3);
     });
 
-    it("should block creation when at BASIC limit (3/3)", async () => {
+    it("should block creation when at PLUS limit (3/3)", async () => {
       mockUserFindUnique.mockResolvedValue({
         id: "user-123",
-        subscriptionTier: "BASIC",
+        subscriptionTier: "PLUS",
       } as any);
 
       mockPropertyCount.mockResolvedValue(3);
@@ -140,10 +152,10 @@ describe("Property Limits - Freemium Model", () => {
       expect(result.limit).toBe(3);
     });
 
-    it("should allow creation when under PRO limit (9/10)", async () => {
+    it("should allow creation when under AGENT limit (9/10)", async () => {
       mockUserFindUnique.mockResolvedValue({
         id: "user-123",
-        subscriptionTier: "PRO",
+        subscriptionTier: "AGENT",
       } as any);
 
       mockPropertyCount.mockResolvedValue(9);
@@ -154,10 +166,10 @@ describe("Property Limits - Freemium Model", () => {
       expect(result.limit).toBe(10);
     });
 
-    it("should block creation when at PRO limit (10/10)", async () => {
+    it("should block creation when at AGENT limit (10/10)", async () => {
       mockUserFindUnique.mockResolvedValue({
         id: "user-123",
-        subscriptionTier: "PRO",
+        subscriptionTier: "AGENT",
       } as any);
 
       mockPropertyCount.mockResolvedValue(10);
@@ -166,6 +178,34 @@ describe("Property Limits - Freemium Model", () => {
 
       expect(result.allowed).toBe(false);
       expect(result.limit).toBe(10);
+    });
+
+    it("should allow creation when under PRO limit (19/20)", async () => {
+      mockUserFindUnique.mockResolvedValue({
+        id: "user-123",
+        subscriptionTier: "PRO",
+      } as any);
+
+      mockPropertyCount.mockResolvedValue(19);
+
+      const result = await canCreateProperty("user-123");
+
+      expect(result.allowed).toBe(true);
+      expect(result.limit).toBe(20);
+    });
+
+    it("should block creation when at PRO limit (20/20)", async () => {
+      mockUserFindUnique.mockResolvedValue({
+        id: "user-123",
+        subscriptionTier: "PRO",
+      } as any);
+
+      mockPropertyCount.mockResolvedValue(20);
+
+      const result = await canCreateProperty("user-123");
+
+      expect(result.allowed).toBe(false);
+      expect(result.limit).toBe(20);
     });
 
     it("should return error when user not found", async () => {
@@ -180,47 +220,61 @@ describe("Property Limits - Freemium Model", () => {
   });
 
   describe("canUploadImage", () => {
-    it("should allow upload when under FREE limit (4/5)", () => {
-      const result = canUploadImage("FREE", 4);
-
-      expect(result.allowed).toBe(true);
-      expect(result.limit).toBe(5);
-    });
-
-    it("should block upload when at FREE limit (5/5)", () => {
+    it("should allow upload when under FREE limit (5/6)", () => {
       const result = canUploadImage("FREE", 5);
 
+      expect(result.allowed).toBe(true);
+      expect(result.limit).toBe(6);
+    });
+
+    it("should block upload when at FREE limit (6/6)", () => {
+      const result = canUploadImage("FREE", 6);
+
       expect(result.allowed).toBe(false);
-      expect(result.limit).toBe(5);
+      expect(result.limit).toBe(6);
       expect(result.reason).toContain("límite");
     });
 
-    it("should allow upload when under BASIC limit (9/10)", () => {
-      const result = canUploadImage("BASIC", 9);
+    it("should allow upload when under PLUS limit (24/25)", () => {
+      const result = canUploadImage("PLUS", 24);
 
       expect(result.allowed).toBe(true);
-      expect(result.limit).toBe(10);
+      expect(result.limit).toBe(25);
     });
 
-    it("should block upload when at BASIC limit (10/10)", () => {
-      const result = canUploadImage("BASIC", 10);
+    it("should block upload when at PLUS limit (25/25)", () => {
+      const result = canUploadImage("PLUS", 25);
 
       expect(result.allowed).toBe(false);
-      expect(result.limit).toBe(10);
+      expect(result.limit).toBe(25);
     });
 
-    it("should allow upload when under PRO limit (19/20)", () => {
-      const result = canUploadImage("PRO", 19);
+    it("should allow upload when under AGENT limit (19/20)", () => {
+      const result = canUploadImage("AGENT", 19);
 
       expect(result.allowed).toBe(true);
       expect(result.limit).toBe(20);
     });
 
-    it("should block upload when at PRO limit (20/20)", () => {
-      const result = canUploadImage("PRO", 20);
+    it("should block upload when at AGENT limit (20/20)", () => {
+      const result = canUploadImage("AGENT", 20);
 
       expect(result.allowed).toBe(false);
       expect(result.limit).toBe(20);
+    });
+
+    it("should allow upload when under PRO limit (24/25)", () => {
+      const result = canUploadImage("PRO", 24);
+
+      expect(result.allowed).toBe(true);
+      expect(result.limit).toBe(25);
+    });
+
+    it("should block upload when at PRO limit (25/25)", () => {
+      const result = canUploadImage("PRO", 25);
+
+      expect(result.allowed).toBe(false);
+      expect(result.limit).toBe(25);
     });
   });
 
@@ -229,8 +283,12 @@ describe("Property Limits - Freemium Model", () => {
       expect(getTierDisplayName("FREE")).toBe("Gratuito");
     });
 
-    it("should return 'Básico' for BASIC", () => {
-      expect(getTierDisplayName("BASIC")).toBe("Básico");
+    it("should return 'Plus' for PLUS", () => {
+      expect(getTierDisplayName("PLUS")).toBe("Plus");
+    });
+
+    it("should return 'Agente' for AGENT", () => {
+      expect(getTierDisplayName("AGENT")).toBe("Agente");
     });
 
     it("should return 'Pro' for PRO", () => {
@@ -246,27 +304,49 @@ describe("Property Limits - Freemium Model", () => {
         tier: "FREE",
         displayName: "Gratuito",
         propertyLimit: 1,
-        imageLimit: 5,
+        imageLimit: 6,
         featuredLimit: 0,
         hasFeatured: false,
         hasUnlimitedFeatured: false,
         hasAnalytics: false,
+        hasCRM: false,
+        hasCRMFull: false,
         support: "Email (72h)",
       });
     });
 
-    it("should return correct features for BASIC tier", () => {
-      const features = getTierFeatures("BASIC");
+    it("should return correct features for PLUS tier", () => {
+      const features = getTierFeatures("PLUS");
 
       expect(features).toEqual({
-        tier: "BASIC",
-        displayName: "Básico",
+        tier: "PLUS",
+        displayName: "Plus",
         propertyLimit: 3,
-        imageLimit: 10,
-        featuredLimit: 3,
+        imageLimit: 25,
+        featuredLimit: 1,
         hasFeatured: true,
         hasUnlimitedFeatured: false,
         hasAnalytics: true,
+        hasCRM: false,
+        hasCRMFull: false,
+        support: "Email (48h)",
+      });
+    });
+
+    it("should return correct features for AGENT tier", () => {
+      const features = getTierFeatures("AGENT");
+
+      expect(features).toEqual({
+        tier: "AGENT",
+        displayName: "Agente",
+        propertyLimit: 10,
+        imageLimit: 20,
+        featuredLimit: 5,
+        hasFeatured: true,
+        hasUnlimitedFeatured: false,
+        hasAnalytics: true,
+        hasCRM: true,
+        hasCRMFull: false,
         support: "Email (24h)",
       });
     });
@@ -277,12 +357,14 @@ describe("Property Limits - Freemium Model", () => {
       expect(features).toEqual({
         tier: "PRO",
         displayName: "Pro",
-        propertyLimit: 10,
-        imageLimit: 20,
+        propertyLimit: 20,
+        imageLimit: 25,
         featuredLimit: null,
         hasFeatured: true,
         hasUnlimitedFeatured: true,
         hasAnalytics: true,
+        hasCRM: true,
+        hasCRMFull: true,
         support: "WhatsApp (12h)",
       });
     });
@@ -299,21 +381,31 @@ describe("Property Limits - Freemium Model", () => {
       });
     });
 
-    it("should return $4.99 for BASIC tier", () => {
-      const pricing = getTierPricing("BASIC");
+    it("should return $9.99 for PLUS tier", () => {
+      const pricing = getTierPricing("PLUS");
 
       expect(pricing).toEqual({
-        price: 4.99,
+        price: 9.99,
         currency: "USD",
         period: "mes",
       });
     });
 
-    it("should return $14.99 for PRO tier", () => {
+    it("should return $29.99 for AGENT tier", () => {
+      const pricing = getTierPricing("AGENT");
+
+      expect(pricing).toEqual({
+        price: 29.99,
+        currency: "USD",
+        period: "mes",
+      });
+    });
+
+    it("should return $59.99 for PRO tier", () => {
       const pricing = getTierPricing("PRO");
 
       expect(pricing).toEqual({
-        price: 14.99,
+        price: 59.99,
         currency: "USD",
         period: "mes",
       });

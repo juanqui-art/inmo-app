@@ -1,7 +1,8 @@
 
 "use client";
 
-import { ModalMap } from "@/components/map/modal-map";
+import { PropertyGoogleMap } from "@/components/map/property-google-map";
+
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Building, MapPin } from "lucide-react";
@@ -74,13 +75,11 @@ export function PropertyLocationCard({
 
       {/* Map Section */}
       {latitude && longitude && (
-         <div className="w-full h-80 rounded-2xl overflow-hidden border border-oslo-gray-200 dark:border-oslo-gray-800 relative group shadow-sm hover:shadow-md transition-all duration-300">
-            <ModalMap 
-               latitude={latitude} 
-               longitude={longitude} 
-               title={title || "Propiedad"} 
-            />
-         </div>
+         <PropertyGoogleMap
+            latitude={latitude}
+            longitude={longitude}
+            title={title || "Propiedad"}
+         />
       )}
 
       {/* Text Details */}

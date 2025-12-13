@@ -124,12 +124,12 @@ describe("Auth Server Actions", () => {
         });
       });
 
-      it("should register user as AGENT with upgrade param (with BASIC plan)", async () => {
+      it("should register user as AGENT with upgrade param (with PLUS plan)", async () => {
         const formData = createSignupFormData({
           name: "Carlos López",
           email: "carlos@example.com",
           password: "Password123",
-          plan: "basic",
+          plan: "plus",
         });
 
         const mockUser = createMockSupabaseUser({
@@ -142,10 +142,10 @@ describe("Auth Server Actions", () => {
           error: null,
         });
 
-        // Con plan BASIC → AGENT → /dashboard?upgrade=basic
+        // Con plan PLUS → AGENT → /dashboard?upgrade=plus
         await expect(async () => {
           await signupAction(null, formData);
-        }).rejects.toThrow("NEXT_REDIRECT: /dashboard?upgrade=basic");
+        }).rejects.toThrow("NEXT_REDIRECT: /dashboard?upgrade=plus");
 
         expect(mockSupabase.auth.signUp).toHaveBeenCalledWith({
           email: "carlos@example.com",
@@ -154,7 +154,7 @@ describe("Auth Server Actions", () => {
             data: {
               name: "Carlos López",
               role: "AGENT",
-              plan: "basic",
+              plan: "plus",
             },
           },
         });

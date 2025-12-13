@@ -13,15 +13,15 @@
  * See: vitest.setup.ts for attempted fix.
  */
 
-import { db } from "@repo/database/src/client";
+import { db } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { requireAuth } from "@/lib/auth";
 import { upgradeSubscriptionAction } from "../subscription";
 
-// Get mocked functions
+// Get mocked functions - cast nested mocks properly
 const mockRequireAuth = vi.mocked(requireAuth);
-const mockDbUserUpdate = vi.mocked(db.user.update);
+const mockDbUserUpdate = db.user.update as ReturnType<typeof vi.fn>;
 const mockRevalidatePath = vi.mocked(revalidatePath);
 
 // Test helpers

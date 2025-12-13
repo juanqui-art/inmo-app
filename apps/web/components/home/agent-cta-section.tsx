@@ -67,7 +67,7 @@
  * - https://www.wordstream.com/blog/ws/2015/03/25/call-to-action-examples
  */
 
-import { ArrowRight, BarChart3, Shield, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, CheckCircle, Home, TrendingUp, Zap } from "lucide-react";
 import Link from "next/link";
 
 export function AgentCTASection() {
@@ -82,13 +82,13 @@ export function AgentCTASection() {
       <div className="max-w-4xl mx-auto text-center relative z-10">
         {/* Heading */}
         <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
-          ¿Eres Agente Inmobiliario?
+          ¿Quieres vender o rentar tu propiedad?
         </h2>
 
         {/* Subheading */}
         <p className="text-xl text-oslo-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-          Únete a nuestra plataforma y conecta con miles de compradores
-          potenciales buscando su próximo hogar.
+          Únete a InmoApp y publica tu primera propiedad completamente gratis.
+          Sin comisiones, sin contratos forzosos.
         </p>
 
         {/* Benefits Grid */}
@@ -96,15 +96,15 @@ export function AgentCTASection() {
           {/* Benefit 1 */}
           <div className="flex items-start gap-5 bg-white/5 p-6 rounded-2xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
             <div className="p-3 rounded-xl bg-indigo-500/10 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-              <TrendingUp className="w-6 h-6 text-indigo-400" />
+              <Home className="w-6 h-6 text-indigo-400" />
             </div>
             <div>
               <h3 className="font-bold text-lg mb-2 text-white">
-                Aumenta tus Ventas
+                Publica Gratis
               </h3>
               <p className="text-oslo-gray-400 text-sm leading-relaxed">
-                Llega a compradores activos buscando propiedades ahora mismo en
-                tu zona.
+                Tu primera propiedad es gratis para siempre. Ideal para
+                propietarios y agentes que inician.
               </p>
             </div>
           </div>
@@ -112,15 +112,15 @@ export function AgentCTASection() {
           {/* Benefit 2 */}
           <div className="flex items-start gap-5 bg-white/5 p-6 rounded-2xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
             <div className="p-3 rounded-xl bg-indigo-500/10 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-              <Users className="w-6 h-6 text-indigo-400" />
+              <Zap className="w-6 h-6 text-indigo-400" />
             </div>
             <div>
               <h3 className="font-bold text-lg mb-2 text-white">
-                Gestión Simplificada
+                Vende más rápido
               </h3>
               <p className="text-oslo-gray-400 text-sm leading-relaxed">
-                Administra todas tus propiedades, clientes y citas desde un solo
-                lugar.
+                Nuestra IA conecta tu propiedad con los compradores ideales en
+                tiempo récord.
               </p>
             </div>
           </div>
@@ -128,15 +128,15 @@ export function AgentCTASection() {
           {/* Benefit 3 */}
           <div className="flex items-start gap-5 bg-white/5 p-6 rounded-2xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
             <div className="p-3 rounded-xl bg-indigo-500/10 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-              <BarChart3 className="w-6 h-6 text-indigo-400" />
+              <TrendingUp className="w-6 h-6 text-indigo-400" />
             </div>
             <div>
               <h3 className="font-bold text-lg mb-2 text-white">
-                Analíticas Detalladas
+                Herramientas Pro
               </h3>
               <p className="text-oslo-gray-400 text-sm leading-relaxed">
-                Conoce qué propiedades reciben más interés y optimiza tu
-                estrategia de venta.
+                Accede a estadísticas detalladas y gestión profesional desde el
+                primer día.
               </p>
             </div>
           </div>
@@ -144,15 +144,15 @@ export function AgentCTASection() {
           {/* Benefit 4 */}
           <div className="flex items-start gap-5 bg-white/5 p-6 rounded-2xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors duration-300 group">
             <div className="p-3 rounded-xl bg-indigo-500/10 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-              <Shield className="w-6 h-6 text-indigo-400" />
+              <CheckCircle className="w-6 h-6 text-indigo-400" />
             </div>
             <div>
               <h3 className="font-bold text-lg mb-2 text-white">
-                Plataforma Confiable
+                Sin Comisiones
               </h3>
               <p className="text-oslo-gray-400 text-sm leading-relaxed">
-                Sistema seguro y respaldo profesional para potenciar tu negocio
-                inmobiliario.
+                No cobramos comisiones por venta o renta. El trato es directo
+                entre tú y el interesado.
               </p>
             </div>
           </div>
@@ -161,7 +161,7 @@ export function AgentCTASection() {
         {/* CTA Button */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/signup?role=AGENT"
+            href="/vender"
             className="
               inline-flex items-center gap-2
               px-8 py-4
@@ -173,12 +173,12 @@ export function AgentCTASection() {
               transform hover:-translate-y-1
             "
           >
-            Comenzar Ahora
+            Publicar Propiedad
             <ArrowRight className="w-5 h-5" />
           </Link>
 
           <Link
-            href="/agentes"
+            href="/vender#planes"
             className="
               inline-flex items-center
               px-6 py-3
@@ -187,7 +187,7 @@ export function AgentCTASection() {
               transition-colors duration-200
             "
           >
-            Conoce más sobre ser agente
+            Ver Planes y Precios
           </Link>
         </div>
 

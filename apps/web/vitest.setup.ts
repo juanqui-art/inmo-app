@@ -7,41 +7,32 @@ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
 process.env.NEXT_PUBLIC_SITE_URL = "http://localhost:3000";
 process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/test";
 // NOTE: NODE_ENV is automatically set to "test" by vitest
-
-// Mock @repo/env to skip validation in tests
-vi.mock("@repo/env", () => ({
-  env: {
-    NODE_ENV: "test",
-    NEXT_PUBLIC_SUPABASE_URL: "https://test.supabase.co",
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
-    NEXT_PUBLIC_SITE_URL: "http://localhost:3000",
-    DATABASE_URL: "postgresql://test:test@localhost:5432/test",
-    DIRECT_URL: "postgresql://test:test@localhost:5432/test",
-  },
-}));
+// NOTE: @repo/env automatically skips validation when NODE_ENV === "test"
 
 // Mock database repositories BEFORE they're imported
+const dbMock = {
+  user: {
+    findUnique: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+  },
+  property: {
+    create: vi.fn(),
+    findUnique: vi.fn(),
+    findMany: vi.fn(),
+    count: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+  },
+  propertyImage: {
+    createMany: vi.fn(),
+    deleteMany: vi.fn(),
+  },
+};
+
 vi.mock("@repo/database", () => {
   return {
-    db: {
-      user: {
-        findUnique: vi.fn(),
-        create: vi.fn(),
-        update: vi.fn(),
-      },
-      property: {
-        create: vi.fn(),
-        findUnique: vi.fn(),
-        findMany: vi.fn(),
-        count: vi.fn(),
-        update: vi.fn(),
-        delete: vi.fn(),
-      },
-      propertyImage: {
-        createMany: vi.fn(),
-        deleteMany: vi.fn(),
-      },
-    },
+    db: dbMock,
     propertyRepository: {
       create: vi.fn(),
       update: vi.fn(),
@@ -68,6 +59,11 @@ vi.mock("@repo/database", () => {
     })),
   };
 });
+
+// Also mock the /src/client path (used by some Server Actions)
+vi.mock("@repo/database/src/client", () => ({
+  db: dbMock,
+}));
 
 // Mock auth functions
 vi.mock("@/lib/auth", () => ({

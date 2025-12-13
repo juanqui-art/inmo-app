@@ -205,8 +205,24 @@ const envSchema = clientSchema.merge(serverSchema);
  *
  * This runs at module load time, so the app will fail to start
  * if any required variables are missing or invalid.
+ *
+ * TESTING: Skips validation when NODE_ENV === "test" to allow
+ * vitest mocks to work properly.
  */
 const parseEnv = (): Env => {
+  // Skip validation in test environment
+  // Vitest will mock this module via vitest.setup.ts
+  if (process.env.NODE_ENV === "test") {
+    return {
+      NODE_ENV: "test",
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || "https://test.supabase.co",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "test-anon-key",
+      NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+      DATABASE_URL: process.env.DATABASE_URL || "postgresql://test:test@localhost:5432/test",
+      DIRECT_URL: process.env.DIRECT_URL || "postgresql://test:test@localhost:5432/test",
+    } as Env;
+  }
+
   // Check if we're in the browser (Next.js client-side)
   const isBrowser = Boolean(
     typeof window !== "undefined" && typeof document !== "undefined",
