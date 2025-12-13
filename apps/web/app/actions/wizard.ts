@@ -6,7 +6,7 @@ import {
 } from "@/lib/permissions/property-limits";
 import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { logger } from "@/lib/utils/logger";
-import { propertyImageRepository, propertyRepository } from "@repo/database";
+import { db } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -91,93 +91,82 @@ export async function createPropertyFromWizard(
   }
 
   try {
-    // 5. Create property using repository
-    const property = await propertyRepository.create(
-      {
-        title: validatedData.data.title,
-        description: validatedData.data.description,
-        price: validatedData.data.price,
-        transactionType: validatedData.data.transactionType,
-        category: validatedData.data.category as any, // Cast to PropertyCategory enum
-        status: "AVAILABLE",
-        address: validatedData.data.address,
-        city: validatedData.data.city,
-        state: validatedData.data.state,
-        zipCode: validatedData.data.zipCode ?? null,
-        latitude: validatedData.data.latitude,
-        longitude: validatedData.data.longitude,
-        bedrooms: validatedData.data.bedrooms,
-        bathrooms: validatedData.data.bathrooms,
-        area: validatedData.data.area,
-        amenities: validatedData.data.amenities,
-      },
-      user.id
-    );
+    // 5-6. TRANSACTION: Create property + images atomically
+    // ATOMICITY PROTECTION: All-or-nothing operation
+    // - Property creation
+    // - Image references creation
+    // If ANY step fails, entire operation is rolled back (no orphaned properties)
+    const property = await db.$transaction(async (tx) => {
+      // Create property
+      const newProperty = await tx.property.create({
+        data: {
+          title: validatedData.data.title,
+          description: validatedData.data.description,
+          price: validatedData.data.price,
+          transactionType: validatedData.data.transactionType,
+          category: validatedData.data.category as any, // Cast to PropertyCategory enum
+          status: "AVAILABLE",
+          address: validatedData.data.address,
+          city: validatedData.data.city,
+          state: validatedData.data.state,
+          zipCode: validatedData.data.zipCode ?? null,
+          latitude: validatedData.data.latitude,
+          longitude: validatedData.data.longitude,
+          bedrooms: validatedData.data.bedrooms,
+          bathrooms: validatedData.data.bathrooms,
+          area: validatedData.data.area,
+          amenities: validatedData.data.amenities,
+          agentId: user.id,
+        },
+      });
 
-    // 6. Save image URLs to database (images already uploaded via presigned URLs)
-    console.log("[Wizard] Image URLs received:", validatedData.data.imageUrls);
-    
-    if (validatedData.data.imageUrls && validatedData.data.imageUrls.length > 0) {
-      console.log(`[Wizard] Saving ${validatedData.data.imageUrls.length} images for property ${property.id}...`);
-      
-      for (let i = 0; i < validatedData.data.imageUrls.length; i++) {
-        const url = validatedData.data.imageUrls[i];
-        
-        // Skip if URL is undefined or empty
-        if (!url) {
-          console.log(`[Wizard] Skipping empty URL at index ${i}`);
-          continue;
-        }
-        
-        console.log(`[Wizard] Attempting to save image ${i + 1}:`, url);
-        
-        try {
-          const savedImage = await propertyImageRepository.create({
+      logger.info(
+        { propertyId: newProperty.id, imageCount: validatedData.data.imageUrls.length },
+        "[Wizard] Property created, saving images"
+      );
+
+      // Save image URLs (images already uploaded via presigned URLs)
+      if (validatedData.data.imageUrls && validatedData.data.imageUrls.length > 0) {
+        const imagesToCreate = validatedData.data.imageUrls
+          .filter(url => url) // Filter out empty URLs
+          .map((url, index) => ({
             url,
-            alt: property.title,
-            order: i,
-            propertyId: property.id,
-          });
-          console.log(`[Wizard] Image ${i + 1} saved successfully. ID: ${savedImage.id}, PropertyID: ${savedImage.propertyId}`);
-          
-          // Verify immediate persistence
-          const verifyImage = await propertyImageRepository.findById(savedImage.id);
-          if (verifyImage) {
-             console.log(`[Wizard] Verification successful: Image ${savedImage.id} found in DB.`);
-          } else {
-             console.error(`[Wizard] CRITICAL: Image ${savedImage.id} reported saved but not found in DB immediately after!`);
-          }
+            alt: newProperty.title,
+            order: index,
+            propertyId: newProperty.id,
+          }));
 
-        } catch (error) {
-          console.error(`[Wizard] Error saving image ${i + 1}:`, error);
-          if (error instanceof Error) {
-             console.error(`[Wizard] Error stack:`, error.stack);
-             console.error(`[Wizard] Error name:`, error.name);
-             console.error(`[Wizard] Error message:`, error.message);
-          }
-          logger.error(
-            { err: error, propertyId: property.id, imageIndex: i },
-            "[Property] Error saving image URL"
+        if (imagesToCreate.length > 0) {
+          // Create all images atomically (all-or-nothing)
+          await tx.propertyImage.createMany({
+            data: imagesToCreate,
+          });
+
+          logger.info(
+            { propertyId: newProperty.id, imageCount: imagesToCreate.length },
+            "[Wizard] Images saved successfully"
           );
-          // Continue with other images even if one fails
         }
       }
-      
-      console.log("[Wizard] Finished image saving process");
-    } else {
-      console.log("[Wizard] No image URLs to save");
-    }
+
+      return newProperty;
+    });
 
     // 7. Revalidate caches
     revalidatePath("/mapa");
     revalidatePath("/dashboard/propiedades");
+
+    logger.info(
+      { propertyId: property.id, userId: user.id },
+      "[Wizard] Property creation completed successfully"
+    );
 
     return {
       success: true,
       propertyId: property.id,
     };
   } catch (error) {
-    logger.error({ err: error, userId: user.id }, "Error creating property from wizard");
+    logger.error({ err: error, userId: user.id }, "[Wizard] Error creating property from wizard");
     return {
       success: false,
       error:
