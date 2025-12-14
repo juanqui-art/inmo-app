@@ -36,6 +36,7 @@ import { getCurrentUser } from "@/lib/auth";
 
 // Lazy load map components (only needed when view=map)
 // Reduces initial bundle size by ~400KB (Mapbox GL JS)
+// Note: Client Component is automatically detected (no ssr: false needed in Next.js 16)
 const MapPageClient = dynamic(
   () =>
     import("@/components/map/map-page-client").then((mod) => ({
@@ -50,7 +51,6 @@ const MapPageClient = dynamic(
         </div>
       </div>
     ),
-    ssr: false, // Map requires browser APIs
   }
 );
 
@@ -68,7 +68,6 @@ const PropertySplitView = dynamic(
         </div>
       </div>
     ),
-    ssr: false,
   }
 );
 import { toMapProperties } from "@/lib/utils/property-mappers";

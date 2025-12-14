@@ -4,6 +4,7 @@ import { canCreateProperty, getImageLimit } from "@/lib/permissions/property-lim
 
 // Lazy load property form (heavy component with validation + image uploads)
 // Reduces initial bundle size by ~50-100KB
+// Note: Client Component is automatically detected (no ssr: false needed in Next.js 16)
 const NewPropertyClient = dynamic(
   () =>
     import("@/components/dashboard/property-wizard/new-property-client").then(
@@ -18,7 +19,6 @@ const NewPropertyClient = dynamic(
         </div>
       </div>
     ),
-    ssr: false, // Form has client-side validation and interactivity
   }
 );
 import { db } from "@repo/database";
