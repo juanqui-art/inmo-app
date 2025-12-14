@@ -200,6 +200,14 @@ const serverSchema = z.object({
     .min(32, "CSRF_SECRET must be at least 32 characters for security")
     .optional()
     .describe("Secret key for CSRF token generation (HMAC-SHA256)"),
+
+  // OpenAI (AI-powered search)
+  OPENAI_API_KEY: z
+    .string()
+    .min(1, "OPENAI_API_KEY is required for AI-powered search")
+    .startsWith("sk-", "OPENAI_API_KEY must be a valid OpenAI API key")
+    .optional()
+    .describe("OpenAI API key for natural language search parsing"),
 });
 
 /**
@@ -245,6 +253,9 @@ const parseEnv = (): Env => {
       NEXT_PUBLIC_GOOGLE_MAPS_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY,
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
         process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+      NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
+      NEXT_PUBLIC_SENTRY_ENABLED: process.env.NEXT_PUBLIC_SENTRY_ENABLED,
     });
 
     if (!result.success) {
@@ -253,19 +264,26 @@ const parseEnv = (): Env => {
       throw new Error("Invalid environment variables");
     }
 
-    // Merge with defaults for server vars
+    // Merge with defaults for server vars (not available in browser)
     return {
       ...result.data,
       DATABASE_URL: process.env.DATABASE_URL || "",
       DIRECT_URL: process.env.DIRECT_URL,
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
       RESEND_API_KEY: process.env.RESEND_API_KEY,
+      EMAIL_FROM_DOMAIN: process.env.EMAIL_FROM_DOMAIN,
       STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
       STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
       STRIPE_BASIC_PRICE_ID: process.env.STRIPE_BASIC_PRICE_ID,
       STRIPE_PRO_PRICE_ID: process.env.STRIPE_PRO_PRICE_ID,
+      SENTRY_DSN: process.env.SENTRY_DSN,
+      SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT,
+      SENTRY_ENABLED: process.env.SENTRY_ENABLED,
+      SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
       UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
       UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+      CSRF_SECRET: process.env.CSRF_SECRET,
+      OPENAI_API_KEY: process.env.OPENAI_API_KEY,
       NODE_ENV: (process.env.NODE_ENV || "development") as
         | "development"
         | "production"
@@ -282,16 +300,26 @@ const parseEnv = (): Env => {
     NEXT_PUBLIC_GOOGLE_MAPS_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY,
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
+    NEXT_PUBLIC_SENTRY_ENABLED: process.env.NEXT_PUBLIC_SENTRY_ENABLED,
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
+    EMAIL_FROM_DOMAIN: process.env.EMAIL_FROM_DOMAIN,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     STRIPE_BASIC_PRICE_ID: process.env.STRIPE_BASIC_PRICE_ID,
     STRIPE_PRO_PRICE_ID: process.env.STRIPE_PRO_PRICE_ID,
+    SENTRY_DSN: process.env.SENTRY_DSN,
+    SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT,
+    SENTRY_ENABLED: process.env.SENTRY_ENABLED,
+    SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+    CSRF_SECRET: process.env.CSRF_SECRET,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     NODE_ENV: process.env.NODE_ENV,
   });
 
