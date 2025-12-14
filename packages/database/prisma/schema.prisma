@@ -38,6 +38,10 @@ model User {
   favorites    Favorite[]
   appointments Appointment[] @relation("ClientAppointments")
   agentAppointments Appointment[] @relation("AgentAppointments")
+  
+  // CRM Relations
+  agentClients    AgentClient[] @relation("AgentClients")    // Clients this agent manages
+  clientOfAgents  AgentClient[] @relation("ClientOfAgents")  // Agents managing this user
 
   @@index([subscriptionTier])
   @@map("users")
@@ -69,10 +73,12 @@ model Property {
   // Relations
   agent        User          @relation("AgentProperties", fields: [agentId], references: [id], onDelete: Cascade)
   images       PropertyImage[]
+  videos       PropertyVideo[] // External video URLs (YouTube, TikTok, etc.)
   favorites    Favorite[]
   appointments Appointment[]
   shares       PropertyShare[]
   views        PropertyView[]
+  interestedClients AgentClient[] // CRM: Clients interested in this property
 
   @@index([transactionType, status])
   @@index([transactionType]) // Standalone for filtered queries
@@ -100,6 +106,31 @@ model PropertyImage {
 
   @@index([propertyId])
   @@map("property_images")
+}
+
+model PropertyVideo {
+  id         String        @id @default(uuid())
+  url        String        // External video URL (YouTube, TikTok, etc.)
+  platform   VideoPlatform // Auto-detected from URL
+  title      String?       // Optional title/description
+  order      Int           @default(0)
+  propertyId String        @map("property_id")
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("property_videos")
+}
+
+enum VideoPlatform {
+  YOUTUBE
+  TIKTOK
+  INSTAGRAM
+  FACEBOOK
+  VIMEO
+  OTHER
 }
 
 model Favorite {
@@ -156,6 +187,15 @@ enum SubscriptionTier {
   PLUS
   AGENT
   PRO
+}
+
+enum LeadStatus {
+  NEW           // Nuevo - acaba de interactuar
+  CONTACTED     // Contactado - ya se comunicó
+  INTERESTED    // Interesado - mostró interés real
+  NEGOTIATING   // En negociación
+  CLOSED_WON    // Cerrado - compró/rentó
+  CLOSED_LOST   // Perdido - no cerró
 }
 
 enum TransactionType {
@@ -236,4 +276,30 @@ enum SharePlatform {
   LINKEDIN
   EMAIL
   COPY_LINK
+}
+
+// ==================== CRM LITE ====================
+
+model AgentClient {
+  id         String     @id @default(uuid())
+  agentId    String     @map("agent_id")
+  clientId   String     @map("client_id")
+  status     LeadStatus @default(NEW)
+  notes      String?    @db.Text
+  source     String?    // Where did this lead come from? (appointment, favorite, manual, etc.)
+  propertyId String?    @map("property_id") // Property they're interested in (optional)
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  agent    User      @relation("AgentClients", fields: [agentId], references: [id], onDelete: Cascade)
+  client   User      @relation("ClientOfAgents", fields: [clientId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  @@unique([agentId, clientId]) // One agent-client relationship per pair
+  @@index([agentId])
+  @@index([clientId])
+  @@index([status])
+  @@index([agentId, status]) // For filtered queries by agent
+  @@map("agent_clients")
 }
