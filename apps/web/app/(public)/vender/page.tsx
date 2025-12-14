@@ -369,9 +369,9 @@ export default async function VenderPage() {
             </p>
           </div>
 
-          {/* Pricing Cards Grid */}
+          {/* Pricing Cards Grid - Excluding PRO tier for now */}
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
-            {tiers.map((tier) => (
+            {tiers.filter(tier => tier.name !== "PRO").map((tier) => (
               <PricingCard key={tier.name} tier={tier} compact={true} />
             ))}
           </div>

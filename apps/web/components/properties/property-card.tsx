@@ -1,5 +1,6 @@
 "use client";
 
+import { TierBadge } from "@/components/badges/tier-badge";
 import { PropertyImageFallback } from "@/components/map/property-image-fallback";
 import { CATEGORY_BADGE_STYLE } from "@/lib/styles/property-card-styles";
 import {
@@ -197,6 +198,10 @@ const PropertyCardComponent = ({
         {/* Top Content: Badges & Favorite Button */}
         <div className="absolute top-3 left-3 right-3 md:top-4 md:left-4 md:right-4 flex justify-between items-start z-20">
           <div className="flex flex-col gap-2">
+            {/* Tier Badge (Premium/Verificado) */}
+            {property.agent?.subscriptionTier && (
+              <TierBadge tier={property.agent.subscriptionTier as "FREE" | "PLUS" | "AGENT" | "PRO"} size="sm" />
+            )}
             <Badge className={transactionBadgeStyle}>
               {TRANSACTION_TYPE_LABELS[property.transactionType]}
             </Badge>

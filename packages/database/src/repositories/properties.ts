@@ -6,14 +6,14 @@
  */
 
 import type {
-  Prisma,
-  PropertyCategory,
-  PropertyStatus,
-  TransactionType,
+    Prisma,
+    PropertyCategory,
+    PropertyStatus,
+    TransactionType,
 } from "@prisma/client";
 import { cache } from "react";
 import { db } from "../client";
-import { sanitizeHTML, sanitizePlainText, sanitizeOptional } from "../utils/sanitize";
+import { sanitizeHTML, sanitizeOptional, sanitizePlainText } from "../utils/sanitize";
 
 /**
  * Property select con relaciones incluidas
@@ -54,6 +54,7 @@ export const propertySelect = {
       email: true,
       phone: true,
       avatar: true,
+      subscriptionTier: true, // For tier badges on property cards
     },
   },
 } satisfies Prisma.PropertySelect;
