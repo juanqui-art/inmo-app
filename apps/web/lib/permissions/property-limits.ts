@@ -7,8 +7,10 @@
  * Updated: Dic 5, 2025 - New tier structure (FREE/PLUS/AGENT/PRO)
  */
 
-import type { SubscriptionTier } from "@repo/database";
+import type { Prisma, SubscriptionTier } from "@repo/database";
 import { db } from "@repo/database";
+
+type TxClient = Prisma.TransactionClient | typeof db;
 
 /**
  * Get maximum properties allowed for a subscription tier
@@ -71,8 +73,9 @@ export function getFeaturedLimit(tier: SubscriptionTier): number | null {
  */
 export async function canCreateProperty(
   userId: string,
+  tx: TxClient = db,
 ): Promise<{ allowed: boolean; reason?: string; limit?: number }> {
-  const user = await db.user.findUnique({
+  const user = await tx.user.findUnique({
     where: { id: userId },
     select: { subscriptionTier: true },
   });
@@ -83,7 +86,7 @@ export async function canCreateProperty(
 
   const limit = getPropertyLimit(user.subscriptionTier);
 
-  const currentCount = await db.property.count({
+  const currentCount = await tx.property.count({
     where: { agentId: userId },
   });
 
@@ -108,7 +111,7 @@ export function canUploadImage(
 ): { allowed: boolean; reason?: string; limit: number } {
   const limit = getImageLimit(tier);
 
-  if (currentImageCount >= limit) {
+  if (currentImageCount > limit) {
     return {
       allowed: false,
       reason: `Has alcanzado el límite de ${limit} imágenes. Actualiza tu plan para agregar más.`,
@@ -125,8 +128,9 @@ export function canUploadImage(
  */
 export async function canFeatureProperty(
   userId: string,
+  tx: TxClient = db,
 ): Promise<{ allowed: boolean; reason?: string; limit: number | null }> {
-  const user = await db.user.findUnique({
+  const user = await tx.user.findUnique({
     where: { id: userId },
     select: { subscriptionTier: true },
   });
@@ -153,7 +157,7 @@ export async function canFeatureProperty(
   }
 
   // Count currently featured properties (permanent highlights)
-  const currentFeaturedCount = await db.property.count({
+  const currentFeaturedCount = await tx.property.count({
     where: {
       agentId: userId,
       isFeatured: true,

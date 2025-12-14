@@ -5,6 +5,7 @@ import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { Loader2, Upload, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 
 interface UploadedImage {
   file: File;
@@ -45,7 +46,8 @@ export function Step4() {
         }
       });
     };
-  }, [formData.imageUrls]); // Depend on imageUrls to re-initialize if they change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount to initialize, do not react to store updates to avoid loops
 
   /**
    * Upload a single file using presigned URL
@@ -95,11 +97,28 @@ export function Step4() {
    * Handle file drop/selection
    */
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    // Filter out files that would exceed maxFiles
-    const filesToProcess = acceptedFiles.slice(0, Math.max(0, 10 - images.length));
+    const remainingSlots = maxImages - images.length;
+    
+    // Check if limits exceeded
+    if (acceptedFiles.length > remainingSlots) {
+       toast.warning(`Solo puedes subir ${maxImages} imágenes con tu plan actual.`);
+       
+       if (remainingSlots <= 0) {
+         return;
+       }
+       
+       toast.info(`Subiendo solo las primeras ${remainingSlots} imágenes...`);
+    }
 
-    if (filesToProcess.length === 0 && acceptedFiles.length > 0) {
-      alert("Has alcanzado el límite máximo de 10 imágenes.");
+    // Filter out files that would exceed maxFiles
+    const filesToProcess = acceptedFiles.slice(0, Math.max(0, remainingSlots));
+
+    if (filesToProcess.length === 0) {
+      if (images.length >= maxImages) {
+         // Already handled by toast above or simple logic
+      } else {
+         // Should not happen if slice logic is correct but good safety
+      }
       return;
     }
 
@@ -168,24 +187,25 @@ export function Step4() {
   }, [images, updateFormData]);
 
   const removeFile = (index: number) => {
-    setImages(prev => {
-      const imageToRemove = prev[index];
+    const imageToRemove = images[index];
       
-      // Revoke preview URL if it was a blob URL
-      if (imageToRemove && imageToRemove.preview.startsWith("blob:")) {
-        URL.revokeObjectURL(imageToRemove.preview);
-      }
+    // Revoke preview URL if it was a blob URL
+    if (imageToRemove && imageToRemove.preview.startsWith("blob:")) {
+      URL.revokeObjectURL(imageToRemove.preview);
+    }
       
-      const newImages = prev.filter((_, i) => i !== index);
+    const newImages = images.filter((_, i) => i !== index);
+    
+    // Update local state
+    setImages(newImages);
       
-      // Update store with new list of uploaded URLs
-      const uploadedUrls = newImages
-        .filter(img => img.url && !img.error)
-        .map(img => img.url!);
-      updateFormData({ imageUrls: uploadedUrls });
+    // Update store with new list of uploaded URLs
+    const uploadedUrls = newImages
+      .filter(img => img.url && !img.error)
+      .map(img => img.url!);
       
-      return newImages;
-    });
+    console.log("[ImagesStep] Removed file, updating store with URLs:", uploadedUrls);
+    updateFormData({ imageUrls: uploadedUrls });
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -193,9 +213,9 @@ export function Step4() {
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png', '.webp']
     },
-    maxFiles: 10,
+    maxFiles: maxImages, // Use dynamic limit from plan
     maxSize: 5 * 1024 * 1024, // 5MB
-    disabled: isUploading || images.length >= 10,
+    disabled: isUploading || images.length >= maxImages,
   });
 
   const handleContinue = () => {
@@ -204,17 +224,17 @@ export function Step4() {
     const hasErrors = images.some(img => img.error);
     
     if (hasUploadingImages) {
-      alert("Espera a que todas las imágenes terminen de subir");
+      toast.error("Espera a que todas las imágenes terminen de subir");
       return;
     }
     
     if (hasErrors) {
-      alert("Algunas imágenes tienen errores. Por favor, elimínalas e intenta de nuevo.");
+      toast.error("Algunas imágenes tienen errores. Por favor, elimínalas e intenta de nuevo.");
       return;
     }
 
     if (images.length === 0) {
-      alert("Por favor, sube al menos una imagen de tu propiedad.");
+      toast.error("Por favor, sube al menos una imagen de tu propiedad.");
       return;
     }
     
@@ -224,9 +244,17 @@ export function Step4() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">Galería de Fotos</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Galería de Fotos</h2>
+          <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-primary/10 text-primary border-primary/20">
+            Plan {limits.tierName} • {maxImages} imágenes
+          </span>
+        </div>
         <p className="text-sm text-muted-foreground">
           Sube fotos de alta calidad de tu propiedad. Las imágenes se suben automáticamente.
+        </p>
+        <p className="text-xs text-amber-600 dark:text-amber-400">
+          📸 Tu plan permite hasta {maxImages} imágenes por propiedad. {images.length}/{maxImages} usadas.
         </p>
       </div>
 

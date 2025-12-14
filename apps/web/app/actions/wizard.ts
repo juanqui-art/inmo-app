@@ -3,6 +3,7 @@
 import { requireRole } from "@/lib/auth";
 import {
     canCreateProperty,
+    canUploadImage,
 } from "@/lib/permissions/property-limits";
 import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { logger } from "@/lib/utils/logger";
@@ -68,7 +69,8 @@ export async function createPropertyFromWizard(
     throw error;
   }
 
-  // 3. Check subscription tier limits
+  // 3. Removed external check, moving to transaction for atomicity
+  /*
   const permissionCheck = await canCreateProperty(user.id);
   if (!permissionCheck.allowed) {
     return {
@@ -78,6 +80,7 @@ export async function createPropertyFromWizard(
       currentLimit: permissionCheck.limit,
     };
   }
+  */
 
   // 4. Validate data with Zod
   const validatedData = wizardPropertySchema.safeParse(data);
@@ -97,6 +100,13 @@ export async function createPropertyFromWizard(
     // - Image references creation
     // If ANY step fails, entire operation is rolled back (no orphaned properties)
     const property = await db.$transaction(async (tx) => {
+      // 1. Check Property Limit (INSIDE TX)
+      // Pass 'tx' to verify limit with current transaction snapshot
+      const permCheck = await canCreateProperty(user.id, tx);
+      if (!permCheck.allowed) {
+        throw new Error(permCheck.reason || "Límite de propiedades excedido");
+      }
+
       // Create property
       const newProperty = await tx.property.create({
         data: {
@@ -137,6 +147,12 @@ export async function createPropertyFromWizard(
           }));
 
         if (imagesToCreate.length > 0) {
+          // 2. Check Image Limit (INSIDE TX)
+          const imageCheck = canUploadImage(user.subscriptionTier, imagesToCreate.length);
+          if (!imageCheck.allowed) {
+             throw new Error(imageCheck.reason || "Límite de imágenes excedido");
+          }
+
           // Create all images atomically (all-or-nothing)
           await tx.propertyImage.createMany({
             data: imagesToCreate,

@@ -5,6 +5,8 @@ import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { Card } from "@repo/ui";
 import { Bath, BedDouble, CheckCircle2, Image as ImageIcon, MapPin, Ruler } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 // Helper for formatting price if the utility doesn't exist or is not exported
 const formatPrice = (price: number) => {
@@ -18,8 +20,14 @@ const formatPrice = (price: number) => {
 export function Step5() {
   const { formData, resetWizard } = usePropertyWizardStore();
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
+    if (isSubmitting) return; // Prevent double submit
+    setIsSubmitting(true);
+    
+    toast.loading("Publicando propiedad...", { id: "publish-property" });
+    
     try {
       // Images are already uploaded in Step4, just create property with URLs
       console.log("[Review] Submitting property with imageUrls:", formData.imageUrls);
@@ -45,15 +53,24 @@ export function Step5() {
 
       if (result.success) {
         console.log("Property created successfully:", result.propertyId);
-        resetWizard();
+        toast.success("¡Propiedad publicada exitosamente!", { id: "publish-property" });
+        
+        // Navigate FIRST, then reset wizard after navigation starts
         router.push("/dashboard/propiedades");
+        
+        // Reset wizard after short delay to avoid flicker
+        setTimeout(() => {
+          resetWizard();
+        }, 100);
       } else {
         console.error("Error creating property:", result.error);
-        alert(result.error || "Error al crear la propiedad");
+        toast.error(result.error || "Error al crear la propiedad", { id: "publish-property" });
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.error("Error creating property:", error);
-      alert(error instanceof Error ? error.message : "Error al crear la propiedad");
+      toast.error(error instanceof Error ? error.message : "Error al crear la propiedad", { id: "publish-property" });
+      setIsSubmitting(false);
     }
   };
 

@@ -39,8 +39,9 @@ interface WizardState {
   resetWizard: () => void;
   limits: {
     maxImages: number;
+    tierName: string;
   };
-  setLimits: (limits: { maxImages: number }) => void;
+  setLimits: (limits: { maxImages: number; tierName?: string }) => void;
 }
 
 const initialFormData: PropertyFormData = {
@@ -71,6 +72,7 @@ export const usePropertyWizardStore = create<WizardState>()(
       formData: initialFormData,
       limits: {
         maxImages: 5, // Default safe limit
+        tierName: "Free", // Default tier name
       },
       setLimits: (limits) => set((state) => ({ limits: { ...state.limits, ...limits } })),
       setStep: (step) => set({ currentStep: step }),
@@ -88,7 +90,7 @@ export const usePropertyWizardStore = create<WizardState>()(
         set({
           currentStep: 1,
           formData: initialFormData,
-          limits: { maxImages: 5 },
+          limits: { maxImages: 5, tierName: "Free" },
         }),
     }),
     {

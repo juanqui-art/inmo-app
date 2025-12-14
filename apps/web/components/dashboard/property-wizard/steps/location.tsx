@@ -196,23 +196,55 @@ export function Step2() {
               )}
             />
 
-             {/* Hidden Lat/Lng fields to ensure they are submitted but visible for debug if needed */}
-             <div className="hidden">
+            {/* Manual Latitude/Longitude (for users who get coordinates from Google Maps) */}
+            <div className="col-span-2 pt-4 border-t">
+              <h3 className="text-sm font-medium mb-2">
+                Coordenadas (Opcional)
+              </h3>
+              <p className="text-xs text-muted-foreground mb-4">
+                Si el mapa no funciona bien, puedes copiar las coordenadas desde Google Maps y pegarlas aquí.
+              </p>
+              <div className="grid gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control as any}
                   name="latitude"
                   render={({ field }) => (
-                    <input type="hidden" {...field} />
+                    <FormItem>
+                      <FormLabel>Latitud</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="any"
+                          placeholder="Ej: -2.9001"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 />
-                 <FormField
+                <FormField
                   control={form.control as any}
                   name="longitude"
                   render={({ field }) => (
-                    <input type="hidden" {...field} />
+                    <FormItem>
+                      <FormLabel>Longitud</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="any"
+                          placeholder="Ej: -79.0059"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 />
-             </div>
+              </div>
+            </div>
           </div>
         </form>
       </Form>
