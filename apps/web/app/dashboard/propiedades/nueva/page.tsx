@@ -1,6 +1,26 @@
-import { NewPropertyClient } from "@/components/dashboard/property-wizard/new-property-client";
+import dynamic from "next/dynamic";
 import { requireRole } from "@/lib/auth";
 import { canCreateProperty, getImageLimit } from "@/lib/permissions/property-limits";
+
+// Lazy load property form (heavy component with validation + image uploads)
+// Reduces initial bundle size by ~50-100KB
+const NewPropertyClient = dynamic(
+  () =>
+    import("@/components/dashboard/property-wizard/new-property-client").then(
+      (mod) => ({ default: mod.NewPropertyClient })
+    ),
+  {
+    loading: () => (
+      <div className="container max-w-4xl py-10">
+        <div className="flex flex-col items-center justify-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-blue-600" />
+          <p className="text-sm text-gray-600">Cargando formulario...</p>
+        </div>
+      </div>
+    ),
+    ssr: false, // Form has client-side validation and interactivity
+  }
+);
 import { db } from "@repo/database";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@repo/ui";
 import { AlertCircle } from "lucide-react";

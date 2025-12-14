@@ -8,8 +8,8 @@
  * Output: { location: "Cuenca", bedrooms: 3, maxPrice: 200000, features: ["moderna"] }
  */
 
-import OpenAI from "openai";
 import { logger } from "@/lib/utils/logger";
+import { getOpenAIClient } from "./openai-client";
 import {
   getAvailableCitiesForPrompt,
   validateLocation,
@@ -198,26 +198,13 @@ IMPORTANT:
  */
 export async function parseSearchQuery(query: string): Promise<ParseResult> {
   try {
-    // Validate API key
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      return {
-        success: false,
-        filters: {},
-        rawQuery: query,
-        confidence: 0,
-        error: "OPENAI_API_KEY not configured. Add it to your .env.local file.",
-      };
-    }
-
     // Get available cities for prompt injection
     const availableCities = await getAvailableCitiesForPrompt();
     const systemPrompt = generateSystemPrompt(availableCities);
 
-    // Initialize OpenAI client
-    const openai = new OpenAI({
-      apiKey,
-    });
+    // Initialize OpenAI client (lazy loaded for better performance)
+    // API key validation happens in getOpenAIClient()
+    const openai = await getOpenAIClient();
 
     // Call OpenAI with the user's query
     const response = await openai.chat.completions.create({

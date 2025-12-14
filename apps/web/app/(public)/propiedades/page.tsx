@@ -29,11 +29,48 @@
  * - Rationale: Industry best practices (Booking.com, Hotels.com pattern)
  */
 
-import { MapPageClient } from "@/components/map/map-page-client";
+import dynamic from "next/dynamic";
 import MapStoreInitializer from "@/components/map/map-store-initializer";
 import { PropertyGridPage } from "@/components/properties/property-grid-page";
-import { PropertySplitView } from "@/components/properties/property-split-view";
 import { getCurrentUser } from "@/lib/auth";
+
+// Lazy load map components (only needed when view=map)
+// Reduces initial bundle size by ~400KB (Mapbox GL JS)
+const MapPageClient = dynamic(
+  () =>
+    import("@/components/map/map-page-client").then((mod) => ({
+      default: mod.MapPageClient,
+    })),
+  {
+    loading: () => (
+      <div className="flex h-[calc(100vh-64px)] items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-blue-600 mx-auto" />
+          <p className="mt-4 text-sm text-gray-600">Cargando mapa...</p>
+        </div>
+      </div>
+    ),
+    ssr: false, // Map requires browser APIs
+  }
+);
+
+const PropertySplitView = dynamic(
+  () =>
+    import("@/components/properties/property-split-view").then((mod) => ({
+      default: mod.PropertySplitView,
+    })),
+  {
+    loading: () => (
+      <div className="flex h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-blue-600 mx-auto" />
+          <p className="mt-4 text-sm text-gray-600">Cargando vista dividida...</p>
+        </div>
+      </div>
+    ),
+    ssr: false,
+  }
+);
 import { toMapProperties } from "@/lib/utils/property-mappers";
 import { parseBoundsParams, parseFilterParams } from "@/lib/utils/url-helpers";
 import AuthStoreInitializer from "@/stores/AuthStoreInitializer";
