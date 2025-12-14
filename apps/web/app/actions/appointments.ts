@@ -10,19 +10,19 @@
 
 "use server";
 
-import { AppointmentRepository, PropertyRepository } from "@repo/database";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { validateAppointmentDateTime } from "@/lib/constants/availability";
-import { validateCSRFToken, isCSRFError } from "@/lib/csrf";
+import { isCSRFError, validateCSRFToken } from "@/lib/csrf";
 import {
-  sendAppointmentCancelledEmail,
-  sendAppointmentConfirmedEmail,
-  sendAppointmentCreatedEmail,
+    sendAppointmentCancelledEmail,
+    sendAppointmentConfirmedEmail,
+    sendAppointmentCreatedEmail,
 } from "@/lib/email/appointment-emails";
 import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { logger } from "@/lib/utils/logger";
+import { AppointmentRepository, PropertyRepository } from "@repo/database";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 // ==================== SCHEMAS ====================
 
@@ -144,6 +144,20 @@ export async function createAppointmentAction(formData: {
       notes: validatedData.notes,
     });
 
+    // 6.5 Create or update AgentClient for CRM tracking
+    try {
+      const { getOrCreateAgentClient } = await import("./crm");
+      await getOrCreateAgentClient(
+        property.agentId,
+        user.id,
+        "appointment",
+        validatedData.propertyId
+      );
+    } catch (crmError) {
+      // Don't fail appointment creation if CRM integration fails
+      logger.warn({ err: crmError }, "[createAppointmentAction] CRM integration failed");
+    }
+
     // 7. Enviar emails de notificación
     const emailResult = await sendAppointmentCreatedEmail({
       clientName: user.name || "Cliente",
@@ -167,6 +181,7 @@ export async function createAppointmentAction(formData: {
     // 8. Revalidar rutas
     revalidatePath("/perfil/citas");
     revalidatePath("/dashboard/citas");
+    revalidatePath("/dashboard/clientes");
     revalidatePath(`/propiedades/${validatedData.propertyId}`);
 
     return {
