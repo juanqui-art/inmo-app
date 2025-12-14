@@ -252,3 +252,28 @@
     max-width: 900px;
   }
 }
+@layer utilities {
+  /* Google Maps InfoWindow Overrides for Glassmorphism */
+  .gm-style-iw-c {
+    padding: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .gm-style-iw-d {
+    overflow: hidden !important;
+    max-height: none !important;
+    background: none !important;
+  }
+
+  /* Hide default close button */
+  .gm-ui-hover-effect {
+    display: none !important;
+  }
+
+  /* Hide the tail/triangle */
+  .gm-style-iw-tc {
+    display: none !important;
+  }
+}

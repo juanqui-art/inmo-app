@@ -1,13 +1,14 @@
 "use client";
 
 import { env } from "@repo/env";
-import { APIProvider, AdvancedMarker, Map, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
+import { APIProvider, AdvancedMarker, InfoWindow, Map, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { MapControls } from "./map-controls";
 import { MapFilterChips } from "./map-filter-chips";
 import { MapMarker } from "./map-marker";
 import { MapSpinner } from "./map-spinner";
+import { PlaceCard } from "./place-card";
 import { PlaceMarker, type PlaceCategory } from "./place-marker";
 
 interface PropertyGoogleMapProps {
@@ -148,6 +149,7 @@ function PlacesManager({
 }) {
     const map = useMap();
     const placesLib = useMapsLibrary("places");
+    const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null);
     
     useEffect(() => {
         if (!placesLib || !map || !activeCategory) return;
@@ -195,10 +197,27 @@ function PlacesManager({
                     position={{ lat: place.lat, lng: place.lng }}
                     title={place.name}
                     zIndex={50}
+                    onClick={() => setSelectedPlace(place)}
                 >
                     <PlaceMarker type={place.type} />
                 </AdvancedMarker>
             ))}
+
+            {selectedPlace && (
+                <InfoWindow
+                    position={{ lat: selectedPlace.lat, lng: selectedPlace.lng }}
+                    onCloseClick={() => setSelectedPlace(null)}
+                    pixelOffset={[0, -32]}
+                    headerContent={null} // Remove default header
+                >
+                    <PlaceCard 
+                        name={selectedPlace.name} 
+                        rating={selectedPlace.rating} 
+                        type={selectedPlace.type}
+                        onClose={() => setSelectedPlace(null)} 
+                    />
+                </InfoWindow>
+            )}
         </>
     );
 }
