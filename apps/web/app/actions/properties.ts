@@ -434,10 +434,32 @@ export async function uploadPropertyImagesAction(
 /**
  * DELETE PROPERTY IMAGE ACTION
  * Elimina una imagen específica
+ *
+ * CSRF Protected: image deletion is a destructive operation
  */
-export async function deletePropertyImageAction(imageId: string) {
+export async function deletePropertyImageAction(
+  imageId: string,
+  csrfToken?: string | null
+) {
   // 1. Verificar autenticación
-  await requireRole(["AGENT", "ADMIN"]);
+  const user = await requireRole(["AGENT", "ADMIN"]);
+
+  // 2. CSRF Protection (destructive operation)
+  if (csrfToken) {
+    try {
+      await validateCSRFToken(csrfToken);
+    } catch (error) {
+      if (isCSRFError(error)) {
+        return { error: error.message };
+      }
+      throw error;
+    }
+  } else {
+    logger.warn(
+      { imageId, userId: user.id },
+      "deletePropertyImageAction called without CSRF token"
+    );
+  }
 
   try {
     // 2. Obtener la imagen

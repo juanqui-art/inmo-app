@@ -193,6 +193,13 @@ const serverSchema = z.object({
     .min(1, "UPSTASH_REDIS_REST_TOKEN is required")
     .optional()
     .describe("Upstash Redis REST token for rate limiting"),
+
+  // CSRF Protection
+  CSRF_SECRET: z
+    .string()
+    .min(32, "CSRF_SECRET must be at least 32 characters for security")
+    .optional()
+    .describe("Secret key for CSRF token generation (HMAC-SHA256)"),
 });
 
 /**
