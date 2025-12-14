@@ -28,6 +28,21 @@ import { PropertyRepository } from "@repo/database";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
+/**
+ * ISR Configuration
+ *
+ * Revalidate property pages every hour (3600 seconds).
+ * Benefits:
+ * - Cached pages serve instantly (0ms)
+ * - Fresh data every hour
+ * - Reduced database load
+ * - Better Core Web Vitals (LCP, FCP)
+ *
+ * Trade-off: Property changes take up to 1 hour to reflect
+ * (acceptable for public listings, critical updates use revalidatePath)
+ */
+export const revalidate = 3600; // 1 hour
+
 interface PropertyDetailPageProps {
   params: Promise<{
     "id-slug": string;
