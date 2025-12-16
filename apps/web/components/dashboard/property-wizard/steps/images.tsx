@@ -362,22 +362,24 @@ export function Step4() {
            <>
               <VideoUrlInput
                 onAdd={(video) => {
-                  const newVideos = [...formData.videos, video];
+                  const currentVideos = formData.videos || [];
+                  const newVideos = [...currentVideos, video];
                   updateFormData({ videos: newVideos });
                 }}
-                disabled={formData.videos.length >= limits.maxVideos}
+                disabled={(formData.videos || []).length >= limits.maxVideos}
               />
               
-              {formData.videos.length >= limits.maxVideos && (
+              {(formData.videos || []).length >= limits.maxVideos && (
                 <p className="text-xs text-amber-600 dark:text-amber-400">
                   Has alcanzado el límite de {limits.maxVideos} videos de tu plan.
                 </p>
               )}
 
               <VideoList
-                videos={formData.videos}
+                videos={formData.videos || []}
                 onRemove={(index) => {
-                  const newVideos = formData.videos.filter((_, i) => i !== index);
+                  const currentVideos = formData.videos || [];
+                  const newVideos = currentVideos.filter((_, i) => i !== index);
                   updateFormData({ videos: newVideos });
                 }}
               />
