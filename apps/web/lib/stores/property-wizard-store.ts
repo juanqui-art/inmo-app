@@ -26,6 +26,9 @@ export type PropertyFormData = {
   // Step 4: Images
   images: File[]; // Note: Files cannot be persisted easily, handled separately or just in memory
   imageUrls: string[]; // Public URLs of uploaded images (persisted)
+
+  // Step 4: Videos (external URLs)
+  videos: { url: string; platform: string; title?: string }[];
 };
 
 interface WizardState {
@@ -39,9 +42,10 @@ interface WizardState {
   resetWizard: () => void;
   limits: {
     maxImages: number;
+    maxVideos: number;
     tierName: string;
   };
-  setLimits: (limits: { maxImages: number; tierName?: string }) => void;
+  setLimits: (limits: { maxImages?: number; maxVideos?: number; tierName?: string }) => void;
 }
 
 const initialFormData: PropertyFormData = {
@@ -62,6 +66,7 @@ const initialFormData: PropertyFormData = {
   amenities: [],
   images: [],
   imageUrls: [],
+  videos: [],
 };
 
 export const usePropertyWizardStore = create<WizardState>()(
@@ -72,6 +77,7 @@ export const usePropertyWizardStore = create<WizardState>()(
       formData: initialFormData,
       limits: {
         maxImages: 5, // Default safe limit
+        maxVideos: 0, // Default: no videos for free tier
         tierName: "Free", // Default tier name
       },
       setLimits: (limits) => set((state) => ({ limits: { ...state.limits, ...limits } })),
@@ -90,7 +96,7 @@ export const usePropertyWizardStore = create<WizardState>()(
         set({
           currentStep: 1,
           formData: initialFormData,
-          limits: { maxImages: 5, tierName: "Free" },
+          limits: { maxImages: 5, maxVideos: 0, tierName: "Free" },
         }),
     }),
     {

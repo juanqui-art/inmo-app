@@ -242,3 +242,52 @@ export function getTierPricing(tier: SubscriptionTier): {
     period: "mes",
   };
 }
+
+/**
+ * Get maximum videos per property for a subscription tier
+ * Used for external video URLs (YouTube, TikTok, etc.)
+ */
+export function getVideoLimit(tier: SubscriptionTier): number {
+  switch (tier) {
+    case "FREE":
+      return 0; // No videos for free tier
+    case "PLUS":
+      return 1; // 1 video for Plus
+    case "AGENT":
+      return 3; // 3 videos for Agent
+    case "PRO":
+      return 10; // Generous limit for Pro
+    default:
+      return 0;
+  }
+}
+
+/**
+ * Check if user can add more videos to a property
+ * @returns Object with permission status, reason, and limit
+ */
+export function canAddVideo(
+  tier: SubscriptionTier,
+  currentVideoCount: number,
+): { allowed: boolean; reason?: string; limit: number } {
+  const limit = getVideoLimit(tier);
+
+  if (limit === 0) {
+    return {
+      allowed: false,
+      reason: "Los videos están disponibles desde el plan Plus. Actualiza para agregar videos a tus propiedades.",
+      limit: 0,
+    };
+  }
+
+  if (currentVideoCount >= limit) {
+    return {
+      allowed: false,
+      reason: `Has alcanzado el límite de ${limit} ${limit === 1 ? "video" : "videos"}. Actualiza tu plan para agregar más.`,
+      limit,
+    };
+  }
+
+  return { allowed: true, limit };
+}
+

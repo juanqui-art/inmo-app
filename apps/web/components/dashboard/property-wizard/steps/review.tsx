@@ -49,6 +49,7 @@ export function Step5() {
         area: formData.area,
         amenities: formData.amenities,
         imageUrls: formData.imageUrls, // URLs from Step4
+        videos: formData.videos, // External video URLs
       });
 
       if (result.success) {

@@ -22,6 +22,7 @@ import { PropertyFloatingActionCard } from "@/components/property-detail/propert
 import { PropertyHeroCarouselWrapper } from "@/components/property-detail/property-hero-carousel-wrapper";
 import { PropertyLocationCard } from "@/components/property-detail/property-location-card";
 import { PropertyStatsCard } from "@/components/property-detail/property-stats-card";
+import { PropertyVideoPlayer } from "@/components/property-detail/property-video-player";
 import { getCurrentUser } from "@/lib/auth";
 import { generateSlug, parseIdSlugParam } from "@/lib/utils/slug-generator";
 import { PropertyRepository } from "@repo/database";
@@ -187,6 +188,13 @@ export default async function PropertyDetailPage(
                 area={area}
               />
             </div>
+
+            {/* Video Player - Show if property has videos */}
+            {property.videos && property.videos.length > 0 && (
+              <div data-animate-card>
+                <PropertyVideoPlayer videos={property.videos} />
+              </div>
+            )}
 
             {/* Description Card */}
             {property.description && (

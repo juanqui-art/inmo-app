@@ -1,6 +1,7 @@
 "use client";
 
 import { generatePresignedUploadUrl, getPublicImageUrl } from "@/app/actions/upload";
+import { VideoUrlInput } from "@/components/property-wizard/video-url-input";
 import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { Loader2, Upload, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -339,6 +340,16 @@ export function Step4() {
           ))}
         </div>
       )}
+
+      {/* Divider */}
+      <div className="border-t pt-6 mt-6">
+        <VideoUrlInput
+          videos={formData.videos}
+          maxVideos={limits.maxVideos}
+          tierName={limits.tierName}
+          onVideosChange={(videos) => updateFormData({ videos })}
+        />
+      </div>
 
       {/* Hidden submit button to be triggered by WizardLayout */}
       <form id="wizard-step-form" onSubmit={(e) => { e.preventDefault(); handleContinue(); }} className="hidden">
