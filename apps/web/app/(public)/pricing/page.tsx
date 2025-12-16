@@ -55,6 +55,7 @@ const comparisonFeatures = [
     features: [
       { name: "Dashboard básico", FREE: true, PLUS: true, AGENT: true, PRO: true },
       { name: "Analytics", FREE: false, PLUS: true, AGENT: true, PRO: true },
+      { name: "Generador de descripción IA", FREE: false, PLUS: false, AGENT: true, PRO: true },
       { name: "CRM Lite (leads, notas)", FREE: false, PLUS: false, AGENT: true, PRO: true },
       { name: "CRM Completo (pipeline, export)", FREE: false, PLUS: false, AGENT: false, PRO: true },
       { name: "Landing page personal", FREE: false, PLUS: false, AGENT: true, PRO: true },

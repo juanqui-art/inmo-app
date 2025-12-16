@@ -69,9 +69,9 @@ export async function getAdvancedDashboardAnalytics(agentId: string) {
     db.$queryRaw<{ count: bigint }[]>`
       SELECT COUNT(DISTINCT user_id) as count
       FROM (
-        SELECT user_id FROM favorites WHERE property_id IN (SELECT id FROM properties WHERE agent_id = ${agentId}::uuid)
+        SELECT user_id FROM favorites WHERE property_id IN (SELECT id FROM properties WHERE agent_id = ${agentId})
         UNION
-        SELECT user_id FROM appointments WHERE property_id IN (SELECT id FROM properties WHERE agent_id = ${agentId}::uuid)
+        SELECT user_id FROM appointments WHERE property_id IN (SELECT id FROM properties WHERE agent_id = ${agentId})
       ) as unique_users
     `,
     

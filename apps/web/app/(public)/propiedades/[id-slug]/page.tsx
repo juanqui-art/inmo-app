@@ -224,6 +224,7 @@ export default async function PropertyDetailPage(
           <div data-animate-card>
             <PropertyFloatingActionCard
               price={formattedPrice}
+              agentId={property.agent?.id ?? ""}
               agentName={property.agent?.name}
               agentEmail={property.agent?.email}
               agentPhone={property.agent?.phone}

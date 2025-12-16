@@ -11,6 +11,7 @@ import { WhatsAppButton } from "@/components/shared/whatsapp-button";
 
 interface PropertyFloatingActionCardProps {
   price: string;
+  agentId: string;
   agentName?: string | null;
   agentEmail?: string | null;
   agentPhone?: string | null;
@@ -21,6 +22,7 @@ interface PropertyFloatingActionCardProps {
 
 export function PropertyFloatingActionCard({
   price,
+  agentId,
   agentName,
   agentEmail,
   agentPhone,
@@ -78,11 +80,12 @@ export function PropertyFloatingActionCard({
                  <p className="font-medium text-oslo-gray-900 dark:text-oslo-gray-100 truncate">
                    {agentName}
                  </p>
-                 {agentEmail && (
-                    <p className="text-sm text-oslo-gray-500 dark:text-oslo-gray-400 truncate">
-                      {agentEmail}
-                    </p>
-                 )}
+                 <a 
+                   href={`/agentes/${agentId}`}
+                   className="text-xs text-primary hover:underline hover:text-primary/80 font-medium block mt-0.5"
+                 >
+                   Ver portafolio completo
+                 </a>
                </div>
              </div>
 
