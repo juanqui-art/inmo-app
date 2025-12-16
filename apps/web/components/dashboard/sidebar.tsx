@@ -7,7 +7,7 @@
 
 import { ModeToggle } from "@/components/mode-toggle";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage, Button, Separator } from "@repo/ui";
+import { Button, Separator } from "@repo/ui";
 import { Building2, Calendar, Home, LogOut, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -128,31 +128,20 @@ export function Sidebar({ user, usageStats }: SidebarProps) {
 
         <Separator className="bg-border/50" />
 
-        {/* User Profile */}
-        <div className="p-4 m-2 rounded-xl bg-muted/30 border border-white/5">
-          <div className="flex items-center gap-3 mb-3">
-            <Avatar className="h-10 w-10 border border-border">
-              <AvatarImage src={user.avatar || ""} />
-              <AvatarFallback className="bg-primary/10 text-primary">
-                {user.name?.substring(0, 2).toUpperCase() || "US"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 overflow-hidden">
-              <p className="text-sm font-medium truncate">{user.name || "Usuario"}</p>
-              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-             <div className="flex-1">
-                <ModeToggle />
-             </div>
-             <form action="/auth/signout" method="post">
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10" title="Cerrar Sesión">
-                  <LogOut className="h-4 w-4" />
-                </Button>
-             </form>
-          </div>
+        {/* Footer Actions */}
+        <div className="p-4 flex items-center justify-between">
+          <ModeToggle />
+          <form action="/api/auth/logout" method="POST">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-2"
+              title="Cerrar Sesión"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="text-xs">Salir</span>
+            </Button>
+          </form>
         </div>
       </div>
     </aside>
