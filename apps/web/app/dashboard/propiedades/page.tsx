@@ -7,15 +7,20 @@
  */
 
 import { AgentPropertyCard } from "@/components/dashboard/agent-property-card";
+import { NewPropertyButton } from "@/components/dashboard/new-property-button";
 import { requireRole } from "@/lib/auth";
+import { canCreateProperty, getPropertyLimit } from "@/lib/permissions/property-limits";
+import type { TierName } from "@/lib/pricing/tiers";
 import { db } from "@repo/database/src/client";
-import { Button } from "@repo/ui";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 
 export default async function PropiedadesPage() {
   // Verificar que el usuario es AGENT o ADMIN
   const user = await requireRole(["AGENT", "ADMIN"]);
+
+  // Check property creation permission
+  const userTier = (user.subscriptionTier || "FREE") as TierName;
+  const propertyPermission = await canCreateProperty(user.id);
+  const propertyLimit = getPropertyLimit(userTier);
 
   // Dashboard-specific query: includes favorites, views, and appointments
   // This differs from propertyRepository.list() which doesn't include these relations
@@ -97,12 +102,11 @@ export default async function PropiedadesPage() {
         </div>
 
         {serializedProperties.length > 0 && (
-          <Link href="/dashboard/propiedades/nueva">
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Nueva Propiedad
-            </Button>
-          </Link>
+          <NewPropertyButton
+            canCreate={propertyPermission.allowed}
+            currentTier={userTier}
+            propertyLimit={propertyLimit}
+          />
         )}
       </div>
 
@@ -112,12 +116,12 @@ export default async function PropiedadesPage() {
           <p className="text-muted-foreground mb-4">
             No tienes propiedades publicadas aún
           </p>
-          <Link href="/dashboard/propiedades/nueva">
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Crear tu primera propiedad
-            </Button>
-          </Link>
+          <NewPropertyButton
+            canCreate={propertyPermission.allowed}
+            currentTier={userTier}
+            propertyLimit={propertyLimit}
+            variant="empty-state"
+          />
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 isolate">

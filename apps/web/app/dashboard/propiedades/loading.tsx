@@ -62,10 +62,8 @@ export default function PropiedadesLoading() {
         <Skeleton className="h-10 w-40" />
       </div>
 
-      {/* Properties Grid Skeleton */}
+      {/* Properties Grid Skeleton - Single card for better UX across all tiers */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <PropertyCardSkeleton />
-        <PropertyCardSkeleton />
         <PropertyCardSkeleton />
       </div>
     </div>

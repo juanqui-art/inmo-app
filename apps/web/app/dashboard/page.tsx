@@ -15,6 +15,7 @@
 import { Sparkline } from "@/components/dashboard/charts/sparkline";
 import { StatusDonut } from "@/components/dashboard/charts/status-donut";
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
+import { QuickActions } from "@/components/dashboard/quick-actions";
 import { ActivityItem, RecentActivity } from "@/components/dashboard/recent-activity";
 import { SimpleStatsCard } from "@/components/dashboard/simple-stats-card";
 import { StatsCard } from "@/components/dashboard/stats-card";
@@ -25,6 +26,7 @@ import {
     getAdvancedDashboardAnalytics,
     getBasicDashboardStats
 } from "@/lib/dashboard/analytics-helpers";
+import { canCreateProperty, getPropertyLimit } from "@/lib/permissions/property-limits";
 import { TIER_RANKS, type TierName } from "@/lib/pricing/tiers";
 import { db } from "@repo/database/src/client";
 import { Building2, Calendar, Eye, Heart, TrendingUp, Users } from "lucide-react";
@@ -36,6 +38,10 @@ export default async function DashboardPage() {
   const userTier = (user.subscriptionTier || "FREE") as TierName;
   const hasAdvancedAnalytics = TIER_RANKS[userTier] >= TIER_RANKS.AGENT;
   const showTrendIndicators = TIER_RANKS[userTier] >= TIER_RANKS.PLUS;
+
+  // Check property creation permission
+  const propertyPermission = await canCreateProperty(user.id);
+  const propertyLimit = getPropertyLimit(userTier);
 
   // Fetch base data for all tiers in parallel
   const [propertiesData, appointmentsData, recentFavorites, recentProperties] = await Promise.all([
@@ -313,24 +319,11 @@ export default async function DashboardPage() {
       <RecentActivity activities={recentActivities} />
 
       {/* Quick Actions */}
-      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">Accesos Rápidos</h2>
-        <div className="flex gap-4">
-          <a
-            href="/dashboard/propiedades/nueva"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
-          >
-            <Building2 className="h-4 w-4" />
-            Nueva Propiedad
-          </a>
-          <a
-            href="/dashboard/propiedades"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-border hover:bg-accent transition-colors text-sm font-medium"
-          >
-            Ver Mis Propiedades
-          </a>
-        </div>
-      </div>
+      <QuickActions
+        canCreateProperty={propertyPermission.allowed}
+        currentTier={userTier}
+        propertyLimit={propertyLimit}
+      />
 
       {/* Upgrade Modal (Client Component) */}
       <UpgradeModal />

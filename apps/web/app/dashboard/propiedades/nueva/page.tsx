@@ -1,6 +1,10 @@
-import dynamic from "next/dynamic";
 import { requireRole } from "@/lib/auth";
 import { canCreateProperty, getImageLimit } from "@/lib/permissions/property-limits";
+import { db } from "@repo/database";
+import { Button } from "@repo/ui";
+import { AlertCircle, CheckCircle, Sparkles } from "lucide-react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
 
 // Lazy load property form (heavy component with validation + image uploads)
 // Reduces initial bundle size by ~50-100KB
@@ -21,10 +25,6 @@ const NewPropertyClient = dynamic(
     ),
   }
 );
-import { db } from "@repo/database";
-import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@repo/ui";
-import { AlertCircle } from "lucide-react";
-import Link from "next/link";
 
 export default async function NewPropertyPage() {
   // 1. Verify Authentication & Role
@@ -49,37 +49,99 @@ export default async function NewPropertyPage() {
   const imageLimit = getImageLimit(dbUser?.subscriptionTier || "FREE");
 
   if (!permission.allowed) {
+    const currentTier = dbUser?.subscriptionTier || "FREE";
+    const nextTier = currentTier === "FREE" ? "PLUS" : currentTier === "PLUS" ? "AGENT" : "PRO";
+    const nextTierLimit = nextTier === "PLUS" ? 3 : nextTier === "AGENT" ? 10 : 20;
+    const nextTierPrice = nextTier === "PLUS" ? "$9.99" : nextTier === "AGENT" ? "$29.99" : "$59.99";
+
     return (
-      <div className="container max-w-2xl py-20">
-        <Card className="border-destructive/20 shadow-lg">
-          <CardHeader className="text-center pb-2">
-            <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
-              <AlertCircle className="w-6 h-6 text-destructive" />
+      <div className="container max-w-3xl py-12 px-4">
+        {/* Main Card */}
+        <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-background via-background to-muted/30 shadow-xl">
+          {/* Decorative gradient */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          
+          <div className="relative p-8 lg:p-10">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-2xl flex items-center justify-center mb-5 border border-amber-500/30">
+                <AlertCircle className="w-8 h-8 text-amber-500" />
+              </div>
+              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight mb-3">
+                Has alcanzado tu límite
+              </h1>
+              <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                Tu plan <span className="font-semibold text-foreground">{currentTier}</span> permite <span className="font-semibold text-foreground">{permission.limit} {permission.limit === 1 ? 'propiedad' : 'propiedades'}</span>
+              </p>
             </div>
-            <CardTitle className="text-2xl">Límite de Propiedades Alcanzado</CardTitle>
-            <CardDescription className="text-lg pt-2">
-              {permission.reason}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center text-muted-foreground">
-            <p>
-              Tu plan actual tiene un límite de <strong>{permission.limit} {permission.limit === 1 ? 'propiedad' : 'propiedades'}</strong>.
-              Para seguir publicando, necesitas actualizar tu suscripción.
-            </p>
-          </CardContent>
-          <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center pt-6">
-            <Button asChild variant="default" size="lg" className="w-full sm:w-auto">
-              <Link href="/dashboard?upgrade=true">
-                Actualizar Plan ahora
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
-              <Link href="/dashboard/propiedades">
-                Gestionar mis propiedades
-              </Link>
-            </Button>
-          </CardFooter>
-        </Card>
+
+            {/* Upgrade Comparison */}
+            <div className="grid sm:grid-cols-2 gap-4 mb-8">
+              {/* Current Plan */}
+              <div className="p-5 rounded-xl bg-muted/50 border border-border">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-2 h-2 rounded-full bg-muted-foreground" />
+                  <span className="text-sm font-medium text-muted-foreground">Plan Actual</span>
+                </div>
+                <div className="text-xl font-bold mb-1">{currentTier}</div>
+                <div className="text-sm text-muted-foreground">
+                  {permission.limit} {permission.limit === 1 ? 'propiedad' : 'propiedades'} • {currentTier === "FREE" ? "6" : "25"} imágenes
+                </div>
+              </div>
+
+              {/* Next Plan */}
+              <div className="p-5 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/30">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                  <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400">Recomendado</span>
+                </div>
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-xl font-bold">{nextTier}</span>
+                  <span className="text-sm text-muted-foreground">desde {nextTierPrice}/mes</span>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {nextTierLimit} propiedades • {nextTier === "PLUS" ? "25" : "20+"} imágenes
+                </div>
+              </div>
+            </div>
+
+            {/* Benefits */}
+            <div className="flex flex-wrap justify-center gap-4 mb-8 text-sm">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <CheckCircle className="w-4 h-4 text-emerald-500" />
+                <span>Sin compromiso</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <CheckCircle className="w-4 h-4 text-emerald-500" />
+                <span>Cancela cuando quieras</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <CheckCircle className="w-4 h-4 text-emerald-500" />
+                <span>Activa al instante</span>
+              </div>
+            </div>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/25 px-8">
+                <Link href="/pricing" className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Ver planes disponibles
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/dashboard/propiedades">
+                  Gestionar propiedades
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Help text */}
+        <p className="text-center text-sm text-muted-foreground mt-6">
+          ¿Tienes dudas? <Link href="/vender#planes" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">Compara todos los planes</Link>
+        </p>
       </div>
     );
   }

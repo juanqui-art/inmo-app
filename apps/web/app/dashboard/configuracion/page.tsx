@@ -53,7 +53,7 @@ export default async function ConfigurationPage() {
                   <p className="text-2xl font-bold text-primary">{user.subscriptionTier}</p>
                 </div>
                 {user.subscriptionTier !== "PRO" && (
-                  <Link href={`/dashboard?upgrade=${user.subscriptionTier === "FREE" ? "basic" : "pro"}`}>
+                  <Link href="/pricing">
                     <Button variant="outline" size="sm">Mejorar Plan</Button>
                   </Link>
                 )}
