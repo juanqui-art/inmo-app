@@ -143,10 +143,10 @@ export function VideoUrlInput({
         <div className="border-2 border-dashed rounded-lg p-6 text-center bg-muted/30">
           <Play className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
           <p className="text-sm text-muted-foreground">
-            Los videos están disponibles desde el plan Plus.
+            Vincula videos externos desde el plan Plus.
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            Agrega videos de YouTube, TikTok, Instagram y más.
+            Pega enlaces de YouTube, TikTok, Instagram y más. Sin límite de almacenamiento.
           </p>
         </div>
       </div>
@@ -158,7 +158,7 @@ export function VideoUrlInput({
       <div className="flex items-center justify-between">
         <h3 className="text-base font-medium flex items-center gap-2">
           <Play className="w-5 h-5" />
-          Videos
+          Videos Externos
         </h3>
         <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-primary/10 text-primary border-primary/20">
           Plan {tierName} • {videoList.length}/{maxVideos} videos
@@ -166,7 +166,7 @@ export function VideoUrlInput({
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Agrega enlaces de videos de YouTube, TikTok, Instagram, Facebook o Vimeo.
+        Pega enlaces de YouTube, TikTok, Instagram, Facebook o Vimeo. Los videos se muestran desde las plataformas originales.
       </p>
 
       {/* Video List */}
