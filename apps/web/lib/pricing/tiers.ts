@@ -121,6 +121,43 @@ export function getHighlightedTier(): PricingTier | undefined {
 }
 
 /**
+ * Helper: Get pricing info for a subscription tier
+ */
+export function getTierPricing(tier: "FREE" | "PLUS" | "AGENT" | "PRO") {
+  const tierData = pricingTiers.find((t) => t.name === tier);
+
+  if (!tierData) {
+    // Fallback to FREE if tier not found
+    return {
+      displayName: "Gratuito",
+      price: 0,
+      period: "mes",
+      limits: {
+        properties: 1,
+        images: 6,
+        videos: 0,
+        featured: 0,
+      },
+    };
+  }
+
+  // Extract limits from tier name
+  const limits = {
+    properties: tier === "FREE" ? 1 : tier === "PLUS" ? 3 : tier === "AGENT" ? 10 : 20,
+    images: tier === "FREE" ? 6 : tier === "PLUS" ? 25 : tier === "AGENT" ? 20 : 25,
+    videos: tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "AGENT" ? 3 : 10,
+    featured: tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "AGENT" ? 5 : Infinity,
+  };
+
+  return {
+    displayName: tierData.displayName,
+    price: tierData.price,
+    period: "mes",
+    limits,
+  };
+}
+
+/**
  * TIER RANKS - Jerarquía de planes
  * Usado para determinar upgrades/downgrades
  */
