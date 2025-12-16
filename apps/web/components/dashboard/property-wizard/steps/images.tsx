@@ -1,6 +1,7 @@
 "use client";
 
 import { generatePresignedUploadUrl, getPublicImageUrl } from "@/app/actions/upload";
+import { VideoList } from "@/components/property-wizard/video-list";
 import { VideoUrlInput } from "@/components/property-wizard/video-url-input";
 import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { Loader2, Upload, X } from "lucide-react";
@@ -342,13 +343,53 @@ export function Step4() {
       )}
 
       {/* Divider */}
-      <div className="border-t pt-6 mt-6">
-        <VideoUrlInput
-          videos={formData.videos}
-          maxVideos={limits.maxVideos}
-          tierName={limits.tierName}
-          onVideosChange={(videos) => updateFormData({ videos })}
-        />
+      <div className="border-t pt-6 mt-6 space-y-4">
+        <div className="space-y-1">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Videos</h3>
+            <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-primary/10 text-primary border-primary/20">
+             {limits.maxVideos === 0 
+               ? "No disponible en tu plan" 
+               : `Plan ${limits.tierName} • ${limits.maxVideos === 10 ? "Ilimitados" : `${limits.maxVideos} videos`}`}
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Agrega videos de YouTube, TikTok, Facebook o Instagram para mostrar mejor tu propiedad.
+          </p>
+        </div>
+
+        {limits.maxVideos > 0 && (
+           <>
+              <VideoUrlInput
+                onAdd={(video) => {
+                  const newVideos = [...formData.videos, video];
+                  updateFormData({ videos: newVideos });
+                }}
+                disabled={formData.videos.length >= limits.maxVideos}
+              />
+              
+              {formData.videos.length >= limits.maxVideos && (
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  Has alcanzado el límite de {limits.maxVideos} videos de tu plan.
+                </p>
+              )}
+
+              <VideoList
+                videos={formData.videos}
+                onRemove={(index) => {
+                  const newVideos = formData.videos.filter((_, i) => i !== index);
+                  updateFormData({ videos: newVideos });
+                }}
+              />
+           </>
+        )}
+
+        {limits.maxVideos === 0 && (
+          <div className="p-4 bg-muted rounded-lg border text-center space-y-2">
+            <p className="font-medium text-sm">Tu plan actual no permite agregar videos</p>
+            <p className="text-xs text-muted-foreground">Actualiza a Plus o Agente para agregar video tours.</p>
+          </div>
+        )}
       </div>
 
       {/* Hidden submit button to be triggered by WizardLayout */}
