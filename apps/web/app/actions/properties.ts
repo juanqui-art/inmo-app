@@ -12,6 +12,7 @@
 import { requireOwnership, requireRole } from "@/lib/auth";
 import { isCSRFError, validateCSRFToken } from "@/lib/csrf";
 import {
+    canAddVideo,
     canCreateProperty,
     canUploadImage,
 } from "@/lib/permissions/property-limits";
@@ -175,9 +176,56 @@ export async function updatePropertyAction(
 
   const { id, ...updateData } = validatedData.data;
 
+  // Extract videos from FormData (sent as JSON string)
+  const videosJson = formData.get("videos") as string | null;
+  let videosToSave: Array<{ url: string; platform: string; title?: string }> = [];
+  
+  if (videosJson) {
+    try {
+      videosToSave = JSON.parse(videosJson);
+    } catch (e) {
+      logger.warn({ videosJson }, "Failed to parse videos JSON");
+    }
+  }
+
   try {
-    // 4. Actualizar (repository verifica ownership)
-    await propertyRepository.update(id, updateData, user.id);
+    // 4. Actualizar propiedad y videos en transacción
+    await db.$transaction(async (tx) => {
+      // Update property data
+      await tx.property.update({
+        where: { id },
+        data: updateData as any, // Cast needed for Prisma types
+      });
+
+      // If videos were sent, replace all existing videos
+      if (videosJson !== null) {
+        // Validate video limits
+        if (videosToSave.length > 0) {
+          const videoCheck = canAddVideo(user.subscriptionTier, videosToSave.length);
+          if (!videoCheck.allowed) {
+            throw new Error(videoCheck.reason || "Límite de videos excedido");
+          }
+        }
+
+        // Delete existing videos
+        await tx.propertyVideo.deleteMany({
+          where: { propertyId: id },
+        });
+
+        // Create new videos
+        if (videosToSave.length > 0) {
+          await tx.propertyVideo.createMany({
+            data: videosToSave.map((video, index) => ({
+              url: video.url,
+              platform: video.platform as any, // Cast to VideoPlatform enum
+              title: video.title ?? null,
+              order: index,
+              propertyId: id,
+            })),
+          });
+        }
+      }
+    });
   } catch (error) {
     logger.error({ err: error, propertyId: id }, "Error updating property");
     return {

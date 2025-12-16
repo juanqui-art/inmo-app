@@ -1,10 +1,16 @@
 /**
  * PROPERTY FORM
  * Formulario compartido para crear y editar propiedades
+ * Con soporte para features tier-locked (Videos, AI Description)
  */
 
 "use client";
 
+import { generatePropertyDescription } from "@/app/actions/ai-description";
+import { ImageGallery } from "@/components/properties/image-gallery";
+import { ImageUpload } from "@/components/properties/image-upload";
+import { VideoUrlInput } from "@/components/property-wizard/video-url-input";
+import { getImageLimit, getTierDisplayName } from "@/lib/permissions/property-limits";
 import type { SerializedProperty, SubscriptionTier } from "@repo/database";
 import {
     Button,
@@ -24,7 +30,10 @@ import {
     Separator,
     Textarea
 } from "@repo/ui";
-import { useActionState, useEffect, useState } from "react";
+import { Loader2, Lock, Sparkles, Wand2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { LimitReachedModal } from "../modals/limit-reached-modal";
 import { LocationPickerMap } from "./location-picker-map";
 
@@ -73,26 +82,44 @@ interface PropertyFormProps {
   property?: SerializedProperty;
   action: any; // Server Action
   submitLabel: string;
+  // Tier info for feature gating
+  userTier?: SubscriptionTier;
+  videoLimit?: number;
+  existingVideos?: { url: string; platform: string }[];
 }
 
 export function PropertyForm({
   property,
   action,
   submitLabel,
+  userTier = "FREE",
+  videoLimit = 0,
+  existingVideos = [],
 }: PropertyFormProps) {
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const [state, formAction, isPending] =
     useActionState<PropertyFormState | null>(action, null);
-
+  const router = useRouter();
   const [limitModalOpen, setLimitModalOpen] = useState(false);
   const [limitData, setLimitData] = useState<{
     currentTier: SubscriptionTier;
     limit: number;
   } | null>(null);
 
-  // Estados locales para mapa y amenities
+  // Estados locales para mapa, amenities y videos
   const [latitude, setLatitude] = useState<number>(property?.latitude || -2.9001); // Cuenca default
   const [longitude, setLongitude] = useState<number>(property?.longitude || -79.0059);
-  const [amenities, setAmenities] = useState<string[]>([]);
+  const [amenities, setAmenities] = useState<string[]>(property?.amenities || []);
+  const [videos, setVideos] = useState<{ url: string; platform: string }[]>(existingVideos);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+
+  // Feature access checks
+  const canUseAI = userTier === "AGENT" || userTier === "PRO";
+  const tierDisplayName = getTierDisplayName(userTier);
+  const imageLimit = getImageLimit(userTier);
+  const currentImageCount = property?.images?.length || 0;
+
+
 
   const handleLocationSelect = (lat: number, lng: number) => {
     setLatitude(lat);
@@ -117,26 +144,66 @@ export function PropertyForm({
     }
   }, [state]);
 
+  // Handle AI description generation
+  const handleGenerateDescription = async () => {
+    if (!canUseAI) {
+      toast.error("Las descripciones con IA están disponibles desde el plan Agente");
+      return;
+    }
+
+    setIsGeneratingAI(true);
+    toast.loading("Generando descripción...", { id: "ai-description" });
+
+    try {
+      const result = await generatePropertyDescription({
+        title: property?.title || "",
+        transactionType: property?.transactionType || "SALE",
+        category: property?.category || "HOUSE",
+        bedrooms: property?.bedrooms || 0,
+        bathrooms: property?.bathrooms || 0,
+        area: property?.area || 0,
+        address: property?.address || "",
+        city: property?.city || "",
+        amenities: amenities,
+        price: property?.price || 0,
+      });
+
+      if (result.success && result.description && descriptionRef.current) {
+        descriptionRef.current.value = result.description;
+        toast.success("¡Descripción generada!", { id: "ai-description" });
+      } else {
+        toast.error(result.error || "No se pudo generar la descripción", { 
+          id: "ai-description" 
+        });
+      }
+    } catch {
+      toast.error("Error al generar descripción", { id: "ai-description" });
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
+
   return (
     <>
-      <form action={formAction} className="space-y-8">
+      <form action={formAction} className="space-y-10">
         {/* Hidden inputs for non-standard form fields */}
         {property && <input type="hidden" name="id" value={property.id} />}
         <input type="hidden" name="latitude" value={latitude} />
         <input type="hidden" name="longitude" value={longitude} />
+        <input type="hidden" name="videos" value={JSON.stringify(videos)} />
         {amenities.map(amenity => (
            <input key={amenity} type="hidden" name="amenities" value={amenity} /> 
         ))}
 
         {/* --- SECCIÓN 1: Información Principal --- */}
-        <Card>
-          <CardHeader>
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader className="pb-4">
             <CardTitle>Información Básica</CardTitle>
             <CardDescription>
               Detalles principales para publicar tu propiedad
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-8">
             
             {/* Title */}
             <div className="space-y-2">
@@ -204,14 +271,53 @@ export function PropertyForm({
               )}
             </div>
 
-            {/* Description */}
+            {/* Description with AI Button */}
             <div className="space-y-2">
-              <Label htmlFor="description">
-                Descripción <span className="text-destructive">*</span>
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="description">
+                  Descripción <span className="text-destructive">*</span>
+                </Label>
+                {/* AI Description Button */}
+                {canUseAI ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGenerateDescription}
+                    disabled={isGeneratingAI}
+                    className="gap-2 bg-gradient-to-r from-violet-500/10 to-purple-500/10 border-violet-500/30 hover:border-violet-500/50 hover:from-violet-500/20 hover:to-purple-500/20 text-violet-700 dark:text-violet-300"
+                  >
+                    {isGeneratingAI ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span className="hidden sm:inline">Generando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Wand2 className="w-4 h-4" />
+                        <span className="hidden sm:inline">Generar con IA</span>
+                        <Sparkles className="w-3 h-3" />
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled
+                    className="gap-2 opacity-60"
+                  >
+                    <Lock className="w-3 h-3" />
+                    <span className="hidden sm:inline">IA</span>
+                    <span className="text-xs text-muted-foreground">(Agente+)</span>
+                  </Button>
+                )}
+              </div>
               <Textarea
                 id="description"
                 name="description"
+                ref={descriptionRef}
                 defaultValue={property?.description || ""}
                 placeholder="Describe las características, ventajas y detalles únicos de la propiedad..."
                 rows={5}
@@ -275,9 +381,44 @@ export function PropertyForm({
           </CardContent>
         </Card>
 
-        {/* --- SECCIÓN 2: Detalles y Amenidades --- */}
-        <Card>
-          <CardHeader>
+        {/* --- SECCIÓN 2: Imágenes --- */}
+        {property && (
+          <Card className="border-border/50 shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle>Galería de Imágenes</CardTitle>
+              <CardDescription>
+                Gestiona las fotos de tu propiedad. La primera será la principal.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              <div>
+                <h3 className="text-sm font-medium mb-3">Imágenes Actuales</h3>
+                <ImageGallery
+                  images={property.images || []}
+                  propertyId={property.id}
+                  onImageDeleted={() => router.refresh()}
+                  onImagesReordered={() => router.refresh()}
+                  userTier={userTier}
+                />
+              </div>
+
+              <div className="pt-4 border-t">
+                 <h3 className="text-sm font-medium mb-3">Subir Nuevas Fotos</h3>
+                 <ImageUpload
+                   propertyId={property.id}
+                   onUploadComplete={() => router.refresh()}
+                   maxImages={imageLimit}
+                   currentImageCount={currentImageCount}
+                   tier={userTier}
+                 />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* --- SECCIÓN 3: Detalles y Amenidades --- */}
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader className="pb-4">
             <CardTitle>Características Detalladas</CardTitle>
           </CardHeader>
           <CardContent className="space-y-8">
@@ -349,15 +490,51 @@ export function PropertyForm({
           </CardContent>
         </Card>
 
-        {/* --- SECCIÓN 3: Ubicación y Mapa --- */}
-        <Card>
-          <CardHeader>
+        {/* --- SECCIÓN 3: Videos (Tier-locked) --- */}
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center justify-between">
+              <span>Videos</span>
+              <span className={`text-xs font-normal px-2 py-1 rounded-full ${
+                videoLimit > 0 
+                  ? "bg-primary/10 text-primary" 
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {videoLimit > 0 ? `Plan ${tierDisplayName}` : "Plan Plus+"}
+              </span>
+            </CardTitle>
+            <CardDescription>
+              Agrega videos de YouTube, TikTok, Instagram, Facebook o Vimeo
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <VideoUrlInput
+              videos={videos}
+              maxVideos={videoLimit}
+              tierName={tierDisplayName}
+              onVideosChange={setVideos}
+            />
+            {/* Hidden inputs for video URLs */}
+            {videos.map((video, index) => (
+              <input
+                key={`video-${index}`}
+                type="hidden"
+                name="videoUrls"
+                value={JSON.stringify(video)}
+              />
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* --- SECCIÓN 4: Ubicación y Mapa --- */}
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader className="pb-4">
             <CardTitle>Ubicación</CardTitle>
             <CardDescription>
               Define la dirección exacta y ajusta el pin en el mapa
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-8">
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="address">Dirección Completa</Label>
@@ -396,9 +573,50 @@ export function PropertyForm({
                   name="zipCode"
                   defaultValue={property?.zipCode || ""}
                   placeholder="Ej: 170150"
+                  className="bg-background"
                 />
               </div>
             </div>
+
+            <Separator />
+
+            {/* Manual Coordinates */}
+            <div className="space-y-4">
+              <div>
+                <Label className="text-base font-medium">Coordenadas Geográficas</Label>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Útil para ubicaciones rurales donde la dirección no es suficiente.
+                  Se actualizan automáticamente al mover el pin en el mapa.
+                </p>
+              </div>
+              <div className="grid gap-6 grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="latitude-input">Latitud</Label>
+                  <Input
+                    id="latitude-input"
+                    type="number"
+                    step="any"
+                    value={latitude}
+                    onChange={(e) => setLatitude(parseFloat(e.target.value) || 0)}
+                    placeholder="-2.9001"
+                    className="font-mono text-sm bg-background"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="longitude-input">Longitud</Label>
+                  <Input
+                    id="longitude-input"
+                    type="number"
+                    step="any"
+                    value={longitude}
+                    onChange={(e) => setLongitude(parseFloat(e.target.value) || 0)}
+                    placeholder="-79.0059"
+                    className="font-mono text-sm bg-background"
+                  />
+                </div>
+              </div>
+            </div>
+
 
             {/* MAPA */}
             <div className="space-y-3 pt-2">
@@ -410,10 +628,7 @@ export function PropertyForm({
                   onLocationSelect={handleLocationSelect}
                 />
               </div>
-              <div className="flex gap-4 text-xs text-muted-foreground">
-                <span>Lat: {latitude.toFixed(6)}</span>
-                <span>Lng: {longitude.toFixed(6)}</span>
-              </div>
+
             </div>
           </CardContent>
         </Card>
