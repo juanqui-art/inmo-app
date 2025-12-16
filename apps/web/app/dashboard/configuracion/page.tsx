@@ -30,6 +30,12 @@ export default async function ConfigurationPage() {
             <ProfileForm
               initialName={user.name}
               initialPhone={user.phone}
+              initialAvatar={user.avatar}
+              initialBio={user.bio}
+              initialLicenseId={user.licenseId}
+              initialWebsite={user.website}
+              initialBrandColor={user.brandColor}
+              initialLogoUrl={user.logoUrl}
             />
           </CardContent>
         </Card>
