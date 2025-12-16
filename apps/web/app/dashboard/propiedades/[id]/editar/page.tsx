@@ -4,15 +4,15 @@
  * Solo el owner o ADMIN pueden editar
  */
 
+import { updatePropertyAction } from "@/app/actions/properties";
+import { PropertyForm } from "@/components/properties/property-form";
+import { requireRole } from "@/lib/auth";
+import { getVideoLimit } from "@/lib/permissions/property-limits";
+import type { SubscriptionTier } from "@repo/database";
 import { propertyRepository } from "@repo/database";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { updatePropertyAction } from "@/app/actions/properties";
-import { ImageGallery } from "@/components/properties/image-gallery";
-import { ImageUpload } from "@/components/properties/image-upload";
-import { PropertyForm } from "@/components/properties/property-form";
-import { requireRole } from "@/lib/auth";
 
 interface EditarPropiedadPageProps {
   params: Promise<{ id: string }>;
@@ -39,7 +39,15 @@ export default async function EditarPropiedadPage({
     throw new Error("No tienes permiso para editar esta propiedad");
   }
 
-  // Note: property is already serialized (Decimal → number) by findByIdCached
+  // Get tier limits
+  const userTier = (user.subscriptionTier || "FREE") as SubscriptionTier;
+  const videoLimit = getVideoLimit(userTier);
+
+  // Get existing videos from property (if available)
+  const existingVideos = (property as any).videos?.map((v: any) => ({
+    url: v.url,
+    platform: v.platform,
+  })) || [];
 
   return (
     <div className="space-y-6">
@@ -66,33 +74,10 @@ export default async function EditarPropiedadPage({
             property={property}
             action={updatePropertyAction}
             submitLabel="Guardar Cambios"
+            userTier={userTier}
+            videoLimit={videoLimit}
+            existingVideos={existingVideos}
           />
-        </div>
-
-        {/* Sección de imágenes */}
-        <div className="rounded-lg border border-border bg-card p-6">
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold">
-                Imágenes de la Propiedad
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                La primera imagen será la imagen principal de la propiedad
-              </p>
-            </div>
-
-            {/* Galería de imágenes existentes */}
-            <div>
-              <h3 className="text-sm font-medium mb-3">Imágenes Actuales</h3>
-              <ImageGallery images={property.images} propertyId={id} />
-            </div>
-
-            {/* Upload de nuevas imágenes */}
-            <div>
-              <h3 className="text-sm font-medium mb-3">Agregar Más Imágenes</h3>
-              <ImageUpload propertyId={id} />
-            </div>
-          </div>
         </div>
       </div>
     </div>

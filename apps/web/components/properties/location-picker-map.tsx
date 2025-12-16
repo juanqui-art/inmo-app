@@ -86,7 +86,7 @@ export function LocationPickerMap({ latitude, longitude, onLocationSelect }: Loc
           </div>
         </Marker>
       </Map>
-      <div className="absolute bottom-2 left-2 bg-background/90 backdrop-blur px-3 py-1.5 rounded-md text-xs shadow-sm border">
+      <div className="absolute top-2 left-2 bg-background/90 backdrop-blur px-3 py-1.5 rounded-md text-xs shadow-sm border z-10">
         Haz clic o arrastra el marcador para ajustar la ubicación
       </div>
     </div>

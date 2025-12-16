@@ -35,6 +35,7 @@ export const propertySelect = {
   zipCode: true,
   latitude: true,
   longitude: true,
+  amenities: true,
   agentId: true,
   createdAt: true,
   updatedAt: true,
@@ -781,6 +782,7 @@ export type SerializedProperty = Omit<
   city?: string;
   state?: string;
   bedrooms?: number | null;
+  amenities?: string[];
 };
 
 /**
