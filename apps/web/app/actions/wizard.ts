@@ -2,6 +2,7 @@
 
 import { requireRole } from "@/lib/auth";
 import {
+    canAddVideo,
     canCreateProperty,
     canUploadImage,
 } from "@/lib/permissions/property-limits";
@@ -36,6 +37,13 @@ const wizardPropertySchema = z.object({
   
   // Step 4: Image URLs (already uploaded via API route)
   imageUrls: z.array(z.string()).default([]),
+
+  // Step 4: External video URLs
+  videos: z.array(z.object({
+    url: z.string().url(),
+    platform: z.string(),
+    title: z.string().optional(),
+  })).default([]),
 });
 
 type WizardPropertyData = z.infer<typeof wizardPropertySchema>;
@@ -163,6 +171,32 @@ export async function createPropertyFromWizard(
             "[Wizard] Images saved successfully"
           );
         }
+      }
+
+      // Save video URLs (external videos)
+      if (validatedData.data.videos && validatedData.data.videos.length > 0) {
+        // Check video limit
+        const videoCheck = canAddVideo(user.subscriptionTier, validatedData.data.videos.length);
+        if (!videoCheck.allowed) {
+          throw new Error(videoCheck.reason || "Límite de videos excedido");
+        }
+
+        const videosToCreate = validatedData.data.videos.map((video, index) => ({
+          url: video.url,
+          platform: video.platform as any, // Cast to VideoPlatform enum
+          title: video.title ?? null,
+          order: index,
+          propertyId: newProperty.id,
+        }));
+
+        await tx.propertyVideo.createMany({
+          data: videosToCreate,
+        });
+
+        logger.info(
+          { propertyId: newProperty.id, videoCount: videosToCreate.length },
+          "[Wizard] Videos saved successfully"
+        );
       }
 
       return newProperty;
