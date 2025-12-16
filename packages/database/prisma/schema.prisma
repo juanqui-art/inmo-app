@@ -30,6 +30,11 @@ model User {
 
   phone     String?
   avatar    String?
+  bio       String?          @db.Text
+  licenseId String?          @map("license_id")
+  website   String?
+  brandColor String?         @map("brand_color")
+  logoUrl   String?          @map("logo_url")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
