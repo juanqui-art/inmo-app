@@ -1,6 +1,7 @@
 "use client";
 
 import { deletePropertyAction } from "@/app/actions/properties";
+import { SharePropertyModal } from "@/components/property-wizard/share-property-modal";
 import { formatPropertyPrice, getTransactionBadgeStyle, TRANSACTION_TYPE_LABELS } from "@/lib/utils/property-formatters";
 import { generateSlug } from "@/lib/utils/slug-generator";
 import type { PropertyWithRelations, SerializedProperty } from "@repo/database";
@@ -22,6 +23,7 @@ import {
     Pause,
     Play,
     Ruler,
+    Share2,
     Sparkles,
     Trash2,
     TrendingUp
@@ -38,6 +40,7 @@ interface AgentPropertyCardProps {
 export function AgentPropertyCard({ property }: AgentPropertyCardProps) {
   const [isDeleted, setIsDeleted] = useState(false);
   const [showActions, setShowActions] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const router = useRouter();
   
   const images = property.images || [];
@@ -320,6 +323,18 @@ export function AgentPropertyCard({ property }: AgentPropertyCardProps) {
             <Button 
               variant="ghost" 
               size="sm"
+              className="px-2.5 hover:bg-primary/10 hover:text-primary transition-colors"
+              onClick={() => setShowShareModal(true)}
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          {/* Delete Button */}
+          <div className="relative group/delete">
+            <Button 
+              variant="ghost" 
+              size="sm"
               className="px-2.5 hover:bg-destructive/10 hover:text-destructive transition-colors"
               onClick={handleDelete}
             >
@@ -327,6 +342,15 @@ export function AgentPropertyCard({ property }: AgentPropertyCardProps) {
             </Button>
           </div>
         </div>
+
+        {/* Share Modal */}
+        <SharePropertyModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          propertyId={`${property.id}-${generateSlug(property.title)}`}
+          propertyTitle={property.title}
+          propertyPrice={Number(property.price) || undefined}
+        />
 
         {/* Footer - Updated Date */}
         <div className="flex items-center justify-between text-xs text-muted-foreground pt-2">
