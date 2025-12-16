@@ -288,6 +288,12 @@ model AgentClient {
   notes      String?    @db.Text
   source     String?    // Where did this lead come from? (appointment, favorite, manual, etc.)
   propertyId String?    @map("property_id") // Property they're interested in (optional)
+  
+  // UTM Tracking for campaign attribution
+  utmSource   String?   @map("utm_source")   // facebook, google, instagram
+  utmMedium   String?   @map("utm_medium")   // cpc, organic, social
+  utmCampaign String?   @map("utm_campaign") // campaign name
+  
   createdAt  DateTime   @default(now()) @map("created_at")
   updatedAt  DateTime   @updatedAt @map("updated_at")
 
@@ -301,5 +307,6 @@ model AgentClient {
   @@index([clientId])
   @@index([status])
   @@index([agentId, status]) // For filtered queries by agent
+  @@index([utmSource]) // For analytics queries
   @@map("agent_clients")
 }

@@ -47,6 +47,16 @@ export const propertySelect = {
     },
     orderBy: { order: "asc" as const },
   },
+  videos: {
+    select: {
+      id: true,
+      url: true,
+      platform: true,
+      title: true,
+      order: true,
+    },
+    orderBy: { order: "asc" as const },
+  },
   agent: {
     select: {
       id: true,

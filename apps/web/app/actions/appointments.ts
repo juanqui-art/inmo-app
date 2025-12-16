@@ -38,6 +38,10 @@ const createAppointmentSchema = z.object({
     },
   ),
   notes: z.string().max(500).optional(),
+  // UTM Tracking (optional)
+  utmSource: z.string().max(100).optional(),
+  utmMedium: z.string().max(100).optional(),
+  utmCampaign: z.string().max(255).optional(),
 });
 
 const updateAppointmentStatusSchema = z.object({
@@ -76,6 +80,10 @@ export async function createAppointmentAction(formData: {
   propertyId: string;
   scheduledAt: string; // ISO string from form
   notes?: string;
+  // UTM params from client
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
 }) {
   try {
     // 1. Validar input
@@ -83,6 +91,9 @@ export async function createAppointmentAction(formData: {
       propertyId: formData.propertyId,
       scheduledAt: new Date(formData.scheduledAt),
       notes: formData.notes,
+      utmSource: formData.utmSource,
+      utmMedium: formData.utmMedium,
+      utmCampaign: formData.utmCampaign,
     });
 
     // 2. Obtener usuario actual (requiere autenticación)
@@ -151,7 +162,12 @@ export async function createAppointmentAction(formData: {
         property.agentId,
         user.id,
         "appointment",
-        validatedData.propertyId
+        validatedData.propertyId,
+        {
+          utmSource: validatedData.utmSource,
+          utmMedium: validatedData.utmMedium,
+          utmCampaign: validatedData.utmCampaign,
+        }
       );
     } catch (crmError) {
       // Don't fail appointment creation if CRM integration fails

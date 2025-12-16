@@ -89,12 +89,19 @@ export async function updateClientNotesAction(
 /**
  * Create or get AgentClient record
  * Called when a client interacts with an agent (appointment, favorite, etc.)
+ * 
+ * Note: UTM fields require manual migration (see migrations/manual_utm_tracking.sql)
  */
 export async function getOrCreateAgentClient(
   agentId: string,
   clientId: string,
   source: string,
-  propertyId?: string
+  propertyId?: string,
+  utmParams?: {
+    utmSource?: string;
+    utmMedium?: string;
+    utmCampaign?: string;
+  }
 ): Promise<{ success: boolean; agentClientId?: string; error?: string }> {
   try {
     // Check if relationship already exists
@@ -108,10 +115,23 @@ export async function getOrCreateAgentClient(
     });
 
     if (existing) {
+      // Update UTM if new data provided and existing doesn't have UTM
+      // Note: utmSource field added via manual migration
+      const existingWithUtm = existing as typeof existing & { utmSource?: string };
+      if (utmParams?.utmSource && !existingWithUtm.utmSource) {
+        await db.agentClient.update({
+          where: { id: existing.id },
+          data: {
+            utmSource: utmParams.utmSource,
+            utmMedium: utmParams.utmMedium,
+            utmCampaign: utmParams.utmCampaign,
+          } as any, // UTM fields added via manual migration
+        });
+      }
       return { success: true, agentClientId: existing.id };
     }
 
-    // Create new relationship
+    // Create new relationship with UTM data
     const agentClient = await db.agentClient.create({
       data: {
         agentId,
@@ -119,7 +139,13 @@ export async function getOrCreateAgentClient(
         source,
         propertyId,
         status: "NEW",
-      },
+        // UTM fields added via manual migration (manual_utm_tracking.sql)
+        ...(utmParams?.utmSource && {
+          utmSource: utmParams.utmSource,
+          utmMedium: utmParams.utmMedium,
+          utmCampaign: utmParams.utmCampaign,
+        }),
+      } as any, // Type assertion for fields added via manual migration
     });
 
     return { success: true, agentClientId: agentClient.id };
