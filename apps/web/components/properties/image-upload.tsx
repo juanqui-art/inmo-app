@@ -25,11 +25,17 @@ import { LimitReachedModal } from "../modals/limit-reached-modal";
 interface ImageUploadProps {
   propertyId: string;
   onUploadComplete?: () => void;
+  maxImages: number;
+  currentImageCount: number;
+  tier: SubscriptionTier; 
 }
 
 export function ImageUpload({
   propertyId,
   onUploadComplete,
+  maxImages,
+  currentImageCount,
+  tier,
 }: ImageUploadProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -48,6 +54,18 @@ export function ImageUpload({
 
   // Manejar archivos seleccionados (drag & drop o click)
   const onDrop = useCallback((acceptedFiles: File[]) => {
+
+    // Validar cantidad total
+    if (currentImageCount + acceptedFiles.length > maxImages) {
+      // Mostrar modal de upgrade en lugar de solo texto
+      setLimitData({
+        currentTier: tier,
+        limit: maxImages,
+      });
+      setLimitModalOpen(true);
+      return;
+    }
+
     // Validar
     const validationError = validateImages(acceptedFiles);
     if (validationError) {
@@ -218,7 +236,7 @@ export function ImageUpload({
       if (result.error) {
         if (result.upgradeRequired) {
           setLimitData({
-            currentTier: "FREE", // TODO: Get actual tier
+            currentTier: tier, 
             limit: result.currentLimit || 0,
           });
           setLimitModalOpen(true);
@@ -281,7 +299,7 @@ export function ImageUpload({
                 Arrastra y suelta imágenes aquí, o haz clic para seleccionar
               </p>
               <p className="text-xs text-muted-foreground">
-                Máximo 10 imágenes, 5MB cada una. Formatos: JPG, PNG, WebP
+                Plan {tier}: Máximo {maxImages} imágenes ({maxImages - currentImageCount} restantes). 5MB/img.
               </p>
             </>
           )}
@@ -329,12 +347,6 @@ export function ImageUpload({
                   >
                     <X className="h-4 w-4" />
                   </button>
-                )}
-
-                {index === 0 && !isUploading && (
-                  <span className="absolute bottom-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
-                    Principal
-                  </span>
                 )}
               </div>
             ))}
