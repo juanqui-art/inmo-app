@@ -1,23 +1,27 @@
 "use client";
 
+/**
+ * LIMIT REACHED MODAL - Premium Design
+ * 
+ * Modal elegante que aparece cuando el usuario alcanza un límite de su plan.
+ * Usa el mismo diseño visual del NewPropertyButton modal.
+ */
+
+import { getTierFeatures, getTierPricing } from "@/lib/permissions/property-limits";
 import type { SubscriptionTier } from "@repo/database";
+import { Button } from "@repo/ui";
 import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@repo/ui";
-import { Check, Rocket } from "lucide-react";
+    AlertCircle,
+    CheckCircle,
+    Sparkles,
+    X,
+} from "lucide-react";
 import Link from "next/link";
-import { getTierFeatures } from "@/lib/permissions/property-limits";
 
 interface LimitReachedModalProps {
   isOpen: boolean;
   onClose: () => void;
-  limitType: "property" | "image" | "featured";
+  limitType: "property" | "image" | "featured" | "video";
   currentTier: SubscriptionTier;
   limit: number;
 }
@@ -29,82 +33,141 @@ export function LimitReachedModal({
   currentTier,
   limit,
 }: LimitReachedModalProps) {
-  const nextTier =
+  if (!isOpen) return null;
+
+  // Calculate next tier info
+  const nextTier: SubscriptionTier =
     currentTier === "FREE"
       ? "PLUS"
       : currentTier === "PLUS"
         ? "AGENT"
         : "PRO";
-  const nextTierFeatures = getTierFeatures(nextTier);
 
-  const titles = {
-    property: "Límite de propiedades alcanzado",
-    image: "Límite de imágenes alcanzado",
-    featured: "Límite de destacados alcanzado",
+  const nextTierFeatures = getTierFeatures(nextTier);
+  const nextTierPricing = getTierPricing(nextTier);
+  const currentTierFeatures = getTierFeatures(currentTier);
+
+  // Dynamic content based on limit type
+  const limitLabels = {
+    property: "propiedades",
+    image: "imágenes por propiedad",
+    featured: "propiedades destacadas",
+    video: "videos por propiedad",
   };
 
-  const descriptions = {
-    property: `Has alcanzado el límite de ${limit} propiedades de tu plan ${currentTier}.`,
-    image: `Has alcanzado el límite de ${limit} imágenes por propiedad de tu plan ${currentTier}.`,
-    featured: `Has alcanzado el límite de ${limit} destacados de tu plan ${currentTier}.`,
+  const nextLimits = {
+    property: nextTierFeatures.propertyLimit,
+    image: nextTierFeatures.imageLimit,
+    featured: nextTierFeatures.featuredLimit ?? "Ilimitados",
+    video: nextTier === "PLUS" ? 1 : nextTier === "AGENT" ? 3 : 10,
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4">
-            <Rocket className="w-6 h-6 text-primary" />
-          </div>
-          <DialogTitle className="text-center text-xl">
-            {titles[limitType]}
-          </DialogTitle>
-          <DialogDescription className="text-center pt-2">
-            {descriptions[limitType]}
-            <br />
-            Actualiza a{" "}
-            <span className="font-bold text-primary">Plan {nextTier}</span> para
-            desbloquear más.
-          </DialogDescription>
-        </DialogHeader>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
-        <div className="bg-muted/50 p-4 rounded-lg my-4 space-y-3">
-          <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">
-            Beneficios del Plan {nextTier}
-          </h4>
-          <ul className="space-y-2 text-sm">
-            <li className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-500" />
-              <span>
-                {nextTierFeatures.propertyLimit} Propiedades publicadas
+      {/* Modal Content */}
+      <div className="relative w-full max-w-lg bg-background rounded-2xl shadow-2xl border overflow-hidden animate-in zoom-in-95 fade-in duration-200">
+        {/* Close button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted transition-colors z-10"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Decorative gradient */}
+        <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+
+        <div className="relative p-6 lg:p-8">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <div className="mx-auto w-14 h-14 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-2xl flex items-center justify-center mb-4 border border-amber-500/30">
+              <AlertCircle className="w-7 h-7 text-amber-500" />
+            </div>
+            <h2 className="text-xl lg:text-2xl font-bold tracking-tight mb-2">
+              Has alcanzado tu límite
+            </h2>
+            <p className="text-muted-foreground">
+              Tu plan <span className="font-semibold text-foreground">{currentTierFeatures.displayName}</span> permite{" "}
+              <span className="font-semibold text-foreground">
+                {limit} {limitLabels[limitType]}
               </span>
-            </li>
-            <li className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-500" />
-              <span>{nextTierFeatures.imageLimit} Imágenes por propiedad</span>
-            </li>
-            {nextTierFeatures.hasFeatured && (
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-green-500" />
-                <span>
-                  {nextTierFeatures.hasUnlimitedFeatured
-                    ? "Destacados ilimitados"
-                    : `${nextTierFeatures.featuredLimit} Propiedades destacadas`}
-                </span>
-              </li>
-            )}
-          </ul>
-        </div>
+            </p>
+          </div>
 
-        <DialogFooter className="flex-col sm:flex-col gap-2">
-          <Button asChild className="w-full" size="lg">
-            <Link href="/pricing">Actualizar Plan</Link>
-          </Button>
-          <Button variant="ghost" onClick={onClose} className="w-full">
-            No por ahora
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          {/* Upgrade Comparison */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            {/* Current Plan */}
+            <div className="p-4 rounded-xl bg-muted/50 border border-border">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-muted-foreground" />
+                <span className="text-xs font-medium text-muted-foreground">Actual</span>
+              </div>
+              <div className="text-lg font-bold">{currentTierFeatures.displayName}</div>
+              <div className="text-xs text-muted-foreground">
+                {limit} {limitLabels[limitType]}
+              </div>
+            </div>
+
+            {/* Next Plan */}
+            <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/30">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">
+                  Recomendado
+                </span>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-lg font-bold">{nextTierFeatures.displayName}</span>
+                <span className="text-xs text-muted-foreground">${nextTierPricing.price}/mes</span>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {nextLimits[limitType]} {limitLabels[limitType]}
+              </div>
+            </div>
+          </div>
+
+          {/* Benefits */}
+          <div className="flex flex-wrap justify-center gap-3 mb-6 text-xs">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Sin compromiso</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Cancela cuando quieras</span>
+            </div>
+          </div>
+
+          {/* CTAs */}
+          <div className="flex flex-col gap-2">
+            <Button
+              asChild
+              size="lg"
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/25"
+            >
+              <Link href="/pricing" className="flex items-center justify-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                Ver planes disponibles
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              className="w-full"
+              onClick={onClose}
+            >
+              Cerrar
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
