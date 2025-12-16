@@ -63,6 +63,7 @@ export { Input, type InputProps } from "./components/input";
 export { Label } from "./components/label";
 export { PasswordInput } from "./components/password-input";
 export { Popover, PopoverContent, PopoverTrigger } from "./components/popover";
+export { Progress } from "./components/progress";
 export {
     Select,
     SelectContent,
