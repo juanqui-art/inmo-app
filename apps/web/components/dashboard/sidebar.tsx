@@ -8,7 +8,7 @@
 import { ModeToggle } from "@/components/mode-toggle";
 import { cn } from "@/lib/utils";
 import { Button, Separator } from "@repo/ui";
-import { Building2, Calendar, Home, LogOut, Settings, Users } from "lucide-react";
+import { Building2, Calendar, CreditCard, Home, LogOut, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PlanUsage } from "./plan-usage";
@@ -59,6 +59,12 @@ const navItems: NavItem[] = [
     href: "/dashboard/clientes",
     icon: Users,
     roles: ["AGENT", "ADMIN"],
+  },
+  {
+    title: "Suscripción",
+    href: "/dashboard/suscripcion",
+    icon: CreditCard,
+    roles: ["CLIENT", "AGENT", "ADMIN"],
   },
   {
     title: "Configuración",
