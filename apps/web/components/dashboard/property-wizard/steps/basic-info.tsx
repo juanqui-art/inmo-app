@@ -1,5 +1,6 @@
 "use client";
 
+import { AIDescriptionButton } from "@/components/property-wizard/ai-description-button";
 import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -32,7 +33,10 @@ const step1Schema = z.object({
 type Step1Values = z.infer<typeof step1Schema>;
 
 export function Step1() {
-  const { formData, updateFormData, setStep } = usePropertyWizardStore();
+  const { formData, updateFormData, setStep, limits } = usePropertyWizardStore();
+  
+  // Check if tier allows AI description (AGENT or PRO)
+  const canUseAI = limits.tierName === "Agente" || limits.tierName === "Pro";
 
   const form = useForm({
     resolver: zodResolver(step1Schema),
@@ -166,10 +170,18 @@ export function Step1() {
             name="description"
             render={({ field }) => (
               <FormItem className="col-span-2">
-                <FormLabel>Descripción</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Descripción</FormLabel>
+                  <AIDescriptionButton
+                    onDescriptionGenerated={(description: string) => {
+                      field.onChange(description);
+                    }}
+                    canUse={canUseAI}
+                  />
+                </div>
                 <FormControl>
                   <Textarea
-                    placeholder="Describe los detalles de la propiedad..."
+                    placeholder="Describe los detalles de la propiedad o usa IA para generarla..."
                     className="min-h-[120px]"
                     {...field}
                   />
