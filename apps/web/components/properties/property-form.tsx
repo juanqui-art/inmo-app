@@ -10,6 +10,7 @@ import { generatePropertyDescription } from "@/app/actions/ai-description";
 import { ImageGallery } from "@/components/properties/image-gallery";
 import { ImageUpload } from "@/components/properties/image-upload";
 import { VideoUrlInput } from "@/components/property-wizard/video-url-input";
+import { VideoList } from "@/components/property-wizard/video-list";
 import { getImageLimit, getTierDisplayName } from "@/lib/permissions/property-limits";
 import type { SerializedProperty, SubscriptionTier } from "@repo/database";
 import {
@@ -507,13 +508,37 @@ export function PropertyForm({
               Agrega videos de YouTube, TikTok, Instagram, Facebook o Vimeo
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <VideoUrlInput
-              videos={videos}
-              maxVideos={videoLimit}
-              tierName={tierDisplayName}
-              onVideosChange={setVideos}
-            />
+          <CardContent className="space-y-4">
+            {videoLimit > 0 ? (
+              <>
+                <VideoUrlInput
+                  onAdd={(video) => {
+                    setVideos([...videos, video]);
+                  }}
+                  disabled={videos.length >= videoLimit}
+                />
+
+                {videos.length >= videoLimit && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    Has alcanzado el límite de {videoLimit} videos de tu plan.
+                  </p>
+                )}
+
+                <VideoList
+                  videos={videos}
+                  onRemove={(index) => {
+                    setVideos(videos.filter((_, i) => i !== index));
+                  }}
+                />
+              </>
+            ) : (
+              <div className="text-center py-8 text-sm text-muted-foreground">
+                <Lock className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p>Los videos están disponibles desde el plan Plus</p>
+                <p className="text-xs mt-1">Actualiza tu plan para agregar videos a tus propiedades</p>
+              </div>
+            )}
+
             {/* Hidden inputs for video URLs */}
             {videos.map((video, index) => (
               <input
