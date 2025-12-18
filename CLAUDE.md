@@ -227,26 +227,35 @@ Con modelo de comisiones (3% por transacción):
 
 ---
 
-## 💳 Freemium Model (Actualizado Dic 5, 2025)
+## 💳 Freemium Model (Actualizado Dic 18, 2025)
 
-**Status:** ✅ Decisiones REVISADAS - Nueva Estrategia de Segmentación B2C/B2B
+**Status:** 🔄 REFACTOR PENDIENTE - Nueva arquitectura de suscripciones
 
-**Modelo de negocio**: Freemium con 4 tiers (FREE/PLUS/AGENT/PRO)
+**Modelo de negocio**: Freemium con 4 tiers (FREE/PLUS/BUSINESS/PRO)
 
-### Pricing Actualizado (Ecuador - USD)
+> **IMPORTANTE:** Hay un refactor arquitectónico pendiente.
+> Ver: `docs/architecture/SUBSCRIPTION_ARCHITECTURE_REFACTOR.md`
+>
+> **Cambios clave:**
+> - Tier `AGENT` renombrado a `BUSINESS` (evitar colisión con role)
+> - Nueva tabla `Subscription` separada de `User`
+> - Solo AGENTs tienen suscripción (CLIENTs no)
+> - Schema agnóstico de payment provider (Lemon Squeezy, no Stripe)
+
+### Pricing Actualizado (Ecuador - USD) - MVP Simplificado Dic 18, 2025
 
 ```
-FREE:   $0/mes     (1 propiedad, 6 fotos, sin destacados)
-PLUS:   $9.99/mes  (3 propiedades, 25 fotos, 1 destacado permanente)  ← B2C
-AGENT:  $29.99/mes (10 propiedades, 20 fotos, 5 destacados, CRM Lite) ← B2B
-PRO:    $59.99/mes (20 propiedades, 25 fotos, ∞ destacados, CRM Full) ← B2B
+FREE:     $0/mes     (1 propiedad, 6 fotos, 0 videos)
+PLUS:     $9.99/mes  (3 propiedades, 10 fotos, 1 video, 1 destacado)    ← B2C
+BUSINESS: $29.99/mes (10 propiedades, 15 fotos, 3 videos, 5 destacados) ← B2B
+PRO:      EN ESPERA  (lanzar cuando haya demanda de BUSINESS)
 ```
 
 ### Cambios Clave vs Anterior
 
 **❌ ELIMINADO:** BASIC ($4.99) - Tier ambiguo sin propuesta de valor clara
 **✅ NUEVO:** PLUS ($9.99) - Enfocado 100% en dueños B2C (venta rápida)
-**✅ NUEVO:** AGENT ($29.99) - Bridge para agentes pequeños con CRM básico
+**✅ RENOMBRADO:** BUSINESS ($29.99) - Antes "AGENT", renombrado para evitar colisión con UserRole
 **✅ AJUSTADO:** PRO ($59.99) - Premium B2B con herramientas profesionales
 
 ### Segmentación Clara
@@ -258,23 +267,21 @@ PRO:    $59.99/mes (20 propiedades, 25 fotos, ∞ destacados, CRM Full) ← B2B
 
 **PLUS (B2C - Dueños):**
 - Target: Dueño particular vendiendo su casa/depto
-- Limits: 3 propiedades, 25 fotos HD, 1 destacado permanente
+- Limits: 3 propiedades, 10 fotos, 1 video, 1 destacado
 - Value prop: "Vende más rápido con máxima visibilidad"
 - LTV esperado: $20-30 (2-3 meses hasta vender, luego cancela)
 
-**AGENT (B2B Core - Agentes Pequeños):**
+**BUSINESS (B2B Core - Agentes):** _(antes AGENT)_
 - Target: Agente freelance/pequeño (2-10 propiedades activas)
-- Limits: 10 propiedades, 20 fotos, 5 destacados permanentes
-- Features: CRM Lite (leads, estados, notas, analytics básico)
+- Limits: 10 propiedades, 15 fotos, 3 videos, 5 destacados
+- Features: CRM Lite (leads, estados, notas), Generador IA
 - Value prop: "Gestiona tu negocio + no pierdas leads"
 - LTV esperado: $360/año (retención 80%)
 
-**PRO (B2B Premium - Agentes Profesionales):**
-- Target: Agencia/agente profesional (10-50 propiedades)
-- Limits: 20 propiedades, 25 fotos, destacados ilimitados
-- Features: CRM completo + Analytics avanzado + Smart data local
-- Value prop: "Herramientas profesionales + data de mercado"
-- LTV esperado: $720/año (retención 85%)
+**PRO (EN ESPERA):**
+- Lanzar cuando haya demanda de usuarios BUSINESS
+- Target futuro: Agencias/equipos grandes
+- Limits planeados: 20 propiedades, 20 fotos, 5 videos, ∞ destacados
 
 ### Mecánica de Destacados
 
@@ -304,19 +311,27 @@ PRO:    $59.99/mes (20 propiedades, 25 fotos, ∞ destacados, CRM Full) ← B2B
 - Usuario las mantiene publicadas hasta que las elimine manualmente
 - Simple, flexible, y generoso para lanzamiento
 
-**Nomenclatura**:
-- Código: `FREE`, `PLUS`, `AGENT`, `PRO` (enum SubscriptionTier)
-- UI: "Gratuito", "Plus", "Agente", "Pro" (traducido)
+**Nomenclatura** (actualizado Dic 18, 2025):
+- Código: `FREE`, `PLUS`, `BUSINESS`, `PRO` (enum SubscriptionTier)
+- UI: "Gratuito", "Plus", "Business", "Pro" (traducido)
+- **NOTA:** `AGENT` renombrado a `BUSINESS` para evitar colisión con `UserRole.AGENT`
+
+**Payment Provider**: Lemon Squeezy (no Stripe)
+- Stripe no tiene cobertura en Ecuador (requiere Atlas $500)
+- Lemon Squeezy funciona directo en Latinoamérica
+- Schema diseñado agnóstico del provider
 
 **Mercado objetivo**: Todo Ecuador, marketing focalizado en Cuenca/Azuay
 
-**Próximos pasos**:
-1. Sprint 1: Actualizar schema + permissions (1 semana)
-2. Sprint 2: Actualizar UI pricing + dashboard (1 semana)
-3. Sprint 3-4: Stripe Integration (2 semanas)
-4. Sprint 5-6: Beta Testing (2 semanas)
+**Próximos pasos** (actualizados):
+1. **Refactor arquitectura** - Ver `docs/architecture/SUBSCRIPTION_ARCHITECTURE_REFACTOR.md`
+2. Sprint 1: Migración DB + nueva tabla Subscription (1 sesión)
+3. Sprint 2: Actualizar código + UI (1-2 sesiones)
+4. Sprint 3-4: Lemon Squeezy Integration (2 semanas)
+5. Sprint 5-6: Beta Testing (2 semanas)
 
 **Referencias técnicas**:
+- **NUEVO:** `docs/architecture/SUBSCRIPTION_ARCHITECTURE_REFACTOR.md` - Plan de refactor
 - Schema changes: `packages/database/prisma/schema.prisma`
 - Permission helpers: `apps/web/lib/permissions/property-limits.ts`
 - Pricing config: `apps/web/lib/pricing/tiers.ts`

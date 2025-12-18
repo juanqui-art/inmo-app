@@ -1,13 +1,16 @@
 /**
  * PRICING TIERS - Definición de planes
  *
- * Source: CLAUDE.md - Freemium Model (Actualizado Dic 5, 2025)
+ * Source: CLAUDE.md - Freemium Model (Actualizado Dic 18, 2025)
  *
- * Decisiones clave:
+ * MVP Simplificado:
  * - FREE: 1 propiedad, 6 imágenes, sin destacados
- * - PLUS: 3 propiedades, 25 imágenes, 1 destacado permanente (B2C)
- * - AGENT: 10 propiedades, 20 imágenes, 5 destacados, CRM Lite (B2B)
- * - PRO: 20 propiedades, 25 imágenes, destacados ilimitados, CRM Full (B2B)
+ * - PLUS: 3 propiedades, 10 imágenes, 1 destacado (B2C)
+ * - BUSINESS: 10 propiedades, 15 imágenes, 5 destacados, CRM Lite (B2B)
+ * - PRO: EN ESPERA (no mostrar en UI hasta haya demanda)
+ *
+ * NOTA: El enum en DB todavía usa "AGENT", será renombrado a "BUSINESS"
+ * Ver: docs/architecture/SUBSCRIPTION_ARCHITECTURE_REFACTOR.md
  */
 
 import type { PricingTier } from "@/components/pricing/pricing-card";
@@ -41,10 +44,10 @@ export const pricingTiers: PricingTier[] = [
     description: "Ideal para dueños que quieren vender rápido",
     features: [
       "3 propiedades activas",
-      "25 imágenes HD por propiedad",
+      "10 imágenes por propiedad",
       "1 destacado permanente",
+      "1 video por propiedad",
       "Badge 'Publicación Premium'",
-      "Video tour (opcional)",
       "Click-to-WhatsApp",
       "Publicación sin expiración",
       "Soporte por email (48h)",
@@ -54,20 +57,20 @@ export const pricingTiers: PricingTier[] = [
     highlighted: true,
   },
   {
-    name: "AGENT",
-    displayName: "Agente",
+    name: "AGENT", // Will be renamed to BUSINESS in DB migration
+    displayName: "Business",
     price: 29.99,
     currency: "$",
     period: "por mes",
-    description: "Para agentes pequeños que gestionan su negocio",
+    description: "Para agentes que gestionan su negocio",
     features: [
       "10 propiedades activas",
-      "20 imágenes por propiedad",
+      "15 imágenes por propiedad",
+      "3 videos por propiedad",
       "5 destacados permanentes",
       "Generador de descripción IA",
       "CRM Lite (leads, estados, notas)",
       "Analytics básico",
-      "Landing page personal",
       "Badge 'Agente Verificado'",
       "Click-to-WhatsApp",
       "Publicación sin expiración",
@@ -78,28 +81,25 @@ export const pricingTiers: PricingTier[] = [
     highlighted: false,
   },
   {
+    // PRO tier - ON HOLD until there's demand from BUSINESS users
     name: "PRO",
     displayName: "Pro",
     price: 59.99,
     currency: "$",
     period: "por mes",
-    description: "Para agentes profesionales y agencias",
+    description: "Para agencias y equipos grandes",
     features: [
       "20 propiedades activas",
-      "25 imágenes HD + video por propiedad",
+      "20 imágenes por propiedad",
+      "5 videos por propiedad",
       "Destacados ilimitados",
-      "Generador de descripción IA",
-      "CRM Completo (pipeline, tags, export)",
-      "Analytics avanzado + ROI",
-      "Smart Analytics (data local)",
-      "Reportes semanales por email",
-      "Landing page personal",
-      "Badge 'Agente Verificado'",
-      "Publicación sin expiración",
-      "Soporte prioritario WhatsApp (12h)",
+      "Todo de Business, más:",
+      "CRM Completo (pipeline, export)",
+      "Analytics avanzado",
+      "Soporte WhatsApp (12h)",
     ],
-    ctaText: "Escalar ahora",
-    ctaUrl: "/signup?plan=pro&redirect=/dashboard",
+    ctaText: "Próximamente",
+    ctaUrl: "#",
     highlighted: false,
   },
 ];
@@ -141,11 +141,11 @@ export function getTierPricing(tier: "FREE" | "PLUS" | "AGENT" | "PRO") {
     };
   }
 
-  // Extract limits from tier name
+  // Extract limits from tier name (Updated Dic 18, 2025)
   const limits = {
     properties: tier === "FREE" ? 1 : tier === "PLUS" ? 3 : tier === "AGENT" ? 10 : 20,
-    images: tier === "FREE" ? 6 : tier === "PLUS" ? 25 : tier === "AGENT" ? 20 : 25,
-    videos: tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "AGENT" ? 3 : 10,
+    images: tier === "FREE" ? 6 : tier === "PLUS" ? 10 : tier === "AGENT" ? 15 : 20,
+    videos: tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "AGENT" ? 3 : 5,
     featured: tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "AGENT" ? 5 : Infinity,
   };
 

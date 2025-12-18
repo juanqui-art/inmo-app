@@ -4,7 +4,10 @@
  * Helpers to enforce subscription tier limits for properties, images, and features.
  * Used in Server Actions to validate user permissions before operations.
  *
- * Updated: Dic 5, 2025 - New tier structure (FREE/PLUS/AGENT/PRO)
+ * Updated: Dic 18, 2025 - Simplified limits for MVP
+ * - AGENT renamed to BUSINESS (pending DB migration)
+ * - Image limits reduced: PLUS=10, BUSINESS=15
+ * - PRO tier on hold (not shown in UI)
  */
 
 import type { Prisma, SubscriptionTier } from "@repo/database";
@@ -32,17 +35,18 @@ export function getPropertyLimit(tier: SubscriptionTier): number {
 
 /**
  * Get maximum images per property for a subscription tier
+ * Updated Dic 18, 2025: Reduced limits for MVP
  */
 export function getImageLimit(tier: SubscriptionTier): number {
   switch (tier) {
     case "FREE":
       return 6;
     case "PLUS":
-      return 25;
-    case "AGENT":
-      return 20;
+      return 10; // Reduced from 25
+    case "AGENT": // Will be renamed to BUSINESS
+      return 15; // Reduced from 20
     case "PRO":
-      return 25;
+      return 20; // Reduced from 25 (on hold)
     default:
       return 6; // Fallback to most restrictive
   }
@@ -111,7 +115,7 @@ export function canUploadImage(
 ): { allowed: boolean; reason?: string; limit: number } {
   const limit = getImageLimit(tier);
 
-  if (currentImageCount > limit) {
+  if (currentImageCount >= limit) {
     return {
       allowed: false,
       reason: `Has alcanzado el límite de ${limit} imágenes. Actualiza tu plan para agregar más.`,
@@ -253,10 +257,10 @@ export function getVideoLimit(tier: SubscriptionTier): number {
       return 0; // No videos for free tier
     case "PLUS":
       return 1; // 1 video for Plus
-    case "AGENT":
-      return 3; // 3 videos for Agent
+    case "AGENT": // Will be renamed to BUSINESS
+      return 3; // 3 videos for Business
     case "PRO":
-      return 10; // Generous limit for Pro
+      return 5; // Reduced from 10 (on hold)
     default:
       return 0;
   }

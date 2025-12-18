@@ -31,41 +31,39 @@ export const metadata: Metadata = {
   },
 };
 
-// Feature comparison data
+// Feature comparison data (Updated Dic 18, 2025 - MVP simplified)
+// Note: AGENT will be renamed to BUSINESS in DB migration
 const comparisonFeatures = [
   {
     category: "Propiedades",
     features: [
-      { name: "Propiedades activas", FREE: "1", PLUS: "3", AGENT: "10", PRO: "20" },
-      { name: "Imágenes por propiedad", FREE: "6", PLUS: "25", AGENT: "20", PRO: "25" },
-      { name: "Videos por propiedad", FREE: false, PLUS: "1", AGENT: "3", PRO: "∞" },
-      { name: "Publicación permanente", FREE: true, PLUS: true, AGENT: true, PRO: true },
+      { name: "Propiedades activas", FREE: "1", PLUS: "3", AGENT: "10" },
+      { name: "Imágenes por propiedad", FREE: "6", PLUS: "10", AGENT: "15" },
+      { name: "Videos por propiedad", FREE: false, PLUS: "1", AGENT: "3" },
+      { name: "Publicación permanente", FREE: true, PLUS: true, AGENT: true },
     ],
   },
   {
     category: "Visibilidad",
     features: [
-      { name: "Destacados permanentes", FREE: false, PLUS: "1", AGENT: "5", PRO: "∞" },
-      { name: "Badge Premium", FREE: false, PLUS: true, AGENT: false, PRO: false },
-      { name: "Badge Verificado", FREE: false, PLUS: false, AGENT: true, PRO: true },
+      { name: "Destacados permanentes", FREE: false, PLUS: "1", AGENT: "5" },
+      { name: "Badge Premium", FREE: false, PLUS: true, AGENT: false },
+      { name: "Badge Verificado", FREE: false, PLUS: false, AGENT: true },
     ],
   },
   {
     category: "Herramientas",
     features: [
-      { name: "Dashboard básico", FREE: true, PLUS: true, AGENT: true, PRO: true },
-      { name: "Analytics", FREE: false, PLUS: true, AGENT: true, PRO: true },
-      { name: "Generador de descripción IA", FREE: false, PLUS: false, AGENT: true, PRO: true },
-      { name: "CRM Lite (leads, notas)", FREE: false, PLUS: false, AGENT: true, PRO: true },
-      { name: "CRM Completo (pipeline, export)", FREE: false, PLUS: false, AGENT: false, PRO: true },
-      { name: "Landing page personal", FREE: false, PLUS: false, AGENT: true, PRO: true },
+      { name: "Dashboard básico", FREE: true, PLUS: true, AGENT: true },
+      { name: "Analytics", FREE: false, PLUS: true, AGENT: true },
+      { name: "Generador de descripción IA", FREE: false, PLUS: false, AGENT: true },
+      { name: "CRM Lite (leads, notas)", FREE: false, PLUS: false, AGENT: true },
     ],
   },
   {
     category: "Soporte",
     features: [
-      { name: "Soporte por email", FREE: "72h", PLUS: "48h", AGENT: "24h", PRO: false },
-      { name: "Soporte WhatsApp", FREE: false, PLUS: false, AGENT: false, PRO: "12h" },
+      { name: "Soporte por email", FREE: "72h", PLUS: "48h", AGENT: "24h" },
     ],
   },
 ];
@@ -241,7 +239,7 @@ export default async function PricingPage() {
                     <div className="text-2xl font-extrabold mt-1">$9.99</div>
                   </th>
                   <th className="p-6 text-center">
-                    <div className="font-bold text-lg">Agente</div>
+                    <div className="font-bold text-lg">Business</div>
                     <div className="text-2xl font-extrabold mt-1">$29.99</div>
                   </th>
                 </tr>

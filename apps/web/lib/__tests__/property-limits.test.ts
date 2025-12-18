@@ -60,16 +60,16 @@ describe("Property Limits - Freemium Model", () => {
       expect(getImageLimit("FREE")).toBe(6);
     });
 
-    it("should return 25 for PLUS tier", () => {
-      expect(getImageLimit("PLUS")).toBe(25);
+    it("should return 10 for PLUS tier", () => {
+      expect(getImageLimit("PLUS")).toBe(10);
     });
 
-    it("should return 20 for AGENT tier", () => {
-      expect(getImageLimit("AGENT")).toBe(20);
+    it("should return 15 for AGENT tier", () => {
+      expect(getImageLimit("AGENT")).toBe(15);
     });
 
-    it("should return 25 for PRO tier", () => {
-      expect(getImageLimit("PRO")).toBe(25);
+    it("should return 20 for PRO tier", () => {
+      expect(getImageLimit("PRO")).toBe(20);
     });
   });
 
@@ -235,46 +235,46 @@ describe("Property Limits - Freemium Model", () => {
       expect(result.reason).toContain("límite");
     });
 
-    it("should allow upload when under PLUS limit (24/25)", () => {
-      const result = canUploadImage("PLUS", 24);
+    it("should allow upload when under PLUS limit (9/10)", () => {
+      const result = canUploadImage("PLUS", 9);
 
       expect(result.allowed).toBe(true);
-      expect(result.limit).toBe(25);
+      expect(result.limit).toBe(10);
     });
 
-    it("should block upload when at PLUS limit (25/25)", () => {
-      const result = canUploadImage("PLUS", 25);
+    it("should block upload when at PLUS limit (10/10)", () => {
+      const result = canUploadImage("PLUS", 10);
 
       expect(result.allowed).toBe(false);
-      expect(result.limit).toBe(25);
+      expect(result.limit).toBe(10);
     });
 
-    it("should allow upload when under AGENT limit (19/20)", () => {
-      const result = canUploadImage("AGENT", 19);
+    it("should allow upload when under AGENT limit (14/15)", () => {
+      const result = canUploadImage("AGENT", 14);
+
+      expect(result.allowed).toBe(true);
+      expect(result.limit).toBe(15);
+    });
+
+    it("should block upload when at AGENT limit (15/15)", () => {
+      const result = canUploadImage("AGENT", 15);
+
+      expect(result.allowed).toBe(false);
+      expect(result.limit).toBe(15);
+    });
+
+    it("should allow upload when under PRO limit (19/20)", () => {
+      const result = canUploadImage("PRO", 19);
 
       expect(result.allowed).toBe(true);
       expect(result.limit).toBe(20);
     });
 
-    it("should block upload when at AGENT limit (20/20)", () => {
-      const result = canUploadImage("AGENT", 20);
+    it("should block upload when at PRO limit (20/20)", () => {
+      const result = canUploadImage("PRO", 20);
 
       expect(result.allowed).toBe(false);
       expect(result.limit).toBe(20);
-    });
-
-    it("should allow upload when under PRO limit (24/25)", () => {
-      const result = canUploadImage("PRO", 24);
-
-      expect(result.allowed).toBe(true);
-      expect(result.limit).toBe(25);
-    });
-
-    it("should block upload when at PRO limit (25/25)", () => {
-      const result = canUploadImage("PRO", 25);
-
-      expect(result.allowed).toBe(false);
-      expect(result.limit).toBe(25);
     });
   });
 
@@ -322,7 +322,7 @@ describe("Property Limits - Freemium Model", () => {
         tier: "PLUS",
         displayName: "Plus",
         propertyLimit: 3,
-        imageLimit: 25,
+        imageLimit: 10,
         featuredLimit: 1,
         hasFeatured: true,
         hasUnlimitedFeatured: false,
@@ -340,7 +340,7 @@ describe("Property Limits - Freemium Model", () => {
         tier: "AGENT",
         displayName: "Agente",
         propertyLimit: 10,
-        imageLimit: 20,
+        imageLimit: 15,
         featuredLimit: 5,
         hasFeatured: true,
         hasUnlimitedFeatured: false,
@@ -358,7 +358,7 @@ describe("Property Limits - Freemium Model", () => {
         tier: "PRO",
         displayName: "Pro",
         propertyLimit: 20,
-        imageLimit: 25,
+        imageLimit: 20,
         featuredLimit: null,
         hasFeatured: true,
         hasUnlimitedFeatured: true,
