@@ -19,8 +19,14 @@
     "format": "bunx biome format --write .",
     "test": "cd apps/web && bun run test || true",
     "test:web": "cd apps/web && bun run test",
+    "test:e2e": "bunx playwright test",
+    "test:e2e:ui": "bunx playwright test --ui",
+    "test:e2e:headed": "bunx playwright test --headed",
+    "test:e2e:debug": "bunx playwright test --debug",
+    "test:e2e:report": "bunx playwright show-report",
+    "test:all": "bun run test && bun run test:e2e",
     "pre-commit": "bun run type-check && bun run lint && bun run test",
-    "ci": "bun run type-check && bun run lint && bun run test && bun run build",
+    "ci": "bun run type-check && bun run lint && bun run test && bun run test:e2e && bun run build",
     "postinstall": "bun run db:gen",
     "clean:cache": "rm -rf apps/web/.next apps/web/.turbo && find . -name '*.tsbuildinfo' -type f -delete && find . -name '.turbo' -type d -exec rm -rf {} + 2>/dev/null || true",
     "clean:deps": "rm -rf node_modules apps/web/node_modules bun.lock",
@@ -35,6 +41,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.5",
+    "@playwright/test": "^1.57.0",
     "@types/dompurify": "^3.2.0",
     "react-scan": "^0.4.3"
   },
