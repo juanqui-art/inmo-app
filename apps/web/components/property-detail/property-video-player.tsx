@@ -1,8 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Badge, Button } from "@repo/ui";
-import { ExternalLink, Play, Share2, Video } from "lucide-react";
+import { Button } from "@repo/ui";
+import { ExternalLink, Play, Video } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
@@ -140,10 +140,6 @@ function getVideoMetadata(url: string, platform: string): { id: string; thumbnai
   }
 
   return { id, thumbnail };
-}
-
-function getPlatformDisplayName(platform: string): string {
-  return PLATFORM_CONFIG[platform]?.name || "Video";
 }
 
 /**
@@ -384,29 +380,6 @@ export function PropertyVideoPlayer({ videos }: PropertyVideoPlayerProps) {
                 </motion.div>
               </div>
 
-              {/* Video Info Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-8 z-20 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                <div className="flex items-end justify-between">
-                  <div className="space-y-2">
-                    <Badge variant="secondary" className="bg-white/10 backdrop-blur-md border-white/20 text-white uppercase tracking-widest text-[10px] px-3 font-bold">
-                      {getPlatformDisplayName(activeVideo.platform)}
-                    </Badge>
-                    <h4 className="text-2xl font-bold text-white leading-tight">
-                      {activeVideo.title || "Recorrido Virtual Premium"}
-                    </h4>
-                  </div>
-                  <div className="hidden md:flex gap-3">
-                    <Button size="icon" variant="outline" className="rounded-full bg-white/5 border-white/10 text-white hover:bg-white/10">
-                      <Share2 className="w-4 h-4" />
-                    </Button>
-                    <Button size="icon" variant="outline" className="rounded-full bg-white/5 border-white/10 text-white hover:bg-white/10" asChild>
-                      <a href={activeVideo.url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </div>
             </motion.div>
           ) : (
             <motion.div
@@ -420,20 +393,6 @@ export function PropertyVideoPlayer({ videos }: PropertyVideoPlayerProps) {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-
-      {/* Bottom Social Proof */}
-      <div className="px-6 py-4 border-t border-oslo-gray-100 dark:border-oslo-gray-800 flex items-center gap-4">
-        <div className="flex -space-x-2">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="w-7 h-7 rounded-full border-2 border-white dark:border-oslo-gray-900 bg-oslo-gray-200 dark:bg-oslo-gray-700 overflow-hidden">
-              <img src={`https://i.pravatar.cc/100?u=VANTagent${i}`} alt="Agent" className="w-full h-full object-cover" />
-            </div>
-          ))}
-        </div>
-        <p className="text-xs text-oslo-gray-500 dark:text-oslo-gray-400">
-          Visto por <span className="text-oslo-gray-700 dark:text-oslo-gray-200 font-semibold">120+</span> personas esta semana
-        </p>
       </div>
     </motion.div>
   );
