@@ -2,19 +2,73 @@
 
 import { cn } from "@/lib/utils";
 import { Badge, Button } from "@repo/ui";
-import { ChevronRight, ExternalLink, Play, Share2, Video } from "lucide-react";
+import { ExternalLink, Play, Share2, Video } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 
-// Dynamic imports for video players (code splitting)
-const ReactPlayer = dynamic(
-  () => import("react-player").then((mod) => mod.default),
-  {
-    ssr: false,
-    loading: () => <VideoLoadingSkeleton />,
+/**
+ * Extract YouTube video ID from various URL formats
+ */
+function getYouTubeId(url: string): string | null {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/,
+    /youtube\.com\/shorts\/([^&?/]+)/,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match?.[1]) return match[1];
   }
-);
+  return null;
+}
+
+/**
+ * Extract Vimeo video ID from URL
+ */
+function getVimeoId(url: string): string | null {
+  const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  return match?.[1] ?? null;
+}
+
+/**
+ * Native YouTube embed component
+ */
+function YouTubeEmbed({ url, title }: { url: string; title?: string }) {
+  const videoId = getYouTubeId(url);
+  if (!videoId) return <div className="text-white p-4">URL de YouTube inválida</div>;
+
+  return (
+    <iframe
+      src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`}
+      title={title || "YouTube Video"}
+      width="100%"
+      height="100%"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowFullScreen
+      className="border-0"
+    />
+  );
+}
+
+/**
+ * Native Vimeo embed component
+ */
+function VimeoEmbed({ url, title }: { url: string; title?: string }) {
+  const videoId = getVimeoId(url);
+  if (!videoId) return <div className="text-white p-4">URL de Vimeo inválida</div>;
+
+  return (
+    <iframe
+      src={`https://player.vimeo.com/video/${videoId}?autoplay=1`}
+      title={title || "Vimeo Video"}
+      width="100%"
+      height="100%"
+      allow="autoplay; fullscreen; picture-in-picture"
+      allowFullScreen
+      className="border-0"
+    />
+  );
+}
 
 // Dynamic imports for social media embeds
 const TikTokEmbed = dynamic(
@@ -156,17 +210,21 @@ function ExternalVideoLink({
  */
 function VideoRenderer({
   video,
-  isPlaying
+  isPlaying: _isPlaying, // Not used for native iframes (autoplay enabled)
 }: {
   video: PropertyVideo;
   isPlaying: boolean;
 }) {
   const { platform, url } = video;
 
-  // YouTube and Vimeo: Use ReactPlayer (best support)
-  if (platform === "YOUTUBE" || platform === "VIMEO") {
-    // @ts-ignore - react-player types are incompatible with React 19
-    return <ReactPlayer url={url} width="100%" height="100%" playing={isPlaying} controls />;
+  // YouTube: Use native iframe embed
+  if (platform === "YOUTUBE") {
+    return <YouTubeEmbed url={url} title={video.title || undefined} />;
+  }
+
+  // Vimeo: Use native iframe embed
+  if (platform === "VIMEO") {
+    return <VimeoEmbed url={url} title={video.title || undefined} />;
   }
 
   // TikTok: Use react-social-media-embed
@@ -355,7 +413,8 @@ export function PropertyVideoPlayer({ videos }: PropertyVideoPlayerProps) {
               key="player"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="w-full h-full bg-black flex items-center justify-center"
+              className="absolute inset-0 w-full h-full bg-black z-30"
+              style={{ pointerEvents: 'auto' }}
             >
               <VideoRenderer video={activeVideo} isPlaying={isPlaying || !supportsEmbed} />
             </motion.div>
@@ -363,26 +422,18 @@ export function PropertyVideoPlayer({ videos }: PropertyVideoPlayerProps) {
         </AnimatePresence>
       </div>
 
-      {/* Bottom Features/Context */}
-      <div className="p-6 bg-oslo-gray-50 dark:bg-oslo-gray-850 border-t border-oslo-gray-100 dark:border-oslo-gray-800 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-           <div className="flex -space-x-2">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="w-8 h-8 rounded-full border-2 border-oslo-gray-50 dark:border-oslo-gray-850 bg-oslo-gray-200 dark:bg-oslo-gray-800 overflow-hidden">
-                  <img src={`https://i.pravatar.cc/100?u=VANTagent${i}`} alt="Agent" className="w-full h-full object-cover" />
-                </div>
-              ))}
-           </div>
-           <p className="text-xs text-oslo-gray-500 dark:text-oslo-gray-400 font-medium">
-             Visto por <span className="text-oslo-gray-900 dark:text-white font-bold">120+</span> personas esta semana
-           </p>
+      {/* Bottom Social Proof */}
+      <div className="px-6 py-4 border-t border-oslo-gray-100 dark:border-oslo-gray-800 flex items-center gap-4">
+        <div className="flex -space-x-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="w-7 h-7 rounded-full border-2 border-white dark:border-oslo-gray-900 bg-oslo-gray-200 dark:bg-oslo-gray-700 overflow-hidden">
+              <img src={`https://i.pravatar.cc/100?u=VANTagent${i}`} alt="Agent" className="w-full h-full object-cover" />
+            </div>
+          ))}
         </div>
-        {supportsEmbed && (
-          <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 gap-2 font-bold" onClick={() => setIsPlaying(!isPlaying)}>
-            {isPlaying ? "Cerrar Reproductor" : "Iniciar Tour"}
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        )}
+        <p className="text-xs text-oslo-gray-500 dark:text-oslo-gray-400">
+          Visto por <span className="text-oslo-gray-700 dark:text-oslo-gray-200 font-semibold">120+</span> personas esta semana
+        </p>
       </div>
     </motion.div>
   );

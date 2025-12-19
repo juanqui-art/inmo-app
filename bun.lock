@@ -7,7 +7,6 @@
         "@radix-ui/react-toggle": "^1.1.10",
         "@radix-ui/react-toggle-group": "^1.1.11",
         "isomorphic-dompurify": "^2.34.0",
-        "react-player": "^3.4.0",
       },
       "devDependencies": {
         "@biomejs/biome": "2.3.5",
