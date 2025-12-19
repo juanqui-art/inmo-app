@@ -9,7 +9,7 @@
  * - BUSINESS: 10 propiedades, 15 imágenes, 5 destacados, CRM Lite (B2B)
  * - PRO: EN ESPERA (no mostrar en UI hasta haya demanda)
  *
- * NOTA: El enum en DB todavía usa "AGENT", será renombrado a "BUSINESS"
+ * NOTA: El enum en DB ahora es "BUSINESS" (migración completada Dic 18, 2025)
  * Ver: docs/architecture/SUBSCRIPTION_ARCHITECTURE_REFACTOR.md
  */
 
@@ -57,7 +57,7 @@ export const pricingTiers: PricingTier[] = [
     highlighted: true,
   },
   {
-    name: "AGENT", // Will be renamed to BUSINESS in DB migration
+    name: "BUSINESS",
     displayName: "Business",
     price: 29.99,
     currency: "$",
@@ -77,7 +77,7 @@ export const pricingTiers: PricingTier[] = [
       "Soporte por email (24h)",
     ],
     ctaText: "Gestionar negocio",
-    ctaUrl: "/signup?plan=agent&redirect=/dashboard",
+    ctaUrl: "/signup?plan=business&redirect=/dashboard",
     highlighted: false,
   },
   {
@@ -108,7 +108,7 @@ export const pricingTiers: PricingTier[] = [
  * Helper: Obtener tier por nombre
  */
 export function getTierByName(
-  name: "FREE" | "PLUS" | "AGENT" | "PRO",
+  name: "FREE" | "PLUS" | "BUSINESS" | "PRO",
 ): PricingTier | undefined {
   return pricingTiers.find((tier) => tier.name === name);
 }
@@ -123,7 +123,7 @@ export function getHighlightedTier(): PricingTier | undefined {
 /**
  * Helper: Get pricing info for a subscription tier
  */
-export function getTierPricing(tier: "FREE" | "PLUS" | "AGENT" | "PRO") {
+export function getTierPricing(tier: "FREE" | "PLUS" | "BUSINESS" | "PRO") {
   const tierData = pricingTiers.find((t) => t.name === tier);
 
   if (!tierData) {
@@ -143,10 +143,10 @@ export function getTierPricing(tier: "FREE" | "PLUS" | "AGENT" | "PRO") {
 
   // Extract limits from tier name (Updated Dic 18, 2025)
   const limits = {
-    properties: tier === "FREE" ? 1 : tier === "PLUS" ? 3 : tier === "AGENT" ? 10 : 20,
-    images: tier === "FREE" ? 6 : tier === "PLUS" ? 10 : tier === "AGENT" ? 15 : 20,
-    videos: tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "AGENT" ? 3 : 5,
-    featured: tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "AGENT" ? 5 : Infinity,
+    properties: tier === "FREE" ? 1 : tier === "PLUS" ? 3 : tier === "BUSINESS" ? 10 : 20,
+    images: tier === "FREE" ? 6 : tier === "PLUS" ? 10 : tier === "BUSINESS" ? 15 : 20,
+    videos: tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "BUSINESS" ? 3 : 5,
+    featured: tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "BUSINESS" ? 5 : Infinity,
   };
 
   return {
@@ -164,7 +164,7 @@ export function getTierPricing(tier: "FREE" | "PLUS" | "AGENT" | "PRO") {
 export const TIER_RANKS = {
   FREE: 0,
   PLUS: 1,
-  AGENT: 2,
+  BUSINESS: 2,
   PRO: 3,
 } as const;
 

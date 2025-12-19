@@ -40,7 +40,7 @@ export function LimitReachedModal({
     currentTier === "FREE"
       ? "PLUS"
       : currentTier === "PLUS"
-        ? "AGENT"
+        ? "BUSINESS"
         : "PRO";
 
   const nextTierFeatures = getTierFeatures(nextTier);
@@ -59,7 +59,7 @@ export function LimitReachedModal({
     property: nextTierFeatures.propertyLimit,
     image: nextTierFeatures.imageLimit,
     featured: nextTierFeatures.featuredLimit ?? "Ilimitados",
-    video: nextTier === "PLUS" ? 1 : nextTier === "AGENT" ? 3 : 10,
+    video: nextTier === "PLUS" ? 1 : nextTier === "BUSINESS" ? 3 : 5,
   };
 
   return (

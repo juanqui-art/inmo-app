@@ -4,7 +4,7 @@
  * AI Property Description Generator
  * 
  * Generates professional property descriptions using OpenAI.
- * Only available for AGENT and PRO tiers.
+ * Only available for BUSINESS and PRO tiers.
  */
 
 import { getOpenAIClient } from "@/lib/ai/openai-client";
@@ -36,7 +36,7 @@ interface GenerateDescriptionResult {
  * Check if user's tier allows AI description generation
  */
 function canUseAIDescription(tier: SubscriptionTier): boolean {
-  return tier === "AGENT" || tier === "PRO";
+  return tier === "BUSINESS" || tier === "PRO";
 }
 
 /**
@@ -108,7 +108,7 @@ export async function generatePropertyDescription(
     if (!canUseAIDescription(user.subscriptionTier)) {
       return { 
         success: false, 
-        error: "Las descripciones con IA están disponibles desde el plan Agente" 
+        error: "Las descripciones con IA están disponibles desde el plan Business" 
       };
     }
 

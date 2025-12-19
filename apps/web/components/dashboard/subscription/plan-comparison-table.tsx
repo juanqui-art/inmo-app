@@ -34,17 +34,17 @@ const featureValues: Record<SubscriptionTier, Record<typeof features[number]["ke
   },
   PLUS: {
     properties: "3",
-    images: "25",
+    images: "10",
     videos: "1",
     featured: "1",
     aiDescription: false,
     crm: false,
     landingPage: false,
-    analytics: false,
+    analytics: true,
   },
-  AGENT: {
+  BUSINESS: {
     properties: "10",
-    images: "20",
+    images: "15",
     videos: "3",
     featured: "5",
     aiDescription: true,
@@ -54,8 +54,8 @@ const featureValues: Record<SubscriptionTier, Record<typeof features[number]["ke
   },
   PRO: {
     properties: "20",
-    images: "25",
-    videos: "10",
+    images: "20",
+    videos: "5",
     featured: "∞",
     aiDescription: true,
     crm: true,

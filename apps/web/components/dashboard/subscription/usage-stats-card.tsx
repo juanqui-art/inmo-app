@@ -3,7 +3,7 @@
 import type { UsageWithLimits } from "@/lib/dashboard/subscription-helpers";
 import { getUsagePercentage, getWarningLevel } from "@/lib/dashboard/subscription-helpers";
 import { Card, CardContent, CardHeader, Progress } from "@repo/ui";
-import { AlertTriangle, Home, Image, Star, Video } from "lucide-react";
+import { AlertTriangle, Home, Image, Sparkles, Star, Video } from "lucide-react";
 import Link from "next/link";
 
 interface UsageStatsCardProps {
@@ -16,9 +16,10 @@ interface UsageItemProps {
   current: number;
   limit: number;
   unit?: string;
+  isUnitLimit?: boolean;
 }
 
-function UsageItem({ icon, label, current, limit, unit = "" }: UsageItemProps) {
+function UsageItem({ icon, label, current, limit, unit = "", isUnitLimit = false }: UsageItemProps) {
   const percentage = getUsagePercentage(current, limit);
   const warningLevel = getWarningLevel(percentage);
   const isUnlimited = limit === Infinity;
@@ -35,6 +36,28 @@ function UsageItem({ icon, label, current, limit, unit = "" }: UsageItemProps) {
     warning: "text-yellow-700 dark:text-yellow-400",
     danger: "text-red-700 dark:text-red-400",
   };
+  
+  // Special rendering for Per-Property Limits (Images, Videos)
+  if (isUnitLimit) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="text-muted-foreground">{icon}</div>
+            <span className="text-sm font-medium">{label}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-sm">
+             <span className="font-semibold">{isUnlimited ? "∞" : limit}</span>
+             <span className="text-muted-foreground">por propiedad</span>
+          </div>
+        </div>
+        
+        <p className="text-xs text-muted-foreground pl-7">
+          {current} {unit} subid{unit.endsWith('s') ? 'as' : 'os'} en total (informativo)
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">
@@ -127,18 +150,22 @@ export function UsageStatsCard({ usage }: UsageStatsCardProps) {
         {/* Images */}
         <UsageItem
           icon={<Image className="w-5 h-5" />}
-          label="Imágenes Totales"
+          label="Imágenes"
           current={usage.images.current}
           limit={usage.images.limit}
+          unit="imgs"
+          isUnitLimit={usage.images.isUnitLimit}
         />
 
         {/* Videos */}
         {usage.videos.limit > 0 && (
           <UsageItem
             icon={<Video className="w-5 h-5" />}
-            label="Videos Totales"
+            label="Videos"
             current={usage.videos.current}
             limit={usage.videos.limit}
+            unit="videos"
+            isUnitLimit={usage.videos.isUnitLimit}
           />
         )}
 
@@ -150,6 +177,26 @@ export function UsageStatsCard({ usage }: UsageStatsCardProps) {
             current={usage.featured.current}
             limit={usage.featured.limit}
           />
+        )}
+
+        {/* AI Description (Rate Limit Info) */}
+        {/* We assume usage.videos.limit > 1 means AGENT or PRO (who have AI) */}
+        {usage.videos.limit > 1 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="text-muted-foreground"><Sparkles className="w-5 h-5" /></div>
+                <span className="text-sm font-medium">Generador IA</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <span className="text-green-600 font-medium">Activo</span>
+                <span>• 30/hora</span>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground pl-7">
+              Genera descripciones automáticas para tus propiedades.
+            </p>
+          </div>
         )}
 
         {/* Upgrade CTA if hitting limits */}

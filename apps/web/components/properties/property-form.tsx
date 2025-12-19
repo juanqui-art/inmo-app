@@ -115,7 +115,7 @@ export function PropertyForm({
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
   // Feature access checks
-  const canUseAI = userTier === "AGENT" || userTier === "PRO";
+  const canUseAI = userTier === "BUSINESS" || userTier === "PRO";
   const tierDisplayName = getTierDisplayName(userTier);
   const imageLimit = getImageLimit(userTier);
   const currentImageCount = property?.images?.length || 0;

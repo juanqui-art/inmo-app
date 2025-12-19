@@ -51,8 +51,8 @@ interface PropertyDetailPageProps {
 }
 
 /**
- * Metadata generation for SEO
- * Will be enhanced with actual property data
+ * Metadata generation for SEO and Social Sharing
+ * Includes Open Graph for Facebook/LinkedIn and Twitter Cards
  */
 export async function generateMetadata(
   props: PropertyDetailPageProps,
@@ -69,10 +69,68 @@ export async function generateMetadata(
     };
   }
 
+  // Format price for display
+  const formattedPrice = new Intl.NumberFormat("es-EC", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+  }).format(property.price);
+
+  // Build property details string
+  const details = [
+    property.bedrooms ? `${property.bedrooms} hab` : null,
+    property.bathrooms ? `${property.bathrooms} baños` : null,
+    property.area ? `${property.area}m²` : null,
+  ].filter(Boolean).join(" • ");
+
+  // Build description for social sharing
+  const description = property.description 
+    ? property.description.slice(0, 160) 
+    : `${property.title} - ${formattedPrice}${details ? ` • ${details}` : ""}`;
+
+  // Get first image for social preview
+  const ogImage = property.images?.[0]?.url;
+  
+  // Build canonical URL
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://vant.ec";
+  const canonicalUrl = `${baseUrl}/propiedades/${id}-${property.title ? property.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "") : "propiedad"}`;
+
   return {
-    title: property.title,
-    description:
-      property.description || `${property.title} - ${property.price}`,
+    title: `${property.title} | ${formattedPrice}`,
+    description,
+    
+    // Open Graph (Facebook, LinkedIn, WhatsApp)
+    openGraph: {
+      title: `${property.title} - ${formattedPrice}`,
+      description,
+      url: canonicalUrl,
+      siteName: "VANT",
+      type: "website",
+      locale: "es_EC",
+      ...(ogImage && {
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: property.title,
+          },
+        ],
+      }),
+    },
+    
+    // Twitter Card
+    twitter: {
+      card: ogImage ? "summary_large_image" : "summary",
+      title: `${property.title} - ${formattedPrice}`,
+      description,
+      ...(ogImage && { images: [ogImage] }),
+    },
+
+    // Additional SEO
+    alternates: {
+      canonical: canonicalUrl,
+    },
   };
 }
 

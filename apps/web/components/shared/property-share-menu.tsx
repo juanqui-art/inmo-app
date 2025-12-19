@@ -75,11 +75,29 @@ export function PropertyShareMenu({
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Determine share URL
-  const shareUrl =
+  const baseUrl =
     customUrl ||
     (typeof window !== "undefined"
       ? `${window.location.origin}/propiedades/${propertyId}`
       : "");
+
+  // Helper to generate URL with UTM parameters
+  const getUtmUrl = (source: string) => {
+    if (!baseUrl) return "";
+    
+    try {
+      const url = new URL(baseUrl);
+      // Don't overwrite existing UTMs if customUrl already has them
+      if (!url.searchParams.has("utm_source")) {
+        url.searchParams.set("utm_source", source);
+        url.searchParams.set("utm_medium", "social");
+        url.searchParams.set("utm_campaign", "share_button");
+      }
+      return url.toString();
+    } catch (e) {
+      return baseUrl;
+    }
+  };
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -204,14 +222,18 @@ export function PropertyShareMenu({
   ];
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareUrl).then(() => {
+    // Generate UTM URL for copy link
+    const utmUrl = getUtmUrl("copy_link");
+    navigator.clipboard.writeText(utmUrl).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   };
 
   const handleShare = (option: ShareOption) => {
-    option.action(shareUrl, propertyTitle, propertyPrice);
+    // Generate UTM URL for specific platform
+    const utmUrl = getUtmUrl(option.id);
+    option.action(utmUrl, propertyTitle, propertyPrice);
     onShare?.(option.id);
     setIsOpen(false);
   };
@@ -226,10 +248,12 @@ export function PropertyShareMenu({
     if (typeof navigator !== "undefined" && navigator.share) {
       setIsSharing(true);
       try {
+        // Generate UTM URL for native share
+        const utmUrl = getUtmUrl("native_share");
         await navigator.share({
           title: propertyTitle,
           text: `Mira esta propiedad: ${propertyTitle}`,
-          url: shareUrl,
+          url: utmUrl,
         });
         onShare?.("native");
       } catch (error) {

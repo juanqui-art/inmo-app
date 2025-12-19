@@ -12,6 +12,7 @@
  * - Responsive grid layout
  */
 
+import { UtmSourceStats } from "@/components/dashboard/analytics/utm-source-stats";
 import { Sparkline } from "@/components/dashboard/charts/sparkline";
 import { StatusDonut } from "@/components/dashboard/charts/status-donut";
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
@@ -19,13 +20,14 @@ import { QuickActions } from "@/components/dashboard/quick-actions";
 import { ActivityItem, RecentActivity } from "@/components/dashboard/recent-activity";
 import { SimpleStatsCard } from "@/components/dashboard/simple-stats-card";
 import { StatsCard } from "@/components/dashboard/stats-card";
-import { UpgradeHint } from "@/components/dashboard/upgrade-hint";
+import { SubscriptionSummaryCard } from "@/components/dashboard/subscription-summary-card";
 import { UpgradeModal } from "@/components/dashboard/upgrade-modal";
 import { requireRole } from "@/lib/auth";
 import {
     getAdvancedDashboardAnalytics,
     getBasicDashboardStats
 } from "@/lib/dashboard/analytics-helpers";
+import { getUtmSourceStats } from "@/lib/dashboard/utm-analytics-helpers";
 import { canCreateProperty, getPropertyLimit } from "@/lib/permissions/property-limits";
 import { TIER_RANKS, type TierName } from "@/lib/pricing/tiers";
 import { db } from "@repo/database/src/client";
@@ -36,7 +38,7 @@ export default async function DashboardPage() {
   
   // Determine if user has advanced analytics access
   const userTier = (user.subscriptionTier || "FREE") as TierName;
-  const hasAdvancedAnalytics = TIER_RANKS[userTier] >= TIER_RANKS.AGENT;
+  const hasAdvancedAnalytics = TIER_RANKS[userTier] >= TIER_RANKS.BUSINESS;
   const showTrendIndicators = TIER_RANKS[userTier] >= TIER_RANKS.PLUS;
 
   // Check property creation permission
@@ -44,7 +46,7 @@ export default async function DashboardPage() {
   const propertyLimit = getPropertyLimit(userTier);
 
   // Fetch base data for all tiers in parallel
-  const [propertiesData, appointmentsData, recentFavorites, recentProperties] = await Promise.all([
+  const [propertiesData, appointmentsData, recentFavorites, recentProperties, utmStats] = await Promise.all([
     // Total properties and status breakdown
     db.property.findMany({
       where: { agentId: user.id },
@@ -86,6 +88,8 @@ export default async function DashboardPage() {
       orderBy: { createdAt: "desc" },
       take: 5,
     }),
+    // UTM Stats (only if advanced analytics allowed)
+    hasAdvancedAnalytics ? getUtmSourceStats(user.id) : Promise.resolve([]),
   ]);
 
   // Fetch tier-specific analytics
@@ -269,10 +273,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Upgrade Hint (FREE/PLUS only) */}
-      {!hasAdvancedAnalytics && (
-        <UpgradeHint currentTier={userTier as "FREE" | "PLUS"} />
-      )}
+
 
       {/* Top Property (AGENT/PRO only) */}
       {hasAdvancedAnalytics && advancedData?.topProperty && advancedData.topProperty.views > 0 && (
@@ -308,22 +309,50 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Onboarding Checklist (Shows only if incomplete) */}
-      <OnboardingChecklist
-        hasProperties={totalProperties > 0}
-        hasAppointments={totalAppointments > 0}
-        userName={user.name}
-      />
+      {/* Main Content Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Left Column: Activity & Onboarding */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Onboarding Checklist (Shows only if incomplete) */}
+          <OnboardingChecklist
+            hasProperties={totalProperties > 0}
+            hasAppointments={totalAppointments > 0}
+            userName={user.name}
+          />
 
-      {/* Recent Activity */}
-      <RecentActivity activities={recentActivities} />
+          {/* Recent Activity */}
+          <RecentActivity activities={recentActivities} />
+          
+          {/* UTM Source Analytics (AGENT/PRO only) */}
+          {hasAdvancedAnalytics && (
+             <UtmSourceStats 
+               stats={utmStats} 
+               totalLeads={utmStats.reduce((acc: number, curr: { count: number }) => acc + curr.count, 0)} 
+             />
+          )}
+        </div>
 
-      {/* Quick Actions */}
-      <QuickActions
-        canCreateProperty={propertyPermission.allowed}
-        currentTier={userTier}
-        propertyLimit={propertyLimit}
-      />
+        {/* Right Column: Subscription & Actions */}
+        <div className="space-y-6">
+           {/* Subscription Summary */}
+           <SubscriptionSummaryCard 
+              tier={userTier} 
+              usage={{
+                 properties: { 
+                   current: totalProperties, 
+                   limit: propertyLimit 
+                 }
+              }} 
+           />
+
+          {/* Quick Actions */}
+          <QuickActions
+            canCreateProperty={propertyPermission.allowed}
+            currentTier={userTier}
+            propertyLimit={propertyLimit}
+          />
+        </div>
+      </div>
 
       {/* Upgrade Modal (Client Component) */}
       <UpgradeModal />

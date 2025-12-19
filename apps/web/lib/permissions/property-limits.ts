@@ -5,7 +5,7 @@
  * Used in Server Actions to validate user permissions before operations.
  *
  * Updated: Dic 18, 2025 - Simplified limits for MVP
- * - AGENT renamed to BUSINESS (pending DB migration)
+ * - AGENT renamed to BUSINESS (completed)
  * - Image limits reduced: PLUS=10, BUSINESS=15
  * - PRO tier on hold (not shown in UI)
  */
@@ -24,7 +24,7 @@ export function getPropertyLimit(tier: SubscriptionTier): number {
       return 1;
     case "PLUS":
       return 3;
-    case "AGENT":
+    case "BUSINESS":
       return 10;
     case "PRO":
       return 20;
@@ -43,8 +43,8 @@ export function getImageLimit(tier: SubscriptionTier): number {
       return 6;
     case "PLUS":
       return 10; // Reduced from 25
-    case "AGENT": // Will be renamed to BUSINESS
-      return 15; // Reduced from 20
+    case "BUSINESS":
+      return 15;
     case "PRO":
       return 20; // Reduced from 25 (on hold)
     default:
@@ -62,7 +62,7 @@ export function getFeaturedLimit(tier: SubscriptionTier): number | null {
       return 0; // No featured properties
     case "PLUS":
       return 1; // 1 permanent featured
-    case "AGENT":
+    case "BUSINESS":
       return 5; // 5 permanent featured
     case "PRO":
       return null; // Unlimited
@@ -155,7 +155,7 @@ export async function canFeatureProperty(
     return {
       allowed: false,
       reason:
-        "Tu plan no incluye propiedades destacadas. Actualiza a PLUS, AGENT o PRO para destacar propiedades.",
+        "Tu plan no incluye propiedades destacadas. Actualiza a PLUS o BUSINESS para destacar propiedades.",
       limit: 0,
     };
   }
@@ -188,8 +188,8 @@ export function getTierDisplayName(tier: SubscriptionTier): string {
       return "Gratuito";
     case "PLUS":
       return "Plus";
-    case "AGENT":
-      return "Agente";
+    case "BUSINESS":
+      return "Business";
     case "PRO":
       return "Pro";
     default:
@@ -212,12 +212,12 @@ export function getTierFeatures(tier: SubscriptionTier) {
     hasFeatured: featuredLimit !== 0,
     hasUnlimitedFeatured: featuredLimit === null,
     hasAnalytics: tier !== "FREE",
-    hasCRM: tier === "AGENT" || tier === "PRO",
+    hasCRM: tier === "BUSINESS" || tier === "PRO",
     hasCRMFull: tier === "PRO",
     support:
       tier === "PRO"
         ? "WhatsApp (12h)"
-        : tier === "AGENT"
+        : tier === "BUSINESS"
           ? "Email (24h)"
           : tier === "PLUS"
             ? "Email (48h)"
@@ -236,7 +236,7 @@ export function getTierPricing(tier: SubscriptionTier): {
   const prices: Record<SubscriptionTier, number> = {
     FREE: 0,
     PLUS: 9.99,
-    AGENT: 29.99,
+    BUSINESS: 29.99,
     PRO: 59.99,
   };
 
@@ -257,8 +257,8 @@ export function getVideoLimit(tier: SubscriptionTier): number {
       return 0; // No videos for free tier
     case "PLUS":
       return 1; // 1 video for Plus
-    case "AGENT": // Will be renamed to BUSINESS
-      return 3; // 3 videos for Business
+    case "BUSINESS":
+      return 3;
     case "PRO":
       return 5; // Reduced from 10 (on hold)
     default:

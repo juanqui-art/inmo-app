@@ -3,14 +3,20 @@
 import { requireAuth } from "@/lib/auth";
 import { validateCSRFToken, isCSRFError } from "@/lib/csrf";
 import { logger } from "@/lib/utils/logger";
-import { db } from "@repo/database/src/client";
+import { promoteToAgent, setUserTier } from "@/lib/subscription/tier-manager";
 import { revalidatePath } from "next/cache";
+import type { SubscriptionTier } from "@prisma/client";
 
 /**
  * UPGRADE SUBSCRIPTION ACTION
  *
  * Simula el proceso de pago y actualiza el tier del usuario.
  * En producción, esto se manejaría vía Webhooks de Stripe.
+ *
+ * ARQUITECTURA SSOT (Single Source of Truth):
+ * - Solo actualiza public.users.subscription_tier
+ * - NO actualiza metadata de auth.users (ignorado después del signup)
+ * - Usa tier-manager para garantizar consistencia
  *
  * CSRF protected: subscription changes are critical for billing/privileges
  */
@@ -30,7 +36,7 @@ export async function upgradeSubscriptionAction(formData: FormData) {
 
   const plan = formData.get("plan") as string;
 
-  if (!plan || !["PLUS", "AGENT", "PRO"].includes(plan)) {
+  if (!plan || !["PLUS", "BUSINESS", "PRO"].includes(plan)) {
     return { error: "Plan inválido" };
   }
 
@@ -38,15 +44,16 @@ export async function upgradeSubscriptionAction(formData: FormData) {
     // Simular delay de procesamiento de pago
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Actualizar tier en base de datos
-    await db.user.update({
-      where: { id: user.id },
-      data: {
-        subscriptionTier: plan as "PLUS" | "AGENT" | "PRO",
-        // Promote CLIENT to AGENT when they subscribe (sellers need AGENT role)
-        role: user.role === "CLIENT" ? "AGENT" : user.role,
-      },
-    });
+    // Usar tier-manager para cambios de tier (patrón SSOT)
+    const newTier = plan as Exclude<SubscriptionTier, "FREE">;
+
+    if (user.role === "CLIENT") {
+      // Promover CLIENT → AGENT con el tier seleccionado
+      await promoteToAgent(user.id, newTier);
+    } else {
+      // Solo actualizar tier (mantener role actual)
+      await setUserTier(user.id, newTier, "subscription_upgrade");
+    }
 
     revalidatePath("/dashboard");
     return { success: true };

@@ -46,8 +46,8 @@ describe("Property Limits - Freemium Model", () => {
       expect(getPropertyLimit("PLUS")).toBe(3);
     });
 
-    it("should return 10 for AGENT tier", () => {
-      expect(getPropertyLimit("AGENT")).toBe(10);
+    it("should return 10 for BUSINESS tier", () => {
+      expect(getPropertyLimit("BUSINESS")).toBe(10);
     });
 
     it("should return 20 for PRO tier", () => {
@@ -64,8 +64,8 @@ describe("Property Limits - Freemium Model", () => {
       expect(getImageLimit("PLUS")).toBe(10);
     });
 
-    it("should return 15 for AGENT tier", () => {
-      expect(getImageLimit("AGENT")).toBe(15);
+    it("should return 15 for BUSINESS tier", () => {
+      expect(getImageLimit("BUSINESS")).toBe(15);
     });
 
     it("should return 20 for PRO tier", () => {
@@ -82,8 +82,8 @@ describe("Property Limits - Freemium Model", () => {
       expect(getFeaturedLimit("PLUS")).toBe(1);
     });
 
-    it("should return 5 for AGENT tier", () => {
-      expect(getFeaturedLimit("AGENT")).toBe(5);
+    it("should return 5 for BUSINESS tier", () => {
+      expect(getFeaturedLimit("BUSINESS")).toBe(5);
     });
 
     it("should return null for PRO tier (unlimited)", () => {
@@ -152,10 +152,10 @@ describe("Property Limits - Freemium Model", () => {
       expect(result.limit).toBe(3);
     });
 
-    it("should allow creation when under AGENT limit (9/10)", async () => {
+    it("should allow creation when under BUSINESS limit (9/10)", async () => {
       mockUserFindUnique.mockResolvedValue({
         id: "user-123",
-        subscriptionTier: "AGENT",
+        subscriptionTier: "BUSINESS",
       } as any);
 
       mockPropertyCount.mockResolvedValue(9);
@@ -166,10 +166,10 @@ describe("Property Limits - Freemium Model", () => {
       expect(result.limit).toBe(10);
     });
 
-    it("should block creation when at AGENT limit (10/10)", async () => {
+    it("should block creation when at BUSINESS limit (10/10)", async () => {
       mockUserFindUnique.mockResolvedValue({
         id: "user-123",
-        subscriptionTier: "AGENT",
+        subscriptionTier: "BUSINESS",
       } as any);
 
       mockPropertyCount.mockResolvedValue(10);
@@ -249,15 +249,15 @@ describe("Property Limits - Freemium Model", () => {
       expect(result.limit).toBe(10);
     });
 
-    it("should allow upload when under AGENT limit (14/15)", () => {
-      const result = canUploadImage("AGENT", 14);
+    it("should allow upload when under BUSINESS limit (14/15)", () => {
+      const result = canUploadImage("BUSINESS", 14);
 
       expect(result.allowed).toBe(true);
       expect(result.limit).toBe(15);
     });
 
-    it("should block upload when at AGENT limit (15/15)", () => {
-      const result = canUploadImage("AGENT", 15);
+    it("should block upload when at BUSINESS limit (15/15)", () => {
+      const result = canUploadImage("BUSINESS", 15);
 
       expect(result.allowed).toBe(false);
       expect(result.limit).toBe(15);
@@ -287,8 +287,8 @@ describe("Property Limits - Freemium Model", () => {
       expect(getTierDisplayName("PLUS")).toBe("Plus");
     });
 
-    it("should return 'Agente' for AGENT", () => {
-      expect(getTierDisplayName("AGENT")).toBe("Agente");
+    it("should return 'Business' for BUSINESS", () => {
+      expect(getTierDisplayName("BUSINESS")).toBe("Business");
     });
 
     it("should return 'Pro' for PRO", () => {
@@ -333,12 +333,12 @@ describe("Property Limits - Freemium Model", () => {
       });
     });
 
-    it("should return correct features for AGENT tier", () => {
-      const features = getTierFeatures("AGENT");
+    it("should return correct features for BUSINESS tier", () => {
+      const features = getTierFeatures("BUSINESS");
 
       expect(features).toEqual({
-        tier: "AGENT",
-        displayName: "Agente",
+        tier: "BUSINESS",
+        displayName: "Business",
         propertyLimit: 10,
         imageLimit: 15,
         featuredLimit: 5,
@@ -391,8 +391,8 @@ describe("Property Limits - Freemium Model", () => {
       });
     });
 
-    it("should return $29.99 for AGENT tier", () => {
-      const pricing = getTierPricing("AGENT");
+    it("should return $29.99 for BUSINESS tier", () => {
+      const pricing = getTierPricing("BUSINESS");
 
       expect(pricing).toEqual({
         price: 29.99,

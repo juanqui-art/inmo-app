@@ -14,7 +14,6 @@ interface ProfileFormProps {
   initialWebsite: string | null;
   initialBrandColor: string | null;
   initialLogoUrl: string | null;
-  initialAvatar: string | null;
 }
 
 export function ProfileForm({ 
@@ -25,7 +24,6 @@ export function ProfileForm({
   initialWebsite,
   initialBrandColor,
   initialLogoUrl,
-  initialAvatar
 }: ProfileFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [color, setColor] = useState(initialBrandColor || "#4F46E5");

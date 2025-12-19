@@ -7,7 +7,7 @@
 
 import type { Prisma, User, UserRole } from "@prisma/client";
 import { db } from "../client";
-import { sanitizePlainText, sanitizeOptional } from "../utils/sanitize";
+import { sanitizeOptional, sanitizePlainText } from "../utils/sanitize";
 
 /**
  * User select (campos seguros para retornar)
@@ -21,6 +21,11 @@ export const userSelect = {
   phone: true,
   avatar: true,
   subscriptionTier: true,
+  bio: true,
+  licenseId: true,
+  website: true,
+  brandColor: true,
+  logoUrl: true,
   createdAt: true,
   updatedAt: true,
 } satisfies Prisma.UserSelect;
@@ -66,8 +71,8 @@ export class UserRepository {
    * Incluye validación de permisos
    *
    * SANITIZATION: User-provided text fields are sanitized to prevent XSS attacks
-   * - name, phone: Plain text only (no HTML)
-   * - avatar: URL validation handled separately (not sanitized as HTML)
+   * - name, phone, bio, licenseId, website: Plain text only (no HTML)
+   * - avatar, logoUrl, brandColor: Format validation handled separately
    */
   async update(
     id: string,
@@ -95,7 +100,10 @@ export class UserRepository {
       ...data,
       ...(data.name && { name: sanitizeOptional(data.name as string | null, sanitizePlainText) }),
       ...(data.phone && { phone: sanitizeOptional(data.phone as string | null, sanitizePlainText) }),
-      // Note: avatar is a URL and should be validated separately (not HTML sanitized)
+      ...(data.bio && { bio: sanitizeOptional(data.bio as string | null, sanitizePlainText) }),
+      ...(data.licenseId && { licenseId: sanitizeOptional(data.licenseId as string | null, sanitizePlainText) }),
+      ...(data.website && { website: sanitizeOptional(data.website as string | null, sanitizePlainText) }),
+      // brandColor, logoUrl, avatar are validated by format/schema, no HTML sanitization needed
     };
 
     return db.user.update({

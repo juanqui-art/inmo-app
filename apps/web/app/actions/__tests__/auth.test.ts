@@ -80,7 +80,7 @@ describe("Auth Server Actions", () => {
             data: {
               name: "Juan Pérez",
               role: "CLIENT", // No plan = CLIENT (buyers/renters)
-              plan: null,
+              plan: "FREE", // Defaults to FREE when no plan provided
             },
           },
         });
@@ -118,7 +118,7 @@ describe("Auth Server Actions", () => {
             data: {
               name: "María García",
               role: "AGENT", // With plan = AGENT (can publish properties)
-              plan: "free",
+              plan: "FREE", // Normalized to uppercase
             },
           },
         });
@@ -154,7 +154,7 @@ describe("Auth Server Actions", () => {
             data: {
               name: "Carlos López",
               role: "AGENT",
-              plan: "plus",
+              plan: "PLUS", // Normalized to uppercase
             },
           },
         });

@@ -7,6 +7,7 @@
 
 import { logoutAction } from "@/app/actions/auth";
 import { AgentAvatar } from "@/components/shared/agent-avatar";
+import { getTierDisplayName } from "@/lib/permissions/property-limits";
 import {
     Badge,
     DropdownMenu,
@@ -52,7 +53,7 @@ export function UserMenu({ user }: UserMenuProps) {
   const tierStyles: Record<string, { bg: string; text: string }> = {
     FREE: defaultStyle,
     PLUS: { bg: "bg-amber-500/10", text: "text-amber-600 dark:text-amber-400" },
-    AGENT: { bg: "bg-indigo-500/10", text: "text-indigo-600 dark:text-indigo-400" },
+    BUSINESS: { bg: "bg-indigo-500/10", text: "text-indigo-600 dark:text-indigo-400" },
     PRO: { bg: "bg-purple-500/10", text: "text-purple-600 dark:text-purple-400" },
   };
   const currentTier = user.subscriptionTier || "FREE";
@@ -65,7 +66,7 @@ export function UserMenu({ user }: UserMenuProps) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="outline-none">
+      <DropdownMenuTrigger className="outline-none" data-testid="user-menu">
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent transition-colors cursor-pointer group">
           <AgentAvatar
             name={name}
@@ -76,8 +77,8 @@ export function UserMenu({ user }: UserMenuProps) {
           <div className="hidden md:flex flex-col items-start">
             <span className="text-sm font-semibold">{name}</span>
             <div className="flex items-center gap-1.5">
-              <Badge variant="secondary" className={`text-[10px] px-1.5 py-0 h-4 ${tierStyle.bg} ${tierStyle.text} border-0`}>
-                {user.subscriptionTier || "FREE"}
+              <Badge data-testid="tier-badge" variant="secondary" className={`text-[10px] px-1.5 py-0 h-4 ${tierStyle.bg} ${tierStyle.text} border-0`}>
+                {getTierDisplayName((user.subscriptionTier || "FREE") as "FREE" | "PLUS" | "BUSINESS" | "PRO")}
               </Badge>
               <span className="text-[10px] text-muted-foreground">• {roleLabel}</span>
             </div>
@@ -101,7 +102,7 @@ export function UserMenu({ user }: UserMenuProps) {
               </p>
               <div className="flex items-center gap-1.5 mt-1.5">
                 <Badge variant="secondary" className={`text-[10px] px-1.5 py-0 h-4 ${tierStyle.bg} ${tierStyle.text} border-0`}>
-                  {user.subscriptionTier || "FREE"}
+                  {getTierDisplayName((user.subscriptionTier || "FREE") as "FREE" | "PLUS" | "BUSINESS" | "PRO")}
                 </Badge>
               </div>
             </div>

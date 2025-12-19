@@ -87,7 +87,7 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
       data: {
         name,
         role,
-        plan: rawData.plan,
+        plan: rawData.plan?.toUpperCase() || "FREE",
       },
     },
   });
@@ -222,40 +222,11 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
     };
   }
 
-  // 5.5 Sincronizar rol de metadata → DB si están desincronizados
-  // El rol correcto está en user_metadata (del signup), la DB puede estar desactualizada
-  // debido a un bug previo en el trigger que no incluía el rol
-  const metadataRole = authData.user.user_metadata?.role as
-    | "CLIENT"
-    | "AGENT"
-    | "ADMIN"
-    | undefined;
-
-  if (metadataRole && metadataRole !== dbUser.role) {
-    // Actualizar el rol en la DB con el valor correcto de metadata
-    await userRepository.update(dbUser.id, { role: metadataRole }, dbUser.id);
-    // Actualizar dbUser local para la redirección correcta
-    dbUser.role = metadataRole;
-
-    logger.info(
-      { userId: dbUser.id, role: metadataRole },
-      "[AUTH] Synced role from metadata to DB",
-    );
-  } else if (!metadataRole && dbUser.role) {
-    // Si no hay rol en metadata pero sí en DB, actualizar metadata (caso legacy)
-    await supabase.auth.updateUser({
-      data: {
-        ...authData.user.user_metadata,
-        role: dbUser.role,
-        name: dbUser.name || authData.user.user_metadata?.name,
-      },
-    });
-
-    logger.info(
-      { userId: dbUser.id, role: dbUser.role },
-      "[AUTH] Synced role from DB to metadata",
-    );
-  }
+  // 5.5 ARQUITECTURA: public.users es la ÚNICA fuente de verdad
+  // - El metadata de auth.users es solo para el signup inicial
+  // - Después del signup, NUNCA sincronizamos metadata → DB
+  // - public.users.role es el valor correcto y autoritativo
+  // - NO leer ni confiar en metadata después del signup
 
   // 5.6 UPGRADE ROLE if plan selected (e.g. CLIENT logging in from /vender)
   const selectedPlan = formData.get("plan") as string | null;
@@ -265,25 +236,18 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
     validLoginPlans.includes(selectedPlan.toUpperCase()) &&
     dbUser.role === "CLIENT"
   ) {
-    // Upgrade to AGENT
+    // Upgrade to AGENT (solo DB, metadata NO importa)
     const newRole = "AGENT";
-    
-    // 1. Update DB
+
+    // Update DB ONLY (public.users es la fuente de verdad)
     await userRepository.update(dbUser.id, { role: newRole }, dbUser.id);
     dbUser.role = newRole; // Update local for redirect
 
-    // 2. Update Supabase Metadata
-    await supabase.auth.updateUser({
-      data: {
-        ...authData.user.user_metadata,
-        role: newRole,
-        plan: selectedPlan,
-      },
-    });
+    // NO actualizar metadata (solo importó en el signup)
 
     logger.info(
       { userId: dbUser.id, oldRole: "CLIENT", newRole, plan: selectedPlan },
-      "[AUTH] Upgraded user role on login",
+      "[AUTH] Upgraded user role on login (DB only, metadata ignored)",
     );
   }
 

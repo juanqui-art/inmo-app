@@ -14,14 +14,14 @@ interface CurrentPlanCardProps {
 const tierIcons: Record<SubscriptionTier, React.ReactNode> = {
   FREE: <Star className="w-5 h-5" />,
   PLUS: <Sparkles className="w-5 h-5" />,
-  AGENT: <Check className="w-5 h-5" />,
+  BUSINESS: <Check className="w-5 h-5" />,
   PRO: <Crown className="w-5 h-5" />,
 };
 
 const tierColors: Record<SubscriptionTier, string> = {
   FREE: "bg-oslo-gray-100 text-oslo-gray-700 dark:bg-oslo-gray-800 dark:text-oslo-gray-300",
   PLUS: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-  AGENT: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
+  BUSINESS: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
   PRO: "bg-gradient-to-r from-purple-500 to-pink-500 text-white",
 };
 

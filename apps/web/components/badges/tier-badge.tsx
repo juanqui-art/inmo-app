@@ -49,6 +49,7 @@ export function TierBadge({ tier, size = "default", className }: TierBadgeProps)
   if (badgeType === "premium") {
     return (
       <div
+        data-testid="tier-badge"
         className={cn(
           "inline-flex items-center gap-1 font-semibold rounded-full",
           "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/25",
@@ -65,6 +66,7 @@ export function TierBadge({ tier, size = "default", className }: TierBadgeProps)
   // Verified badge for AGENT/PRO
   return (
     <div
+      data-testid="tier-badge"
       className={cn(
         "inline-flex items-center gap-1 font-semibold rounded-full",
         "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25",

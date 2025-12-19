@@ -36,6 +36,7 @@ export function PricingCard({ tier, compact = false }: PricingCardProps) {
 
   return (
     <div
+      data-testid={`plan-${tier.name}`}
       className={`group relative flex flex-col p-8 rounded-2xl border transition-all duration-500 ${
         tier.highlighted
           ? "border-indigo-500/30 dark:border-indigo-400/30 bg-gradient-to-br from-oslo-gray-50 to-indigo-50/30 dark:from-oslo-gray-800 dark:to-oslo-gray-900 shadow-2xl shadow-indigo-500/10 dark:shadow-indigo-400/20 scale-105 hover:scale-[1.07] hover:shadow-indigo-500/20 dark:hover:shadow-indigo-400/30"

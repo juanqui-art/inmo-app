@@ -1,11 +1,11 @@
-import { db } from "@repo/database";
-import type { SubscriptionTier } from "@repo/database";
 import {
-  getFeaturedLimit,
-  getImageLimit,
-  getPropertyLimit,
-  getVideoLimit,
+    getFeaturedLimit,
+    getImageLimit,
+    getPropertyLimit,
+    getVideoLimit,
 } from "@/lib/permissions/property-limits";
+import type { SubscriptionTier } from "@repo/database";
+import { db } from "@repo/database";
 
 /**
  * User usage statistics
@@ -31,10 +31,10 @@ export interface UsageLimits {
  * Combined usage stats with limits
  */
 export interface UsageWithLimits {
-  properties: { current: number; limit: number };
-  images: { current: number; limit: number };
-  videos: { current: number; limit: number };
-  featured: { current: number; limit: number };
+  properties: { current: number; limit: number; isUnitLimit?: boolean };
+  images: { current: number; limit: number; isUnitLimit?: boolean };
+  videos: { current: number; limit: number; isUnitLimit?: boolean };
+  featured: { current: number; limit: number; isUnitLimit?: boolean };
 }
 
 /**
@@ -108,13 +108,13 @@ export function combineUsageWithLimits(
     },
     images: {
       current: stats.images,
-      // Total images limit = imagesPerProperty * number of properties
-      limit: limits.imagesPerProperty * Math.max(stats.properties, 1),
+      limit: limits.imagesPerProperty,
+      isUnitLimit: true, // It's a per-property limit, not global
     },
     videos: {
       current: stats.videos,
-      // Total videos limit = videosPerProperty * number of properties
-      limit: limits.videosPerProperty * Math.max(stats.properties, 1),
+      limit: limits.videosPerProperty,
+      isUnitLimit: true, // It's a per-property limit, not global
     },
     featured: {
       current: stats.featured,
@@ -151,8 +151,8 @@ export function getNextTierUpgrade(
 ): SubscriptionTier | null {
   const upgradeMap: Record<SubscriptionTier, SubscriptionTier | null> = {
     FREE: "PLUS",
-    PLUS: "AGENT",
-    AGENT: "PRO",
+    PLUS: "BUSINESS",
+    BUSINESS: "PRO",
     PRO: null, // Already at highest tier
   };
 

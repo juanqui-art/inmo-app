@@ -318,16 +318,20 @@ export function AgentPropertyCard({ property }: AgentPropertyCardProps) {
             )}
           </Button>
           
-          {/* More Actions Dropdown */}
-          <div className="relative group/more">
+          {/* Share Button - Improved */}
+          <div className="relative group/share">
             <Button 
-              variant="ghost" 
+              variant="outline" 
               size="sm"
-              className="px-2.5 hover:bg-primary/10 hover:text-primary transition-colors"
+              className="px-2.5 hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all duration-300 hover:scale-105 active:scale-95"
               onClick={() => setShowShareModal(true)}
             >
               <Share2 className="h-4 w-4" />
             </Button>
+            {/* Tooltip */}
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-xs rounded opacity-0 group-hover/share:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+              Compartir
+            </div>
           </div>
           
           {/* Delete Button */}
@@ -350,6 +354,7 @@ export function AgentPropertyCard({ property }: AgentPropertyCardProps) {
           propertyId={`${property.id}-${generateSlug(property.title)}`}
           propertyTitle={property.title}
           propertyPrice={Number(property.price) || undefined}
+          propertyImage={imageUrl}
         />
 
         {/* Footer - Updated Date */}

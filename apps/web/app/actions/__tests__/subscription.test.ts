@@ -2,7 +2,7 @@
  * TESTS - Subscription Server Actions
  *
  * Tests for subscription upgrade flow:
- * - Plan validation (PLUS/AGENT/PRO accepted, others rejected)
+ * - Plan validation (PLUS/BUSINESS/PRO accepted, others rejected)
  * - Role promotion (CLIENT → AGENT on subscription)
  * - Role preservation (AGENT stays AGENT, ADMIN stays ADMIN)
  * - Error handling (DB failures)
@@ -35,7 +35,7 @@ function createMockUser(overrides?: {
   id?: string;
   email?: string;
   role?: "CLIENT" | "AGENT" | "ADMIN";
-  subscriptionTier?: "FREE" | "PLUS" | "AGENT" | "PRO";
+  subscriptionTier?: "FREE" | "PLUS" | "BUSINESS" | "PRO";
 }) {
   return {
     id: overrides?.id || "user-123",
@@ -100,7 +100,7 @@ describe("upgradeSubscriptionAction", () => {
       expect(mockRevalidatePath).toHaveBeenCalledWith("/dashboard");
     });
 
-    it("should accept AGENT plan and upgrade FREE user", async () => {
+    it("should accept BUSINESS plan and upgrade FREE user", async () => {
       const mockUser = createMockUser({
         role: "CLIENT",
         subscriptionTier: "FREE",
@@ -109,11 +109,11 @@ describe("upgradeSubscriptionAction", () => {
       mockRequireAuth.mockResolvedValue(mockUser);
       mockDbUserUpdate.mockResolvedValue({
         ...mockUser,
-        subscriptionTier: "AGENT",
+        subscriptionTier: "BUSINESS",
         role: "AGENT",
       });
 
-      const formData = createUpgradeFormData("AGENT");
+      const formData = createUpgradeFormData("BUSINESS");
       const resultPromise = upgradeSubscriptionAction(formData);
       await vi.runAllTimersAsync();
       const result = await resultPromise;
@@ -122,7 +122,7 @@ describe("upgradeSubscriptionAction", () => {
       expect(mockDbUserUpdate).toHaveBeenCalledWith({
         where: { id: mockUser.id },
         data: {
-          subscriptionTier: "AGENT",
+          subscriptionTier: "BUSINESS",
           role: "AGENT",
         },
       });
@@ -233,7 +233,7 @@ describe("upgradeSubscriptionAction", () => {
       });
     });
 
-    it("should promote CLIENT to AGENT when subscribing to AGENT tier", async () => {
+    it("should promote CLIENT to AGENT when subscribing to BUSINESS tier", async () => {
       const mockUser = createMockUser({
         role: "CLIENT",
         subscriptionTier: "FREE",
@@ -242,11 +242,11 @@ describe("upgradeSubscriptionAction", () => {
       mockRequireAuth.mockResolvedValue(mockUser);
       mockDbUserUpdate.mockResolvedValue({
         ...mockUser,
-        subscriptionTier: "AGENT",
+        subscriptionTier: "BUSINESS",
         role: "AGENT",
       });
 
-      const formData = createUpgradeFormData("AGENT");
+      const formData = createUpgradeFormData("BUSINESS");
       const resultPromise = upgradeSubscriptionAction(formData);
       await vi.runAllTimersAsync();
 
@@ -255,7 +255,7 @@ describe("upgradeSubscriptionAction", () => {
       expect(mockDbUserUpdate).toHaveBeenCalledWith({
         where: { id: mockUser.id },
         data: {
-          subscriptionTier: "AGENT",
+          subscriptionTier: "BUSINESS",
           role: "AGENT",
         },
       });
@@ -292,7 +292,7 @@ describe("upgradeSubscriptionAction", () => {
     it("should NOT change AGENT role when upgrading to PRO", async () => {
       const mockUser = createMockUser({
         role: "AGENT",
-        subscriptionTier: "AGENT",
+        subscriptionTier: "BUSINESS",
       });
 
       mockRequireAuth.mockResolvedValue(mockUser);
@@ -308,12 +308,11 @@ describe("upgradeSubscriptionAction", () => {
 
       await resultPromise;
 
-      // Verify AGENT → AGENT (no change)
+      // Verify AGENT role is preserved (only tier changes)
       expect(mockDbUserUpdate).toHaveBeenCalledWith({
         where: { id: mockUser.id },
         data: {
           subscriptionTier: "PRO",
-          role: "AGENT", // Preserved
         },
       });
     });
@@ -337,12 +336,11 @@ describe("upgradeSubscriptionAction", () => {
 
       await resultPromise;
 
-      // Verify ADMIN → ADMIN (no change)
+      // Verify only tier changes (ADMIN role is preserved by not being updated)
       expect(mockDbUserUpdate).toHaveBeenCalledWith({
         where: { id: mockUser.id },
         data: {
           subscriptionTier: "PRO",
-          role: "ADMIN", // Preserved
         },
       });
     });
@@ -372,7 +370,7 @@ describe("upgradeSubscriptionAction", () => {
 
       mockDbUserUpdate.mockRejectedValue(new Error("DB Error"));
 
-      const formData = createUpgradeFormData("AGENT");
+      const formData = createUpgradeFormData("BUSINESS");
       const resultPromise = upgradeSubscriptionAction(formData);
       await vi.runAllTimersAsync();
       await resultPromise;

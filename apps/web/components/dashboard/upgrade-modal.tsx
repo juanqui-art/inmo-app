@@ -18,7 +18,7 @@ export function UpgradeModal() {
   if (!upgradeParam) return null;
 
   const planName = upgradeParam.toUpperCase();
-  const tier = getTierByName(planName as "PLUS" | "AGENT" | "PRO");
+  const tier = getTierByName(planName as "PLUS" | "BUSINESS" | "PRO");
 
   // Si el plan no es válido, no mostrar nada
   if (!tier) return null;
@@ -46,7 +46,7 @@ export function UpgradeModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div data-testid="upgrade-modal" className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-4xl bg-white dark:bg-oslo-gray-900 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
         <button
           onClick={handleClose}
@@ -154,9 +154,10 @@ export function UpgradeModal() {
               </p>
             </div>
 
-            <Button 
-              onClick={handleUpgrade} 
+            <Button
+              onClick={handleUpgrade}
               disabled={isPending}
+              data-testid="confirm-upgrade"
               className="w-full py-6 text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/20"
             >
               {isPending ? "Procesando..." : "Confirmar y Suscribirse"}

@@ -19,10 +19,12 @@ model User {
   id               String           @id @default(uuid())
   email            String           @unique
   name             String?
-  role             UserRole         @default(AGENT)
-  subscriptionTier SubscriptionTier @default(FREE) @map("subscription_tier")
+  role             UserRole         @default(CLIENT)
 
-  // Stripe fields
+  // DEPRECATED: These fields are being migrated to Subscription table
+  // Keep for backwards compatibility during migration
+  // TODO: Remove after migration is complete
+  subscriptionTier SubscriptionTier @default(FREE) @map("subscription_tier")
   stripeCustomerId       String?   @unique @map("stripe_customer_id")
   stripeSubscriptionId   String?   @unique @map("stripe_subscription_id")
   stripePriceId          String?   @map("stripe_price_id")
@@ -39,17 +41,56 @@ model User {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
+  subscription Subscription?  // Only exists if role = AGENT
   properties   Property[]   @relation("AgentProperties")
   favorites    Favorite[]
   appointments Appointment[] @relation("ClientAppointments")
   agentAppointments Appointment[] @relation("AgentAppointments")
-  
+
   // CRM Relations
   agentClients    AgentClient[] @relation("AgentClients")    // Clients this agent manages
   clientOfAgents  AgentClient[] @relation("ClientOfAgents")  // Agents managing this user
 
   @@index([subscriptionTier])
   @@map("users")
+}
+
+// New Subscription model - separates billing from authorization
+model Subscription {
+  id        String             @id @default(dbgenerated("gen_random_uuid()::text"))
+  userId    String             @unique @map("user_id")
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Plan
+  tier      SubscriptionTier   @default(FREE)
+  status    SubscriptionStatus @default(ACTIVE)
+
+  // Payment Provider (agnostic: Lemon Squeezy, Stripe, etc.)
+  provider              String?   @map("provider")
+  providerCustomerId    String?   @unique @map("provider_customer_id")
+  providerSubscriptionId String?  @unique @map("provider_subscription_id")
+  providerProductId     String?   @map("provider_product_id")
+  providerVariantId     String?   @map("provider_variant_id")
+
+  // Billing Dates
+  currentPeriodStart DateTime?   @map("current_period_start")
+  currentPeriodEnd   DateTime?   @map("current_period_end")
+  trialEndsAt        DateTime?   @map("trial_ends_at")
+  cancelledAt        DateTime?   @map("cancelled_at")
+
+  // Payment Method (for UI display)
+  cardBrand     String?   @map("card_brand")
+  cardLastFour  String?   @map("card_last_four")
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([providerCustomerId])
+  @@index([providerSubscriptionId])
+  @@index([status])
+  @@index([tier])
+  @@map("subscriptions")
 }
 
 model Property {
@@ -190,8 +231,17 @@ enum UserRole {
 enum SubscriptionTier {
   FREE
   PLUS
-  AGENT
+  BUSINESS
   PRO
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+  TRIALING
 }
 
 enum LeadStatus {
