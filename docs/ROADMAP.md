@@ -374,32 +374,30 @@ packages/database:  ~85% ✅ (target: 80%)
 
 ---
 
-### Sprint 3-4: Stripe Integration (Sem 7-8)
+### Sprint 3-4: Payment Integration (Lemon Squeezy Pivot)
 
 **Timeline Original**: Enero 20-31, 2026
-**Status**: ⏳ **~15% COMPLETADO** (preparación hecha)
+**Status**: 🔄 **Iniciando Investigación** (Pivot de Stripe a Lemon Squeezy para LatAm)
 
 | Tarea | Entregable | Tiempo | Status |
 |-------|------------|--------|--------|
-| **6.1 Stripe Account Setup** | Cuenta Stripe configurada (USD) | 1h | ⏳ Pendiente |
-| **6.2 Products Creation** | BASIC ($4.99), PRO ($14.99) | 1h | ⏳ Pendiente |
-| **6.3 Checkout Flow** | Embedded checkout component | 8h | 🔄 ~30% (upgrade flow simulado) |
-| **6.4 Webhooks** | `checkout.session.completed`, `invoice.paid` | 6h | ⏳ Pendiente |
-| **6.5 Subscription Management** | Cancel/upgrade/downgrade | 6h | 🔄 ~20% (upgrade action existe) |
-| **6.6 Testing Stripe** | Test mode + manual QA | 4h | ⏳ Pendiente |
+| **6.1 Lemon Squeezy Setup** | Cuenta + Store Setup (LatAm friendly) | 2h | ⏳ Pendiente |
+| **6.2 Products Creation** | BASIC ($4.99), PRO ($14.99) en LS | 1h | ⏳ Pendiente |
+| **6.3 Checkout Overlay** | Lemon.js integration | 6h | ⏳ Pendiente |
+| **6.4 Webhooks** | `order_created`, `subscription_updated` | 6h | ⏳ Pendiente |
+| **6.5 Portal Management** | Customer Portal link | 2h | ⏳ Pendiente |
+| **6.6 Testing** | Sandbox mode transactions | 4h | ⏳ Pendiente |
 
-**Preparación Completada**:
-- ✅ Stripe fields en schema (`stripeCustomerId`, `stripeSubscriptionId`, etc.)
-- ✅ `upgradeSubscriptionAction` (simulado, listo para Stripe real)
-- ✅ Pricing tiers definidos con URLs de checkout
+**Razón del Pivot**:
+- Stripe no tiene soporte directo completo en Ecuador sin empresa en USA.
+- Lemon Squeezy actúa como Merchant of Record (MoR), manejando impuestos globales.
+- Mejor soporte para tarjetas LatAm.
 
 **Pendiente**:
-- Cuenta Stripe Ecuador (USD)
-- Productos en Stripe Dashboard
-- Webhooks endpoint
-- Checkout embebido real
+- Investigar Lemon Squeezy API
+- Crear productos en dashboard
+- Configurar webhooks en Next.js
 
-**Riesgo**: Stripe approval puede tomar 1-3 días (Ecuador)
 
 ---
 
@@ -412,10 +410,10 @@ packages/database:  ~85% ✅ (target: 80%)
 |-------|------------|--------|--------|
 | **7.1 Pricing Page** | `/pricing` con 3 tiers | 8h | ✅ **DONE** (Dic 3) |
 | **7.2 Upgrade Modals** | Modal cuando alcanza límite | 4h | ✅ **DONE** (Dic 3) |
-| **7.3 Dashboard Subscription** | Ver plan actual + upgrade CTA | 4h | 🔄 ~50% |
+| **7.3 Dashboard Subscription** | Ver plan actual + upgrade CTA | 4h | ✅ **DONE** (Dic 17) |
 | **7.4 Email Templates** | Confirmación suscripción | 2h | ⏳ Pendiente |
 | **7.5 Beta Cerrada** | 50 usuarios invitados | 16h | ⏳ Pendiente |
-| **7.6 Analytics Setup** | Tracking conversiones | 2h | ⏳ Pendiente |
+| **7.6 Analytics Setup** | Basic Dashboard Analytics | 2h | ✅ **DONE** (Dic 17) |
 
 **Trabajo Completado (Dic 3-4, 2025)**:
 
@@ -659,7 +657,7 @@ Mes 4-6 (Growth):          $700 MRR (120 × BASIC, 20 × PRO)
 | Fecha Original | Hito | Status | Nueva Fecha Estimada |
 |----------------|------|--------|---------------------|
 | ~~**Ene 17**~~ | Schema + Permissions Freemium completo | ✅ **DONE** (Dic 4) | Completado |
-| **Ene 17** | Stripe integration funcional | ⏳ | Dic 20 - Ene 10 |
+| **Ene 17** | Lemon Squeezy integration funcional | ⏳ | Dic 20 - Ene 10 |
 | **Feb 14** | Beta cerrada (50 usuarios) | ⏳ |
 | **Feb 28** | E2E tests + Coverage >40% | ⏳ |
 | **Mar 14** | Beta pública (200-500 usuarios) | ⏳ |
