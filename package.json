@@ -40,7 +40,7 @@
     "verify:install": "./scripts/verify-install.sh"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.5",
+    "@biomejs/biome": "2.3.10",
     "@playwright/test": "^1.57.0",
     "@types/dompurify": "^3.2.0",
     "react-scan": "^0.4.3"
