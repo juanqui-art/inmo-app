@@ -12,12 +12,14 @@
  */
 
 import { CheckCircle } from "lucide-react";
+import * as motion from "motion/react-client";
 import Link from "next/link";
 
 export interface PricingTier {
   name: string;
   displayName: string;
   price: number;
+  yearlyPrice?: number;
   currency: string;
   period: string;
   description: string;
@@ -30,14 +32,21 @@ export interface PricingTier {
 interface PricingCardProps {
   tier: PricingTier;
   compact?: boolean; // Versión compacta para /vender
+  isYearly?: boolean; // Toggle state
 }
 
-export function PricingCard({ tier, compact = false }: PricingCardProps) {
+export function PricingCard({ tier, compact = false, isYearly = false }: PricingCardProps) {
+  const currentPrice = isYearly && tier.yearlyPrice !== undefined ? tier.yearlyPrice : tier.price;
+  const currentPeriod = isYearly ? "por año" : tier.period;
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: tier.highlighted ? 0.2 : 0 }}
       data-testid={`plan-${tier.name}`}
-      className={`group relative flex flex-col p-8 rounded-2xl border transition-all duration-500 ${
+      className={`group relative flex flex-col p-6 rounded-2xl border transition-all duration-500 ${
         tier.highlighted
           ? "border-indigo-500/30 dark:border-indigo-400/30 bg-gradient-to-br from-oslo-gray-50 to-indigo-50/30 dark:from-oslo-gray-800 dark:to-oslo-gray-900 shadow-2xl shadow-indigo-500/10 dark:shadow-indigo-400/20 scale-105 hover:scale-[1.07] hover:shadow-indigo-500/20 dark:hover:shadow-indigo-400/30"
           : "border-oslo-gray-200/50 dark:border-oslo-gray-700/50 bg-white/80 dark:bg-oslo-gray-900/80 backdrop-blur-sm shadow-lg hover:border-oslo-gray-300 dark:hover:border-oslo-gray-600 hover:shadow-xl hover:scale-105 hover:-translate-y-1"
@@ -67,20 +76,24 @@ export function PricingCard({ tier, compact = false }: PricingCardProps) {
 
       {/* Precio */}
       <div className="text-center mb-6 relative z-10">
-        <div className="flex items-baseline justify-center gap-1">
-          <span className="text-sm font-semibold text-oslo-gray-600 dark:text-oslo-gray-400">
+        <div className="flex items-start justify-center gap-1">
+          <span className="text-2xl font-bold text-oslo-gray-400 dark:text-oslo-gray-500 mt-1">
             {tier.currency}
           </span>
-          <span className={`text-6xl font-extrabold ${
+          <motion.span 
+            key={currentPrice}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`text-5xl font-extrabold ${
             tier.highlighted
               ? "bg-gradient-to-br from-indigo-500 to-purple-500 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent"
               : "text-oslo-gray-900 dark:text-oslo-gray-50"
           }`}>
-            {tier.price}
-          </span>
+            {currentPrice}
+          </motion.span>
         </div>
         <p className="text-sm text-oslo-gray-600 dark:text-oslo-gray-400 mt-1 font-medium">
-          {tier.period}
+          {currentPeriod}
         </p>
       </div>
 
@@ -88,11 +101,11 @@ export function PricingCard({ tier, compact = false }: PricingCardProps) {
       <div className="h-px bg-gradient-to-r from-transparent via-oslo-gray-200 dark:via-oslo-gray-700 to-transparent mb-6" />
 
       {/* Features */}
-      <ul className="space-y-3.5 mb-8 flex-grow relative z-10">
+      <ul className="space-y-3 mb-6 flex-grow relative z-10">
         {tier.features.map((feature, index) => (
           <li key={index} className="flex items-start gap-3 group/item">
             <CheckCircle
-              className={`w-5 h-5 flex-shrink-0 transition-transform group-hover/item:scale-110 ${
+              className={`w-4 h-4 mt-0.5 flex-shrink-0 transition-transform group-hover/item:scale-110 ${
                 tier.highlighted
                   ? "text-indigo-600 dark:text-indigo-400"
                   : "text-emerald-600 dark:text-emerald-400"
@@ -120,6 +133,6 @@ export function PricingCard({ tier, compact = false }: PricingCardProps) {
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 opacity-0 hover:opacity-100 transition-opacity duration-300" />
         )}
       </Link>
-    </div>
+    </motion.div>
   );
 }

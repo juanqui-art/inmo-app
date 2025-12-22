@@ -54,16 +54,16 @@ const comparisonFeatures = [
   {
     category: "Herramientas",
     features: [
-      { name: "Dashboard básico", FREE: true, PLUS: true, AGENT: true },
-      { name: "Analytics", FREE: false, PLUS: true, AGENT: true },
+      { name: "Dashboard Profesional", FREE: true, PLUS: true, AGENT: true },
+      { name: "Métricas de Visibilidad", FREE: false, PLUS: true, AGENT: true },
       { name: "Generador de descripción IA", FREE: false, PLUS: false, AGENT: true },
-      { name: "CRM Lite (leads, notas)", FREE: false, PLUS: false, AGENT: true },
+      { name: "Gestión de Clientes", FREE: false, PLUS: false, AGENT: true },
     ],
   },
   {
     category: "Soporte",
     features: [
-      { name: "Soporte por email", FREE: "72h", PLUS: "48h", AGENT: "24h" },
+      { name: "Nivel de Soporte", FREE: "Digital (72h)", PLUS: "Digital (48h)", AGENT: "Prioritario (24h)" },
     ],
   },
 ];

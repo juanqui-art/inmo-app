@@ -29,7 +29,7 @@
 
 import { FAQAccordion } from "@/components/faq/faq-accordion";
 import { HeroBackground } from "@/components/home/hero-background";
-import { PricingCard } from "@/components/pricing/pricing-card";
+import { PricingGrid } from "@/components/pricing/pricing-grid";
 import { getTierRank, pricingTiers } from "@/lib/pricing/tiers";
 import { createClient } from "@/lib/supabase/server";
 import { ArrowRight, CheckCircle, Home, TrendingUp, Users } from "lucide-react";
@@ -370,11 +370,8 @@ export default async function VenderPage() {
           </div>
 
           {/* Pricing Cards Grid - Excluding PRO tier for now */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
-            {tiers.filter(tier => tier.name !== "PRO").map((tier) => (
-              <PricingCard key={tier.name} tier={tier} compact={true} />
-            ))}
-          </div>
+          {/* Pricing Grid with Toggle */}
+          <PricingGrid tiers={tiers.filter(tier => tier.name !== "PRO")} />
 
           {/* Additional Info */}
           <div className="text-center">
