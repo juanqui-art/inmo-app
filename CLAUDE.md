@@ -223,7 +223,8 @@ Con modelo de comisiones (3% por transacción):
 - `docs/business/ECUADOR_STRATEGY.md` - 🇪🇨 **Ecuador-specific strategy** (Cuenca/Azuay launch, local pricing, phased expansion)
 - `docs/business/IMPLEMENTATION_STRATEGY.md` - 🚀 **Development strategy** (Git workflow, no fork decision, sprint plan, rollback strategy)
 - `docs/business/DECISIONS_APPROVED.md` - ✅ **Approved decisions** (pricing, limits, business rules - Nov 20, 2025)
-- `docs/business/TECHNICAL_SPEC.md` - 📋 **Technical specification** (schema, helpers, stripe integration)
+- `docs/business/TECHNICAL_SPEC.md` - 📋 **Technical specification** (schema, helpers, payment integration)
+- `docs/payments/LEMON_SQUEEZY_INTEGRATION.md` - 🍋 **Payment integration guide** (Lemon Squeezy setup, webhooks, Next.js)
 
 ---
 
@@ -316,18 +317,28 @@ PRO:      EN ESPERA  (lanzar cuando haya demanda de BUSINESS)
 - UI: "Gratuito", "Plus", "Business", "Pro" (traducido)
 - **NOTA:** `AGENT` renombrado a `BUSINESS` para evitar colisión con `UserRole.AGENT`
 
-**Payment Provider**: Lemon Squeezy (no Stripe)
-- Stripe no tiene cobertura en Ecuador (requiere Atlas $500)
-- Lemon Squeezy funciona directo en Latinoamérica
-- Schema diseñado agnóstico del provider
+**Payment Provider**: Lemon Squeezy (no Stripe) ✅ DECISIÓN FINAL (Dic 27, 2025)
+- Stripe no tiene cobertura en Ecuador (requiere Atlas $500 + LLC USA)
+- Lemon Squeezy funciona directo en Latinoamérica (Ecuador soportado)
+- Merchant of Record (MoR): Maneja impuestos, compliance, fraude
+- Fees: 5% + $0.50 (+ 3% non-domestic currency)
+- Payouts: 2x/mes a Ecuador vía Bank o PayPal
+- Adquirido por Stripe (Jul 2024) - respaldo y estabilidad
+- Schema diseñado agnóstico del provider (fácil migración futura)
+
+**Ver:** `docs/payments/LEMON_SQUEEZY_INTEGRATION.md` para guía completa
 
 **Mercado objetivo**: Todo Ecuador, marketing focalizado en Cuenca/Azuay
 
-**Próximos pasos** (actualizados):
+**Próximos pasos** (actualizados Dic 27, 2025):
 1. **Refactor arquitectura** - Ver `docs/architecture/SUBSCRIPTION_ARCHITECTURE_REFACTOR.md`
 2. Sprint 1: Migración DB + nueva tabla Subscription (1 sesión)
 3. Sprint 2: Actualizar código + UI (1-2 sesiones)
 4. Sprint 3-4: Lemon Squeezy Integration (2 semanas)
+   - Crear cuenta y productos en dashboard
+   - Implementar checkout flow
+   - Configurar webhooks
+   - Ver: `docs/payments/LEMON_SQUEEZY_INTEGRATION.md`
 5. Sprint 5-6: Beta Testing (2 semanas)
 
 **Referencias técnicas**:
@@ -353,7 +364,7 @@ PRO:      EN ESPERA  (lanzar cuando haya demanda de BUSINESS)
 Week 1:     ✅ URGENCIAS (Email, Performance, Quick Wins) - DONE
 Week 2-4:   ✅ FOUNDATIONS (Testing 46.53%, Logging, Security 100%) - DONE
 Week 5:     ✅ PERFORMANCE (Lazy Loading, ISR, Memoization) - DONE
-Week 6-10:  🔄 FREEMIUM (Schema ✅, UI ✅, Stripe ⏳) - ~50% DONE
+Week 6-10:  🔄 FREEMIUM (Schema ✅, UI ✅, Lemon Squeezy ⏳) - ~50% DONE
 Week 11-18: ⏳ SCALE (E2E tests, Beta pública 500 MAU, Launch)
 ```
 
@@ -368,7 +379,7 @@ Week 11-18: ⏳ SCALE (E2E tests, Beta pública 500 MAU, Launch)
 | **Dic 3-4** | Freemium Schema + UI | Pricing page | ✅ **DONE** |
 | **Dic 4-5** | Rate Limiting + CSRF | Security 10/10 | ✅ **DONE** |
 | **Dic 5** | Performance Optimization | Phase 3 | ✅ **DONE** |
-| **Dic 20** | Stripe Integration | Payments | ⏳ Próximo |
+| **Dic 27-Ene 10** | Lemon Squeezy Integration | Payments | ⏳ Próximo |
 | **Feb 14** | Beta cerrada | $25-50 MRR | ⏳ Pending |
 | **Mar 28** | Beta pública | 200-500 MAU | ⏳ Pending |
 | **Abr 11** | Production Launch | $700 MRR 🚀 | ⏳ Pending |
@@ -875,8 +886,8 @@ TOTAL:              289 tests ✅ (100% passing)
 **Phase 4 (Freemium):** 🔄 ~65-70% COMPLETE - **AVANZANDO BIEN** 🚀
 
 **✅ Sprint 1-2 ~90% COMPLETADO** - Schema + Permissions (Dec 3-4, 2025)
-- ✅ SubscriptionTier enum (FREE/PLUS/AGENT/PRO)
-- ✅ Stripe fields en User schema
+- ✅ SubscriptionTier enum (FREE/PLUS/BUSINESS/PRO)
+- ✅ Payment provider fields en User schema (agnóstico: Lemon Squeezy/Stripe)
 - ✅ Permission helpers (property-limits.ts)
 - ✅ upgradeSubscriptionAction (simulado)
 - ✅ TierBadge component (Premium/Verificado badges)
@@ -908,15 +919,14 @@ TOTAL:              289 tests ✅ (100% passing)
 - **4+ SEMANAS ADELANTADO DEL PLAN ORIGINAL** 🚀
 
 **Next Steps:**
-- **Dic 16-20:** Dashboard views + UTM analytics
-- **Dic 20-Ene 3:** Stripe Integration (Checkout + Webhooks)
+- **Dic 27-Ene 10:** Lemon Squeezy Integration (Checkout + Webhooks)
 - **Ene 2026:** Beta cerrada (50 usuarios)
 - **Feb-Mar 2026:** Beta pública (200-500 MAU)
 - **Abr 2026:** Production Launch
 
 **Timeline:**
-- Today: Dec 16, 2025
-- Stripe Integration: Dec 20, 2025
+- Today: Dec 27, 2025
+- Lemon Squeezy Integration: Dic 27 - Ene 10, 2026
 - Beta cerrada: Feb 14, 2026
 - Production launch: Apr 11, 2026
 

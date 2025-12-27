@@ -1,6 +1,7 @@
 # Technical Specification - Freemium Implementation
 
 > **Fecha**: Noviembre 20, 2025
+> **Actualizado**: Diciembre 27, 2025
 > **Status**: 📋 Especificación Técnica para Sprint 1-6
 > **Propósito**: Referencia rápida para implementación
 
@@ -8,91 +9,104 @@
 
 ## 🎯 Objetivo
 
-Implementar sistema de suscripciones Freemium (3 tiers) con límites por tier y integración Stripe.
+Implementar sistema de suscripciones Freemium (4 tiers) con límites por tier y integración **Lemon Squeezy**.
+
+> **NOTA (Dic 27, 2025):** Stripe no está disponible en Ecuador directamente.
+> Usamos Lemon Squeezy como Merchant of Record.
+> Ver: `docs/payments/LEMON_SQUEEZY_INTEGRATION.md` para guía completa.
 
 ---
 
-## 📊 Tiers y Límites
+## 📊 Tiers y Límites (Actualizado Dic 2025)
 
-| Feature | FREE | BASIC | PRO |
-|---------|------|-------|-----|
-| Precio | $0/mes | $4.99/mes | $14.99/mes |
-| Propiedades activas | 1 | 3 | 10 |
-| Imágenes/propiedad | 5 | 10 | 20 |
-| Duración | ∞ | ∞ | ∞ |
-| Destacados | ❌ | 3/mes | ∞ |
-| Analytics | ❌ | ✅ Básico | ✅ Avanzado |
-| Soporte | Email 72h | Email 24h | WhatsApp 12h |
+| Feature | FREE | PLUS | BUSINESS | PRO |
+|---------|------|------|----------|-----|
+| Precio | $0/mes | $9.99/mes | $29.99/mes | EN ESPERA |
+| Propiedades activas | 1 | 3 | 10 | 20 |
+| Imágenes/propiedad | 6 | 10 | 15 | 20 |
+| Videos | 0 | 1 | 3 | 5 |
+| Destacados | 0 | 1 | 5 | ∞ |
+| CRM Lite | ❌ | ❌ | ✅ | ✅ |
+| AI Description | ❌ | ❌ | ✅ | ✅ |
+| Soporte | Email | Email | Email 24h | WhatsApp |
+
+> **NOTA:** PRO tier está "EN ESPERA" hasta validar demanda de BUSINESS.
 
 ---
 
 ## 🗄️ Database Schema
 
-### Cambios requeridos:
+> **IMPORTANTE:** Ver `docs/architecture/SUBSCRIPTION_ARCHITECTURE_REFACTOR.md` para el nuevo schema con tabla `Subscription` separada.
+
+### Schema Actual (En refactor)
 
 ```prisma
 // packages/database/prisma/schema.prisma
 
-// 1. Agregar enum
 enum SubscriptionTier {
   FREE
-  BASIC
+  PLUS
+  BUSINESS  // Antes era AGENT (renombrado para evitar colisión)
   PRO
 }
 
-// 2. Modificar modelo User
-model User {
-  id               String           @id @default(uuid())
-  email            String           @unique
-  name             String?
-  role             UserRole         @default(CLIENT)
-  subscriptionTier SubscriptionTier @default(FREE) @map("subscription_tier")
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+  TRIALING
+}
 
-  // Stripe fields (para Sprint 3-4)
-  stripeCustomerId       String? @unique @map("stripe_customer_id")
-  stripeSubscriptionId   String? @unique @map("stripe_subscription_id")
-  stripePriceId          String? @map("stripe_price_id")
-  stripeCurrentPeriodEnd DateTime? @map("stripe_current_period_end")
+// Nueva tabla Subscription (separada de User)
+model Subscription {
+  id        String             @id @default(uuid())
+  userId    String             @unique @map("user_id")
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  phone     String?
-  avatar    String?
+  tier      SubscriptionTier   @default(FREE)
+  status    SubscriptionStatus @default(ACTIVE)
+
+  // Payment Provider (agnóstico: Lemon Squeezy, Stripe, etc.)
+  provider              String?   @map("provider")  // "lemonsqueezy" | "stripe"
+  providerCustomerId    String?   @unique @map("provider_customer_id")
+  providerSubscriptionId String?  @unique @map("provider_subscription_id")
+  providerProductId     String?   @map("provider_product_id")
+  providerVariantId     String?   @map("provider_variant_id")
+
+  // Billing Dates
+  currentPeriodStart DateTime?   @map("current_period_start")
+  currentPeriodEnd   DateTime?   @map("current_period_end")
+  trialEndsAt        DateTime?   @map("trial_ends_at")
+  cancelledAt        DateTime?   @map("cancelled_at")
+
+  // Payment Method
+  cardBrand     String?   @map("card_brand")
+  cardLastFour  String?   @map("card_last_four")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  properties         Property[]
-  favorites          Favorite[]
-  appointments       Appointment[]
-  agentAppointments  Appointment[] @relation("AgentAppointments")
-
-  @@map("users")
+  @@map("subscriptions")
 }
 
-// 3. NO modificar Property (sin expiración)
-// Property queda como está
+// User model (solo role, sin subscription tier)
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  name         String?
+  role         UserRole  @default(CLIENT)  // Authorization only
+  subscription Subscription?               // Only for AGENTs
+
+  // ... other fields
+  @@map("users")
+}
 ```
 
-### Migración:
+### Migración
 
-```sql
--- Migration file: add_subscription_tier.sql
-
--- Add enum
-CREATE TYPE "SubscriptionTier" AS ENUM ('FREE', 'BASIC', 'PRO');
-
--- Add column to users
-ALTER TABLE "users"
-  ADD COLUMN "subscription_tier" "SubscriptionTier" NOT NULL DEFAULT 'FREE';
-
--- Add Stripe fields (optional for Sprint 1-2, required for Sprint 3-4)
-ALTER TABLE "users"
-  ADD COLUMN "stripe_customer_id" TEXT UNIQUE,
-  ADD COLUMN "stripe_subscription_id" TEXT UNIQUE,
-  ADD COLUMN "stripe_price_id" TEXT,
-  ADD COLUMN "stripe_current_period_end" TIMESTAMP(3);
-
--- Create index
-CREATE INDEX "users_subscription_tier_idx" ON "users"("subscription_tier");
-```
+Ver SQL completo en: `docs/architecture/SUBSCRIPTION_ARCHITECTURE_REFACTOR.md`
 
 ---
 
@@ -280,20 +294,24 @@ export async function createPropertyAction(formData: FormData) {
 
 ---
 
-## 💳 Stripe Configuration
+## 💳 Lemon Squeezy Configuration
 
-### Products & Prices (crear en Stripe Dashboard):
+> **NOTA:** Usamos Lemon Squeezy en lugar de Stripe porque Ecuador no está soportado directamente por Stripe.
+> Ver: `docs/payments/LEMON_SQUEEZY_INTEGRATION.md` para guía completa.
+
+### Products (crear en Lemon Squeezy Dashboard):
 
 ```javascript
-// Stripe Product IDs (guardar en env después de crear)
+// Lemon Squeezy Variant IDs (guardar en env después de crear)
 
-BASIC Tier:
-  Product ID: prod_xxxxx
-  Price ID: price_xxxxx (monthly, $4.99 USD)
+PLUS Tier:
+  Variant ID: 123456 (monthly, $9.99 USD)
+
+BUSINESS Tier:
+  Variant ID: 123457 (monthly, $29.99 USD)
 
 PRO Tier:
-  Product ID: prod_yyyyy
-  Price ID: price_yyyyy (monthly, $14.99 USD)
+  Variant ID: 123458 (monthly, $59.99 USD) - EN ESPERA
 ```
 
 ### Environment Variables:
@@ -305,14 +323,15 @@ PRO Tier:
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 
-# NEW: Stripe keys
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx
-STRIPE_SECRET_KEY=sk_test_xxxxx
-STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+# NEW: Lemon Squeezy keys
+LEMONSQUEEZY_API_KEY=lmsq_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+LEMONSQUEEZY_STORE_ID=12345
+LEMONSQUEEZY_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxx
 
-# NEW: Stripe Price IDs
-STRIPE_BASIC_PRICE_ID=price_xxxxx
-STRIPE_PRO_PRICE_ID=price_yyyyy
+# NEW: Lemon Squeezy Variant IDs
+LEMONSQUEEZY_PLUS_VARIANT_ID=123456
+LEMONSQUEEZY_BUSINESS_VARIANT_ID=123457
+LEMONSQUEEZY_PRO_VARIANT_ID=123458
 ```
 
 **También agregar a**: `packages/env/src/index.ts`
@@ -323,45 +342,64 @@ STRIPE_PRO_PRICE_ID=price_yyyyy
 
 ```typescript
 // apps/web/app/(public)/pricing/page.tsx
+// Ver también: apps/web/lib/pricing/tiers.ts
 
 export default function PricingPage() {
   const tiers = [
     {
       name: 'Gratuito',
+      tier: 'FREE',
       price: 0,
-      stripePriceId: null,
       features: [
         '1 propiedad activa',
-        '5 imágenes por propiedad',
-        'Publicación ilimitada en tiempo',
-        'Búsqueda y mapas',
-        'Soporte por email (72h)'
+        '6 imágenes por propiedad',
+        'Sin videos',
+        'Publicación ilimitada',
+        'Búsqueda y mapas'
       ]
     },
     {
-      name: 'Básico',
-      price: 4.99,
-      stripePriceId: env.STRIPE_BASIC_PRICE_ID,
-      popular: true,
+      name: 'Plus',
+      tier: 'PLUS',
+      price: 9.99,
+      variantId: env.LEMONSQUEEZY_PLUS_VARIANT_ID,
       features: [
         '3 propiedades activas',
         '10 imágenes por propiedad',
-        '3 destacados por mes',
-        'Analytics básico',
-        'Soporte por email (24h)'
+        '1 video por propiedad',
+        '1 propiedad destacada',
+        'Ideal para dueños particulares'
+      ]
+    },
+    {
+      name: 'Business',
+      tier: 'BUSINESS',
+      price: 29.99,
+      variantId: env.LEMONSQUEEZY_BUSINESS_VARIANT_ID,
+      popular: true,
+      features: [
+        '10 propiedades activas',
+        '15 imágenes por propiedad',
+        '3 videos por propiedad',
+        '5 propiedades destacadas',
+        'CRM Lite (gestión de leads)',
+        'Generador de descripciones IA',
+        'Soporte prioritario (24h)'
       ]
     },
     {
       name: 'Pro',
-      price: 14.99,
-      stripePriceId: env.STRIPE_PRO_PRICE_ID,
+      tier: 'PRO',
+      price: 59.99,
+      variantId: env.LEMONSQUEEZY_PRO_VARIANT_ID,
+      comingSoon: true,  // EN ESPERA
       features: [
-        '10 propiedades activas',
+        '20 propiedades activas',
         '20 imágenes por propiedad',
+        '5 videos por propiedad',
         'Destacados ilimitados',
-        'Analytics avanzado',
-        'Badge "Agente Verificado"',
-        'Soporte WhatsApp (12h)'
+        'Todo de Business',
+        'Soporte WhatsApp'
       ]
     }
   ]
@@ -378,77 +416,57 @@ export default function PricingPage() {
 
 ---
 
-## 🔔 Stripe Webhooks
+## 🔔 Lemon Squeezy Webhooks
+
+> **Ver implementación completa en:** `docs/payments/LEMON_SQUEEZY_INTEGRATION.md`
 
 ```typescript
-// apps/web/app/api/webhooks/stripe/route.ts
+// apps/web/app/api/webhook/lemonsqueezy/route.ts
 
-import { stripe } from '@/lib/stripe'
-import { db } from '@repo/database'
+import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
+import { db } from '@repo/database';
+import { env } from '@repo/env';
 
-export async function POST(req: Request) {
-  const body = await req.text()
-  const sig = req.headers.get('stripe-signature')!
+export async function POST(request: NextRequest) {
+  const rawBody = await request.text();
+  const signature = request.headers.get('X-Signature');
 
-  const event = stripe.webhooks.constructEvent(
-    body,
-    sig,
-    env.STRIPE_WEBHOOK_SECRET
-  )
-
-  switch (event.type) {
-    case 'checkout.session.completed': {
-      const session = event.data.object
-
-      // Update user subscription
-      await db.user.update({
-        where: { stripeCustomerId: session.customer as string },
-        data: {
-          subscriptionTier: getPriceIdTier(session.subscription as string),
-          stripeSubscriptionId: session.subscription as string
-        }
-      })
-      break
-    }
-
-    case 'customer.subscription.updated': {
-      const subscription = event.data.object
-
-      await db.user.update({
-        where: { stripeSubscriptionId: subscription.id },
-        data: {
-          subscriptionTier: getPriceIdTier(subscription.items.data[0].price.id),
-          stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000)
-        }
-      })
-      break
-    }
-
-    case 'customer.subscription.deleted': {
-      const subscription = event.data.object
-
-      // Downgrade to FREE
-      await db.user.update({
-        where: { stripeSubscriptionId: subscription.id },
-        data: {
-          subscriptionTier: 'FREE',
-          stripeSubscriptionId: null,
-          stripeCurrentPeriodEnd: null
-        }
-      })
-      break
-    }
+  // Verify signature
+  if (!verifySignature(rawBody, signature)) {
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
-  return new Response(JSON.stringify({ received: true }))
+  const payload = JSON.parse(rawBody);
+  const { event_name, custom_data } = payload.meta;
+  const userId = custom_data?.user_id;
+
+  switch (event_name) {
+    case 'subscription_created':
+    case 'subscription_updated':
+      await handleSubscriptionActive(userId, payload.data);
+      break;
+
+    case 'subscription_cancelled':
+    case 'subscription_expired':
+      await handleSubscriptionInactive(userId, payload.data);
+      break;
+  }
+
+  return NextResponse.json({ received: true });
 }
 
-function getPriceIdTier(priceId: string): SubscriptionTier {
-  if (priceId === env.STRIPE_BASIC_PRICE_ID) return 'BASIC'
-  if (priceId === env.STRIPE_PRO_PRICE_ID) return 'PRO'
-  return 'FREE'
-}
+// Ver implementación completa en docs/payments/LEMON_SQUEEZY_INTEGRATION.md
 ```
+
+**Eventos a configurar en Lemon Squeezy Dashboard:**
+- `subscription_created`
+- `subscription_updated`
+- `subscription_cancelled`
+- `subscription_resumed`
+- `subscription_expired`
+- `subscription_payment_success`
+- `subscription_payment_failed`
 
 ---
 
@@ -491,16 +509,17 @@ function getPriceIdTier(priceId: string): SubscriptionTier {
 - [ ] Integration tests
 - [ ] Error messages in Spanish
 
-### Sprint 3: Stripe Setup (Week 3)
-- [ ] Create Stripe products/prices
-- [ ] Add env vars
+### Sprint 3: Lemon Squeezy Setup (Week 3)
+- [ ] Create Lemon Squeezy account and products
+- [ ] Add env vars (API key, store ID, variant IDs)
+- [ ] Install SDK: `bun add @lemonsqueezy/lemonsqueezy.js`
 - [ ] Implement checkout flow
-- [ ] Test with Stripe test mode
+- [ ] Test with Lemon Squeezy test mode
 
 ### Sprint 4: Webhooks (Week 4)
-- [ ] Webhook endpoint
+- [ ] Webhook endpoint (`/api/webhook/lemonsqueezy`)
 - [ ] Handle subscription events
-- [ ] Test locally with Stripe CLI
+- [ ] Test locally with ngrok
 - [ ] Deploy and test in production
 
 ### Sprint 5: Pricing Page (Week 5)
@@ -521,27 +540,31 @@ function getPriceIdTier(priceId: string): SubscriptionTier {
 ## 🚀 Deploy Checklist
 
 Before going live:
-- [ ] Stripe products created in LIVE mode
-- [ ] Webhook endpoint configured in Stripe
-- [ ] Environment variables updated (production)
+- [ ] Lemon Squeezy switched to LIVE mode
+- [ ] New API key generated for production
+- [ ] Webhook endpoint configured in Lemon Squeezy
+- [ ] Webhook secret updated
+- [ ] Environment variables updated in Vercel
 - [ ] Database migration applied
 - [ ] All tests passing
 - [ ] Pricing page reviewed
 - [ ] Error messages in Spanish
-- [ ] Analytics configured
 - [ ] Beta user list ready
+- [ ] Payout settings configured (Ecuador bank account)
 
 ---
 
 ## 📚 References
 
-- **Business**: `DECISIONS_APPROVED.md`
-- **Market**: `ECUADOR_STRATEGY.md`
-- **Git**: `IMPLEMENTATION_STRATEGY.md`
-- **Stripe Docs**: https://stripe.com/docs/billing/subscriptions/build-subscriptions
+- **Payment Integration**: `docs/payments/LEMON_SQUEEZY_INTEGRATION.md`
+- **Subscription Architecture**: `docs/architecture/SUBSCRIPTION_ARCHITECTURE_REFACTOR.md`
+- **Business Decisions**: `DECISIONS_APPROVED.md`
+- **Market Strategy**: `ECUADOR_STRATEGY.md`
+- **Git Workflow**: `IMPLEMENTATION_STRATEGY.md`
+- **Lemon Squeezy Docs**: https://docs.lemonsqueezy.com
 
 ---
 
 **Created**: Noviembre 20, 2025
-**Last Updated**: Noviembre 20, 2025
-**Status**: Ready for Sprint 1
+**Last Updated**: Diciembre 27, 2025
+**Status**: Ready for Sprint 1 (Lemon Squeezy integration planned)
