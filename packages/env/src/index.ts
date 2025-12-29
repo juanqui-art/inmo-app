@@ -208,6 +208,43 @@ const serverSchema = z.object({
     .startsWith("sk-", "OPENAI_API_KEY must be a valid OpenAI API key")
     .optional()
     .describe("OpenAI API key for natural language search parsing"),
+
+  // Lemon Squeezy (Subscription Payments)
+  LEMONSQUEEZY_API_KEY: z
+    .string()
+    .min(1, "LEMONSQUEEZY_API_KEY is required")
+    .optional()
+    .describe("Lemon Squeezy API key for payment processing"),
+
+  LEMONSQUEEZY_STORE_ID: z
+    .string()
+    .min(1, "LEMONSQUEEZY_STORE_ID is required")
+    .optional()
+    .describe("Lemon Squeezy store ID"),
+
+  LEMONSQUEEZY_WEBHOOK_SECRET: z
+    .string()
+    .min(1, "LEMONSQUEEZY_WEBHOOK_SECRET is required")
+    .optional()
+    .describe("Lemon Squeezy webhook signing secret"),
+
+  LEMONSQUEEZY_PLUS_VARIANT_ID: z
+    .string()
+    .min(1, "LEMONSQUEEZY_PLUS_VARIANT_ID is required")
+    .optional()
+    .describe("Lemon Squeezy variant ID for PLUS tier"),
+
+  LEMONSQUEEZY_BUSINESS_VARIANT_ID: z
+    .string()
+    .min(1, "LEMONSQUEEZY_BUSINESS_VARIANT_ID is required")
+    .optional()
+    .describe("Lemon Squeezy variant ID for BUSINESS tier"),
+
+  LEMONSQUEEZY_PRO_VARIANT_ID: z
+    .string()
+    .min(1, "LEMONSQUEEZY_PRO_VARIANT_ID is required")
+    .optional()
+    .describe("Lemon Squeezy variant ID for PRO tier"),
 });
 
 /**
@@ -284,6 +321,12 @@ const parseEnv = (): Env => {
       UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
       CSRF_SECRET: process.env.CSRF_SECRET,
       OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+      LEMONSQUEEZY_API_KEY: process.env.LEMONSQUEEZY_API_KEY,
+      LEMONSQUEEZY_STORE_ID: process.env.LEMONSQUEEZY_STORE_ID,
+      LEMONSQUEEZY_WEBHOOK_SECRET: process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
+      LEMONSQUEEZY_PLUS_VARIANT_ID: process.env.LEMONSQUEEZY_PLUS_VARIANT_ID,
+      LEMONSQUEEZY_BUSINESS_VARIANT_ID: process.env.LEMONSQUEEZY_BUSINESS_VARIANT_ID,
+      LEMONSQUEEZY_PRO_VARIANT_ID: process.env.LEMONSQUEEZY_PRO_VARIANT_ID,
       NODE_ENV: (process.env.NODE_ENV || "development") as
         | "development"
         | "production"
@@ -320,6 +363,12 @@ const parseEnv = (): Env => {
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     CSRF_SECRET: process.env.CSRF_SECRET,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    LEMONSQUEEZY_API_KEY: process.env.LEMONSQUEEZY_API_KEY,
+    LEMONSQUEEZY_STORE_ID: process.env.LEMONSQUEEZY_STORE_ID,
+    LEMONSQUEEZY_WEBHOOK_SECRET: process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
+    LEMONSQUEEZY_PLUS_VARIANT_ID: process.env.LEMONSQUEEZY_PLUS_VARIANT_ID,
+    LEMONSQUEEZY_BUSINESS_VARIANT_ID: process.env.LEMONSQUEEZY_BUSINESS_VARIANT_ID,
+    LEMONSQUEEZY_PRO_VARIANT_ID: process.env.LEMONSQUEEZY_PRO_VARIANT_ID,
     NODE_ENV: process.env.NODE_ENV,
   });
 

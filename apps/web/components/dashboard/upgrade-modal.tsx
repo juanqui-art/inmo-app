@@ -1,8 +1,9 @@
 "use client";
 
-import { upgradeSubscriptionAction } from "@/app/actions/subscription";
+import { createSubscriptionCheckout } from "@/app/actions/subscription";
 import { PricingCard } from "@/components/pricing/pricing-card";
 import { getTierByName } from "@/lib/pricing/tiers";
+import type { SubscriptionTier } from "@/lib/payments/lemonsqueezy";
 import { Button } from "@repo/ui";
 import { X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -31,17 +32,13 @@ export function UpgradeModal() {
 
   const handleUpgrade = async () => {
     setIsPending(true);
-    const formData = new FormData();
-    formData.append("plan", planName);
-
-    const result = await upgradeSubscriptionAction(formData);
-
-    if (result?.success) {
-      // Recargar para reflejar cambios y cerrar modal
-      window.location.href = "/dashboard";
-    } else {
+    try {
+      // Redirect to Lemon Squeezy checkout
+      await createSubscriptionCheckout(planName as SubscriptionTier);
+    } catch (error) {
       setIsPending(false);
       alert("Error al procesar la suscripción");
+      console.error(error);
     }
   };
 

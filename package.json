@@ -46,6 +46,7 @@
     "react-scan": "^0.4.3"
   },
   "dependencies": {
+    "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@radix-ui/react-toggle": "^1.1.10",
     "@radix-ui/react-toggle-group": "^1.1.11",
     "isomorphic-dompurify": "^2.34.0"
