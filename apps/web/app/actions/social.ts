@@ -26,11 +26,39 @@
 
 "use server";
 
-import type { SharePlatform } from "@prisma/client";
+import { createHash } from "node:crypto";
+import { SharePlatform } from "@prisma/client";
 import { db } from "@repo/database";
-import { logger } from "@/lib/utils/logger";
 import { headers } from "next/headers";
+import { z } from "zod";
+import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/utils/logger";
+
+const propertyIdSchema = z.string().uuid();
+const sharePlatformSchema = z.nativeEnum(SharePlatform);
+
+/**
+ * Validates input and applies the "social" rate limit.
+ * Returns false if the event should NOT be recorded (invalid or rate limited).
+ */
+async function canTrack(
+  propertyId: unknown,
+  userId: string | undefined,
+): Promise<boolean> {
+  if (!propertyIdSchema.safeParse(propertyId).success) return false;
+
+  try {
+    await enforceRateLimit({ userId, tier: "social" });
+    return true;
+  } catch (error) {
+    if (isRateLimitError(error)) {
+      logger.warn({ userId, propertyId }, "[Social] Rate limit exceeded");
+      return false;
+    }
+    throw error;
+  }
+}
 
 /**
  * Track property share
@@ -49,9 +77,16 @@ export async function trackPropertyShare(
       data: { user },
     } = await supabase.auth.getUser();
 
+    if (!sharePlatformSchema.safeParse(platform).success) {
+      return { success: false };
+    }
+    if (!(await canTrack(propertyId, user?.id))) {
+      return { success: false };
+    }
+
     // Get request metadata
     const headersList = await headers();
-    const ipAddress = headersList.get("x-forwarded-for") || "unknown";
+    const ipAddress = getClientIP(headersList);
     const userAgent = headersList.get("user-agent") || "unknown";
 
     // Create share record
@@ -92,9 +127,13 @@ export async function trackPropertyView(
       data: { user },
     } = await supabase.auth.getUser();
 
+    if (!(await canTrack(propertyId, user?.id))) {
+      return { success: false };
+    }
+
     // Get request metadata
     const headersList = await headers();
-    const ipAddress = headersList.get("x-forwarded-for") || "unknown";
+    const ipAddress = getClientIP(headersList);
     const userAgent = headersList.get("user-agent") || "unknown";
 
     // Create view record
@@ -297,15 +336,20 @@ export async function getTrendingProperties(limit = 10) {
  * Uses simple hash (in production, use crypto.subtle)
  */
 function hashIP(ip: string): string {
-  // Simple hash for privacy
-  // In production, use: crypto.createHash('sha256').update(ip).digest('hex')
-  let hash = 0;
-  for (let i = 0; i < ip.length; i++) {
-    const char = ip.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return hash.toString(36);
+  // SHA-256 instead of the previous 32-bit rolling hash (collision-prone and
+  // trivially reversible). Note: unsalted, so IPv4 is still brute-forceable;
+  // add a server-side salt if this data is ever exposed.
+  return createHash("sha256").update(ip).digest("hex").slice(0, 32);
+}
+
+/**
+ * First IP in x-forwarded-for is the client; the rest are proxies.
+ */
+function getClientIP(
+  headersList: Awaited<ReturnType<typeof headers>>,
+): string {
+  const forwarded = headersList.get("x-forwarded-for");
+  return forwarded?.split(",")[0]?.trim() || "unknown";
 }
 
 /**

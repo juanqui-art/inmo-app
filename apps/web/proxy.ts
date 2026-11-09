@@ -104,16 +104,12 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(loginUrl);
       }
 
-      // Usuario sin rol en metadata → Loguear pero permitir acceso (o asignar default) para evitar bucle
+      // Usuario sin rol en metadata (p. ej. OAuth) → dejar pasar.
+      // user_metadata es controlado por el cliente y puede estar desactualizado
+      // respecto a la DB, así que aquí solo es una optimización de UX.
+      // La autorización real la hace requireRole() (rol desde DB) en los layouts.
       if (!userRole) {
-        console.log("[PROXY] User has no role in metadata", { 
-          userId: user.id, 
-          metadata: user.user_metadata 
-        });
-        
-        // En lugar de bloquear, permitimos continuar o asignamos CLIENT por defecto si es seguro
-        // Para debugging, vamos a permitir que pase, el layout/page ya validará si necesita rol
-        // Opcional: break; para permitir acceso
+        logSecurityEvent("missing_role", { pathname, userId: user.id });
       }
 
       // Usuario con rol NO permitido → redirigir a su área

@@ -18,6 +18,7 @@ export type RateLimitTier =
   | "property-create" // Property creation (user-based)
   | "appointment" // Appointment booking (user-based)
   | "favorite" // Toggle favorites (user-based)
+  | "social" // Share/view tracking (user or IP-based)
   | "default"; // Fallback
 
 export interface RateLimitConfig {
@@ -75,6 +76,14 @@ export const RATE_LIMIT_CONFIGS: Record<RateLimitTier, RateLimitConfig> = {
     limit: 100,
     window: "1 h",
     description: "100 favoritos por hora",
+  },
+
+  // Social tracking: public endpoints, prevents inflating views/shares/trending
+  // User-based if logged in, IP-based otherwise
+  social: {
+    limit: 60,
+    window: "1 h",
+    description: "60 interacciones por hora",
   },
 
   // Default fallback for unspecified actions
