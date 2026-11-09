@@ -19,6 +19,7 @@
 import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/utils/logger";
+import { getSafeRedirectPath } from "@/lib/utils/safe-redirect";
 import { loginSchema, signupSchema } from "@/lib/validations/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -126,8 +127,8 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
   }
 
   // 8. Redirigir según parámetro explícito o rol
-  const redirectParam = rawData.redirect;
-  if (redirectParam?.startsWith("/")) {
+  const redirectParam = getSafeRedirectPath(rawData.redirect);
+  if (redirectParam) {
     return redirect(redirectParam);
   }
 
@@ -255,10 +256,12 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
   revalidatePath("/", "layout");
 
   // 7. Redirigir según parámetro redirect o rol
-  const redirectParam = formData.get("redirect") as string | null;
+  const redirectParam = getSafeRedirectPath(
+    formData.get("redirect") as string | null,
+  );
 
-  // Si viene un redirect explícito y es una ruta protegida, usarlo
-  if (redirectParam?.startsWith("/")) {
+  // Si viene un redirect explícito y es una ruta interna segura, usarlo
+  if (redirectParam) {
     redirect(redirectParam);
   }
 
