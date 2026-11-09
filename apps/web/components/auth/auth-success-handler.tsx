@@ -14,13 +14,12 @@
  * Este componente solo muestra feedback visual.
  */
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AuthIntentExecutor } from "./auth-intent-executor";
 import { SuccessModal } from "./success-modal";
 
 export function AuthSuccessHandler() {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [showSuccess, setShowSuccess] = useState(false);
@@ -48,7 +47,7 @@ export function AuthSuccessHandler() {
 
       return () => clearTimeout(timer);
     }
-  }, [searchParams, pathname, router]);
+  }, [searchParams, pathname]);
 
   if (!showSuccess) {
     return null;

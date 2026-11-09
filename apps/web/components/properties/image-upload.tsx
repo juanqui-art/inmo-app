@@ -56,32 +56,37 @@ export function ImageUpload({
   } | null>(null);
 
   // Manejar archivos seleccionados (drag & drop o click)
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Validar cantidad total
-    if (currentImageCount + acceptedFiles.length > maxImages) {
-      // Mostrar modal de upgrade en lugar de solo texto
-      setLimitData({
-        currentTier: tier,
-        limit: maxImages,
-      });
-      setLimitModalOpen(true);
-      return;
-    }
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      // Validar cantidad total
+      if (currentImageCount + acceptedFiles.length > maxImages) {
+        // Mostrar modal de upgrade en lugar de solo texto
+        setLimitData({
+          currentTier: tier,
+          limit: maxImages,
+        });
+        setLimitModalOpen(true);
+        return;
+      }
 
-    // Validar
-    const validationError = validateImages(acceptedFiles);
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+      // Validar
+      const validationError = validateImages(acceptedFiles);
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
 
-    setError(null);
-    setSelectedFiles(acceptedFiles);
+      setError(null);
+      setSelectedFiles(acceptedFiles);
 
-    // Crear previews
-    const newPreviews = acceptedFiles.map((file) => URL.createObjectURL(file));
-    setPreviews(newPreviews);
-  }, []);
+      // Crear previews
+      const newPreviews = acceptedFiles.map((file) =>
+        URL.createObjectURL(file),
+      );
+      setPreviews(newPreviews);
+    },
+    [currentImageCount, maxImages, tier],
+  );
 
   // Configurar react-dropzone
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

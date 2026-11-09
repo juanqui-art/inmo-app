@@ -20,6 +20,54 @@ interface UploadedImage {
   error?: string;
 }
 
+/**
+ * Upload a single file using presigned URL
+ */
+async function uploadFile(file: File): Promise<string | null> {
+  try {
+    // 1. Get presigned URL from server
+    const presignedResult = await generatePresignedUploadUrl(
+      file.name,
+      file.type,
+      file.size,
+    );
+
+    if (
+      !presignedResult.success ||
+      !presignedResult.uploadUrl ||
+      !presignedResult.path
+    ) {
+      throw new Error(presignedResult.error || "Error al generar URL de carga");
+    }
+
+    // 2. Upload directly to Supabase Storage
+    const uploadResponse = await fetch(presignedResult.uploadUrl, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file.type,
+        "x-upsert": "true", // Allow overwrite if file exists
+      },
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+    }
+
+    // 3. Get public URL
+    const publicUrlResult = await getPublicImageUrl(presignedResult.path);
+
+    if (!publicUrlResult.success || !publicUrlResult.publicUrl) {
+      throw new Error("Error al obtener URL pública");
+    }
+
+    return publicUrlResult.publicUrl;
+  } catch (error) {
+    console.error("Upload error:", error);
+    throw error;
+  }
+}
+
 export function Step4() {
   const { formData, updateFormData, nextStep, limits } =
     usePropertyWizardStore();
@@ -28,6 +76,7 @@ export function Step4() {
   const [isUploading, setIsUploading] = useState(false);
 
   // Initialize from store
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only on purpose; reacting to store updates causes loops
   useEffect(() => {
     // If formData.imageUrls exists and is not empty, we should reconstruct the state
     // This assumes that if we have imageUrls, the files themselves are not needed for re-upload
@@ -54,58 +103,7 @@ export function Step4() {
         }
       });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run on mount to initialize, do not react to store updates to avoid loops
-
-  /**
-   * Upload a single file using presigned URL
-   */
-  const uploadFile = async (file: File): Promise<string | null> => {
-    try {
-      // 1. Get presigned URL from server
-      const presignedResult = await generatePresignedUploadUrl(
-        file.name,
-        file.type,
-        file.size,
-      );
-
-      if (
-        !presignedResult.success ||
-        !presignedResult.uploadUrl ||
-        !presignedResult.path
-      ) {
-        throw new Error(
-          presignedResult.error || "Error al generar URL de carga",
-        );
-      }
-
-      // 2. Upload directly to Supabase Storage
-      const uploadResponse = await fetch(presignedResult.uploadUrl, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type,
-          "x-upsert": "true", // Allow overwrite if file exists
-        },
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error(`Upload failed: ${uploadResponse.statusText}`);
-      }
-
-      // 3. Get public URL
-      const publicUrlResult = await getPublicImageUrl(presignedResult.path);
-
-      if (!publicUrlResult.success || !publicUrlResult.publicUrl) {
-        throw new Error("Error al obtener URL pública");
-      }
-
-      return publicUrlResult.publicUrl;
-    } catch (error) {
-      console.error("Upload error:", error);
-      throw error;
-    }
-  };
 
   /**
    * Handle file drop/selection
@@ -212,7 +210,7 @@ export function Step4() {
       console.log("[ImagesStep] Updating store with URLs:", allUrls);
       updateFormData({ imageUrls: allUrls });
     },
-    [images, updateFormData],
+    [images, maxImages, updateFormData],
   );
 
   const removeFile = (index: number) => {
