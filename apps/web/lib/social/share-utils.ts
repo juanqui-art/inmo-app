@@ -22,9 +22,9 @@
  * - https://developer.twitter.com/en/docs/twitter-for-websites/tweet-button/guides/web-intent
  */
 
+import type { Property } from "@prisma/client";
 import { env } from "@/lib/env";
 import { logger } from "@/lib/utils/logger";
-import type { Property } from "@prisma/client";
 
 export type SharePlatform =
   | "FACEBOOK"
@@ -222,10 +222,7 @@ export async function copyLinkToClipboard(url: string): Promise<boolean> {
 
     return success;
   } catch (error) {
-    logger.error(
-      { err: error },
-      "[Social] Failed to copy link to clipboard"
-    );
+    logger.error({ err: error }, "[Social] Failed to copy link to clipboard");
     return false;
   }
 }
@@ -292,10 +289,7 @@ export async function shareViaSystem(shareData: ShareData): Promise<boolean> {
       (error as Error).name !== "AbortError" &&
       (error as Error).name !== "InvalidStateError"
     ) {
-      logger.error(
-        { err: error, shareData },
-        "[Social] Native share failed"
-      );
+      logger.error({ err: error, shareData }, "[Social] Native share failed");
     }
     return false;
   }

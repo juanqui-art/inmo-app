@@ -1,21 +1,21 @@
 "use client";
 
-import { AddressAutocomplete } from "@/components/properties/address-autocomplete";
-import { LocationPickerMap } from "@/components/properties/location-picker-map";
-import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-    Input,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
 } from "@repo/ui";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { AddressAutocomplete } from "@/components/properties/address-autocomplete";
+import { LocationPickerMap } from "@/components/properties/location-picker-map";
+import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 
 const step2Schema = z.object({
   address: z
@@ -80,7 +80,7 @@ export function Step2() {
     if (data.city) form.setValue("city", data.city);
     if (data.state) form.setValue("state", data.state);
     if (data.zipCode) form.setValue("zipCode", data.zipCode);
-    
+
     form.setValue("latitude", data.latitude);
     form.setValue("longitude", data.longitude);
   };
@@ -202,7 +202,8 @@ export function Step2() {
                 Coordenadas (Opcional)
               </h3>
               <p className="text-xs text-muted-foreground mb-4">
-                Si el mapa no funciona bien, puedes copiar las coordenadas desde Google Maps y pegarlas aquí.
+                Si el mapa no funciona bien, puedes copiar las coordenadas desde
+                Google Maps y pegarlas aquí.
               </p>
               <div className="grid gap-4 md:grid-cols-2">
                 <FormField
@@ -217,7 +218,9 @@ export function Step2() {
                           step="any"
                           placeholder="Ej: -2.9001"
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -236,7 +239,9 @@ export function Step2() {
                           step="any"
                           placeholder="Ej: -79.0059"
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value) || 0)
+                          }
                         />
                       </FormControl>
                       <FormMessage />

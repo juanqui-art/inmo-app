@@ -5,12 +5,20 @@
  * Muestra links según el rol del usuario
  */
 
-import { ModeToggle } from "@/components/mode-toggle";
-import { cn } from "@/lib/utils";
 import { Button, Separator } from "@repo/ui";
-import { Building2, Calendar, CreditCard, Home, LogOut, Settings, Users } from "lucide-react";
+import {
+  Building2,
+  Calendar,
+  CreditCard,
+  Home,
+  LogOut,
+  Settings,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ModeToggle } from "@/components/mode-toggle";
+import { cn } from "@/lib/utils";
 import { PlanUsage } from "./plan-usage";
 
 interface SidebarProps {
@@ -98,9 +106,10 @@ export function Sidebar({ user, usageStats }: SidebarProps) {
       <nav className="flex-1 px-4 space-y-2 overflow-y-auto py-4">
         {filteredItems.map((item) => {
           const Icon = item.icon;
-          const isActive = item.href === "/dashboard" 
-            ? pathname === "/dashboard"
-            : pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const isActive =
+            item.href === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           return (
             <Link
@@ -110,13 +119,20 @@ export function Sidebar({ user, usageStats }: SidebarProps) {
                 "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group relative overflow-hidden",
                 isActive
                   ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               {isActive && (
                 <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-20" />
               )}
-              <Icon className={cn("h-5 w-5 transition-transform group-hover:scale-110", isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground")} />
+              <Icon
+                className={cn(
+                  "h-5 w-5 transition-transform group-hover:scale-110",
+                  isActive
+                    ? "text-primary-foreground"
+                    : "text-muted-foreground group-hover:text-foreground",
+                )}
+              />
               <span>{item.title}</span>
             </Link>
           );
@@ -138,9 +154,9 @@ export function Sidebar({ user, usageStats }: SidebarProps) {
         <div className="p-4 flex items-center justify-between">
           <ModeToggle />
           <form action="/api/auth/logout" method="POST">
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-2"
               title="Cerrar Sesión"
             >

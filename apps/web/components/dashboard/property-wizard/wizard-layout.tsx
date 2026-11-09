@@ -1,9 +1,9 @@
 "use client";
 
-import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { Button, Card } from "@repo/ui";
 import { ArrowLeft, ArrowRight, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { StepIndicator } from "./step-indicator";
 
 interface WizardLayoutProps {
@@ -14,7 +14,13 @@ interface WizardLayoutProps {
   isSubmitting?: boolean;
 }
 
-export function WizardLayout({ children, title, description, formId, isSubmitting }: WizardLayoutProps) {
+export function WizardLayout({
+  children,
+  title,
+  description,
+  formId,
+  isSubmitting,
+}: WizardLayoutProps) {
   const { currentStep, totalSteps, setStep } = usePropertyWizardStore();
   const router = useRouter();
 
@@ -56,21 +62,25 @@ export function WizardLayout({ children, title, description, formId, isSubmittin
         </Button>
 
         <div className="flex gap-2">
-            {/* Save Draft Button (Optional) */}
-            <Button variant="ghost" className="gap-2 text-muted-foreground" type="button">
-                <Save className="w-4 h-4" />
-                Guardar Borrador
-            </Button>
+          {/* Save Draft Button (Optional) */}
+          <Button
+            variant="ghost"
+            className="gap-2 text-muted-foreground"
+            type="button"
+          >
+            <Save className="w-4 h-4" />
+            Guardar Borrador
+          </Button>
 
-            <Button
+          <Button
             type={formId ? "submit" : "button"}
             form={formId}
             className="gap-2"
             disabled={isSubmitting}
-            >
+          >
             {currentStep === totalSteps ? "Publicar" : "Siguiente"}
             <ArrowRight className="w-4 h-4" />
-            </Button>
+          </Button>
         </div>
       </div>
     </div>

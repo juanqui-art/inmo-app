@@ -1,11 +1,11 @@
-import {
-    getFeaturedLimit,
-    getImageLimit,
-    getPropertyLimit,
-    getVideoLimit,
-} from "@/lib/permissions/property-limits";
 import type { SubscriptionTier } from "@repo/database";
 import { db } from "@repo/database";
+import {
+  getFeaturedLimit,
+  getImageLimit,
+  getPropertyLimit,
+  getVideoLimit,
+} from "@/lib/permissions/property-limits";
 
 /**
  * User usage statistics
@@ -99,7 +99,7 @@ export function getUsageLimits(tier: SubscriptionTier): UsageLimits {
  */
 export function combineUsageWithLimits(
   stats: UsageStats,
-  limits: UsageLimits
+  limits: UsageLimits,
 ): UsageWithLimits {
   return {
     properties: {
@@ -136,7 +136,7 @@ export function getUsagePercentage(current: number, limit: number): number {
  * Get warning level based on usage percentage
  */
 export function getWarningLevel(
-  percentage: number
+  percentage: number,
 ): "safe" | "warning" | "danger" {
   if (percentage >= 90) return "danger";
   if (percentage >= 70) return "warning";
@@ -147,7 +147,7 @@ export function getWarningLevel(
  * Get next tier upgrade option
  */
 export function getNextTierUpgrade(
-  currentTier: SubscriptionTier
+  currentTier: SubscriptionTier,
 ): SubscriptionTier | null {
   const upgradeMap: Record<SubscriptionTier, SubscriptionTier | null> = {
     FREE: "PLUS",

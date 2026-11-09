@@ -73,7 +73,7 @@ const clientSchema = z.object({
       "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY must be a valid Stripe publishable key",
     )
     .optional(),
-  
+
   // Sentry (public DSN for client-side error tracking)
   NEXT_PUBLIC_SENTRY_DSN: z
     .string()
@@ -267,11 +267,17 @@ const parseEnv = (): Env => {
   if (process.env.NODE_ENV === "test") {
     return {
       NODE_ENV: "test",
-      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || "https://test.supabase.co",
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "test-anon-key",
-      NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-      DATABASE_URL: process.env.DATABASE_URL || "postgresql://test:test@localhost:5432/test",
-      DIRECT_URL: process.env.DIRECT_URL || "postgresql://test:test@localhost:5432/test",
+      NEXT_PUBLIC_SUPABASE_URL:
+        process.env.NEXT_PUBLIC_SUPABASE_URL || "https://test.supabase.co",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY:
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "test-anon-key",
+      NEXT_PUBLIC_SITE_URL:
+        process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+      DATABASE_URL:
+        process.env.DATABASE_URL ||
+        "postgresql://test:test@localhost:5432/test",
+      DIRECT_URL:
+        process.env.DIRECT_URL || "postgresql://test:test@localhost:5432/test",
     } as Env;
   }
 
@@ -291,7 +297,8 @@ const parseEnv = (): Env => {
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
         process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
       NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
-      NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
+      NEXT_PUBLIC_SENTRY_ENVIRONMENT:
+        process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
       NEXT_PUBLIC_SENTRY_ENABLED: process.env.NEXT_PUBLIC_SENTRY_ENABLED,
     });
 
@@ -325,7 +332,8 @@ const parseEnv = (): Env => {
       LEMONSQUEEZY_STORE_ID: process.env.LEMONSQUEEZY_STORE_ID,
       LEMONSQUEEZY_WEBHOOK_SECRET: process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
       LEMONSQUEEZY_PLUS_VARIANT_ID: process.env.LEMONSQUEEZY_PLUS_VARIANT_ID,
-      LEMONSQUEEZY_BUSINESS_VARIANT_ID: process.env.LEMONSQUEEZY_BUSINESS_VARIANT_ID,
+      LEMONSQUEEZY_BUSINESS_VARIANT_ID:
+        process.env.LEMONSQUEEZY_BUSINESS_VARIANT_ID,
       LEMONSQUEEZY_PRO_VARIANT_ID: process.env.LEMONSQUEEZY_PRO_VARIANT_ID,
       NODE_ENV: (process.env.NODE_ENV || "development") as
         | "development"
@@ -367,7 +375,8 @@ const parseEnv = (): Env => {
     LEMONSQUEEZY_STORE_ID: process.env.LEMONSQUEEZY_STORE_ID,
     LEMONSQUEEZY_WEBHOOK_SECRET: process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
     LEMONSQUEEZY_PLUS_VARIANT_ID: process.env.LEMONSQUEEZY_PLUS_VARIANT_ID,
-    LEMONSQUEEZY_BUSINESS_VARIANT_ID: process.env.LEMONSQUEEZY_BUSINESS_VARIANT_ID,
+    LEMONSQUEEZY_BUSINESS_VARIANT_ID:
+      process.env.LEMONSQUEEZY_BUSINESS_VARIANT_ID,
     LEMONSQUEEZY_PRO_VARIANT_ID: process.env.LEMONSQUEEZY_PRO_VARIANT_ID,
     NODE_ENV: process.env.NODE_ENV,
   });

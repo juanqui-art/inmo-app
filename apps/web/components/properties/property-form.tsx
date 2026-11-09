@@ -6,35 +6,38 @@
 
 "use client";
 
-import { generatePropertyDescription } from "@/app/actions/ai-description";
-import { ImageGallery } from "@/components/properties/image-gallery";
-import { ImageUpload } from "@/components/properties/image-upload";
-import { VideoUrlInput } from "@/components/property-wizard/video-url-input";
-import { VideoList } from "@/components/property-wizard/video-list";
-import { getImageLimit, getTierDisplayName } from "@/lib/permissions/property-limits";
 import type { SerializedProperty, SubscriptionTier } from "@repo/database";
 import {
-    Button,
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-    Checkbox,
-    Input,
-    Label,
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-    Separator,
-    Textarea
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Checkbox,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Separator,
+  Textarea,
 } from "@repo/ui";
 import { Loader2, Lock, Sparkles, Wand2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { generatePropertyDescription } from "@/app/actions/ai-description";
+import { ImageGallery } from "@/components/properties/image-gallery";
+import { ImageUpload } from "@/components/properties/image-upload";
+import { VideoList } from "@/components/property-wizard/video-list";
+import { VideoUrlInput } from "@/components/property-wizard/video-url-input";
+import {
+  getImageLimit,
+  getTierDisplayName,
+} from "@/lib/permissions/property-limits";
 import { LimitReachedModal } from "../modals/limit-reached-modal";
 import { LocationPickerMap } from "./location-picker-map";
 
@@ -108,10 +111,17 @@ export function PropertyForm({
   } | null>(null);
 
   // Estados locales para mapa, amenities y videos
-  const [latitude, setLatitude] = useState<number>(property?.latitude || -2.9001); // Cuenca default
-  const [longitude, setLongitude] = useState<number>(property?.longitude || -79.0059);
-  const [amenities, setAmenities] = useState<string[]>(property?.amenities || []);
-  const [videos, setVideos] = useState<{ url: string; platform: string }[]>(existingVideos);
+  const [latitude, setLatitude] = useState<number>(
+    property?.latitude || -2.9001,
+  ); // Cuenca default
+  const [longitude, setLongitude] = useState<number>(
+    property?.longitude || -79.0059,
+  );
+  const [amenities, setAmenities] = useState<string[]>(
+    property?.amenities || [],
+  );
+  const [videos, setVideos] =
+    useState<{ url: string; platform: string }[]>(existingVideos);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
   // Feature access checks
@@ -120,25 +130,23 @@ export function PropertyForm({
   const imageLimit = getImageLimit(userTier);
   const currentImageCount = property?.images?.length || 0;
 
-
-
   const handleLocationSelect = (lat: number, lng: number) => {
     setLatitude(lat);
     setLongitude(lng);
   };
 
   const handleAmenityToggle = (amenityId: string) => {
-    setAmenities(prev => 
+    setAmenities((prev) =>
       prev.includes(amenityId)
-        ? prev.filter(a => a !== amenityId)
-        : [...prev, amenityId]
+        ? prev.filter((a) => a !== amenityId)
+        : [...prev, amenityId],
     );
   };
 
   useEffect(() => {
     if (state?.upgradeRequired) {
       setLimitData({
-        currentTier: "FREE", 
+        currentTier: "FREE",
         limit: state.currentLimit || 0,
       });
       setLimitModalOpen(true);
@@ -148,7 +156,9 @@ export function PropertyForm({
   // Handle AI description generation
   const handleGenerateDescription = async () => {
     if (!canUseAI) {
-      toast.error("Las descripciones con IA están disponibles desde el plan Agente");
+      toast.error(
+        "Las descripciones con IA están disponibles desde el plan Agente",
+      );
       return;
     }
 
@@ -173,8 +183,8 @@ export function PropertyForm({
         descriptionRef.current.value = result.description;
         toast.success("¡Descripción generada!", { id: "ai-description" });
       } else {
-        toast.error(result.error || "No se pudo generar la descripción", { 
-          id: "ai-description" 
+        toast.error(result.error || "No se pudo generar la descripción", {
+          id: "ai-description",
         });
       }
     } catch {
@@ -192,8 +202,8 @@ export function PropertyForm({
         <input type="hidden" name="latitude" value={latitude} />
         <input type="hidden" name="longitude" value={longitude} />
         <input type="hidden" name="videos" value={JSON.stringify(videos)} />
-        {amenities.map(amenity => (
-           <input key={amenity} type="hidden" name="amenities" value={amenity} /> 
+        {amenities.map((amenity) => (
+          <input key={amenity} type="hidden" name="amenities" value={amenity} />
         ))}
 
         {/* --- SECCIÓN 1: Información Principal --- */}
@@ -205,7 +215,6 @@ export function PropertyForm({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
-            
             {/* Title */}
             <div className="space-y-2">
               <Label htmlFor="title">
@@ -220,7 +229,9 @@ export function PropertyForm({
                 required
               />
               {state?.error?.title && (
-                <p className="text-sm text-destructive">{state.error.title[0]}</p>
+                <p className="text-sm text-destructive">
+                  {state.error.title[0]}
+                </p>
               )}
             </div>
 
@@ -231,7 +242,9 @@ export function PropertyForm({
                   Precio (USD) <span className="text-destructive">*</span>
                 </Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    $
+                  </span>
                   <Input
                     id="price"
                     name="price"
@@ -244,7 +257,9 @@ export function PropertyForm({
                   />
                 </div>
                 {state?.error?.price && (
-                  <p className="text-sm text-destructive">{state.error.price[0]}</p>
+                  <p className="text-sm text-destructive">
+                    {state.error.price[0]}
+                  </p>
                 )}
               </div>
 
@@ -311,7 +326,9 @@ export function PropertyForm({
                   >
                     <Lock className="w-3 h-3" />
                     <span className="hidden sm:inline">IA</span>
-                    <span className="text-xs text-muted-foreground">(Agente+)</span>
+                    <span className="text-xs text-muted-foreground">
+                      (Agente+)
+                    </span>
                   </Button>
                 )}
               </div>
@@ -388,7 +405,8 @@ export function PropertyForm({
             <CardHeader className="pb-4">
               <CardTitle>Galería de Imágenes</CardTitle>
               <CardDescription>
-                Gestiona las fotos de tu propiedad. La primera será la principal.
+                Gestiona las fotos de tu propiedad. La primera será la
+                principal.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
@@ -404,14 +422,14 @@ export function PropertyForm({
               </div>
 
               <div className="pt-4 border-t">
-                 <h3 className="text-sm font-medium mb-3">Subir Nuevas Fotos</h3>
-                 <ImageUpload
-                   propertyId={property.id}
-                   onUploadComplete={() => router.refresh()}
-                   maxImages={imageLimit}
-                   currentImageCount={currentImageCount}
-                   tier={userTier}
-                 />
+                <h3 className="text-sm font-medium mb-3">Subir Nuevas Fotos</h3>
+                <ImageUpload
+                  propertyId={property.id}
+                  onUploadComplete={() => router.refresh()}
+                  maxImages={imageLimit}
+                  currentImageCount={currentImageCount}
+                  tier={userTier}
+                />
               </div>
             </CardContent>
           </Card>
@@ -496,11 +514,13 @@ export function PropertyForm({
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center justify-between">
               <span>Videos</span>
-              <span className={`text-xs font-normal px-2 py-1 rounded-full ${
-                videoLimit > 0 
-                  ? "bg-primary/10 text-primary" 
-                  : "bg-muted text-muted-foreground"
-              }`}>
+              <span
+                className={`text-xs font-normal px-2 py-1 rounded-full ${
+                  videoLimit > 0
+                    ? "bg-primary/10 text-primary"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
                 {videoLimit > 0 ? `Plan ${tierDisplayName}` : "Plan Plus+"}
               </span>
             </CardTitle>
@@ -535,7 +555,9 @@ export function PropertyForm({
               <div className="text-center py-8 text-sm text-muted-foreground">
                 <Lock className="w-8 h-8 mx-auto mb-2 opacity-50" />
                 <p>Los videos están disponibles desde el plan Plus</p>
-                <p className="text-xs mt-1">Actualiza tu plan para agregar videos a tus propiedades</p>
+                <p className="text-xs mt-1">
+                  Actualiza tu plan para agregar videos a tus propiedades
+                </p>
               </div>
             )}
 
@@ -570,7 +592,7 @@ export function PropertyForm({
                   placeholder="Calle Principal 123 y Secundaria"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="city">Ciudad</Label>
                 <Input
@@ -580,7 +602,7 @@ export function PropertyForm({
                   placeholder="Ej: Quito"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="state">Provincia / Estado</Label>
                 <Input
@@ -590,7 +612,7 @@ export function PropertyForm({
                   placeholder="Ej: Pichincha"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="zipCode">Código Postal</Label>
                 <Input
@@ -608,10 +630,13 @@ export function PropertyForm({
             {/* Manual Coordinates */}
             <div className="space-y-4">
               <div>
-                <Label className="text-base font-medium">Coordenadas Geográficas</Label>
+                <Label className="text-base font-medium">
+                  Coordenadas Geográficas
+                </Label>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Útil para ubicaciones rurales donde la dirección no es suficiente.
-                  Se actualizan automáticamente al mover el pin en el mapa.
+                  Útil para ubicaciones rurales donde la dirección no es
+                  suficiente. Se actualizan automáticamente al mover el pin en
+                  el mapa.
                 </p>
               </div>
               <div className="grid gap-6 grid-cols-2">
@@ -622,7 +647,9 @@ export function PropertyForm({
                     type="number"
                     step="any"
                     value={latitude}
-                    onChange={(e) => setLatitude(parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      setLatitude(parseFloat(e.target.value) || 0)
+                    }
                     placeholder="-2.9001"
                     className="font-mono text-sm bg-background"
                   />
@@ -634,14 +661,15 @@ export function PropertyForm({
                     type="number"
                     step="any"
                     value={longitude}
-                    onChange={(e) => setLongitude(parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      setLongitude(parseFloat(e.target.value) || 0)
+                    }
                     placeholder="-79.0059"
                     className="font-mono text-sm bg-background"
                   />
                 </div>
               </div>
             </div>
-
 
             {/* MAPA */}
             <div className="space-y-3 pt-2">
@@ -653,7 +681,6 @@ export function PropertyForm({
                   onLocationSelect={handleLocationSelect}
                 />
               </div>
-
             </div>
           </CardContent>
         </Card>
@@ -661,7 +688,9 @@ export function PropertyForm({
         {/* General Error */}
         {state?.error?.general && (
           <div className="rounded-md bg-destructive/10 p-4 border border-destructive/20">
-            <p className="text-sm font-medium text-destructive">{state.error.general}</p>
+            <p className="text-sm font-medium text-destructive">
+              {state.error.general}
+            </p>
           </div>
         )}
 

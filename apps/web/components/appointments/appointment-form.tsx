@@ -180,7 +180,10 @@ export function AppointmentForm({
       {/* Mensaje de éxito con botón de cierre inmediato */}
       {success && (
         <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg flex items-start gap-3">
-          <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <CheckCircle2
+            className="w-5 h-5 flex-shrink-0 mt-0.5"
+            aria-hidden="true"
+          />
           <div className="flex-1">
             <p className="font-medium">¡Cita agendada exitosamente!</p>
             <p className="text-sm mt-1 opacity-90">
@@ -201,17 +204,31 @@ export function AppointmentForm({
       {/* Mensaje de error con icono */}
       {error && (
         <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertCircle
+            className="w-5 h-5 flex-shrink-0 mt-0.5"
+            aria-hidden="true"
+          />
           <p>{error}</p>
         </div>
       )}
 
       {/* Date Picker */}
       <div className="space-y-2">
-        <Label className={touched.date && !selectedDate ? "text-red-600 dark:text-red-400" : ""}>
+        <Label
+          className={
+            touched.date && !selectedDate
+              ? "text-red-600 dark:text-red-400"
+              : ""
+          }
+        >
           Selecciona una fecha
           {touched.date && !selectedDate && (
-            <span className="ml-1 text-red-600 dark:text-red-400" aria-label="Campo requerido">*</span>
+            <span
+              className="ml-1 text-red-600 dark:text-red-400"
+              aria-label="Campo requerido"
+            >
+              *
+            </span>
           )}
         </Label>
         <p className="text-xs text-oslo-gray-500 dark:text-oslo-gray-400">
@@ -252,27 +269,45 @@ export function AppointmentForm({
         <div className="space-y-2">
           <Label
             htmlFor="selectedHour"
-            className={touched.hour && !selectedHour ? "text-red-600 dark:text-red-400" : ""}
+            className={
+              touched.hour && !selectedHour
+                ? "text-red-600 dark:text-red-400"
+                : ""
+            }
           >
             Selecciona una hora
             {touched.hour && !selectedHour && (
-              <span className="ml-1 text-red-600 dark:text-red-400" aria-label="Campo requerido">*</span>
+              <span
+                className="ml-1 text-red-600 dark:text-red-400"
+                aria-label="Campo requerido"
+              >
+                *
+              </span>
             )}
           </Label>
           {loadingSlots ? (
             // Skeleton loading
-            <div className="space-y-2" role="status" aria-live="polite" aria-label="Cargando horarios disponibles">
+            <div
+              className="space-y-2"
+              role="status"
+              aria-live="polite"
+              aria-label="Cargando horarios disponibles"
+            >
               <div className="h-10 bg-oslo-gray-200 dark:bg-oslo-gray-800 rounded-md motion-safe:animate-pulse" />
               <div className="h-4 w-48 bg-oslo-gray-200 dark:bg-oslo-gray-800 rounded motion-safe:animate-pulse" />
             </div>
           ) : slotsError ? (
             <div className="text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+              <AlertCircle
+                className="w-4 h-4 flex-shrink-0"
+                aria-hidden="true"
+              />
               <span>{slotsError}</span>
             </div>
           ) : availableSlots.length === 0 ? (
             <div className="text-sm text-oslo-gray-600 dark:text-oslo-gray-400">
-              No hay horarios disponibles para esta fecha. Por favor elige otra fecha.
+              No hay horarios disponibles para esta fecha. Por favor elige otra
+              fecha.
             </div>
           ) : (
             <>
@@ -326,7 +361,9 @@ export function AppointmentForm({
       {/* Submit Button */}
       <Button
         type="submit"
-        disabled={!selectedDate || !selectedHour || isPending || loadingSlots || success}
+        disabled={
+          !selectedDate || !selectedHour || isPending || loadingSlots || success
+        }
         className="w-full"
       >
         {isPending ? "Agendando cita…" : "Agendar cita"}

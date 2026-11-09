@@ -16,11 +16,11 @@
  * - Child components also read from store directly
  */
 
+import { useSearchParams } from "next/navigation";
 import { FilterBar } from "@/components/map/filters/filter-bar";
 import { useFilterUrlSync } from "@/components/map/filters/use-filter-url-sync";
 import { useFavorites } from "@/hooks/use-favorites";
 import { usePropertyGridStore } from "@/stores/property-grid-store";
-import { useSearchParams } from "next/navigation";
 import { PropertyCard } from "./property-card";
 import { PropertyCardSkeleton } from "./property-card-skeleton";
 import { PropertyGridPagination } from "./property-grid-pagination";

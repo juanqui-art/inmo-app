@@ -54,19 +54,26 @@ export function AppointmentButton({
           "w-full inline-flex items-center justify-center gap-2 h-12 text-base font-semibold rounded-lg transition-all duration-300 motion-safe:active:scale-[0.98]",
           compact ? "text-xs sm:text-sm h-11 sm:h-10 gap-1" : "", // h-11 = 44px (mobile-safe)
           // Use indigo color scheme to match the email button in PropertyFloatingActionCard
-          "bg-indigo-600 hover:bg-indigo-700 text-white"
+          "bg-indigo-600 hover:bg-indigo-700 text-white",
         )}
       >
-        <Calendar className={compact ? "w-3 h-3 sm:w-4 sm:h-4" : "w-5 h-5"} aria-hidden="true" />
+        <Calendar
+          className={compact ? "w-3 h-3 sm:w-4 sm:h-4" : "w-5 h-5"}
+          aria-hidden="true"
+        />
         {compact ? (
           <>
-            <span className="hidden sm:inline">{isAuthenticated ? "Agendar" : "Inicia sesión"}</span>
+            <span className="hidden sm:inline">
+              {isAuthenticated ? "Agendar" : "Inicia sesión"}
+            </span>
             <span className="sm:hidden">
               <Calendar className="w-4 h-4" />
             </span>
           </>
         ) : (
-          <span>{isAuthenticated ? "Agendar una visita" : "Agendar (Inicia sesión)"}</span>
+          <span>
+            {isAuthenticated ? "Agendar una visita" : "Agendar (Inicia sesión)"}
+          </span>
         )}
       </button>
 

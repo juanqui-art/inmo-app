@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { CheckCircle2, Circle } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface OnboardingChecklistProps {
   hasProperties: boolean;

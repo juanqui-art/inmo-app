@@ -1,11 +1,11 @@
 "use client";
 
-import { generatePropertyDescription } from "@/app/actions/ai-description";
-import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { Button } from "@repo/ui";
 import { Loader2, Sparkles, Wand2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { generatePropertyDescription } from "@/app/actions/ai-description";
+import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 
 interface AIDescriptionButtonProps {
   onDescriptionGenerated: (description: string) => void;
@@ -23,7 +23,9 @@ export function AIDescriptionButton({
 
   const handleGenerate = async () => {
     if (!canUse) {
-      toast.error("Las descripciones con IA están disponibles desde el plan Agente");
+      toast.error(
+        "Las descripciones con IA están disponibles desde el plan Agente",
+      );
       return;
     }
 
@@ -48,8 +50,8 @@ export function AIDescriptionButton({
         onDescriptionGenerated(result.description);
         toast.success("¡Descripción generada!", { id: "ai-description" });
       } else {
-        toast.error(result.error || "No se pudo generar la descripción", { 
-          id: "ai-description" 
+        toast.error(result.error || "No se pudo generar la descripción", {
+          id: "ai-description",
         });
       }
     } catch (error) {

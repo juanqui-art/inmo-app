@@ -2,16 +2,16 @@
 
 /**
  * AI Property Description Generator
- * 
+ *
  * Generates professional property descriptions using OpenAI.
  * Only available for BUSINESS and PRO tiers.
  */
 
+import type { SubscriptionTier } from "@repo/database";
 import { getOpenAIClient } from "@/lib/ai/openai-client";
 import { getCurrentUser } from "@/lib/auth";
 import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { logger } from "@/lib/utils/logger";
-import type { SubscriptionTier } from "@repo/database";
 
 interface PropertyData {
   title?: string;
@@ -43,7 +43,8 @@ function canUseAIDescription(tier: SubscriptionTier): boolean {
  * Build the prompt for property description
  */
 function buildDescriptionPrompt(data: PropertyData): string {
-  const transactionText = data.transactionType === "SALE" ? "venta" : "alquiler";
+  const transactionText =
+    data.transactionType === "SALE" ? "venta" : "alquiler";
   const categoryMap: Record<string, string> = {
     HOUSE: "casa",
     APARTMENT: "apartamento",
@@ -58,14 +59,18 @@ function buildDescriptionPrompt(data: PropertyData): string {
     WAREHOUSE: "bodega",
     FARM: "finca",
   };
-  const categoryText = categoryMap[data.category] || data.category.toLowerCase();
-  
-  const amenitiesText = data.amenities.length > 0 
-    ? `Amenidades: ${data.amenities.join(", ")}.`
-    : "";
+  const categoryText =
+    categoryMap[data.category] || data.category.toLowerCase();
+
+  const amenitiesText =
+    data.amenities.length > 0
+      ? `Amenidades: ${data.amenities.join(", ")}.`
+      : "";
 
   const locationText = data.city ? `Ubicación: ${data.city}.` : "";
-  const priceText = data.price ? `Precio: $${data.price.toLocaleString()}.` : "";
+  const priceText = data.price
+    ? `Precio: $${data.price.toLocaleString()}.`
+    : "";
 
   return `Genera una descripción profesional y atractiva para una propiedad inmobiliaria en Ecuador.
 
@@ -95,7 +100,7 @@ Devuelve SOLO la descripción, sin títulos ni encabezados.`;
  * Generate AI property description
  */
 export async function generatePropertyDescription(
-  data: PropertyData
+  data: PropertyData,
 ): Promise<GenerateDescriptionResult> {
   try {
     // 1. Verificar autenticación
@@ -106,9 +111,10 @@ export async function generatePropertyDescription(
 
     // 2. Verificar tier
     if (!canUseAIDescription(user.subscriptionTier)) {
-      return { 
-        success: false, 
-        error: "Las descripciones con IA están disponibles desde el plan Business" 
+      return {
+        success: false,
+        error:
+          "Las descripciones con IA están disponibles desde el plan Business",
       };
     }
 
@@ -117,7 +123,10 @@ export async function generatePropertyDescription(
       await enforceRateLimit({ userId: user.id, tier: "ai-search" });
     } catch (error) {
       if (isRateLimitError(error)) {
-        logger.warn({ userId: user.id }, "[AI Description] Rate limit exceeded");
+        logger.warn(
+          { userId: user.id },
+          "[AI Description] Rate limit exceeded",
+        );
         return { success: false, error: error.message };
       }
       throw error;
@@ -136,12 +145,13 @@ export async function generatePropertyDescription(
       messages: [
         {
           role: "system",
-          content: "Eres un experto en marketing inmobiliario en Ecuador. Generas descripciones profesionales y atractivas para propiedades."
+          content:
+            "Eres un experto en marketing inmobiliario en Ecuador. Generas descripciones profesionales y atractivas para propiedades.",
         },
         {
           role: "user",
-          content: prompt
-        }
+          content: prompt,
+        },
       ],
       max_tokens: 500,
       temperature: 0.7,
@@ -150,22 +160,28 @@ export async function generatePropertyDescription(
     const description = response.choices[0]?.message?.content?.trim();
 
     if (!description) {
-      logger.error({ userId: user.id }, "[AI Description] Empty response from OpenAI");
+      logger.error(
+        { userId: user.id },
+        "[AI Description] Empty response from OpenAI",
+      );
       return { success: false, error: "No se pudo generar la descripción" };
     }
 
     logger.info(
       { userId: user.id, descriptionLength: description.length },
-      "[AI Description] Description generated successfully"
+      "[AI Description] Description generated successfully",
     );
 
     return { success: true, description };
-
   } catch (error) {
-    logger.error({ err: error }, "[AI Description] Error generating description");
+    logger.error(
+      { err: error },
+      "[AI Description] Error generating description",
+    );
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Error al generar descripción"
+      error:
+        error instanceof Error ? error.message : "Error al generar descripción",
     };
   }
 }

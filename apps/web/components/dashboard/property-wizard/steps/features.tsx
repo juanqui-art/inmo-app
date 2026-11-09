@@ -1,20 +1,20 @@
 "use client";
 
-import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-    Checkbox,
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-    Input
+  Checkbox,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
 } from "@repo/ui";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 
 const step3Schema = z.object({
   bedrooms: z.number().min(0, "Debe ser mayor o igual a 0"),
@@ -72,12 +72,17 @@ export function Step3() {
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">Características y Amenidades</h2>
         <p className="text-sm text-muted-foreground">
-          Detalla las características principales y selecciona las comodidades que ofrece.
+          Detalla las características principales y selecciona las comodidades
+          que ofrece.
         </p>
       </div>
 
       <Form {...form}>
-        <form id="wizard-step-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form
+          id="wizard-step-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8"
+        >
           <div className="grid gap-6 md:grid-cols-3">
             {/* Bedrooms */}
             <FormField
@@ -87,9 +92,9 @@ export function Step3() {
                 <FormItem>
                   <FormLabel>Habitaciones</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
-                      {...field} 
+                    <Input
+                      type="number"
+                      {...field}
                       onChange={(e) => field.onChange(e.target.valueAsNumber)}
                       value={field.value || ""}
                     />
@@ -107,9 +112,9 @@ export function Step3() {
                 <FormItem>
                   <FormLabel>Baños</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
-                      {...field} 
+                    <Input
+                      type="number"
+                      {...field}
                       onChange={(e) => field.onChange(e.target.valueAsNumber)}
                       value={field.value || ""}
                     />
@@ -127,9 +132,9 @@ export function Step3() {
                 <FormItem>
                   <FormLabel>Área (m²)</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
-                      {...field} 
+                    <Input
+                      type="number"
+                      {...field}
                       onChange={(e) => field.onChange(e.target.valueAsNumber)}
                       value={field.value || ""}
                     />
@@ -162,9 +167,9 @@ export function Step3() {
                                 ? field.onChange([...field.value, amenity.id])
                                 : field.onChange(
                                     field.value?.filter(
-                                      (value: string) => value !== amenity.id
-                                    )
-                                  )
+                                      (value: string) => value !== amenity.id,
+                                    ),
+                                  );
                             }}
                           />
                         </FormControl>
@@ -172,7 +177,7 @@ export function Step3() {
                           {amenity.label}
                         </FormLabel>
                       </FormItem>
-                    )
+                    );
                   }}
                 />
               ))}

@@ -1,15 +1,15 @@
 /**
  * TIER BADGE
- * 
+ *
  * Visual badge indicating subscription tier perks.
  * - PLUS: "Premium" badge (golden)
  * - AGENT/PRO: "Verificado" badge (blue with checkmark)
- * 
+ *
  * Used on property cards and agent profiles.
  */
 
-import { cn } from "@/lib/utils";
 import { BadgeCheck, Crown, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export type TierBadgeType = "premium" | "verified" | "none";
 
@@ -37,9 +37,13 @@ function getBadgeType(tier: string): TierBadgeType {
   }
 }
 
-export function TierBadge({ tier, size = "default", className }: TierBadgeProps) {
+export function TierBadge({
+  tier,
+  size = "default",
+  className,
+}: TierBadgeProps) {
   const badgeType = getBadgeType(tier);
-  
+
   if (badgeType === "none") {
     return null;
   }
@@ -54,7 +58,7 @@ export function TierBadge({ tier, size = "default", className }: TierBadgeProps)
           "inline-flex items-center gap-1 font-semibold rounded-full",
           "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/25",
           isSmall ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs",
-          className
+          className,
         )}
       >
         <Crown className={cn(isSmall ? "h-2.5 w-2.5" : "h-3 w-3")} />
@@ -71,7 +75,7 @@ export function TierBadge({ tier, size = "default", className }: TierBadgeProps)
         "inline-flex items-center gap-1 font-semibold rounded-full",
         "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25",
         isSmall ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs",
-        className
+        className,
       )}
     >
       <BadgeCheck className={cn(isSmall ? "h-2.5 w-2.5" : "h-3 w-3")} />
@@ -83,9 +87,15 @@ export function TierBadge({ tier, size = "default", className }: TierBadgeProps)
 /**
  * Compact icon-only badge for tight spaces
  */
-export function TierBadgeIcon({ tier, className }: { tier: string; className?: string }) {
+export function TierBadgeIcon({
+  tier,
+  className,
+}: {
+  tier: string;
+  className?: string;
+}) {
   const badgeType = getBadgeType(tier);
-  
+
   if (badgeType === "none") {
     return null;
   }
@@ -96,7 +106,7 @@ export function TierBadgeIcon({ tier, className }: { tier: string; className?: s
         className={cn(
           "inline-flex items-center justify-center w-5 h-5 rounded-full",
           "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-sm",
-          className
+          className,
         )}
         title="Publicación Premium"
       >
@@ -110,7 +120,7 @@ export function TierBadgeIcon({ tier, className }: { tier: string; className?: s
       className={cn(
         "inline-flex items-center justify-center w-5 h-5 rounded-full",
         "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-sm",
-        className
+        className,
       )}
       title="Agente Verificado"
     >

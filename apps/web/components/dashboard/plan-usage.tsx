@@ -1,9 +1,9 @@
 "use client";
 
-import { getTierDisplayName } from "@/lib/permissions/property-limits";
-import { cn } from "@/lib/utils";
 import { Zap } from "lucide-react";
 import Link from "next/link";
+import { getTierDisplayName } from "@/lib/permissions/property-limits";
+import { cn } from "@/lib/utils";
 
 interface PlanUsageProps {
   tier: "FREE" | "PLUS" | "BUSINESS" | "PRO";
@@ -28,7 +28,12 @@ export function PlanUsage({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Zap className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-          <span data-testid="sidebar-tier-badge" className="text-sm font-semibold">{getTierDisplayName(tier)}</span>
+          <span
+            data-testid="sidebar-tier-badge"
+            className="text-sm font-semibold"
+          >
+            {getTierDisplayName(tier)}
+          </span>
         </div>
         {tier !== "PRO" && (
           <Link
@@ -45,7 +50,10 @@ export function PlanUsage({
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>Propiedades</span>
-          <span data-testid="property-count" className={cn(isNearLimit && "text-red-500 font-medium")}>
+          <span
+            data-testid="property-count"
+            className={cn(isNearLimit && "text-red-500 font-medium")}
+          >
             {propertyCount} / {propertyLimit}
           </span>
         </div>

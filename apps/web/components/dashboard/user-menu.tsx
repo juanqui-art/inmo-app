@@ -5,20 +5,26 @@
  * Dropdown con opciones: Perfil, Configuración, Logout
  */
 
+import {
+  Badge,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@repo/ui";
+import {
+  ChevronDown,
+  CreditCard,
+  LogOut,
+  Settings,
+  User as UserIcon,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 import { logoutAction } from "@/app/actions/auth";
 import { AgentAvatar } from "@/components/shared/agent-avatar";
 import { getTierDisplayName } from "@/lib/permissions/property-limits";
-import {
-    Badge,
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@repo/ui";
-import { ChevronDown, CreditCard, LogOut, Settings, User as UserIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 // Type para el usuario desde DB (SafeUser del repository)
 interface User {
@@ -53,8 +59,14 @@ export function UserMenu({ user }: UserMenuProps) {
   const tierStyles: Record<string, { bg: string; text: string }> = {
     FREE: defaultStyle,
     PLUS: { bg: "bg-amber-500/10", text: "text-amber-600 dark:text-amber-400" },
-    BUSINESS: { bg: "bg-indigo-500/10", text: "text-indigo-600 dark:text-indigo-400" },
-    PRO: { bg: "bg-purple-500/10", text: "text-purple-600 dark:text-purple-400" },
+    BUSINESS: {
+      bg: "bg-indigo-500/10",
+      text: "text-indigo-600 dark:text-indigo-400",
+    },
+    PRO: {
+      bg: "bg-purple-500/10",
+      text: "text-purple-600 dark:text-purple-400",
+    },
   };
   const currentTier = user.subscriptionTier || "FREE";
   const tierStyle = tierStyles[currentTier] || defaultStyle;
@@ -77,10 +89,22 @@ export function UserMenu({ user }: UserMenuProps) {
           <div className="hidden md:flex flex-col items-start">
             <span className="text-sm font-semibold">{name}</span>
             <div className="flex items-center gap-1.5">
-              <Badge data-testid="tier-badge" variant="secondary" className={`text-[10px] px-1.5 py-0 h-4 ${tierStyle.bg} ${tierStyle.text} border-0`}>
-                {getTierDisplayName((user.subscriptionTier || "FREE") as "FREE" | "PLUS" | "BUSINESS" | "PRO")}
+              <Badge
+                data-testid="tier-badge"
+                variant="secondary"
+                className={`text-[10px] px-1.5 py-0 h-4 ${tierStyle.bg} ${tierStyle.text} border-0`}
+              >
+                {getTierDisplayName(
+                  (user.subscriptionTier || "FREE") as
+                    | "FREE"
+                    | "PLUS"
+                    | "BUSINESS"
+                    | "PRO",
+                )}
               </Badge>
-              <span className="text-[10px] text-muted-foreground">• {roleLabel}</span>
+              <span className="text-[10px] text-muted-foreground">
+                • {roleLabel}
+              </span>
             </div>
           </div>
           <ChevronDown className="hidden md:block w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
@@ -96,33 +120,56 @@ export function UserMenu({ user }: UserMenuProps) {
               isVerified={user.role === "AGENT" || user.role === "ADMIN"}
             />
             <div className="flex flex-col min-w-0">
-              <p className="text-sm font-semibold leading-none truncate">{name}</p>
+              <p className="text-sm font-semibold leading-none truncate">
+                {name}
+              </p>
               <p className="text-xs text-muted-foreground truncate mt-0.5">
                 {user.email}
               </p>
               <div className="flex items-center gap-1.5 mt-1.5">
-                <Badge variant="secondary" className={`text-[10px] px-1.5 py-0 h-4 ${tierStyle.bg} ${tierStyle.text} border-0`}>
-                  {getTierDisplayName((user.subscriptionTier || "FREE") as "FREE" | "PLUS" | "BUSINESS" | "PRO")}
+                <Badge
+                  variant="secondary"
+                  className={`text-[10px] px-1.5 py-0 h-4 ${tierStyle.bg} ${tierStyle.text} border-0`}
+                >
+                  {getTierDisplayName(
+                    (user.subscriptionTier || "FREE") as
+                      | "FREE"
+                      | "PLUS"
+                      | "BUSINESS"
+                      | "PRO",
+                  )}
                 </Badge>
               </div>
             </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push("/perfil")} className="cursor-pointer">
+        <DropdownMenuItem
+          onClick={() => router.push("/perfil")}
+          className="cursor-pointer"
+        >
           <UserIcon className="mr-2 h-4 w-4" />
           <span>Mi Perfil</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push("/dashboard/configuracion")} className="cursor-pointer">
+        <DropdownMenuItem
+          onClick={() => router.push("/dashboard/configuracion")}
+          className="cursor-pointer"
+        >
           <Settings className="mr-2 h-4 w-4" />
           <span>Configuración</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push("/pricing")} className="cursor-pointer">
+        <DropdownMenuItem
+          onClick={() => router.push("/pricing")}
+          className="cursor-pointer"
+        >
           <CreditCard className="mr-2 h-4 w-4" />
           <span>Gestionar Plan</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer focus:text-destructive">
+        <DropdownMenuItem
+          onClick={handleLogout}
+          className="text-destructive cursor-pointer focus:text-destructive"
+        >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Cerrar sesión</span>
         </DropdownMenuItem>

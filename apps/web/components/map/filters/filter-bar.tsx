@@ -30,10 +30,10 @@
  * - Better mobile UX (navbar integration)
  */
 
+import { X } from "lucide-react";
 import { AISearchInline } from "@/components/ai-search/ai-search-inline";
 import { PropertyViewToggle } from "@/components/properties/property-view-toggle";
 import { useMapStore } from "@/stores/map-store";
-import { X } from "lucide-react";
 import { ActiveFilterChips } from "./active-filter-chips";
 import { BathroomsFilter } from "./bathrooms-filter";
 import { BedroomsFilter } from "./bedrooms-filter";

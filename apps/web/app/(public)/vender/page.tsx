@@ -27,13 +27,13 @@
  * - Single CTA: Don't confuse with multiple options
  */
 
+import { ArrowRight, CheckCircle, Home, TrendingUp, Users } from "lucide-react";
+import Link from "next/link";
 import { FAQAccordion } from "@/components/faq/faq-accordion";
 import { HeroBackground } from "@/components/home/hero-background";
 import { PricingGrid } from "@/components/pricing/pricing-grid";
 import { getTierRank, pricingTiers } from "@/lib/pricing/tiers";
 import { createClient } from "@/lib/supabase/server";
-import { ArrowRight, CheckCircle, Home, TrendingUp, Users } from "lucide-react";
-import Link from "next/link";
 
 export default async function VenderPage() {
   const supabase = await createClient();
@@ -45,7 +45,8 @@ export default async function VenderPage() {
     if (user) {
       // Helper to check if this is the current plan
       // Note: plan is stored in user_metadata.plan (set during signup in auth.ts)
-      const userPlan = (user.user_metadata?.plan as string)?.toUpperCase() || "FREE";
+      const userPlan =
+        (user.user_metadata?.plan as string)?.toUpperCase() || "FREE";
       const isCurrentPlan = userPlan === tier.name;
       // Helper to check if this plan is "lower" than current
       const currentTierRank = getTierRank(userPlan);
@@ -181,9 +182,13 @@ export default async function VenderPage() {
               <div className="w-14 h-14 bg-indigo-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Users className="w-7 h-7 text-indigo-400" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Búsqueda inteligente con IA</h3>
+              <h3 className="text-xl font-bold mb-3">
+                Búsqueda inteligente con IA
+              </h3>
               <p className="text-oslo-gray-400 leading-relaxed">
-                Tu propiedad será encontrada fácilmente gracias a nuestro sistema de búsqueda por lenguaje natural potenciado por inteligencia artificial.
+                Tu propiedad será encontrada fácilmente gracias a nuestro
+                sistema de búsqueda por lenguaje natural potenciado por
+                inteligencia artificial.
               </p>
             </div>
 
@@ -247,9 +252,13 @@ export default async function VenderPage() {
               <div className="w-20 h-20 bg-oslo-gray-900 border border-indigo-500/30 text-white rounded-2xl flex items-center justify-center text-3xl font-bold mb-8 shadow-lg shadow-indigo-500/10 z-10 group-hover:scale-110 transition-transform duration-300">
                 <span className="text-indigo-400">3</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4">Gestiona tu publicación</h3>
+              <h3 className="text-2xl font-bold mb-4">
+                Gestiona tu publicación
+              </h3>
               <p className="text-oslo-gray-400 leading-relaxed max-w-xs">
-                Controla tus publicaciones desde el dashboard. Edita información, actualiza precios y gestiona disponibilidad fácilmente.
+                Controla tus publicaciones desde el dashboard. Edita
+                información, actualiza precios y gestiona disponibilidad
+                fácilmente.
               </p>
             </div>
           </div>
@@ -267,8 +276,18 @@ export default async function VenderPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm text-oslo-gray-300 rounded-full text-sm font-semibold mb-6 border border-white/10">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <span>Preguntas frecuentes</span>
             </div>
@@ -277,7 +296,8 @@ export default async function VenderPage() {
               ¿Tienes dudas?
             </h2>
             <p className="text-xl text-oslo-gray-300 max-w-2xl mx-auto leading-relaxed">
-              Respondemos las preguntas más comunes sobre nuestros planes y servicios
+              Respondemos las preguntas más comunes sobre nuestros planes y
+              servicios
             </p>
           </div>
 
@@ -285,27 +305,33 @@ export default async function VenderPage() {
             items={[
               {
                 question: "¿Qué incluye el plan gratuito?",
-                answer: "El plan gratuito incluye 1 propiedad activa sin expiración, hasta 6 imágenes por propiedad, búsqueda con IA, y acceso completo al dashboard. Es perfecto para comenzar sin compromiso.",
+                answer:
+                  "El plan gratuito incluye 1 propiedad activa sin expiración, hasta 6 imágenes por propiedad, búsqueda con IA, y acceso completo al dashboard. Es perfecto para comenzar sin compromiso.",
               },
               {
                 question: "¿Qué pasa si necesito publicar más de 1 propiedad?",
-                answer: "Puedes escalar fácilmente al plan Plus ($9.99/mes) para publicar hasta 3 propiedades, al plan Agente ($29.99/mes) para hasta 10, o al plan Pro ($59.99/mes) para hasta 20 propiedades. Todos los planes incluyen las mismas herramientas profesionales.",
+                answer:
+                  "Puedes escalar fácilmente al plan Plus ($9.99/mes) para publicar hasta 3 propiedades, al plan Agente ($29.99/mes) para hasta 10, o al plan Pro ($59.99/mes) para hasta 20 propiedades. Todos los planes incluyen las mismas herramientas profesionales.",
               },
               {
                 question: "¿Puedo cancelar en cualquier momento?",
-                answer: "Sí, puedes cancelar tu suscripción en cualquier momento desde tu dashboard sin penalización. Si cancelas, tus propiedades seguirán activas hasta el final del período de facturación actual.",
+                answer:
+                  "Sí, puedes cancelar tu suscripción en cualquier momento desde tu dashboard sin penalización. Si cancelas, tus propiedades seguirán activas hasta el final del período de facturación actual.",
               },
               {
                 question: "¿Cobran comisiones por transacciones?",
-                answer: "No, nunca cobramos comisión por la venta o renta de tus propiedades. Solo pagas la suscripción mensual del plan que elijas. El dinero de tus transacciones es 100% tuyo.",
+                answer:
+                  "No, nunca cobramos comisión por la venta o renta de tus propiedades. Solo pagas la suscripción mensual del plan que elijas. El dinero de tus transacciones es 100% tuyo.",
               },
               {
                 question: "¿Necesito tarjeta de crédito para el plan gratuito?",
-                answer: "No, el plan gratuito no requiere tarjeta de crédito. Solo necesitas crear una cuenta con tu correo electrónico y puedes empezar a publicar inmediatamente.",
+                answer:
+                  "No, el plan gratuito no requiere tarjeta de crédito. Solo necesitas crear una cuenta con tu correo electrónico y puedes empezar a publicar inmediatamente.",
               },
               {
                 question: "¿Qué son los 'destacados' en los planes pagos?",
-                answer: "Los destacados te permiten poner tus propiedades en posiciones privilegiadas en los resultados de búsqueda y en la página principal, aumentando significativamente su visibilidad ante compradores potenciales.",
+                answer:
+                  "Los destacados te permiten poner tus propiedades en posiciones privilegiadas en los resultados de búsqueda y en la página principal, aumentando significativamente su visibilidad ante compradores potenciales.",
               },
             ]}
           />
@@ -371,7 +397,7 @@ export default async function VenderPage() {
 
           {/* Pricing Cards Grid - Excluding PRO tier for now */}
           {/* Pricing Grid with Toggle */}
-          <PricingGrid tiers={tiers.filter(tier => tier.name !== "PRO")} />
+          <PricingGrid tiers={tiers.filter((tier) => tier.name !== "PRO")} />
 
           {/* Additional Info */}
           <div className="text-center">

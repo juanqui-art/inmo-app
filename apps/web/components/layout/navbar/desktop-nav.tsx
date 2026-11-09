@@ -11,10 +11,10 @@
 
 "use client";
 
-import type { SafeUser } from "@/lib/auth";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
+import type { SafeUser } from "@/lib/auth";
 import { AuthButtons } from "./auth-buttons";
 import { getNavLinks } from "./constants/nav-links";
 import { FavoritesDropdown } from "./favorites-dropdown";

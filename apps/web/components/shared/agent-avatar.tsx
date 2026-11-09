@@ -33,12 +33,13 @@ export function AgentAvatar({
   isVerified = true,
 }: AgentAvatarProps) {
   // Get initials (up to 2 chars)
-  const initials = name
-    ?.split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase() || "A";
+  const initials =
+    name
+      ?.split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "A";
 
   return (
     <div className={cn("relative inline-block")}>
@@ -50,12 +51,12 @@ export function AgentAvatar({
           "border-2 border-white dark:border-oslo-gray-800",
           !image && "ring-2 ring-indigo-100/50 dark:ring-indigo-900/30", // Glow only for initials
           sizeClasses[size],
-          className
+          className,
         )}
       >
         {/* Subtle internal shine effect */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-white/20 pointer-events-none" />
-        
+
         {/* Content */}
         {image ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -73,10 +74,12 @@ export function AgentAvatar({
 
       {/* Verified Badge (Simulating Google/Verified status) */}
       {isVerified && (
-        <div className={cn(
-          "absolute -bottom-0.5 -right-0.5 rounded-full bg-blue-500 text-white flex items-center justify-center ring-2 ring-white dark:ring-oslo-gray-900 shadow-sm",
-          badgeSizeClasses[size]
-        )}>
+        <div
+          className={cn(
+            "absolute -bottom-0.5 -right-0.5 rounded-full bg-blue-500 text-white flex items-center justify-center ring-2 ring-white dark:ring-oslo-gray-900 shadow-sm",
+            badgeSizeClasses[size],
+          )}
+        >
           <Check className="w-full h-full" strokeWidth={3} />
         </div>
       )}

@@ -1,26 +1,28 @@
 "use server";
 
-import { requireRole } from "@/lib/auth";
-import {
-    canAddVideo,
-    canCreateProperty,
-    canUploadImage,
-} from "@/lib/permissions/property-limits";
-import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
-import { logger } from "@/lib/utils/logger";
 import { db } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { requireRole } from "@/lib/auth";
+import {
+  canAddVideo,
+  canCreateProperty,
+  canUploadImage,
+} from "@/lib/permissions/property-limits";
+import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
+import { logger } from "@/lib/utils/logger";
 
 // Schema for wizard data validation
 const wizardPropertySchema = z.object({
   // Step 1: Basic Info
   title: z.string().min(5, "El título debe tener al menos 5 caracteres"),
-  description: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
+  description: z
+    .string()
+    .min(10, "La descripción debe tener al menos 10 caracteres"),
   price: z.number().positive("El precio debe ser mayor a 0"),
   transactionType: z.enum(["SALE", "RENT"]),
   category: z.string(),
-  
+
   // Step 2: Location
   address: z.string().min(5, "La dirección es requerida"),
   city: z.string().min(2, "La ciudad es requerida"),
@@ -28,38 +30,40 @@ const wizardPropertySchema = z.object({
   zipCode: z.string().optional(),
   latitude: z.number(),
   longitude: z.number(),
-  
+
   // Step 3: Features
   bedrooms: z.number().min(0),
   bathrooms: z.number().min(0),
   area: z.number().positive("El área debe ser mayor a 0"),
   amenities: z.array(z.string()).default([]),
-  
+
   // Step 4: Image URLs (already uploaded via API route)
   imageUrls: z.array(z.string()).default([]),
 
   // Step 4: External video URLs
-  videos: z.array(z.object({
-    url: z.string().url(),
-    platform: z.string(),
-    title: z.string().optional(),
-  })).default([]),
+  videos: z
+    .array(
+      z.object({
+        url: z.string().url(),
+        platform: z.string(),
+        title: z.string().optional(),
+      }),
+    )
+    .default([]),
 });
 
 type WizardPropertyData = z.infer<typeof wizardPropertySchema>;
 
 /**
  * CREATE PROPERTY FROM WIZARD
- * 
+ *
  * Handles property creation from the multi-step wizard.
  * Images should be uploaded separately via /api/upload-property-images
  * and their URLs passed in the imageUrls array.
- * 
+ *
  * This avoids the 1MB Server Action body limit.
  */
-export async function createPropertyFromWizard(
-  data: WizardPropertyData
-) {
+export async function createPropertyFromWizard(data: WizardPropertyData) {
   // 1. Verificar que el usuario es AGENT o ADMIN
   const user = await requireRole(["AGENT", "ADMIN"]);
 
@@ -68,10 +72,13 @@ export async function createPropertyFromWizard(
     await enforceRateLimit({ userId: user.id, tier: "property-create" });
   } catch (error) {
     if (isRateLimitError(error)) {
-      logger.warn({ userId: user.id, tier: "property-create" }, "[Property] Rate limit exceeded");
-      return { 
+      logger.warn(
+        { userId: user.id, tier: "property-create" },
+        "[Property] Rate limit exceeded",
+      );
+      return {
         success: false,
-        error: error.message 
+        error: error.message,
       };
     }
     throw error;
@@ -139,14 +146,20 @@ export async function createPropertyFromWizard(
       });
 
       logger.info(
-        { propertyId: newProperty.id, imageCount: validatedData.data.imageUrls.length },
-        "[Wizard] Property created, saving images"
+        {
+          propertyId: newProperty.id,
+          imageCount: validatedData.data.imageUrls.length,
+        },
+        "[Wizard] Property created, saving images",
       );
 
       // Save image URLs (images already uploaded via presigned URLs)
-      if (validatedData.data.imageUrls && validatedData.data.imageUrls.length > 0) {
+      if (
+        validatedData.data.imageUrls &&
+        validatedData.data.imageUrls.length > 0
+      ) {
         const imagesToCreate = validatedData.data.imageUrls
-          .filter(url => url) // Filter out empty URLs
+          .filter((url) => url) // Filter out empty URLs
           .map((url, index) => ({
             url,
             alt: newProperty.title,
@@ -156,9 +169,12 @@ export async function createPropertyFromWizard(
 
         if (imagesToCreate.length > 0) {
           // 2. Check Image Limit (INSIDE TX)
-          const imageCheck = canUploadImage(user.subscriptionTier, imagesToCreate.length);
+          const imageCheck = canUploadImage(
+            user.subscriptionTier,
+            imagesToCreate.length,
+          );
           if (!imageCheck.allowed) {
-             throw new Error(imageCheck.reason || "Límite de imágenes excedido");
+            throw new Error(imageCheck.reason || "Límite de imágenes excedido");
           }
 
           // Create all images atomically (all-or-nothing)
@@ -168,7 +184,7 @@ export async function createPropertyFromWizard(
 
           logger.info(
             { propertyId: newProperty.id, imageCount: imagesToCreate.length },
-            "[Wizard] Images saved successfully"
+            "[Wizard] Images saved successfully",
           );
         }
       }
@@ -176,18 +192,23 @@ export async function createPropertyFromWizard(
       // Save video URLs (external videos)
       if (validatedData.data.videos && validatedData.data.videos.length > 0) {
         // Check video limit
-        const videoCheck = canAddVideo(user.subscriptionTier, validatedData.data.videos.length);
+        const videoCheck = canAddVideo(
+          user.subscriptionTier,
+          validatedData.data.videos.length,
+        );
         if (!videoCheck.allowed) {
           throw new Error(videoCheck.reason || "Límite de videos excedido");
         }
 
-        const videosToCreate = validatedData.data.videos.map((video, index) => ({
-          url: video.url,
-          platform: video.platform as any, // Cast to VideoPlatform enum
-          title: video.title ?? null,
-          order: index,
-          propertyId: newProperty.id,
-        }));
+        const videosToCreate = validatedData.data.videos.map(
+          (video, index) => ({
+            url: video.url,
+            platform: video.platform as any, // Cast to VideoPlatform enum
+            title: video.title ?? null,
+            order: index,
+            propertyId: newProperty.id,
+          }),
+        );
 
         await tx.propertyVideo.createMany({
           data: videosToCreate,
@@ -195,7 +216,7 @@ export async function createPropertyFromWizard(
 
         logger.info(
           { propertyId: newProperty.id, videoCount: videosToCreate.length },
-          "[Wizard] Videos saved successfully"
+          "[Wizard] Videos saved successfully",
         );
       }
 
@@ -208,7 +229,7 @@ export async function createPropertyFromWizard(
 
     logger.info(
       { propertyId: property.id, userId: user.id },
-      "[Wizard] Property creation completed successfully"
+      "[Wizard] Property creation completed successfully",
     );
 
     return {
@@ -216,13 +237,14 @@ export async function createPropertyFromWizard(
       propertyId: property.id,
     };
   } catch (error) {
-    logger.error({ err: error, userId: user.id }, "[Wizard] Error creating property from wizard");
+    logger.error(
+      { err: error, userId: user.id },
+      "[Wizard] Error creating property from wizard",
+    );
     return {
       success: false,
       error:
-        error instanceof Error
-          ? error.message
-          : "Error al crear la propiedad",
+        error instanceof Error ? error.message : "Error al crear la propiedad",
     };
   }
 }

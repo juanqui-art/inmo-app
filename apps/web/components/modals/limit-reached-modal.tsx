@@ -2,21 +2,19 @@
 
 /**
  * LIMIT REACHED MODAL - Premium Design
- * 
+ *
  * Modal elegante que aparece cuando el usuario alcanza un límite de su plan.
  * Usa el mismo diseño visual del NewPropertyButton modal.
  */
 
-import { getTierFeatures, getTierPricing } from "@/lib/permissions/property-limits";
 import type { SubscriptionTier } from "@repo/database";
 import { Button } from "@repo/ui";
-import {
-    AlertCircle,
-    CheckCircle,
-    Sparkles,
-    X,
-} from "lucide-react";
+import { AlertCircle, CheckCircle, Sparkles, X } from "lucide-react";
 import Link from "next/link";
+import {
+  getTierFeatures,
+  getTierPricing,
+} from "@/lib/permissions/property-limits";
 
 interface LimitReachedModalProps {
   isOpen: boolean;
@@ -94,7 +92,11 @@ export function LimitReachedModal({
               Has alcanzado tu límite
             </h2>
             <p className="text-muted-foreground">
-              Tu plan <span className="font-semibold text-foreground">{currentTierFeatures.displayName}</span> permite{" "}
+              Tu plan{" "}
+              <span className="font-semibold text-foreground">
+                {currentTierFeatures.displayName}
+              </span>{" "}
+              permite{" "}
               <span className="font-semibold text-foreground">
                 {limit} {limitLabels[limitType]}
               </span>
@@ -107,9 +109,13 @@ export function LimitReachedModal({
             <div className="p-4 rounded-xl bg-muted/50 border border-border">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-muted-foreground" />
-                <span className="text-xs font-medium text-muted-foreground">Actual</span>
+                <span className="text-xs font-medium text-muted-foreground">
+                  Actual
+                </span>
               </div>
-              <div className="text-lg font-bold">{currentTierFeatures.displayName}</div>
+              <div className="text-lg font-bold">
+                {currentTierFeatures.displayName}
+              </div>
               <div className="text-xs text-muted-foreground">
                 {limit} {limitLabels[limitType]}
               </div>
@@ -124,8 +130,12 @@ export function LimitReachedModal({
                 </span>
               </div>
               <div className="flex items-baseline gap-1">
-                <span className="text-lg font-bold">{nextTierFeatures.displayName}</span>
-                <span className="text-xs text-muted-foreground">${nextTierPricing.price}/mes</span>
+                <span className="text-lg font-bold">
+                  {nextTierFeatures.displayName}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  ${nextTierPricing.price}/mes
+                </span>
               </div>
               <div className="text-xs text-muted-foreground">
                 {nextLimits[limitType]} {limitLabels[limitType]}
@@ -152,7 +162,10 @@ export function LimitReachedModal({
               size="lg"
               className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/25"
             >
-              <Link href="/pricing" className="flex items-center justify-center gap-2">
+              <Link
+                href="/pricing"
+                className="flex items-center justify-center gap-2"
+              >
                 <Sparkles className="w-4 h-4" />
                 Ver planes disponibles
               </Link>

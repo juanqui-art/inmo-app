@@ -9,23 +9,27 @@
 
 "use server";
 
+import {
+  db,
+  propertyImageRepository,
+  propertyRepository,
+} from "@repo/database";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { requireOwnership, requireRole } from "@/lib/auth";
 import { isCSRFError, validateCSRFToken } from "@/lib/csrf";
 import {
-    canAddVideo,
-    canCreateProperty,
-    canUploadImage,
+  canAddVideo,
+  canCreateProperty,
+  canUploadImage,
 } from "@/lib/permissions/property-limits";
 import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { deletePropertyImage, uploadPropertyImage } from "@/lib/storage/client";
 import { logger } from "@/lib/utils/logger";
 import {
-    createPropertySchema,
-    updatePropertySchema,
+  createPropertySchema,
+  updatePropertySchema,
 } from "@/lib/validations/property";
-import { db, propertyImageRepository, propertyRepository } from "@repo/database";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 /**
  * CREATE PROPERTY ACTION
@@ -43,7 +47,10 @@ export async function createPropertyAction(
     await enforceRateLimit({ userId: user.id, tier: "property-create" });
   } catch (error) {
     if (isRateLimitError(error)) {
-      logger.warn({ userId: user.id, tier: "property-create" }, "[Property] Rate limit exceeded");
+      logger.warn(
+        { userId: user.id, tier: "property-create" },
+        "[Property] Rate limit exceeded",
+      );
       return { error: { general: error.message } };
     }
     throw error;
@@ -178,8 +185,9 @@ export async function updatePropertyAction(
 
   // Extract videos from FormData (sent as JSON string)
   const videosJson = formData.get("videos") as string | null;
-  let videosToSave: Array<{ url: string; platform: string; title?: string }> = [];
-  
+  let videosToSave: Array<{ url: string; platform: string; title?: string }> =
+    [];
+
   if (videosJson) {
     try {
       videosToSave = JSON.parse(videosJson);
@@ -201,7 +209,10 @@ export async function updatePropertyAction(
       if (videosJson !== null) {
         // Validate video limits
         if (videosToSave.length > 0) {
-          const videoCheck = canAddVideo(user.subscriptionTier, videosToSave.length);
+          const videoCheck = canAddVideo(
+            user.subscriptionTier,
+            videosToSave.length,
+          );
           if (!videoCheck.allowed) {
             throw new Error(videoCheck.reason || "Límite de videos excedido");
           }
@@ -256,7 +267,7 @@ export async function updatePropertyAction(
  */
 export async function deletePropertyAction(
   propertyId: string,
-  csrfToken?: string | null
+  csrfToken?: string | null,
 ) {
   // 1. Verificar autenticación
   const user = await requireRole(["AGENT", "ADMIN"]);
@@ -275,7 +286,7 @@ export async function deletePropertyAction(
     // Log warning if CSRF token not provided (should be added by clients)
     logger.warn(
       { propertyId, userId: user.id },
-      "deletePropertyAction called without CSRF token"
+      "deletePropertyAction called without CSRF token",
     );
   }
 
@@ -306,7 +317,7 @@ export async function deletePropertyAction(
  */
 export async function saveUploadedPropertyImagesAction(
   propertyId: string,
-  imageUrls: string[]
+  imageUrls: string[],
 ) {
   // 1. Verificar autenticación
   const user = await requireRole(["AGENT", "ADMIN"]);
@@ -321,7 +332,7 @@ export async function saveUploadedPropertyImagesAction(
     // Verificar ownership
     await requireOwnership(
       property.agentId,
-      "No tienes permiso para modificar esta propiedad"
+      "No tienes permiso para modificar esta propiedad",
     );
 
     if (!imageUrls || imageUrls.length === 0) {
@@ -343,17 +354,22 @@ export async function saveUploadedPropertyImagesAction(
       const totalAfterUpload = existingImageCount + imageUrls.length;
 
       // Check tier limitations
-      const imageCheck = canUploadImage(user.subscriptionTier, totalAfterUpload);
+      const imageCheck = canUploadImage(
+        user.subscriptionTier,
+        totalAfterUpload,
+      );
       if (!imageCheck.allowed) {
         // Create error object with limit info for client handling
-        const error: any = new Error(imageCheck.reason || "Límite de imágenes excedido");
+        const error: any = new Error(
+          imageCheck.reason || "Límite de imágenes excedido",
+        );
         error.limit = imageCheck.limit; // Attach limit for error handling
         throw error;
       }
 
       // Prepare images to create
       const imagesToCreate = imageUrls
-        .filter(url => url) // Filter out empty URLs
+        .filter((url) => url) // Filter out empty URLs
         .map((url, index) => ({
           url,
           alt: property.title,
@@ -380,7 +396,10 @@ export async function saveUploadedPropertyImagesAction(
     logger.error({ err: error, propertyId }, "Error saving uploaded images");
 
     // Handle tier limit errors with upgrade prompt
-    if (error instanceof Error && error.message.includes("Límite de imágenes excedido")) {
+    if (
+      error instanceof Error &&
+      error.message.includes("Límite de imágenes excedido")
+    ) {
       return {
         error: error.message,
         upgradeRequired: true,
@@ -389,7 +408,10 @@ export async function saveUploadedPropertyImagesAction(
     }
 
     return {
-      error: error instanceof Error ? error.message : "Error al guardar las imágenes",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Error al guardar las imágenes",
     };
   }
 }
@@ -403,7 +425,7 @@ export async function uploadPropertyImagesAction(
   propertyId: string,
   formData: FormData,
 ) {
-  // ... existing implementation kept for backward compatibility if needed, 
+  // ... existing implementation kept for backward compatibility if needed,
   // but marked deprecated
   // 1. Verificar autenticación
   const user = await requireRole(["AGENT", "ADMIN"]);
@@ -487,7 +509,7 @@ export async function uploadPropertyImagesAction(
  */
 export async function deletePropertyImageAction(
   imageId: string,
-  csrfToken?: string | null
+  csrfToken?: string | null,
 ) {
   // 1. Verificar autenticación
   const user = await requireRole(["AGENT", "ADMIN"]);
@@ -505,7 +527,7 @@ export async function deletePropertyImageAction(
   } else {
     logger.warn(
       { imageId, userId: user.id },
-      "deletePropertyImageAction called without CSRF token"
+      "deletePropertyImageAction called without CSRF token",
     );
   }
 

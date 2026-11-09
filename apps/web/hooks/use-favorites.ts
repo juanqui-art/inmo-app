@@ -60,9 +60,7 @@ export function useFavorites() {
   // Listen for auth-required events from the store
   // When user is not authenticated, store emits event and we handle redirect
   useEffect(() => {
-    const handleAuthRequired = (
-      event: CustomEvent<{ propertyId: string }>,
-    ) => {
+    const handleAuthRequired = (event: CustomEvent<{ propertyId: string }>) => {
       const { propertyId } = event.detail;
       // Use Next.js router for client-side navigation to login page
       router.push(`/login?intent=favorite&propertyId=${propertyId}`);

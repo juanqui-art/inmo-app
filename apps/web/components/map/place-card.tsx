@@ -2,7 +2,7 @@
 
 import { cn } from "@repo/ui";
 import { Star, X } from "lucide-react";
-import { type PlaceCategory } from "./place-marker";
+import type { PlaceCategory } from "./place-marker";
 
 interface PlaceCardProps {
   name: string;
@@ -14,16 +14,17 @@ interface PlaceCardProps {
 export function PlaceCard({ name, rating, type, onClose }: PlaceCardProps) {
   return (
     <div className="relative min-w-[200px] p-3 bg-white/95 dark:bg-black/90 backdrop-blur-md rounded-lg shadow-lg border border-border/50">
-      <button 
+      <button
         onClick={onClose}
         className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors"
       >
         <X className="w-3 h-3 text-muted-foreground" />
       </button>
 
-      <div className="flex flex-col gap-1 pr-4"> {/* Added padding-right to avoid overlap with close button */}
+      <div className="flex flex-col gap-1 pr-4">
+        {" "}
+        {/* Added padding-right to avoid overlap with close button */}
         <h3 className="font-medium text-sm text-foreground">{name}</h3>
-        
         {rating && (
           <div className="flex items-center gap-1">
             <div className="flex">
@@ -34,7 +35,7 @@ export function PlaceCard({ name, rating, type, onClose }: PlaceCardProps) {
                     "w-3 h-3",
                     star <= Math.round(rating)
                       ? "text-yellow-400 fill-yellow-400"
-                      : "text-muted-foreground/30"
+                      : "text-muted-foreground/30",
                   )}
                 />
               ))}
@@ -44,9 +45,18 @@ export function PlaceCard({ name, rating, type, onClose }: PlaceCardProps) {
             </span>
           </div>
         )}
-
         <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-            <span className="capitalize">{type === 'school' ? 'Escuela' : type === 'hospital' ? 'Hospital' : type === 'park' ? 'Parque' : type === 'shopping_mall' ? 'Centro Comercial' : type}</span>
+          <span className="capitalize">
+            {type === "school"
+              ? "Escuela"
+              : type === "hospital"
+                ? "Hospital"
+                : type === "park"
+                  ? "Parque"
+                  : type === "shopping_mall"
+                    ? "Centro Comercial"
+                    : type}
+          </span>
         </div>
       </div>
     </div>

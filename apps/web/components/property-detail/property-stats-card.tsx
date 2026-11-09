@@ -43,24 +43,30 @@ function StatItem({
     if (!containerRef.current) return;
 
     gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, y: 10 },
-        { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.4, 
-            delay: delay * 0.1,
-            ease: "power2.out",
-            scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top 90%",
-            }
-        }
+      containerRef.current,
+      { opacity: 0, y: 10 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.4,
+        delay: delay * 0.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 90%",
+        },
+      },
     );
   }, [delay]);
 
   useEffect(() => {
-    if (!value || !counterRef.current || hasAnimated.current || typeof value !== 'number') return;
+    if (
+      !value ||
+      !counterRef.current ||
+      hasAnimated.current ||
+      typeof value !== "number"
+    )
+      return;
 
     const counter = counterRef.current;
     const displayValue = Math.round(value * 10) / 10;
@@ -99,40 +105,49 @@ function StatItem({
         "bg-white dark:bg-oslo-gray-900 p-4 rounded-xl text-center transition-all duration-300",
         "border border-oslo-gray-100 dark:border-oslo-gray-800",
         "cursor-pointer group hover:shadow-lg hover:-translate-y-1 relative overflow-hidden",
-        isHovered && "border-primary/50 dark:border-primary/50"
+        isHovered && "border-primary/50 dark:border-primary/50",
       )}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
     >
-       {/* Background gradient on hover */}
-       <div className={cn(
-           "absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-300",
-           isHovered && "opacity-100"
-       )} />
+      {/* Background gradient on hover */}
+      <div
+        className={cn(
+          "absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-300",
+          isHovered && "opacity-100",
+        )}
+      />
 
       <div className="relative z-10 flex flex-col items-center gap-3">
         {/* Icon Circle */}
-        <div className={cn(
+        <div
+          className={cn(
             "p-3 rounded-full bg-oslo-gray-50 dark:bg-oslo-gray-800 text-oslo-gray-500 dark:text-oslo-gray-400 transition-colors duration-300",
-            isHovered && "bg-primary text-primary-foreground shadow-md scale-110"
-        )}>
-            {icon}
+            isHovered &&
+              "bg-primary text-primary-foreground shadow-md scale-110",
+          )}
+        >
+          {icon}
         </div>
 
         {/* Value & Label */}
         <div>
-            <div className="flex items-baseline justify-center gap-0.5">
-                <span
-                    ref={typeof value === 'number' ? counterRef : undefined}
-                    className="text-2xl font-bold text-oslo-gray-950 dark:text-white"
-                >
-                    {typeof value === 'number' ? 0 : value}
-                </span>
-                {unit && <span className="text-xs font-medium text-oslo-gray-500 dark:text-oslo-gray-400">{unit}</span>}
-            </div>
-            <p className="text-xs font-medium uppercase tracking-wider text-oslo-gray-500 dark:text-oslo-gray-400 mt-1">
-                {label}
-            </p>
+          <div className="flex items-baseline justify-center gap-0.5">
+            <span
+              ref={typeof value === "number" ? counterRef : undefined}
+              className="text-2xl font-bold text-oslo-gray-950 dark:text-white"
+            >
+              {typeof value === "number" ? 0 : value}
+            </span>
+            {unit && (
+              <span className="text-xs font-medium text-oslo-gray-500 dark:text-oslo-gray-400">
+                {unit}
+              </span>
+            )}
+          </div>
+          <p className="text-xs font-medium uppercase tracking-wider text-oslo-gray-500 dark:text-oslo-gray-400 mt-1">
+            {label}
+          </p>
         </div>
       </div>
     </div>
@@ -144,7 +159,7 @@ export function PropertyStatsCard({
   bathrooms,
   area,
   parking,
-  yearBuilt
+  yearBuilt,
 }: PropertyStatsCardProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -152,26 +167,26 @@ export function PropertyStatsCard({
   // Use simple entrance animation for main container
   useEffect(() => {
     if (!containerRef.current) return;
-    
+
     gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, y: 20 },
-        { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.6, 
-            ease: "power2.out",
-            scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top 85%",
-            }
-        }
+      containerRef.current,
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 85%",
+        },
+      },
     );
   }, []);
 
   // Use hasAnyStat to check if we should render anything at all
   const hasAnyStat = [bedrooms, bathrooms, area, parking, yearBuilt].some(
-      stat => stat !== null && stat !== undefined
+    (stat) => stat !== null && stat !== undefined,
   );
 
   if (!hasAnyStat) return null;
@@ -181,7 +196,7 @@ export function PropertyStatsCard({
       <h2 className="text-2xl font-bold text-oslo-gray-950 dark:text-white">
         Características
       </h2>
-      
+
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <StatItem
           icon={<Bed className="w-5 h-5" />}
@@ -191,7 +206,7 @@ export function PropertyStatsCard({
           onHover={(h) => setHoveredIndex(h ? 0 : null)}
           delay={0}
         />
-        
+
         <StatItem
           icon={<Bath className="w-5 h-5" />}
           label="Baños"
@@ -200,7 +215,7 @@ export function PropertyStatsCard({
           onHover={(h) => setHoveredIndex(h ? 1 : null)}
           delay={1}
         />
-        
+
         <StatItem
           icon={<Maximize className="w-5 h-5" />}
           label="Área"

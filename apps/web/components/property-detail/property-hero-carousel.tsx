@@ -1,12 +1,12 @@
 "use client";
 
-import { PropertyImageFallback } from "@/components/map/property-image-fallback";
-import { PropertyShareMenu } from "@/components/shared/property-share-menu";
 import { cn } from "@repo/ui";
 import useEmblaCarousel from "embla-carousel-react";
 import { Heart, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { PropertyImageFallback } from "@/components/map/property-image-fallback";
+import { PropertyShareMenu } from "@/components/shared/property-share-menu";
 import { PropertyLightboxGallery } from "./property-lightbox-gallery";
 
 interface PropertyHeroCarouselProps {
@@ -146,17 +146,20 @@ export function PropertyHeroCarousel({
         >
           <div className="flex h-full w-full">
             {displayImages.map((image, index) => (
-              <div key={image.id} className="relative flex-[0_0_100%] flex items-center justify-center overflow-hidden bg-black">
+              <div
+                key={image.id}
+                className="relative flex-[0_0_100%] flex items-center justify-center overflow-hidden bg-black"
+              >
                 {/* Ambilight Background (Blurred) */}
                 <div className="absolute inset-0 z-0">
-                   <Image
-                      src={image.url}
-                      alt=""
-                      fill
-                      className="object-cover blur-2xl scale-110 opacity-60 dark:opacity-40"
-                      aria-hidden="true"
-                   />
-                   <div className="absolute inset-0 bg-black/20" /> 
+                  <Image
+                    src={image.url}
+                    alt=""
+                    fill
+                    className="object-cover blur-2xl scale-110 opacity-60 dark:opacity-40"
+                    aria-hidden="true"
+                  />
+                  <div className="absolute inset-0 bg-black/20" />
                 </div>
 
                 {/* Main Image */}
@@ -196,7 +199,7 @@ export function PropertyHeroCarousel({
               <Heart
                 className={cn(
                   "w-5 h-5 transition-colors",
-                  isFavorite ? "fill-red-500 text-red-500" : "text-white"
+                  isFavorite ? "fill-red-500 text-red-500" : "text-white",
                 )}
               />
             </button>
@@ -219,7 +222,9 @@ export function PropertyHeroCarousel({
             className="bg-white/20 text-white px-3.5 py-2 rounded-full text-sm font-medium backdrop-blur-md flex items-center gap-2 border border-white/30 shadow-sm transition-all hover:bg-white/40 hover:scale-105 active:scale-95 cursor-pointer"
             aria-label="Ver galería completa"
           >
-            <span className="font-bold">{selectedIndex + 1} / {displayImages.length}</span>
+            <span className="font-bold">
+              {selectedIndex + 1} / {displayImages.length}
+            </span>
             <div className="w-px h-3.5 bg-white/40" />
             <ImageIcon className="w-4 h-4 opacity-90" />
           </button>

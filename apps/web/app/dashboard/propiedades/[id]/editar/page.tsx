@@ -4,15 +4,15 @@
  * Solo el owner o ADMIN pueden editar
  */
 
-import { updatePropertyAction } from "@/app/actions/properties";
-import { PropertyForm } from "@/components/properties/property-form";
-import { requireRole } from "@/lib/auth";
-import { getVideoLimit } from "@/lib/permissions/property-limits";
 import type { SubscriptionTier } from "@repo/database";
 import { propertyRepository } from "@repo/database";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { updatePropertyAction } from "@/app/actions/properties";
+import { PropertyForm } from "@/components/properties/property-form";
+import { requireRole } from "@/lib/auth";
+import { getVideoLimit } from "@/lib/permissions/property-limits";
 
 interface EditarPropiedadPageProps {
   params: Promise<{ id: string }>;
@@ -44,10 +44,11 @@ export default async function EditarPropiedadPage({
   const videoLimit = getVideoLimit(userTier);
 
   // Get existing videos from property (if available)
-  const existingVideos = (property as any).videos?.map((v: any) => ({
-    url: v.url,
-    platform: v.platform,
-  })) || [];
+  const existingVideos =
+    (property as any).videos?.map((v: any) => ({
+      url: v.url,
+      platform: v.platform,
+    })) || [];
 
   return (
     <div className="space-y-6">

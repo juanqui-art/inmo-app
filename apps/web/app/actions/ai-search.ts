@@ -90,7 +90,10 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
       await enforceRateLimit({ userId: user?.id, tier: "ai-search" });
     } catch (error) {
       if (isRateLimitError(error)) {
-        logger.warn({ query: query.slice(0, 50), tier: "ai-search" }, "[AI Search] Rate limit exceeded");
+        logger.warn(
+          { query: query.slice(0, 50), tier: "ai-search" },
+          "[AI Search] Rate limit exceeded",
+        );
         return {
           success: false,
           query,
@@ -127,7 +130,10 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
 
     if (!isConfidentParse(parseResult, MIN_CONFIDENCE_THRESHOLD)) {
       logger.warn(
-        { confidence: parseResult.confidence, threshold: MIN_CONFIDENCE_THRESHOLD },
+        {
+          confidence: parseResult.confidence,
+          threshold: MIN_CONFIDENCE_THRESHOLD,
+        },
         `❌ Query confidence below minimum threshold`,
       );
 
@@ -174,7 +180,10 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
 
     if (parseResult.confidence < WARN_CONFIDENCE_THRESHOLD) {
       logger.warn(
-        { confidence: parseResult.confidence, threshold: WARN_CONFIDENCE_THRESHOLD },
+        {
+          confidence: parseResult.confidence,
+          threshold: WARN_CONFIDENCE_THRESHOLD,
+        },
         `⚠️ Low confidence parse - results may be incomplete`,
       );
     }
@@ -278,7 +287,10 @@ export async function aiSearchAction(query: string): Promise<AISearchResult> {
       suggestions: suggestions.length > 0 ? suggestions : undefined,
     };
   } catch (error) {
-    logger.error({ err: error, query: query.slice(0, 50) }, "❌ AI Search Error");
+    logger.error(
+      { err: error, query: query.slice(0, 50) },
+      "❌ AI Search Error",
+    );
     return {
       success: false,
       query,

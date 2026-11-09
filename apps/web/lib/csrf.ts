@@ -35,8 +35,8 @@
  */
 
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
-import { headers } from "next/headers";
 import { env } from "@repo/env";
+import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/auth";
 import { logger } from "@/lib/utils/logger";
 
@@ -73,14 +73,14 @@ function getCSRFSecret(): string {
     // In development, use a fallback (not secure, just for testing)
     if (process.env.NODE_ENV === "development") {
       logger.warn(
-        "[CSRF] CSRF_SECRET not configured - using insecure fallback for development"
+        "[CSRF] CSRF_SECRET not configured - using insecure fallback for development",
       );
       return "dev-csrf-secret-change-in-production";
     }
 
     // In production, this is a critical error
     throw new Error(
-      "CSRF_SECRET environment variable is required for CSRF protection"
+      "CSRF_SECRET environment variable is required for CSRF protection",
     );
   }
 
@@ -176,7 +176,7 @@ export async function generateCSRFToken(): Promise<string> {
  * @throws CSRFError if token is invalid
  */
 export async function validateCSRFToken(
-  token: string | null | undefined
+  token: string | null | undefined,
 ): Promise<void> {
   // Check token exists
   if (!token) {
@@ -198,7 +198,7 @@ export async function validateCSRFToken(
 
   if (age > CSRF_TOKEN_VALIDITY_MS) {
     throw new CSRFError(
-      "Token CSRF expirado. Por favor, recarga la página e intenta de nuevo."
+      "Token CSRF expirado. Por favor, recarga la página e intenta de nuevo.",
     );
   }
 
@@ -220,7 +220,7 @@ export async function validateCSRFToken(
         tokenUserId: userId.slice(0, 8),
         actualUserId: user.id.slice(0, 8),
       },
-      "[CSRF] Token user ID mismatch"
+      "[CSRF] Token user ID mismatch",
     );
     throw new CSRFError("Token CSRF inválido (usuario no coincide)");
   }
@@ -241,7 +241,7 @@ export async function validateCSRFToken(
   if (!timingSafeEqual(tokenBuffer, expectedBuffer)) {
     logger.warn(
       { userId: userId.slice(0, 8) },
-      "[CSRF] Token signature mismatch"
+      "[CSRF] Token signature mismatch",
     );
     throw new CSRFError("Token CSRF inválido (firma incorrecta)");
   }
@@ -261,9 +261,7 @@ export async function getCSRFTokenFromHeaders(): Promise<string | null> {
   const headersList = await headers();
 
   return (
-    headersList.get("x-csrf-token") ||
-    headersList.get("csrf-token") ||
-    null
+    headersList.get("x-csrf-token") || headersList.get("csrf-token") || null
   );
 }
 

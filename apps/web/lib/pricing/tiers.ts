@@ -40,7 +40,7 @@ export const pricingTiers: PricingTier[] = [
     name: "PLUS",
     displayName: "Plus",
     price: 9.99,
-    yearlyPrice: 99.00,
+    yearlyPrice: 99.0,
     currency: "$",
     period: "por mes",
     description: "Ideal para dueños que quieren vender rápido",
@@ -62,7 +62,7 @@ export const pricingTiers: PricingTier[] = [
     name: "BUSINESS",
     displayName: "Business",
     price: 29.99,
-    yearlyPrice: 290.00,
+    yearlyPrice: 290.0,
     currency: "$",
     period: "por mes",
     description: "Para agentes que gestionan su negocio",
@@ -88,7 +88,7 @@ export const pricingTiers: PricingTier[] = [
     name: "PRO",
     displayName: "Pro",
     price: 59.99,
-    yearlyPrice: 590.00,
+    yearlyPrice: 590.0,
     currency: "$",
     period: "por mes",
     description: "Para agencias y equipos grandes",
@@ -147,10 +147,26 @@ export function getTierPricing(tier: "FREE" | "PLUS" | "BUSINESS" | "PRO") {
 
   // Extract limits from tier name (Updated Dic 18, 2025)
   const limits = {
-    properties: tier === "FREE" ? 1 : tier === "PLUS" ? 3 : tier === "BUSINESS" ? 10 : 20,
-    images: tier === "FREE" ? 6 : tier === "PLUS" ? 10 : tier === "BUSINESS" ? 15 : 20,
-    videos: tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "BUSINESS" ? 3 : 5,
-    featured: tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "BUSINESS" ? 5 : Infinity,
+    properties:
+      tier === "FREE" ? 1 : tier === "PLUS" ? 3 : tier === "BUSINESS" ? 10 : 20,
+    images:
+      tier === "FREE"
+        ? 6
+        : tier === "PLUS"
+          ? 10
+          : tier === "BUSINESS"
+            ? 15
+            : 20,
+    videos:
+      tier === "FREE" ? 0 : tier === "PLUS" ? 1 : tier === "BUSINESS" ? 3 : 5,
+    featured:
+      tier === "FREE"
+        ? 0
+        : tier === "PLUS"
+          ? 1
+          : tier === "BUSINESS"
+            ? 5
+            : Infinity,
   };
 
   return {

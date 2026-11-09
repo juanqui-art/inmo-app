@@ -1,15 +1,5 @@
 "use client";
 
-import { TierBadge } from "@/components/badges/tier-badge";
-import { PropertyImageFallback } from "@/components/map/property-image-fallback";
-import { CATEGORY_BADGE_STYLE } from "@/lib/styles/property-card-styles";
-import {
-    formatPropertyPrice,
-    getCategoryLabel,
-    getTransactionBadgeStyle,
-    TRANSACTION_TYPE_LABELS,
-} from "@/lib/utils/property-formatters";
-import { generateSlug } from "@/lib/utils/slug-generator";
 import type { PropertyWithRelations, SerializedProperty } from "@repo/database";
 import { Badge } from "@repo/ui";
 import { Bath, Bed, Heart, MapPin, Maximize, Share2 } from "lucide-react";
@@ -17,6 +7,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { TierBadge } from "@/components/badges/tier-badge";
+import { PropertyImageFallback } from "@/components/map/property-image-fallback";
+import { CATEGORY_BADGE_STYLE } from "@/lib/styles/property-card-styles";
+import {
+  formatPropertyPrice,
+  getCategoryLabel,
+  getTransactionBadgeStyle,
+  TRANSACTION_TYPE_LABELS,
+} from "@/lib/utils/property-formatters";
+import { generateSlug } from "@/lib/utils/slug-generator";
 
 interface PropertyCardProps {
   property: PropertyWithRelations | SerializedProperty;
@@ -200,7 +200,16 @@ const PropertyCardComponent = ({
           <div className="flex flex-col gap-2">
             {/* Tier Badge (Premium/Verificado) */}
             {property.agent?.subscriptionTier && (
-              <TierBadge tier={property.agent.subscriptionTier as "FREE" | "PLUS" | "AGENT" | "PRO"} size="sm" />
+              <TierBadge
+                tier={
+                  property.agent.subscriptionTier as
+                    | "FREE"
+                    | "PLUS"
+                    | "AGENT"
+                    | "PRO"
+                }
+                size="sm"
+              />
             )}
             <Badge className={transactionBadgeStyle}>
               {TRANSACTION_TYPE_LABELS[property.transactionType]}
@@ -420,5 +429,5 @@ export const PropertyCard = memo(
 
     // Same property, same favorite state, same priority → skip re-render
     return true;
-  }
+  },
 );

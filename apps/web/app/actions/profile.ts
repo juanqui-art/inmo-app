@@ -1,17 +1,23 @@
 "use server";
 
-import { requireRole } from "@/lib/auth";
 import { db } from "@repo/database/src/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { requireRole } from "@/lib/auth";
 
 const profileSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   phone: z.string().optional(),
-  bio: z.string().max(500, "La biografía no puede exceder 500 caracteres").optional(),
+  bio: z
+    .string()
+    .max(500, "La biografía no puede exceder 500 caracteres")
+    .optional(),
   licenseId: z.string().optional(),
   website: z.string().url("URL inválida").optional().or(z.literal("")),
-  brandColor: z.string().regex(/^#[0-9A-F]{6}$/i, "Color inválido").optional(),
+  brandColor: z
+    .string()
+    .regex(/^#[0-9A-F]{6}$/i, "Color inválido")
+    .optional(),
   logoUrl: z.string().url("URL de logo inválida").optional().or(z.literal("")),
 });
 

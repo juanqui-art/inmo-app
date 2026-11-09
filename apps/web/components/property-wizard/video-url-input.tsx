@@ -27,7 +27,8 @@ export function VideoUrlInput({ onAdd, disabled = false }: VideoUrlInputProps) {
     const canPlay = ReactPlayer.canPlay ? ReactPlayer.canPlay(url) : true; // Fallback to true if undefined (runtime check)
     if (!canPlay) {
       toast.error("URL de video no soportada", {
-        description: "Por favor ingresa una URL válida de YouTube, Vimeo, TikTok, Facebook, etc."
+        description:
+          "Por favor ingresa una URL válida de YouTube, Vimeo, TikTok, Facebook, etc.",
       });
       return;
     }
@@ -37,10 +38,12 @@ export function VideoUrlInput({ onAdd, disabled = false }: VideoUrlInputProps) {
     // Simple platform detection based on URL
     let platform = "OTHER";
     const lowerUrl = url.toLowerCase();
-    
-    if (lowerUrl.includes("youtube") || lowerUrl.includes("youtu.be")) platform = "YOUTUBE";
+
+    if (lowerUrl.includes("youtube") || lowerUrl.includes("youtu.be"))
+      platform = "YOUTUBE";
     else if (lowerUrl.includes("tiktok")) platform = "TIKTOK";
-    else if (lowerUrl.includes("facebook") || lowerUrl.includes("fb.watch")) platform = "FACEBOOK";
+    else if (lowerUrl.includes("facebook") || lowerUrl.includes("fb.watch"))
+      platform = "FACEBOOK";
     else if (lowerUrl.includes("instagram")) platform = "INSTAGRAM";
     else if (lowerUrl.includes("vimeo")) platform = "VIMEO";
 
@@ -80,9 +83,9 @@ export function VideoUrlInput({ onAdd, disabled = false }: VideoUrlInputProps) {
           />
           <Video className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         </div>
-        <Button 
-          type="button" 
-          onClick={handleAdd} 
+        <Button
+          type="button"
+          onClick={handleAdd}
           disabled={!url || disabled || isChecking}
         >
           {isChecking ? (

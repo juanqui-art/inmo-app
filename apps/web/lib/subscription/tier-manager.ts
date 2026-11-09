@@ -14,9 +14,9 @@
  * 4. Metadata solo se usa en signup (trigger lo copia UNA VEZ)
  */
 
-import { logger } from "@/lib/utils/logger";
 import type { SubscriptionTier } from "@prisma/client";
 import { db } from "@repo/database/src/client";
+import { logger } from "@/lib/utils/logger";
 
 /**
  * Cambiar tier de un usuario
@@ -34,12 +34,14 @@ import { db } from "@repo/database/src/client";
 export async function setUserTier(
   userId: string,
   newTier: SubscriptionTier,
-  reason: string = "manual_change"
+  reason: string = "manual_change",
 ): Promise<void> {
   const validTiers: SubscriptionTier[] = ["FREE", "PLUS", "BUSINESS", "PRO"];
 
   if (!validTiers.includes(newTier)) {
-    throw new Error(`Invalid tier: ${newTier}. Must be one of ${validTiers.join(", ")}`);
+    throw new Error(
+      `Invalid tier: ${newTier}. Must be one of ${validTiers.join(", ")}`,
+    );
   }
 
   // Solo actualizar DB (public.users es la fuente de verdad)
@@ -50,7 +52,7 @@ export async function setUserTier(
 
   logger.info(
     { userId, newTier, reason },
-    "[TierManager] Subscription tier updated (DB only, metadata ignored)"
+    "[TierManager] Subscription tier updated (DB only, metadata ignored)",
   );
 
   // NO actualizar metadata en auth.users
@@ -100,7 +102,7 @@ export async function getUserTier(userId: string): Promise<SubscriptionTier> {
  */
 export async function hasMinimumTier(
   userId: string,
-  requiredTier: SubscriptionTier
+  requiredTier: SubscriptionTier,
 ): Promise<boolean> {
   const currentTier = await getUserTier(userId);
 
@@ -128,7 +130,7 @@ export async function hasMinimumTier(
  */
 export async function promoteToAgent(
   userId: string,
-  newTier: Exclude<SubscriptionTier, "FREE">
+  newTier: Exclude<SubscriptionTier, "FREE">,
 ): Promise<void> {
   // Verificar que el tier no sea FREE
   if ((newTier as string) === "FREE") {
@@ -146,7 +148,7 @@ export async function promoteToAgent(
 
   logger.info(
     { userId, newTier },
-    "[TierManager] User promoted to AGENT (CLIENT → AGENT)"
+    "[TierManager] User promoted to AGENT (CLIENT → AGENT)",
   );
 
   // NO actualizar metadata (patrón SSOT)
@@ -166,14 +168,11 @@ export async function promoteToAgent(
  */
 export async function downgradeToFree(
   userId: string,
-  reason: string = "subscription_cancelled"
+  reason: string = "subscription_cancelled",
 ): Promise<void> {
   await setUserTier(userId, "FREE", reason);
 
-  logger.warn(
-    { userId, reason },
-    "[TierManager] User downgraded to FREE tier"
-  );
+  logger.warn({ userId, reason }, "[TierManager] User downgraded to FREE tier");
 
   // Mantener el role AGENT (no degradar a CLIENT)
   // Los vendedores solo pierden privilegios, no su estatus
@@ -205,7 +204,7 @@ export async function checkMetadataSync(): Promise<number> {
   if (count > 0) {
     logger.warn(
       { mismatchCount: count },
-      "[TierManager] Metadata-DB mismatch detected (expected in SSOT pattern)"
+      "[TierManager] Metadata-DB mismatch detected (expected in SSOT pattern)",
     );
   }
 

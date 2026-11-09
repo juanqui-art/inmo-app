@@ -279,7 +279,8 @@ export function canAddVideo(
   if (limit === 0) {
     return {
       allowed: false,
-      reason: "Los videos están disponibles desde el plan Plus. Actualiza para agregar videos a tus propiedades.",
+      reason:
+        "Los videos están disponibles desde el plan Plus. Actualiza para agregar videos a tus propiedades.",
       limit: 0,
     };
   }
@@ -294,4 +295,3 @@ export function canAddVideo(
 
   return { allowed: true, limit };
 }
-

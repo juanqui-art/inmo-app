@@ -1,5 +1,5 @@
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
 
 interface StatsCardProps {
   title: string;
@@ -57,7 +57,9 @@ export function StatsCard({
               {trend}
             </span>
           )}
-          <p className="text-xs text-muted-foreground truncate">{description}</p>
+          <p className="text-xs text-muted-foreground truncate">
+            {description}
+          </p>
         </div>
         {chart && <div className="flex-1 max-w-[100px]">{chart}</div>}
       </div>

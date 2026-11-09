@@ -1,10 +1,10 @@
 "use client";
 
-import { loginAction } from "@/app/actions/auth";
 import { Button, Checkbox, Input, Label, PasswordInput } from "@repo/ui";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useState } from "react";
+import { loginAction } from "@/app/actions/auth";
 import { GoogleButton } from "./google-button";
 
 export function LoginFormStyled() {

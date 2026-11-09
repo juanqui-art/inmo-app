@@ -80,7 +80,7 @@ export interface EnforceRateLimitOptions {
  * ```
  */
 export async function enforceRateLimit(
-  options: EnforceRateLimitOptions
+  options: EnforceRateLimitOptions,
 ): Promise<void> {
   const { userId, tier } = options;
 
@@ -92,7 +92,7 @@ export async function enforceRateLimit(
     throw new RateLimitError(
       result.error || "Rate limit exceeded",
       tier,
-      result.retryAfter
+      result.retryAfter,
     );
   }
 }
@@ -171,7 +171,7 @@ export interface RateLimitedResult<T> {
  */
 export function withRateLimit<TInput extends unknown[], TOutput>(
   action: (...args: TInput) => Promise<TOutput>,
-  options: WithRateLimitOptions
+  options: WithRateLimitOptions,
 ): (...args: TInput) => Promise<RateLimitedResult<TOutput>> {
   const { tier, getUserId, useIP = false } = options;
 

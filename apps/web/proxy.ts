@@ -18,9 +18,9 @@
  * de defensa (defense in depth). El proxy es la primera línea de seguridad.
  */
 
-import { env } from "@/lib/env";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { env } from "@/lib/env";
 
 // Tipos de roles permitidos
 type UserRole = "CLIENT" | "AGENT" | "ADMIN";
@@ -195,12 +195,21 @@ export async function proxy(request: NextRequest) {
   supabaseResponse.headers.set("X-Frame-Options", "DENY");
   supabaseResponse.headers.set("X-Content-Type-Options", "nosniff");
   supabaseResponse.headers.set("Referrer-Policy", "origin-when-cross-origin");
-  supabaseResponse.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(self), interest-cohort=()");
-  supabaseResponse.headers.set("Content-Security-Policy", isDev ? devCSP : prodCSP);
+  supabaseResponse.headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
+  );
+  supabaseResponse.headers.set(
+    "Content-Security-Policy",
+    isDev ? devCSP : prodCSP,
+  );
 
   // HSTS only in production (localhost doesn't have HTTPS)
   if (!isDev) {
-    supabaseResponse.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+    supabaseResponse.headers.set(
+      "Strict-Transport-Security",
+      "max-age=63072000; includeSubDomains; preload",
+    );
   }
 
   return supabaseResponse;

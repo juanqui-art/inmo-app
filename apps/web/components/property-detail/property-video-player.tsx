@@ -1,11 +1,11 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@repo/ui";
 import { ExternalLink, Play, Video } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 
 /**
  * Extract YouTube video ID from various URL formats
@@ -35,7 +35,8 @@ function getVimeoId(url: string): string | null {
  */
 function YouTubeEmbed({ url, title }: { url: string; title?: string }) {
   const videoId = getYouTubeId(url);
-  if (!videoId) return <div className="text-white p-4">URL de YouTube inválida</div>;
+  if (!videoId)
+    return <div className="text-white p-4">URL de YouTube inválida</div>;
 
   return (
     <iframe
@@ -55,7 +56,8 @@ function YouTubeEmbed({ url, title }: { url: string; title?: string }) {
  */
 function VimeoEmbed({ url, title }: { url: string; title?: string }) {
   const videoId = getVimeoId(url);
-  if (!videoId) return <div className="text-white p-4">URL de Vimeo inválida</div>;
+  if (!videoId)
+    return <div className="text-white p-4">URL de Vimeo inválida</div>;
 
   return (
     <iframe
@@ -73,12 +75,12 @@ function VimeoEmbed({ url, title }: { url: string; title?: string }) {
 // Dynamic imports for social media embeds
 const TikTokEmbed = dynamic(
   () => import("react-social-media-embed").then((mod) => mod.TikTokEmbed),
-  { ssr: false, loading: () => <VideoLoadingSkeleton /> }
+  { ssr: false, loading: () => <VideoLoadingSkeleton /> },
 );
 
 const InstagramEmbed = dynamic(
   () => import("react-social-media-embed").then((mod) => mod.InstagramEmbed),
-  { ssr: false, loading: () => <VideoLoadingSkeleton /> }
+  { ssr: false, loading: () => <VideoLoadingSkeleton /> },
 );
 
 /**
@@ -89,7 +91,9 @@ function VideoLoadingSkeleton() {
     <div className="flex items-center justify-center w-full h-full bg-oslo-gray-950/20 backdrop-blur-md min-h-[300px]">
       <div className="flex flex-col items-center gap-4">
         <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-oslo-gray-400 text-sm font-medium">Cargando video...</p>
+        <p className="text-oslo-gray-400 text-sm font-medium">
+          Cargando video...
+        </p>
       </div>
     </div>
   );
@@ -110,27 +114,41 @@ interface PropertyVideoPlayerProps {
 /**
  * Platform configuration with display names and icons
  */
-const PLATFORM_CONFIG: Record<string, { name: string; color: string; supportsEmbed: boolean }> = {
+const PLATFORM_CONFIG: Record<
+  string,
+  { name: string; color: string; supportsEmbed: boolean }
+> = {
   YOUTUBE: { name: "YouTube", color: "bg-red-600", supportsEmbed: true },
   VIMEO: { name: "Vimeo", color: "bg-blue-500", supportsEmbed: true },
   TIKTOK: { name: "TikTok", color: "bg-black", supportsEmbed: true },
-  INSTAGRAM: { name: "Instagram", color: "bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500", supportsEmbed: true },
+  INSTAGRAM: {
+    name: "Instagram",
+    color: "bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500",
+    supportsEmbed: true,
+  },
   FACEBOOK: { name: "Facebook", color: "bg-blue-600", supportsEmbed: false }, // Fallback to external link
 };
 
 /**
  * Utility to extract IDs and thumbnails from various platforms
  */
-function getVideoMetadata(url: string, platform: string): { id: string; thumbnail: string } {
+function getVideoMetadata(
+  url: string,
+  platform: string,
+): { id: string; thumbnail: string } {
   let id = "";
   let thumbnail = "";
 
   if (platform === "YOUTUBE") {
-    const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+    const ytMatch = url.match(
+      /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/i,
+    );
     id = ytMatch?.[1] ?? "";
     thumbnail = id ? `https://img.youtube.com/vi/${id}/maxresdefault.jpg` : "";
   } else if (platform === "VIMEO") {
-    const vimeoMatch = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/);
+    const vimeoMatch = url.match(
+      /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/,
+    );
     id = vimeoMatch?.[1] ?? "";
     // Vimeo requires API call for thumbnails - using placeholder
     thumbnail = "";
@@ -146,12 +164,16 @@ function getVideoMetadata(url: string, platform: string): { id: string; thumbnai
  * External link component for platforms without native embed support (Facebook Reels)
  */
 /** Default config for unknown platforms */
-const DEFAULT_PLATFORM_CONFIG = { name: "Video", color: "bg-oslo-gray-700", supportsEmbed: false };
+const DEFAULT_PLATFORM_CONFIG = {
+  name: "Video",
+  color: "bg-oslo-gray-700",
+  supportsEmbed: false,
+};
 
 function ExternalVideoLink({
   url,
   platform,
-  title
+  title,
 }: {
   url: string;
   platform: string;
@@ -163,10 +185,12 @@ function ExternalVideoLink({
     <div className="flex flex-col items-center justify-center w-full h-full min-h-[400px] bg-gradient-to-br from-oslo-gray-900 to-oslo-gray-950 p-8">
       <div className="flex flex-col items-center gap-6 max-w-md text-center">
         {/* Platform Icon */}
-        <div className={cn(
-          "w-20 h-20 rounded-2xl flex items-center justify-center shadow-2xl",
-          config.color
-        )}>
+        <div
+          className={cn(
+            "w-20 h-20 rounded-2xl flex items-center justify-center shadow-2xl",
+            config.color,
+          )}
+        >
           <Video className="w-10 h-10 text-white" />
         </div>
 
@@ -176,16 +200,13 @@ function ExternalVideoLink({
             {title || `Video de ${config.name}`}
           </h4>
           <p className="text-oslo-gray-400 text-sm">
-            Este video está disponible en {config.name}. Haz clic para verlo en la plataforma original.
+            Este video está disponible en {config.name}. Haz clic para verlo en
+            la plataforma original.
           </p>
         </div>
 
         {/* CTA Button */}
-        <Button
-          asChild
-          size="lg"
-          className="gap-2 rounded-full px-8"
-        >
+        <Button asChild size="lg" className="gap-2 rounded-full px-8">
           <a href={url} target="_blank" rel="noopener noreferrer">
             Ver en {config.name}
             <ExternalLink className="w-4 h-4" />
@@ -227,10 +248,7 @@ function VideoRenderer({
   if (platform === "TIKTOK") {
     return (
       <div className="w-full h-full flex items-center justify-center bg-black overflow-auto">
-        <TikTokEmbed
-          url={url}
-          width={325}
-        />
+        <TikTokEmbed url={url} width={325} />
       </div>
     );
   }
@@ -239,21 +257,14 @@ function VideoRenderer({
   if (platform === "INSTAGRAM") {
     return (
       <div className="w-full h-full flex items-center justify-center bg-white overflow-auto">
-        <InstagramEmbed
-          url={url}
-          width={328}
-        />
+        <InstagramEmbed url={url} width={328} />
       </div>
     );
   }
 
   // Facebook and others: External link fallback
   return (
-    <ExternalVideoLink
-      url={url}
-      platform={platform}
-      title={video.title}
-    />
+    <ExternalVideoLink url={url} platform={platform} title={video.title} />
   );
 }
 
@@ -279,7 +290,8 @@ export function PropertyVideoPlayer({ videos }: PropertyVideoPlayerProps) {
 
   if (!videos || videos.length === 0 || !activeVideo) return null;
 
-  const isVertical = activeVideo.platform === "TIKTOK" || activeVideo.platform === "INSTAGRAM";
+  const isVertical =
+    activeVideo.platform === "TIKTOK" || activeVideo.platform === "INSTAGRAM";
 
   return (
     <motion.div
@@ -319,7 +331,7 @@ export function PropertyVideoPlayer({ videos }: PropertyVideoPlayerProps) {
                   "relative px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 whitespace-nowrap",
                   activeIndex === index
                     ? "text-white shadow-lg"
-                    : "text-oslo-gray-500 dark:text-oslo-gray-400 hover:text-oslo-gray-950 dark:hover:text-white"
+                    : "text-oslo-gray-500 dark:text-oslo-gray-400 hover:text-oslo-gray-950 dark:hover:text-white",
                 )}
               >
                 {activeIndex === index && (
@@ -337,10 +349,12 @@ export function PropertyVideoPlayer({ videos }: PropertyVideoPlayerProps) {
       </div>
 
       {/* Video Container Area */}
-      <div className={cn(
-        "relative overflow-hidden bg-black flex items-center justify-center",
-        isVertical ? "aspect-[9/16] md:h-[700px]" : "aspect-video"
-      )}>
+      <div
+        className={cn(
+          "relative overflow-hidden bg-black flex items-center justify-center",
+          isVertical ? "aspect-[9/16] md:h-[700px]" : "aspect-video",
+        )}
+      >
         <AnimatePresence mode="wait">
           {!isPlaying && supportsEmbed ? (
             <motion.div
@@ -379,7 +393,6 @@ export function PropertyVideoPlayer({ videos }: PropertyVideoPlayerProps) {
                   </div>
                 </motion.div>
               </div>
-
             </motion.div>
           ) : (
             <motion.div
@@ -387,9 +400,12 @@ export function PropertyVideoPlayer({ videos }: PropertyVideoPlayerProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="absolute inset-0 w-full h-full bg-black z-30"
-              style={{ pointerEvents: 'auto' }}
+              style={{ pointerEvents: "auto" }}
             >
-              <VideoRenderer video={activeVideo} isPlaying={isPlaying || !supportsEmbed} />
+              <VideoRenderer
+                video={activeVideo}
+                isPlaying={isPlaying || !supportsEmbed}
+              />
             </motion.div>
           )}
         </AnimatePresence>

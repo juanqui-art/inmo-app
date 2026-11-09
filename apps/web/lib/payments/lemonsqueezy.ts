@@ -17,17 +17,17 @@ let isConfigured = false;
  * Safe to call multiple times (only configures once).
  */
 export function configureLemonSqueezy() {
-	if (isConfigured) return;
+  if (isConfigured) return;
 
-	lemonSqueezySetup({
-		apiKey: env.LEMONSQUEEZY_API_KEY!,
-		onError: (error) => {
-			console.error("[LemonSqueezy] API Error:", error);
-			throw error;
-		},
-	});
+  lemonSqueezySetup({
+    apiKey: env.LEMONSQUEEZY_API_KEY!,
+    onError: (error) => {
+      console.error("[LemonSqueezy] API Error:", error);
+      throw error;
+    },
+  });
 
-	isConfigured = true;
+  isConfigured = true;
 }
 
 /**
@@ -36,9 +36,9 @@ export function configureLemonSqueezy() {
  * Maps Lemon Squeezy variant IDs to our internal subscription tiers.
  */
 export const VARIANT_TO_TIER = {
-	[env.LEMONSQUEEZY_PLUS_VARIANT_ID!]: "PLUS",
-	[env.LEMONSQUEEZY_BUSINESS_VARIANT_ID!]: "BUSINESS",
-	[env.LEMONSQUEEZY_PRO_VARIANT_ID!]: "PRO",
+  [env.LEMONSQUEEZY_PLUS_VARIANT_ID!]: "PLUS",
+  [env.LEMONSQUEEZY_BUSINESS_VARIANT_ID!]: "BUSINESS",
+  [env.LEMONSQUEEZY_PRO_VARIANT_ID!]: "PRO",
 } as const;
 
 /**
@@ -47,9 +47,9 @@ export const VARIANT_TO_TIER = {
  * Maps our internal subscription tiers to Lemon Squeezy variant IDs.
  */
 export const TIER_TO_VARIANT = {
-	PLUS: env.LEMONSQUEEZY_PLUS_VARIANT_ID!,
-	BUSINESS: env.LEMONSQUEEZY_BUSINESS_VARIANT_ID!,
-	PRO: env.LEMONSQUEEZY_PRO_VARIANT_ID!,
+  PLUS: env.LEMONSQUEEZY_PLUS_VARIANT_ID!,
+  BUSINESS: env.LEMONSQUEEZY_BUSINESS_VARIANT_ID!,
+  PRO: env.LEMONSQUEEZY_PRO_VARIANT_ID!,
 } as const;
 
 /**
@@ -65,13 +65,13 @@ export type SubscriptionTier = keyof typeof TIER_TO_VARIANT;
  * @throws Error if tier is not found
  */
 export function getVariantIdForTier(tier: SubscriptionTier): string {
-	const variantId = TIER_TO_VARIANT[tier];
+  const variantId = TIER_TO_VARIANT[tier];
 
-	if (!variantId) {
-		throw new Error(`No variant ID found for tier: ${tier}`);
-	}
+  if (!variantId) {
+    throw new Error(`No variant ID found for tier: ${tier}`);
+  }
 
-	return variantId;
+  return variantId;
 }
 
 /**
@@ -81,5 +81,5 @@ export function getVariantIdForTier(tier: SubscriptionTier): string {
  * @returns The subscription tier or "FREE" if not found
  */
 export function getTierForVariantId(variantId: string): string {
-	return VARIANT_TO_TIER[variantId] || "FREE";
+  return VARIANT_TO_TIER[variantId] || "FREE";
 }

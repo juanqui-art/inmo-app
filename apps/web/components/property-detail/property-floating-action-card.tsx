@@ -63,56 +63,56 @@ export function PropertyFloatingActionCard({
 
       {/* Agent & Actions Wrapper */}
       <div className="space-y-4">
-        
         {/* Agent Block (Modal Style) */}
         {agentName && (
           <div className="p-4 rounded-xl border border-oslo-gray-200/60 dark:border-oslo-gray-700/60 bg-gradient-to-br from-white to-oslo-gray-50/50 dark:from-oslo-gray-900 dark:to-oslo-gray-800/50 space-y-4">
-             <h3 className="font-semibold text-xs uppercase tracking-wider text-oslo-gray-500 dark:text-oslo-gray-400">
-                Agente Inmobiliario
-             </h3>
+            <h3 className="font-semibold text-xs uppercase tracking-wider text-oslo-gray-500 dark:text-oslo-gray-400">
+              Agente Inmobiliario
+            </h3>
 
-             {/* Agent Info */}
-             <div className="flex items-center gap-3">
-               <div className="flex-shrink-0">
-                 <AgentAvatar name={agentName} size="md" />
-               </div>
-               <div className="flex-1 min-w-0">
-                 <p className="font-medium text-oslo-gray-900 dark:text-oslo-gray-100 truncate">
-                   {agentName}
-                 </p>
-                 <a 
-                   href={`/agentes/${agentId}`}
-                   className="text-xs text-primary hover:underline hover:text-primary/80 font-medium block mt-0.5"
-                 >
-                   Ver portafolio completo
-                 </a>
-               </div>
-             </div>
+            {/* Agent Info */}
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0">
+                <AgentAvatar name={agentName} size="md" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-oslo-gray-900 dark:text-oslo-gray-100 truncate">
+                  {agentName}
+                </p>
+                <a
+                  href={`/agentes/${agentId}`}
+                  className="text-xs text-primary hover:underline hover:text-primary/80 font-medium block mt-0.5"
+                >
+                  Ver portafolio completo
+                </a>
+              </div>
+            </div>
 
-             {/* Appointment Button (Inside Agent Block) */}
-             <AppointmentButton
-               propertyId={propertyId}
-               isAuthenticated={isAuthenticated}
-             />
+            {/* Appointment Button (Inside Agent Block) */}
+            <AppointmentButton
+              propertyId={propertyId}
+              isAuthenticated={isAuthenticated}
+            />
           </div>
         )}
 
         {/* Secondary Actions */}
         <div className="space-y-3 pt-2">
-            {/* WhatsApp Button */}
-            <WhatsAppButton phone={agentPhone} />
+          {/* WhatsApp Button */}
+          <WhatsAppButton phone={agentPhone} />
 
-            {/* Email Button */}
-            <a
-              href={agentEmail ? `mailto:${agentEmail}` : "#"}
-              className={cn(
-                "w-full inline-flex items-center justify-center bg-white dark:bg-oslo-gray-800 border border-oslo-gray-200 dark:border-oslo-gray-700 hover:bg-oslo-gray-50 dark:hover:bg-oslo-gray-700 text-oslo-gray-900 dark:text-white h-12 text-base font-medium rounded-lg transition-all duration-200 active:scale-[0.98]",
-                !agentEmail && "opacity-50 cursor-not-allowed pointer-events-none",
-              )}
-            >
-              <Mail className="w-4 h-4 mr-2 text-oslo-gray-500" />
-              Contactar por Correo
-            </a>
+          {/* Email Button */}
+          <a
+            href={agentEmail ? `mailto:${agentEmail}` : "#"}
+            className={cn(
+              "w-full inline-flex items-center justify-center bg-white dark:bg-oslo-gray-800 border border-oslo-gray-200 dark:border-oslo-gray-700 hover:bg-oslo-gray-50 dark:hover:bg-oslo-gray-700 text-oslo-gray-900 dark:text-white h-12 text-base font-medium rounded-lg transition-all duration-200 active:scale-[0.98]",
+              !agentEmail &&
+                "opacity-50 cursor-not-allowed pointer-events-none",
+            )}
+          >
+            <Mail className="w-4 h-4 mr-2 text-oslo-gray-500" />
+            Contactar por Correo
+          </a>
         </div>
       </div>
     </div>

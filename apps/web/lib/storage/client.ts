@@ -51,7 +51,7 @@ export async function uploadPropertyImage(
   if (error) {
     logger.error(
       { err: error, propertyId, fileName, fileSize: file.size },
-      "[Storage] Error uploading image"
+      "[Storage] Error uploading image",
     );
     throw new Error("Error al subir la imagen");
   }
@@ -82,7 +82,7 @@ export async function deletePropertyImage(path: string): Promise<void> {
   if (error) {
     logger.error(
       { err: error, path, filePath },
-      "[Storage] Error deleting image"
+      "[Storage] Error deleting image",
     );
     throw new Error("Error al eliminar la imagen");
   }

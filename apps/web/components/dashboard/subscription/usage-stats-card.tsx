@@ -1,10 +1,20 @@
 "use client";
 
-import type { UsageWithLimits } from "@/lib/dashboard/subscription-helpers";
-import { getUsagePercentage, getWarningLevel } from "@/lib/dashboard/subscription-helpers";
 import { Card, CardContent, CardHeader, Progress } from "@repo/ui";
-import { AlertTriangle, Home, Image, Sparkles, Star, Video } from "lucide-react";
+import {
+  AlertTriangle,
+  Home,
+  Image,
+  Sparkles,
+  Star,
+  Video,
+} from "lucide-react";
 import Link from "next/link";
+import type { UsageWithLimits } from "@/lib/dashboard/subscription-helpers";
+import {
+  getUsagePercentage,
+  getWarningLevel,
+} from "@/lib/dashboard/subscription-helpers";
 
 interface UsageStatsCardProps {
   usage: UsageWithLimits;
@@ -19,7 +29,14 @@ interface UsageItemProps {
   isUnitLimit?: boolean;
 }
 
-function UsageItem({ icon, label, current, limit, unit = "", isUnitLimit = false }: UsageItemProps) {
+function UsageItem({
+  icon,
+  label,
+  current,
+  limit,
+  unit = "",
+  isUnitLimit = false,
+}: UsageItemProps) {
   const percentage = getUsagePercentage(current, limit);
   const warningLevel = getWarningLevel(percentage);
   const isUnlimited = limit === Infinity;
@@ -36,7 +53,7 @@ function UsageItem({ icon, label, current, limit, unit = "", isUnitLimit = false
     warning: "text-yellow-700 dark:text-yellow-400",
     danger: "text-red-700 dark:text-red-400",
   };
-  
+
   // Special rendering for Per-Property Limits (Images, Videos)
   if (isUnitLimit) {
     return (
@@ -47,13 +64,14 @@ function UsageItem({ icon, label, current, limit, unit = "", isUnitLimit = false
             <span className="text-sm font-medium">{label}</span>
           </div>
           <div className="flex items-center gap-1.5 text-sm">
-             <span className="font-semibold">{isUnlimited ? "∞" : limit}</span>
-             <span className="text-muted-foreground">por propiedad</span>
+            <span className="font-semibold">{isUnlimited ? "∞" : limit}</span>
+            <span className="text-muted-foreground">por propiedad</span>
           </div>
         </div>
-        
+
         <p className="text-xs text-muted-foreground pl-7">
-          {current} {unit} subid{unit.endsWith('s') ? 'as' : 'os'} en total (informativo)
+          {current} {unit} subid{unit.endsWith("s") ? "as" : "os"} en total
+          (informativo)
         </p>
       </div>
     );
@@ -114,12 +132,15 @@ function UsageItem({ icon, label, current, limit, unit = "", isUnitLimit = false
 
 export function UsageStatsCard({ usage }: UsageStatsCardProps) {
   // Check if any resource is at danger level
-  const hasDangerLevel = [usage.properties, usage.images, usage.videos, usage.featured].some(
-    ({ current, limit }) => {
-      const percentage = getUsagePercentage(current, limit);
-      return getWarningLevel(percentage) === "danger";
-    }
-  );
+  const hasDangerLevel = [
+    usage.properties,
+    usage.images,
+    usage.videos,
+    usage.featured,
+  ].some(({ current, limit }) => {
+    const percentage = getUsagePercentage(current, limit);
+    return getWarningLevel(percentage) === "danger";
+  });
 
   return (
     <Card>
@@ -185,7 +206,9 @@ export function UsageStatsCard({ usage }: UsageStatsCardProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="text-muted-foreground"><Sparkles className="w-5 h-5" /></div>
+                <div className="text-muted-foreground">
+                  <Sparkles className="w-5 h-5" />
+                </div>
                 <span className="text-sm font-medium">Generador IA</span>
               </div>
               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -207,7 +230,8 @@ export function UsageStatsCard({ usage }: UsageStatsCardProps) {
                 ¿Necesitas más espacio?
               </p>
               <p className="text-xs text-muted-foreground mb-3">
-                Actualiza tu plan para obtener más propiedades, imágenes y funcionalidades.
+                Actualiza tu plan para obtener más propiedades, imágenes y
+                funcionalidades.
               </p>
               <Link
                 href="/dashboard/suscripcion/upgrade"

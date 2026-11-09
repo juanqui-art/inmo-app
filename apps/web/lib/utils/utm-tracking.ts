@@ -1,9 +1,9 @@
 /**
  * UTM Tracking Utilities
- * 
+ *
  * Captures UTM parameters from URLs and stores them in sessionStorage
  * for attribution when leads convert (appointments, contact forms, etc.)
- * 
+ *
  * UTM Parameters:
  * - utm_source: Where the traffic came from (facebook, google, instagram)
  * - utm_medium: Type of traffic (cpc, organic, social, email)
@@ -83,7 +83,7 @@ export function getStoredUTM(): UTMParams | null {
       const capturedTime = new Date(utmParams.capturedAt).getTime();
       const now = Date.now();
       const hoursElapsed = (now - capturedTime) / (1000 * 60 * 60);
-      
+
       if (hoursElapsed > UTM_EXPIRY_HOURS) {
         clearStoredUTM();
         return null;
@@ -115,7 +115,7 @@ export function clearStoredUTM(): void {
  */
 export function getSourceDisplayName(utmSource?: string): string {
   if (!utmSource) return "Directo";
-  
+
   const sourceNames: Record<string, string> = {
     facebook: "Facebook",
     fb: "Facebook",
@@ -140,7 +140,7 @@ export function getSourceDisplayName(utmSource?: string): string {
  */
 export function determineLeadSource(
   source?: string,
-  utmParams?: UTMParams | null
+  utmParams?: UTMParams | null,
 ): string {
   // If explicit source provided (e.g., "appointment", "favorite")
   if (source) return source;

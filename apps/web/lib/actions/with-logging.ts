@@ -27,26 +27,26 @@
 import { createRequestLogger } from "@/lib/utils/logger";
 
 interface WithLoggingOptions {
-	/**
-	 * Name of the action for logging purposes
-	 */
-	actionName: string;
+  /**
+   * Name of the action for logging purposes
+   */
+  actionName: string;
 
-	/**
-	 * Whether to log input data (default: false for security)
-	 * Be careful not to log sensitive data like passwords
-	 */
-	logInput?: boolean;
+  /**
+   * Whether to log input data (default: false for security)
+   * Be careful not to log sensitive data like passwords
+   */
+  logInput?: boolean;
 
-	/**
-	 * Whether to log output data (default: false for security)
-	 */
-	logOutput?: boolean;
+  /**
+   * Whether to log output data (default: false for security)
+   */
+  logOutput?: boolean;
 
-	/**
-	 * Custom metadata to include in logs
-	 */
-	metadata?: Record<string, unknown>;
+  /**
+   * Custom metadata to include in logs
+   */
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -57,67 +57,72 @@ interface WithLoggingOptions {
  * @returns Wrapped Server Action with logging
  */
 export function withLogging<TInput extends unknown[], TOutput>(
-	action: (...args: TInput) => Promise<TOutput>,
-	options: WithLoggingOptions,
+  action: (...args: TInput) => Promise<TOutput>,
+  options: WithLoggingOptions,
 ): (...args: TInput) => Promise<TOutput> {
-	const { actionName, logInput = false, logOutput = false, metadata = {} } = options;
+  const {
+    actionName,
+    logInput = false,
+    logOutput = false,
+    metadata = {},
+  } = options;
 
-	return async (...args: TInput): Promise<TOutput> => {
-		// Create request-scoped logger with requestId
-		const reqLogger = createRequestLogger();
+  return async (...args: TInput): Promise<TOutput> => {
+    // Create request-scoped logger with requestId
+    const reqLogger = createRequestLogger();
 
-		// Start timing
-		const startTime = performance.now();
+    // Start timing
+    const startTime = performance.now();
 
-		// Log action start
-		reqLogger.info(
-			{
-				action: actionName,
-				...(logInput && { input: args }),
-				...metadata,
-			},
-			`[Server Action] ${actionName} - Start`,
-		);
+    // Log action start
+    reqLogger.info(
+      {
+        action: actionName,
+        ...(logInput && { input: args }),
+        ...metadata,
+      },
+      `[Server Action] ${actionName} - Start`,
+    );
 
-		try {
-			// Execute the action
-			const result = await action(...args);
+    try {
+      // Execute the action
+      const result = await action(...args);
 
-			// Calculate execution time
-			const duration = Math.round(performance.now() - startTime);
+      // Calculate execution time
+      const duration = Math.round(performance.now() - startTime);
 
-			// Log success
-			reqLogger.info(
-				{
-					action: actionName,
-					duration,
-					...(logOutput && { output: result }),
-					...metadata,
-				},
-				`[Server Action] ${actionName} - Success (${duration}ms)`,
-			);
+      // Log success
+      reqLogger.info(
+        {
+          action: actionName,
+          duration,
+          ...(logOutput && { output: result }),
+          ...metadata,
+        },
+        `[Server Action] ${actionName} - Success (${duration}ms)`,
+      );
 
-			return result;
-		} catch (error) {
-			// Calculate execution time
-			const duration = Math.round(performance.now() - startTime);
+      return result;
+    } catch (error) {
+      // Calculate execution time
+      const duration = Math.round(performance.now() - startTime);
 
-			// Log error (automatically sent to Sentry)
-			reqLogger.error(
-				{
-					err: error,
-					action: actionName,
-					duration,
-					...(logInput && { input: args }),
-					...metadata,
-				},
-				`[Server Action] ${actionName} - Error (${duration}ms)`,
-			);
+      // Log error (automatically sent to Sentry)
+      reqLogger.error(
+        {
+          err: error,
+          action: actionName,
+          duration,
+          ...(logInput && { input: args }),
+          ...metadata,
+        },
+        `[Server Action] ${actionName} - Error (${duration}ms)`,
+      );
 
-			// Re-throw the error to preserve original behavior
-			throw error;
-		}
-	};
+      // Re-throw the error to preserve original behavior
+      throw error;
+    }
+  };
 }
 
 /**
@@ -135,10 +140,10 @@ export function withLogging<TInput extends unknown[], TOutput>(
  * ```
  */
 export function wrapServerAction<TInput extends unknown[], TOutput>(
-	action: (...args: TInput) => Promise<TOutput>,
-	options: WithLoggingOptions,
+  action: (...args: TInput) => Promise<TOutput>,
+  options: WithLoggingOptions,
 ): (...args: TInput) => Promise<TOutput> {
-	return withLogging(action, options);
+  return withLogging(action, options);
 }
 
 /**

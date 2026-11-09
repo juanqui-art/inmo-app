@@ -9,11 +9,11 @@
 
 "use client";
 
-import { AgentAvatar } from "@/components/shared/agent-avatar";
-import type { SafeUser } from "@/lib/auth";
 import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { AgentAvatar } from "@/components/shared/agent-avatar";
+import type { SafeUser } from "@/lib/auth";
 
 interface UserDropdownProps {
   user: SafeUser;

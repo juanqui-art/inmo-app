@@ -42,7 +42,7 @@ const nextConfig: NextConfig = {
     config.module.rules.push({
       test: /\.test\.(js|ts|tsx)$/,
       include: /node_modules/,
-      use: 'null-loader',
+      use: "null-loader",
     });
 
     return config;
@@ -67,15 +67,15 @@ const nextConfig: NextConfig = {
 
   /**
    * Experimental Features Configuration
-   * 
+   *
    * Server Actions body size limit increased to support image uploads.
    * Default is 1MB, we increase to 10MB to allow multiple high-quality images.
-   * 
+   *
    * RELATED: Property creation wizard (apps/web/app/actions/wizard.ts)
    */
   experimental: {
     serverActions: {
-      bodySizeLimit: '10mb',
+      bodySizeLimit: "10mb",
     },
   },
 
@@ -161,7 +161,8 @@ const nextConfig: NextConfig = {
       },
       {
         key: "Permissions-Policy",
-        value: "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
+        value:
+          "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
       },
       {
         key: "Content-Security-Policy",
@@ -195,32 +196,32 @@ const nextConfig: NextConfig = {
  * Only enabled in production builds.
  */
 const sentryOptions = {
-	// For all available options, see:
-	// https://github.com/getsentry/sentry-webpack-plugin#options
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options
 
-	// Only upload source maps in production
-	disableServerWebpackPlugin: process.env.NODE_ENV !== "production",
-	disableClientWebpackPlugin: process.env.NODE_ENV !== "production",
+  // Only upload source maps in production
+  disableServerWebpackPlugin: process.env.NODE_ENV !== "production",
+  disableClientWebpackPlugin: process.env.NODE_ENV !== "production",
 
-	// Suppresses source map uploading logs during build
-	silent: true,
+  // Suppresses source map uploading logs during build
+  silent: true,
 
-	// For all available options, see:
-	// https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+  // For all available options, see:
+  // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
-	// Upload a larger set of source maps for prettier stack traces (increases build time)
-	widenClientFileUpload: true,
+  // Upload a larger set of source maps for prettier stack traces (increases build time)
+  widenClientFileUpload: true,
 
-	// Hides source maps from generated client bundles
-	hideSourceMaps: true,
+  // Hides source maps from generated client bundles
+  hideSourceMaps: true,
 
-	// Automatically tree-shake Sentry logger statements to reduce bundle size
-	disableLogger: true,
+  // Automatically tree-shake Sentry logger statements to reduce bundle size
+  disableLogger: true,
 
-	// Automatically annotate React components for better errors
-	reactComponentAnnotation: {
-		enabled: true,
-	},
+  // Automatically annotate React components for better errors
+  reactComponentAnnotation: {
+    enabled: true,
+  },
 };
 
 // Wrap the config with Sentry

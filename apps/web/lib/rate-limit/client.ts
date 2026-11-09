@@ -13,9 +13,9 @@
  * @see https://upstash.com/docs/redis/sdks/ratelimit-ts/overview
  */
 
+import { env } from "@repo/env";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import { env } from "@repo/env";
 import { logger } from "@/lib/utils/logger";
 import { RATE_LIMIT_CONFIGS, type RateLimitTier } from "./config";
 
@@ -44,7 +44,7 @@ function getRedisClient(): Redis | null {
   if (!url || !token) {
     logger.warn(
       { component: "rate-limit" },
-      "Upstash Redis credentials not configured - rate limiting disabled"
+      "Upstash Redis credentials not configured - rate limiting disabled",
     );
     return null;
   }
@@ -53,13 +53,13 @@ function getRedisClient(): Redis | null {
     redisClient = new Redis({ url, token });
     logger.info(
       { component: "rate-limit" },
-      "Upstash Redis client initialized successfully"
+      "Upstash Redis client initialized successfully",
     );
     return redisClient;
   } catch (error) {
     logger.error(
       { err: error, component: "rate-limit" },
-      "Failed to initialize Upstash Redis client"
+      "Failed to initialize Upstash Redis client",
     );
     return null;
   }

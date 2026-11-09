@@ -52,7 +52,10 @@ export function GoogleButton({ onBeforeRedirect }: GoogleButtonProps) {
         try {
           const url = new URL(returnUrl, window.location.origin);
           if (url.origin === window.location.origin) {
-            callbackUrl.searchParams.set("returnUrl", url.pathname + url.search);
+            callbackUrl.searchParams.set(
+              "returnUrl",
+              url.pathname + url.search,
+            );
           }
         } catch {
           // Si no es una URL válida, intentar como ruta relativa

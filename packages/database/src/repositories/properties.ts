@@ -6,14 +6,18 @@
  */
 
 import type {
-    Prisma,
-    PropertyCategory,
-    PropertyStatus,
-    TransactionType,
+  Prisma,
+  PropertyCategory,
+  PropertyStatus,
+  TransactionType,
 } from "@prisma/client";
 import { cache } from "react";
 import { db } from "../client";
-import { sanitizeHTML, sanitizeOptional, sanitizePlainText } from "../utils/sanitize";
+import {
+  sanitizeHTML,
+  sanitizeOptional,
+  sanitizePlainText,
+} from "../utils/sanitize";
 
 /**
  * Property select con relaciones incluidas
@@ -426,11 +430,23 @@ export class PropertyRepository {
       const sanitizedData: Prisma.PropertyUpdateInput = {
         ...data,
         ...(data.title && { title: sanitizePlainText(data.title as string) }),
-        ...(data.description && { description: sanitizeOptional(data.description as string | null, sanitizeHTML) }),
-        ...(data.address && { address: sanitizePlainText(data.address as string) }),
+        ...(data.description && {
+          description: sanitizeOptional(
+            data.description as string | null,
+            sanitizeHTML,
+          ),
+        }),
+        ...(data.address && {
+          address: sanitizePlainText(data.address as string),
+        }),
         ...(data.city && { city: sanitizePlainText(data.city as string) }),
         ...(data.state && { state: sanitizePlainText(data.state as string) }),
-        ...(data.zipCode && { zipCode: sanitizeOptional(data.zipCode as string | null, sanitizePlainText) }),
+        ...(data.zipCode && {
+          zipCode: sanitizeOptional(
+            data.zipCode as string | null,
+            sanitizePlainText,
+          ),
+        }),
       };
 
       return tx.property.update({

@@ -7,13 +7,13 @@
  * Used inside MobileFilterSheet
  */
 
-import {
-    type CitySearchResult,
-    getCitiesAction,
-} from "@/app/actions/properties";
-import { Spinner } from "@/components/common";
 import { MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+  type CitySearchResult,
+  getCitiesAction,
+} from "@/app/actions/properties";
+import { Spinner } from "@/components/common";
 
 interface CityFilterContentProps {
   selected?: string;
@@ -61,7 +61,9 @@ export function CityFilterContent({
             <button
               key={city.id}
               type="button"
-              onClick={() => onChange(selected === city.name ? undefined : city.name)}
+              onClick={() =>
+                onChange(selected === city.name ? undefined : city.name)
+              }
               className={`flex flex-col items-start gap-1 px-3 py-2.5 rounded-lg text-left transition-all duration-200 ${
                 selected === city.name
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
@@ -70,7 +72,9 @@ export function CityFilterContent({
             >
               <div className="flex items-center gap-2">
                 <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
-                <span className="font-medium text-sm truncate">{city.name}</span>
+                <span className="font-medium text-sm truncate">
+                  {city.name}
+                </span>
               </div>
               <span className="text-xs opacity-75">
                 {city.propertyCount} props

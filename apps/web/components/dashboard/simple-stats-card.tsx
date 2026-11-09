@@ -1,23 +1,23 @@
 /**
  * SIMPLE STATS CARD
- * 
+ *
  * Simplified stats card for FREE/PLUS users.
  * Shows count + human-readable text + optional trend indicator.
  */
 
 "use client";
 
-import { cn } from "@/lib/utils";
 import {
-    ArrowDown,
-    ArrowRight,
-    ArrowUp,
-    Building2,
-    Calendar,
-    Eye,
-    Heart,
-    type LucideIcon
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  Building2,
+  Calendar,
+  Eye,
+  Heart,
+  type LucideIcon,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Icon mapping for server-to-client component communication
 const iconMap: Record<string, LucideIcon> = {
@@ -77,9 +77,11 @@ export function SimpleStatsCard({
           <div className="p-2 rounded-lg bg-primary/10">
             <Icon className="h-4 w-4 text-primary" />
           </div>
-          <span className="text-sm font-medium text-muted-foreground">{title}</span>
+          <span className="text-sm font-medium text-muted-foreground">
+            {title}
+          </span>
         </div>
-        
+
         {/* Trend indicator (PLUS only) */}
         {showTrend && (
           <div className={cn("p-1.5 rounded-full", trend.bg)}>

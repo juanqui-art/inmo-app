@@ -35,8 +35,13 @@ interface PricingCardProps {
   isYearly?: boolean; // Toggle state
 }
 
-export function PricingCard({ tier, compact = false, isYearly = false }: PricingCardProps) {
-  const currentPrice = isYearly && tier.yearlyPrice !== undefined ? tier.yearlyPrice : tier.price;
+export function PricingCard({
+  tier,
+  compact = false,
+  isYearly = false,
+}: PricingCardProps) {
+  const currentPrice =
+    isYearly && tier.yearlyPrice !== undefined ? tier.yearlyPrice : tier.price;
   const currentPeriod = isYearly ? "por año" : tier.period;
 
   return (
@@ -80,15 +85,16 @@ export function PricingCard({ tier, compact = false, isYearly = false }: Pricing
           <span className="text-2xl font-bold text-oslo-gray-400 dark:text-oslo-gray-500 mt-1">
             {tier.currency}
           </span>
-          <motion.span 
+          <motion.span
             key={currentPrice}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className={`text-5xl font-extrabold ${
-            tier.highlighted
-              ? "bg-gradient-to-br from-indigo-500 to-purple-500 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent"
-              : "text-oslo-gray-900 dark:text-oslo-gray-50"
-          }`}>
+              tier.highlighted
+                ? "bg-gradient-to-br from-indigo-500 to-purple-500 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent"
+                : "text-oslo-gray-900 dark:text-oslo-gray-50"
+            }`}
+          >
             {currentPrice}
           </motion.span>
         </div>

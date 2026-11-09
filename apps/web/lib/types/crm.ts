@@ -1,11 +1,11 @@
 /**
  * CRM Types
- * 
+ *
  * Type definitions for the CRM Lite feature.
  */
 
 // LeadStatus enum matches Prisma schema
-export type LeadStatus = 
+export type LeadStatus =
   | "NEW"
   | "CONTACTED"
   | "INTERESTED"

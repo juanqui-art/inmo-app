@@ -12,11 +12,20 @@
 
 "use client";
 
-import { AgentAvatar } from "@/components/shared/agent-avatar";
-import type { SafeUser } from "@/lib/auth";
-import { Heart, Home as HomeIcon, LogOut, PlusCircle, Search, Settings, User, X } from "lucide-react";
+import {
+  Heart,
+  Home as HomeIcon,
+  LogOut,
+  PlusCircle,
+  Search,
+  Settings,
+  User,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
+import { AgentAvatar } from "@/components/shared/agent-avatar";
+import type { SafeUser } from "@/lib/auth";
 import { AuthButtons } from "./auth-buttons";
 import { getNavLinks } from "./constants/nav-links";
 import { useStaggerAnimation } from "./hooks/use-navbar-animations";
@@ -76,7 +85,9 @@ export function MobileMenu({
             <div className="mb-6 flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
               <AgentAvatar name={user.email} size="md" isVerified={false} />
               <div className="flex-1 min-w-0">
-                <p className="text-white font-medium truncate">Hola, {user.email}</p>
+                <p className="text-white font-medium truncate">
+                  Hola, {user.email}
+                </p>
                 <p className="text-white/50 text-sm">Bienvenido de vuelta</p>
               </div>
             </div>
@@ -88,7 +99,9 @@ export function MobileMenu({
             onClick={onClose}
             className="group flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all active:scale-98"
           >
-            <span className="text-xl font-semibold text-white">Buscar propiedades</span>
+            <span className="text-xl font-semibold text-white">
+              Buscar propiedades
+            </span>
             <div className="p-2 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors">
               <Search className="w-5 h-5 text-white" />
             </div>
@@ -100,7 +113,9 @@ export function MobileMenu({
             onClick={onClose}
             className="group flex items-center justify-between p-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 transition-all active:scale-98 shadow-lg shadow-indigo-900/20"
           >
-            <span className="text-xl font-bold text-white">Publicar propiedad</span>
+            <span className="text-xl font-bold text-white">
+              Publicar propiedad
+            </span>
             <div className="p-2 rounded-full bg-white/20 transition-colors">
               <PlusCircle className="w-5 h-5 text-white" />
             </div>

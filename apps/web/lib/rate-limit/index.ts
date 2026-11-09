@@ -19,25 +19,27 @@
  * ```
  */
 
-// Configuration
-export { RATE_LIMIT_CONFIGS, getRetryAfterSeconds } from "./config";
-export type { RateLimitTier, RateLimitConfig } from "./config";
-
-// Client
-export { getRateLimiter, isRateLimitingEnabled, clearRateLimiterCache } from "./client";
-
+export type { RateLimitResult } from "./check";
 // Check functions
 export { checkRateLimitByIP, checkRateLimitByUser } from "./check";
-export type { RateLimitResult } from "./check";
 
-// HOC and helpers
+// Client
 export {
-  enforceRateLimit,
-  withRateLimit,
-  isRateLimitError,
-  RateLimitError,
-} from "./with-rate-limit";
+  clearRateLimiterCache,
+  getRateLimiter,
+  isRateLimitingEnabled,
+} from "./client";
+export type { RateLimitConfig, RateLimitTier } from "./config";
+// Configuration
+export { getRetryAfterSeconds, RATE_LIMIT_CONFIGS } from "./config";
 export type {
   EnforceRateLimitOptions,
   RateLimitedResult,
+} from "./with-rate-limit";
+// HOC and helpers
+export {
+  enforceRateLimit,
+  isRateLimitError,
+  RateLimitError,
+  withRateLimit,
 } from "./with-rate-limit";

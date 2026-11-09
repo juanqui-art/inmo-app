@@ -1,4 +1,3 @@
-
 import { db } from "@repo/database";
 
 export interface UtmSourceStat {
@@ -10,14 +9,16 @@ export interface UtmSourceStat {
 /**
  * Get lead distribution by UTM Source for the last 30 days
  */
-export async function getUtmSourceStats(agentId: string): Promise<UtmSourceStat[]> {
+export async function getUtmSourceStats(
+  agentId: string,
+): Promise<UtmSourceStat[]> {
   // Aggregate clients by utmSource
   const groups = await db.agentClient.groupBy({
     by: ["utmSource"],
     where: {
       agentId: agentId,
       // Optional: Filter by date (e.g., last 30 days or all time)
-      // createdAt: { gte: subDays(new Date(), 30) } 
+      // createdAt: { gte: subDays(new Date(), 30) }
     },
     _count: {
       _all: true,
@@ -37,7 +38,7 @@ export async function getUtmSourceStats(agentId: string): Promise<UtmSourceStat[
     count: g._count._all,
     percentage: total > 0 ? (g._count._all / total) * 100 : 0,
   }));
-  
+
   // Sort by count desc
   return stats.sort((a, b) => b.count - a.count);
 }

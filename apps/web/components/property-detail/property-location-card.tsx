@@ -1,12 +1,10 @@
-
 "use client";
-
-import { PropertyGoogleMap } from "@/components/map/property-google-map";
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Building, MapPin } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { PropertyGoogleMap } from "@/components/map/property-google-map";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,7 +25,7 @@ export function PropertyLocationCard({
   zipCode,
   latitude,
   longitude,
-  title
+  title,
 }: PropertyLocationCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -64,10 +62,7 @@ export function PropertyLocationCard({
   }
 
   return (
-    <div
-      ref={containerRef}
-      className="space-y-6"
-    >
+    <div ref={containerRef} className="space-y-6">
       {/* Header */}
       <h2 className="text-2xl font-bold text-oslo-gray-950 dark:text-white">
         Ubicación
@@ -75,11 +70,11 @@ export function PropertyLocationCard({
 
       {/* Map Section */}
       {latitude && longitude && (
-         <PropertyGoogleMap
-            latitude={latitude}
-            longitude={longitude}
-            title={title || "Propiedad"}
-         />
+        <PropertyGoogleMap
+          latitude={latitude}
+          longitude={longitude}
+          title={title || "Propiedad"}
+        />
       )}
 
       {/* Text Details */}
@@ -87,13 +82,15 @@ export function PropertyLocationCard({
         {address && (
           <div className="flex items-start gap-4 p-3 rounded-lg hover:bg-oslo-gray-50 dark:hover:bg-oslo-gray-800 transition-colors">
             <div className="p-3 bg-primary/10 rounded-full text-primary">
-               <MapPin className="w-5 h-5" />
+              <MapPin className="w-5 h-5" />
             </div>
             <div>
               <p className="text-sm font-medium text-oslo-gray-500 dark:text-oslo-gray-400">
                 Dirección
               </p>
-              <p className="font-semibold text-oslo-gray-900 dark:text-oslo-gray-100 mt-1">{address}</p>
+              <p className="font-semibold text-oslo-gray-900 dark:text-oslo-gray-100 mt-1">
+                {address}
+              </p>
             </div>
           </div>
         )}
@@ -101,7 +98,7 @@ export function PropertyLocationCard({
         {(city || state) && (
           <div className="flex items-start gap-4 p-3 rounded-lg hover:bg-oslo-gray-50 dark:hover:bg-oslo-gray-800 transition-colors">
             <div className="p-3 bg-blue-500/10 rounded-full text-blue-500">
-               <Building className="w-5 h-5" />
+              <Building className="w-5 h-5" />
             </div>
             <div>
               <p className="text-sm font-medium text-oslo-gray-500 dark:text-oslo-gray-400">
@@ -116,17 +113,19 @@ export function PropertyLocationCard({
         )}
 
         {zipCode && (
-           <div className="flex items-start gap-4 p-3 rounded-lg hover:bg-oslo-gray-50 dark:hover:bg-oslo-gray-800 transition-colors">
-             <div className="p-3 bg-amber-500/10 rounded-full text-amber-500">
-                <span className="text-lg font-bold">#</span>
-             </div>
-             <div>
-               <p className="text-sm font-medium text-oslo-gray-500 dark:text-oslo-gray-400">
-                 Código Postal
-               </p>
-               <p className="font-semibold text-oslo-gray-900 dark:text-oslo-gray-100 mt-1">{zipCode}</p>
-             </div>
-           </div>
+          <div className="flex items-start gap-4 p-3 rounded-lg hover:bg-oslo-gray-50 dark:hover:bg-oslo-gray-800 transition-colors">
+            <div className="p-3 bg-amber-500/10 rounded-full text-amber-500">
+              <span className="text-lg font-bold">#</span>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-oslo-gray-500 dark:text-oslo-gray-400">
+                Código Postal
+              </p>
+              <p className="font-semibold text-oslo-gray-900 dark:text-oslo-gray-100 mt-1">
+                {zipCode}
+              </p>
+            </div>
+          </div>
         )}
       </div>
     </div>

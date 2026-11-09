@@ -1,12 +1,19 @@
 "use client";
 
-import { createPropertyFromWizard } from "@/app/actions/wizard";
-import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { Card } from "@repo/ui";
-import { Bath, BedDouble, CheckCircle2, Image as ImageIcon, MapPin, Ruler } from "lucide-react";
+import {
+  Bath,
+  BedDouble,
+  CheckCircle2,
+  Image as ImageIcon,
+  MapPin,
+  Ruler,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { createPropertyFromWizard } from "@/app/actions/wizard";
+import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 
 // Helper for formatting price if the utility doesn't exist or is not exported
 const formatPrice = (price: number) => {
@@ -25,13 +32,16 @@ export function Step5() {
   const handleSubmit = async () => {
     if (isSubmitting) return; // Prevent double submit
     setIsSubmitting(true);
-    
+
     toast.loading("Publicando propiedad...", { id: "publish-property" });
-    
+
     try {
       // Images are already uploaded in Step4, just create property with URLs
-      console.log("[Review] Submitting property with imageUrls:", formData.imageUrls);
-      
+      console.log(
+        "[Review] Submitting property with imageUrls:",
+        formData.imageUrls,
+      );
+
       const result = await createPropertyFromWizard({
         title: formData.title,
         description: formData.description,
@@ -54,23 +64,30 @@ export function Step5() {
 
       if (result.success) {
         console.log("Property created successfully:", result.propertyId);
-        toast.success("¡Propiedad publicada exitosamente!", { id: "publish-property" });
-        
+        toast.success("¡Propiedad publicada exitosamente!", {
+          id: "publish-property",
+        });
+
         // Navigate FIRST, then reset wizard after navigation starts
         router.push("/dashboard/propiedades");
-        
+
         // Reset wizard after short delay to avoid flicker
         setTimeout(() => {
           resetWizard();
         }, 100);
       } else {
         console.error("Error creating property:", result.error);
-        toast.error(result.error || "Error al crear la propiedad", { id: "publish-property" });
+        toast.error(result.error || "Error al crear la propiedad", {
+          id: "publish-property",
+        });
         setIsSubmitting(false);
       }
     } catch (error) {
       console.error("Error creating property:", error);
-      toast.error(error instanceof Error ? error.message : "Error al crear la propiedad", { id: "publish-property" });
+      toast.error(
+        error instanceof Error ? error.message : "Error al crear la propiedad",
+        { id: "publish-property" },
+      );
       setIsSubmitting(false);
     }
   };
@@ -80,7 +97,8 @@ export function Step5() {
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">Revisar y Publicar</h2>
         <p className="text-sm text-muted-foreground">
-          Verifica que toda la información sea correcta antes de publicar tu propiedad.
+          Verifica que toda la información sea correcta antes de publicar tu
+          propiedad.
         </p>
       </div>
 
@@ -96,7 +114,9 @@ export function Step5() {
               </p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-primary">{formatPrice(formData.price)}</p>
+              <p className="text-2xl font-bold text-primary">
+                {formatPrice(formData.price)}
+              </p>
               <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
                 {formData.transactionType === "SALE" ? "Venta" : "Alquiler"}
               </span>
@@ -107,7 +127,9 @@ export function Step5() {
             <div className="flex flex-col items-center justify-center p-2 bg-muted/50 rounded-lg">
               <BedDouble className="w-5 h-5 mb-1 text-muted-foreground" />
               <span className="font-semibold">{formData.bedrooms}</span>
-              <span className="text-xs text-muted-foreground">Habitaciones</span>
+              <span className="text-xs text-muted-foreground">
+                Habitaciones
+              </span>
             </div>
             <div className="flex flex-col items-center justify-center p-2 bg-muted/50 rounded-lg">
               <Bath className="w-5 h-5 mb-1 text-muted-foreground" />
@@ -142,7 +164,9 @@ export function Step5() {
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-muted-foreground italic">No se seleccionaron amenidades.</p>
+            <p className="text-sm text-muted-foreground italic">
+              No se seleccionaron amenidades.
+            </p>
           )}
         </Card>
 
@@ -154,11 +178,14 @@ export function Step5() {
               {formData.images.length} imágenes
             </span>
           </h4>
-          
+
           {formData.imageUrls && formData.imageUrls.length > 0 ? (
             <div className="grid grid-cols-3 gap-2">
               {formData.imageUrls.slice(0, 6).map((url, index) => (
-                <div key={index} className="relative aspect-square rounded-md overflow-hidden bg-muted">
+                <div
+                  key={index}
+                  className="relative aspect-square rounded-md overflow-hidden bg-muted"
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
@@ -183,7 +210,14 @@ export function Step5() {
       </div>
 
       {/* Hidden submit button to be triggered by WizardLayout */}
-      <form id="wizard-step-form" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="hidden">
+      <form
+        id="wizard-step-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+        className="hidden"
+      >
         <button type="submit"></button>
       </form>
     </div>

@@ -29,9 +29,9 @@
  * @see https://owasp.org/www-community/attacks/csrf
  */
 
+import { env } from "@repo/env";
 import { cookies } from "next/headers";
 import { logger } from "@/lib/utils/logger";
-import { env } from "@repo/env";
 
 const CSRF_COOKIE_NAME = "inmoapp_csrf_token";
 const TOKEN_LENGTH = 32; // 32 bytes = 256 bits
@@ -110,10 +110,14 @@ export async function getCSRFToken(): Promise<string> {
  * @param submittedToken - Token from form data or header
  * @throws {CSRFError} If token is missing or invalid
  */
-export async function validateCSRFToken(submittedToken: string | null): Promise<void> {
+export async function validateCSRFToken(
+  submittedToken: string | null,
+): Promise<void> {
   if (!submittedToken) {
     logger.warn({ component: "csrf" }, "CSRF token missing in request");
-    throw new CSRFError("Token de seguridad no encontrado. Recarga la página e intenta de nuevo.");
+    throw new CSRFError(
+      "Token de seguridad no encontrado. Recarga la página e intenta de nuevo.",
+    );
   }
 
   const cookieStore = await cookies();
@@ -121,16 +125,17 @@ export async function validateCSRFToken(submittedToken: string | null): Promise<
 
   if (!cookieToken) {
     logger.warn({ component: "csrf" }, "CSRF token missing in cookie");
-    throw new CSRFError("Sesión expirada. Recarga la página e intenta de nuevo.");
+    throw new CSRFError(
+      "Sesión expirada. Recarga la página e intenta de nuevo.",
+    );
   }
 
   // Constant-time comparison to prevent timing attacks
   if (!timingSafeEqual(submittedToken, cookieToken)) {
-    logger.warn(
-      { component: "csrf" },
-      "CSRF token mismatch - possible attack"
+    logger.warn({ component: "csrf" }, "CSRF token mismatch - possible attack");
+    throw new CSRFError(
+      "Token de seguridad inválido. Recarga la página e intenta de nuevo.",
     );
-    throw new CSRFError("Token de seguridad inválido. Recarga la página e intenta de nuevo.");
   }
 
   logger.debug({ component: "csrf" }, "CSRF token validated successfully");

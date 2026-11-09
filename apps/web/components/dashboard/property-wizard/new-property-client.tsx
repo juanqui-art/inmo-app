@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Step1 } from "@/components/dashboard/property-wizard/steps/basic-info";
 import { Step3 } from "@/components/dashboard/property-wizard/steps/features";
 import { Step4 } from "@/components/dashboard/property-wizard/steps/images";
@@ -7,8 +8,6 @@ import { Step2 } from "@/components/dashboard/property-wizard/steps/location";
 import { Step5 } from "@/components/dashboard/property-wizard/steps/review";
 import { WizardLayout } from "@/components/dashboard/property-wizard/wizard-layout";
 import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
-
-import { useEffect } from "react";
 
 interface NewPropertyClientProps {
   maxImages: number;

@@ -1,15 +1,15 @@
+import { Card, CardContent, CardHeader } from "@repo/ui";
+import { CreditCard, Receipt } from "lucide-react";
+import type { Metadata } from "next";
 import { CurrentPlanCard } from "@/components/dashboard/subscription/current-plan-card";
 import { PlanComparisonTable } from "@/components/dashboard/subscription/plan-comparison-table";
 import { UsageStatsCard } from "@/components/dashboard/subscription/usage-stats-card";
 import { requireRole } from "@/lib/auth";
 import {
   combineUsageWithLimits,
-  getUserUsageStats,
   getUsageLimits,
+  getUserUsageStats,
 } from "@/lib/dashboard/subscription-helpers";
-import { Card, CardContent, CardHeader } from "@repo/ui";
-import { CreditCard, Receipt } from "lucide-react";
-import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Suscripción | Dashboard",
@@ -77,9 +77,7 @@ export default async function SubscriptionPage() {
             <CardContent>
               <div className="text-center py-6 text-sm text-muted-foreground">
                 <p className="mb-2">Sin transacciones aún</p>
-                <p className="text-xs">
-                  Tu historial de pagos aparecerá aquí
-                </p>
+                <p className="text-xs">Tu historial de pagos aparecerá aquí</p>
               </div>
             </CardContent>
           </Card>

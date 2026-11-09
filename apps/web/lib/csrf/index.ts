@@ -26,9 +26,9 @@
  */
 
 export {
-  getCSRFToken,
-  validateCSRFToken,
-  rotateCSRFToken,
-  isCSRFError,
   CSRFError,
+  getCSRFToken,
+  isCSRFError,
+  rotateCSRFToken,
+  validateCSRFToken,
 } from "./tokens";

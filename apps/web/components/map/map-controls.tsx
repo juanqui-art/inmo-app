@@ -24,7 +24,7 @@ export function MapControls() {
       const currentZoom = map.getZoom() || 15;
       map.setZoom(currentZoom + delta);
     },
-    [map]
+    [map],
   );
 
   const toggleMapType = useCallback(() => {
@@ -52,16 +52,16 @@ export function MapControls() {
       {/* Bottom Right - Zoom Controls */}
       <div className="absolute bottom-24 right-4 z-10 flex flex-col gap-2">
         <button
-           onClick={() => handleZoom(1)}
-           className={cn(buttonClass)}
-           title="Acercar"
+          onClick={() => handleZoom(1)}
+          className={cn(buttonClass)}
+          title="Acercar"
         >
           <Plus className="w-5 h-5" />
         </button>
         <button
-           onClick={() => handleZoom(-1)}
-           className={cn(buttonClass)}
-           title="Alejar"
+          onClick={() => handleZoom(-1)}
+          className={cn(buttonClass)}
+          title="Alejar"
         >
           <Minus className="w-5 h-5" />
         </button>

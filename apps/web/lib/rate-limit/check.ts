@@ -15,8 +15,8 @@ import { headers } from "next/headers";
 import { createRequestLogger } from "@/lib/utils/logger";
 import { getRateLimiter, isRateLimitingEnabled } from "./client";
 import {
-  RATE_LIMIT_CONFIGS,
   getRetryAfterSeconds,
+  RATE_LIMIT_CONFIGS,
   type RateLimitTier,
 } from "./config";
 
@@ -65,13 +65,16 @@ async function getClientIP(): Promise<string> {
  * @param tier - Rate limit tier (defaults to "auth")
  */
 export async function checkRateLimitByIP(
-  tier: RateLimitTier = "auth"
+  tier: RateLimitTier = "auth",
 ): Promise<RateLimitResult> {
   const reqLogger = createRequestLogger();
 
   // Graceful degradation if Redis unavailable
   if (!isRateLimitingEnabled()) {
-    reqLogger.debug({ tier }, "[RateLimit] Redis unavailable - allowing request");
+    reqLogger.debug(
+      { tier },
+      "[RateLimit] Redis unavailable - allowing request",
+    );
     return {
       allowed: true,
       limit: RATE_LIMIT_CONFIGS[tier].limit,
@@ -96,7 +99,7 @@ export async function checkRateLimitByIP(
  */
 export async function checkRateLimitByUser(
   userId: string,
-  tier: RateLimitTier = "default"
+  tier: RateLimitTier = "default",
 ): Promise<RateLimitResult> {
   const reqLogger = createRequestLogger();
 
@@ -104,7 +107,7 @@ export async function checkRateLimitByUser(
   if (!isRateLimitingEnabled()) {
     reqLogger.debug(
       { tier, userId: userId.slice(0, 8) },
-      "[RateLimit] Redis unavailable - allowing request"
+      "[RateLimit] Redis unavailable - allowing request",
     );
     return {
       allowed: true,
@@ -128,7 +131,7 @@ export async function checkRateLimitByUser(
 async function checkRateLimit(
   identifier: string,
   tier: RateLimitTier,
-  reqLogger: ReturnType<typeof createRequestLogger>
+  reqLogger: ReturnType<typeof createRequestLogger>,
 ): Promise<RateLimitResult> {
   const ratelimit = getRateLimiter(tier);
 
@@ -151,7 +154,7 @@ async function checkRateLimit(
       pending.catch((err) => {
         reqLogger.warn(
           { err, tier, identifier: maskIdentifier(identifier) },
-          "[RateLimit] Analytics submission failed"
+          "[RateLimit] Analytics submission failed",
         );
       });
     }
@@ -169,7 +172,7 @@ async function checkRateLimit(
           remaining,
           retryAfter,
         },
-        "[RateLimit] Rate limit exceeded"
+        "[RateLimit] Rate limit exceeded",
       );
 
       return {
@@ -181,17 +184,14 @@ async function checkRateLimit(
       };
     }
 
-    reqLogger.debug(
-      { tier, remaining, limit },
-      "[RateLimit] Request allowed"
-    );
+    reqLogger.debug({ tier, remaining, limit }, "[RateLimit] Request allowed");
 
     return { allowed: true, limit, remaining };
   } catch (error) {
     // On Redis error, allow request (fail open strategy)
     reqLogger.error(
       { err: error, tier, identifier: maskIdentifier(identifier) },
-      "[RateLimit] Redis error - allowing request (fail open)"
+      "[RateLimit] Redis error - allowing request (fail open)",
     );
 
     return {

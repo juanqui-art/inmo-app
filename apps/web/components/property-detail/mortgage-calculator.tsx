@@ -15,7 +15,8 @@ const LOAN_TYPES = {
     label: "Crédito VIP/VIS",
     rate: 4.99,
     maxTerm: 25,
-    description: "Tasa subsidiada (4.99%) para primera vivienda nueva hasta $105,340 (aprox).",
+    description:
+      "Tasa subsidiada (4.99%) para primera vivienda nueva hasta $105,340 (aprox).",
   },
   biess: {
     label: "BIESS / IESS",
@@ -54,7 +55,7 @@ export function MortgageCalculator({ price }: MortgageCalculatorProps) {
   // Calculations
   const downPaymentAmount = (price * downPaymentPercent) / 100;
   const loanAmount = price - downPaymentAmount;
-  
+
   // Monthly Payment Calculation (Amortization)
   const calculateMonthlyPayment = () => {
     if (loanAmount <= 0) return 0;
@@ -63,9 +64,9 @@ export function MortgageCalculator({ price }: MortgageCalculatorProps) {
 
     if (interestRate === 0) return loanAmount / numberOfPayments;
 
-    const numerator = monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments);
-    const denominator = Math.pow(1 + monthlyRate, numberOfPayments) - 1;
-    
+    const numerator = monthlyRate * (1 + monthlyRate) ** numberOfPayments;
+    const denominator = (1 + monthlyRate) ** numberOfPayments - 1;
+
     return loanAmount * (numerator / denominator);
   };
 
@@ -100,10 +101,14 @@ export function MortgageCalculator({ price }: MortgageCalculatorProps) {
               "py-2 px-3 text-sm font-medium rounded-lg transition-all duration-200",
               loanType === type
                 ? "bg-white dark:bg-oslo-gray-800 text-primary shadow-sm border border-transparent dark:border-oslo-gray-700"
-                : "text-oslo-gray-500 hover:text-oslo-gray-900 dark:hover:text-white hover:bg-oslo-gray-200/50 dark:hover:bg-oslo-gray-800/50"
+                : "text-oslo-gray-500 hover:text-oslo-gray-900 dark:hover:text-white hover:bg-oslo-gray-200/50 dark:hover:bg-oslo-gray-800/50",
             )}
           >
-            {type === 'vip' ? 'VIP 4.87%' : type === 'biess' ? 'BIESS' : 'Banco'}
+            {type === "vip"
+              ? "VIP 4.87%"
+              : type === "biess"
+                ? "BIESS"
+                : "Banco"}
           </button>
         ))}
       </div>
@@ -118,8 +123,12 @@ export function MortgageCalculator({ price }: MortgageCalculatorProps) {
           {/* Down Payment */}
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-oslo-gray-600 dark:text-oslo-gray-300">Entrada ({downPaymentPercent}%)</span>
-              <span className="font-semibold text-oslo-gray-900 dark:text-white">{formatMoney(downPaymentAmount)}</span>
+              <span className="text-oslo-gray-600 dark:text-oslo-gray-300">
+                Entrada ({downPaymentPercent}%)
+              </span>
+              <span className="font-semibold text-oslo-gray-900 dark:text-white">
+                {formatMoney(downPaymentAmount)}
+              </span>
             </div>
             <input
               type="range"
@@ -135,8 +144,12 @@ export function MortgageCalculator({ price }: MortgageCalculatorProps) {
           {/* Term */}
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-oslo-gray-600 dark:text-oslo-gray-300">Plazo</span>
-              <span className="font-semibold text-oslo-gray-900 dark:text-white">{termYears} Años</span>
+              <span className="text-oslo-gray-600 dark:text-oslo-gray-300">
+                Plazo
+              </span>
+              <span className="font-semibold text-oslo-gray-900 dark:text-white">
+                {termYears} Años
+              </span>
             </div>
             <input
               type="range"
@@ -149,18 +162,20 @@ export function MortgageCalculator({ price }: MortgageCalculatorProps) {
             />
           </div>
 
-           {/* Interest Rate (Editable) */}
-           <div className="space-y-1">
-            <label className="text-sm text-oslo-gray-600 dark:text-oslo-gray-300">Tasa de Interés (%)</label>
-             <div className="relative">
-                <input 
-                    type="number" 
-                    value={interestRate}
-                    onChange={(e) => setInterestRate(Number(e.target.value))}
-                    className="w-full bg-oslo-gray-50 dark:bg-oslo-gray-800 border border-oslo-gray-200 dark:border-oslo-gray-700 rounded-lg py-2 pl-3 pr-8 text-sm text-oslo-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                />
-                <Percent className="absolute right-3 top-2.5 w-4 h-4 text-oslo-gray-400" />
-             </div>
+          {/* Interest Rate (Editable) */}
+          <div className="space-y-1">
+            <label className="text-sm text-oslo-gray-600 dark:text-oslo-gray-300">
+              Tasa de Interés (%)
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                value={interestRate}
+                onChange={(e) => setInterestRate(Number(e.target.value))}
+                className="w-full bg-oslo-gray-50 dark:bg-oslo-gray-800 border border-oslo-gray-200 dark:border-oslo-gray-700 rounded-lg py-2 pl-3 pr-8 text-sm text-oslo-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+              />
+              <Percent className="absolute right-3 top-2.5 w-4 h-4 text-oslo-gray-400" />
+            </div>
           </div>
         </div>
 
@@ -170,14 +185,14 @@ export function MortgageCalculator({ price }: MortgageCalculatorProps) {
             Cuota Mensual Estimada
           </span>
           <div className="text-4xl font-bold text-primary mb-1">
-             {formatMoney(monthlyPayment)}
+            {formatMoney(monthlyPayment)}
           </div>
           <span className="text-xs text-oslo-gray-400 dark:text-oslo-gray-500">
             *No incluye seguros ni impuestos
           </span>
 
           <div className="w-full h-px bg-primary/10 my-4" />
-          
+
           <div className="w-full flex justify-between text-xs text-oslo-gray-500 dark:text-oslo-gray-400">
             <span>Monto Préstamo:</span>
             <span className="font-semibold">{formatMoney(loanAmount)}</span>

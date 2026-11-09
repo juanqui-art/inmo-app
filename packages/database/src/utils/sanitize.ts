@@ -18,7 +18,7 @@
  * - docs/security/INPUT_SANITIZATION.md
  */
 
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from "isomorphic-dompurify";
 
 /**
  * Sanitize HTML content while allowing safe formatting tags
@@ -41,18 +41,25 @@ export function sanitizeHTML(dirty: string): string {
   return DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS: [
       // Text formatting
-      'b', 'i', 'em', 'strong', 'u',
+      "b",
+      "i",
+      "em",
+      "strong",
+      "u",
       // Paragraphs and line breaks
-      'p', 'br',
+      "p",
+      "br",
       // Lists
-      'ul', 'ol', 'li',
+      "ul",
+      "ol",
+      "li",
       // Links (important for property details)
-      'a',
+      "a",
     ],
     ALLOWED_ATTR: [
       // Only allow href and target on links
-      'href',
-      'target',
+      "href",
+      "target",
     ],
     // Force links to open in new tab (security best practice)
     ALLOWED_URI_REGEXP: /^(?:(?:https?):)|^\//, // Only allow HTTPS and relative URLs
@@ -142,7 +149,7 @@ export function sanitizeObject<T extends Record<string, any>>(
 
   for (const [key, sanitizer] of Object.entries(sanitizers)) {
     const value = obj[key as keyof T];
-    if (typeof value === 'string' && sanitizer) {
+    if (typeof value === "string" && sanitizer) {
       result[key as keyof T] = sanitizer(value) as any;
     }
   }

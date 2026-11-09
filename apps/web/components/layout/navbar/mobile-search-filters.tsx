@@ -18,14 +18,14 @@
  * UPDATED: Now uses existing AISearchInline component in modal
  */
 
-import { AISearchInline } from "@/components/ai-search/ai-search-inline";
-import { MobileFilterSheet } from "@/components/map/filters/mobile-filter-sheet";
-import { useMapStore } from "@/stores/map-store";
-import { usePropertyGridStore } from "@/stores/property-grid-store";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { AISearchInline } from "@/components/ai-search/ai-search-inline";
+import { MobileFilterSheet } from "@/components/map/filters/mobile-filter-sheet";
+import { useMapStore } from "@/stores/map-store";
+import { usePropertyGridStore } from "@/stores/property-grid-store";
 
 export function MobileSearchAndFilters() {
   // =========================================================================

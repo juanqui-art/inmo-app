@@ -29,7 +29,10 @@ interface MapboxFeature {
   }[];
 }
 
-export function AddressAutocomplete({ onAddressSelect, initialValue = "" }: AddressAutocompleteProps) {
+export function AddressAutocomplete({
+  onAddressSelect,
+  initialValue = "",
+}: AddressAutocompleteProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(initialValue);
   const [debouncedValue] = useDebounce(inputValue, 500);
@@ -51,12 +54,12 @@ export function AddressAutocomplete({ onAddressSelect, initialValue = "" }: Addr
 
         // Limit results to 5, types address/poi, language es
         const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          debouncedValue
+          debouncedValue,
         )}.json?access_token=${token}&language=es&limit=5`;
 
         const response = await fetch(endpoint);
         const data = await response.json();
-        
+
         if (data.features) {
           setResults(data.features);
         }
@@ -78,17 +81,21 @@ export function AddressAutocomplete({ onAddressSelect, initialValue = "" }: Addr
     // Extract basic details from Mapbox context
     // Mapbox context is array like: [District, City, Region, Country]
     // We try to find patterns roughly.
-    const city = feature.context?.find(c => c.id.startsWith('place'))?.text || 
-                 feature.context?.find(c => c.id.startsWith('district'))?.text || "";
-    
-    const state = feature.context?.find(c => c.id.startsWith('region'))?.text || "";
-    
+    const city =
+      feature.context?.find((c) => c.id.startsWith("place"))?.text ||
+      feature.context?.find((c) => c.id.startsWith("district"))?.text ||
+      "";
+
+    const state =
+      feature.context?.find((c) => c.id.startsWith("region"))?.text || "";
+
     // Zip code is rarely returned perfectly in this generic endpoint, usually empty or in context
-    const zip = feature.context?.find(c => c.id.startsWith('postcode'))?.text || "";
+    const zip =
+      feature.context?.find((c) => c.id.startsWith("postcode"))?.text || "";
 
     // Feature place_name usually contains the full formatted address
     // We use the 'text' (name of place) + address number if available, else full string
-    const address = feature.place_name.split(',')[0] || feature.place_name;
+    const address = feature.place_name.split(",")[0] || feature.place_name;
 
     onAddressSelect({
       address,
@@ -121,29 +128,35 @@ export function AddressAutocomplete({ onAddressSelect, initialValue = "" }: Addr
             )}
           </div>
         </PopoverTrigger>
-        <PopoverContent 
-          className="p-0 w-[var(--radix-popover-trigger-width)]" 
+        <PopoverContent
+          className="p-0 w-[var(--radix-popover-trigger-width)]"
           align="start"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <div className="max-h-[300px] overflow-y-auto overflow-x-hidden p-1">
             {results.length === 0 ? (
-               <div className="py-6 text-center text-sm text-muted-foreground">No se encontraron resultados.</div>
+              <div className="py-6 text-center text-sm text-muted-foreground">
+                No se encontraron resultados.
+              </div>
             ) : (
-               <div className="flex flex-col gap-1">
-                 <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">Sugerencias</div>
-                 {results.map((feature) => (
-                   <button
-                     key={feature.id}
-                     onClick={() => handleSelect(feature)}
-                     className="relative flex cursor-default select-none items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground w-full text-left"
-                   >
-                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground opacity-70 shrink-0" />
-                     <span className="truncate">{feature.place_name}</span>
-                     {inputValue === feature.place_name && <Check className="ml-auto h-4 w-4 opacity-50 shrink-0" />}
-                   </button>
-                 ))}
-               </div>
+              <div className="flex flex-col gap-1">
+                <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                  Sugerencias
+                </div>
+                {results.map((feature) => (
+                  <button
+                    key={feature.id}
+                    onClick={() => handleSelect(feature)}
+                    className="relative flex cursor-default select-none items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground w-full text-left"
+                  >
+                    <MapPin className="mr-2 h-4 w-4 text-muted-foreground opacity-70 shrink-0" />
+                    <span className="truncate">{feature.place_name}</span>
+                    {inputValue === feature.place_name && (
+                      <Check className="ml-auto h-4 w-4 opacity-50 shrink-0" />
+                    )}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
         </PopoverContent>

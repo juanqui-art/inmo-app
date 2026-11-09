@@ -1,17 +1,20 @@
 /**
  * PROPIEDADES - Lista de propiedades del agente
  * Muestra todas las propiedades que pertenecen al agente autenticado
- * 
+ *
  * DASHBOARD-SPECIFIC QUERY: Includes favorites, views, and appointments counts
  * for accurate statistics display in AgentPropertyCard
  */
 
+import { db } from "@repo/database/src/client";
 import { AgentPropertyCard } from "@/components/dashboard/agent-property-card";
 import { NewPropertyButton } from "@/components/dashboard/new-property-button";
 import { requireRole } from "@/lib/auth";
-import { canCreateProperty, getPropertyLimit } from "@/lib/permissions/property-limits";
+import {
+  canCreateProperty,
+  getPropertyLimit,
+} from "@/lib/permissions/property-limits";
 import type { TierName } from "@/lib/pricing/tiers";
-import { db } from "@repo/database/src/client";
 
 export default async function PropiedadesPage() {
   // Verificar que el usuario es AGENT o ADMIN
@@ -67,9 +70,9 @@ export default async function PropiedadesPage() {
       },
       // Include relations for stats
       // Exclude agent's own favorites to show only real client interest
-      favorites: { 
+      favorites: {
         select: { id: true },
-        where: { userId: { not: user.id } }
+        where: { userId: { not: user.id } },
       },
       views: { select: { id: true } },
       appointments: { select: { id: true } },
@@ -135,7 +138,8 @@ export default async function PropiedadesPage() {
       {serializedProperties.length > 0 && (
         <div className="mt-8 p-4 rounded-lg border border-border bg-card">
           <p className="text-sm text-muted-foreground">
-            Total: <span className="font-semibold">{serializedProperties.length}</span>{" "}
+            Total:{" "}
+            <span className="font-semibold">{serializedProperties.length}</span>{" "}
             {serializedProperties.length === 1 ? "propiedad" : "propiedades"}
           </p>
         </div>

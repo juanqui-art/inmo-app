@@ -1,10 +1,10 @@
 "use client";
 
-import { pricingTiers } from "@/lib/pricing/tiers";
 import type { SubscriptionTier } from "@repo/database";
 import { Badge, Button, Card, CardContent, CardHeader } from "@repo/ui";
 import { Check, X } from "lucide-react";
 import Link from "next/link";
+import { pricingTiers } from "@/lib/pricing/tiers";
 
 interface PlanComparisonTableProps {
   currentTier: SubscriptionTier;
@@ -21,7 +21,10 @@ const features = [
   { label: "Analytics básico", key: "analytics" as const },
 ];
 
-const featureValues: Record<SubscriptionTier, Record<typeof features[number]["key"], string | boolean>> = {
+const featureValues: Record<
+  SubscriptionTier,
+  Record<(typeof features)[number]["key"], string | boolean>
+> = {
   FREE: {
     properties: "1",
     images: "6",
@@ -87,7 +90,9 @@ export function PlanComparisonTable({ currentTier }: PlanComparisonTableProps) {
                   <th key={tier.name} className="text-center py-3 px-4">
                     <div className="space-y-1">
                       <div className="flex items-center justify-center gap-2">
-                        <span className="font-semibold text-sm">{tier.displayName}</span>
+                        <span className="font-semibold text-sm">
+                          {tier.displayName}
+                        </span>
                         {tier.name === currentTier && (
                           <Badge variant="secondary" className="text-xs">
                             Actual
@@ -113,7 +118,8 @@ export function PlanComparisonTable({ currentTier }: PlanComparisonTableProps) {
                 >
                   <td className="py-3 px-4 text-sm">{feature.label}</td>
                   {pricingTiers.map((tier) => {
-                    const value = featureValues[tier.name as SubscriptionTier][feature.key];
+                    const value =
+                      featureValues[tier.name as SubscriptionTier][feature.key];
                     const isCurrent = tier.name === currentTier;
 
                     return (
@@ -173,13 +179,16 @@ export function PlanComparisonTable({ currentTier }: PlanComparisonTableProps) {
 
               <div className="space-y-2">
                 {features.map((feature) => {
-                  const value = featureValues[tier.name as SubscriptionTier][feature.key];
+                  const value =
+                    featureValues[tier.name as SubscriptionTier][feature.key];
                   return (
                     <div
                       key={feature.key}
                       className="flex items-center justify-between text-sm"
                     >
-                      <span className="text-muted-foreground">{feature.label}</span>
+                      <span className="text-muted-foreground">
+                        {feature.label}
+                      </span>
                       {typeof value === "boolean" ? (
                         value ? (
                           <Check className="w-4 h-4 text-green-600" />

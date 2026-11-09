@@ -5,7 +5,12 @@ import { MapPin } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Map, { GeolocateControl, MapRef, Marker, NavigationControl } from "react-map-gl/mapbox";
+import Map, {
+  GeolocateControl,
+  type MapRef,
+  Marker,
+  NavigationControl,
+} from "react-map-gl/mapbox";
 
 interface LocationPickerMapProps {
   latitude: number;
@@ -13,7 +18,11 @@ interface LocationPickerMapProps {
   onLocationSelect: (lat: number, lng: number) => void;
 }
 
-export function LocationPickerMap({ latitude, longitude, onLocationSelect }: LocationPickerMapProps) {
+export function LocationPickerMap({
+  latitude,
+  longitude,
+  onLocationSelect,
+}: LocationPickerMapProps) {
   const { resolvedTheme } = useTheme();
   const mapRef = useRef<MapRef>(null);
   const [viewState, setViewState] = useState({
@@ -23,30 +32,37 @@ export function LocationPickerMap({ latitude, longitude, onLocationSelect }: Loc
   });
 
   // Calculate map style based on theme
-  const mapStyle = resolvedTheme === "dark" 
-    ? "mapbox://styles/mapbox/dark-v11" 
-    : "mapbox://styles/mapbox/streets-v12";
+  const mapStyle =
+    resolvedTheme === "dark"
+      ? "mapbox://styles/mapbox/dark-v11"
+      : "mapbox://styles/mapbox/streets-v12";
 
   // Update view state if props change significantly (e.g. initial load or external update)
   useEffect(() => {
     if (latitude && longitude) {
-      setViewState(prev => ({
+      setViewState((prev) => ({
         ...prev,
         latitude,
-        longitude
+        longitude,
       }));
     }
   }, [latitude, longitude]);
 
-  const handleMapClick = useCallback((event: any) => {
-    const { lat, lng } = event.lngLat;
-    onLocationSelect(lat, lng);
-  }, [onLocationSelect]);
+  const handleMapClick = useCallback(
+    (event: any) => {
+      const { lat, lng } = event.lngLat;
+      onLocationSelect(lat, lng);
+    },
+    [onLocationSelect],
+  );
 
-  const handleMarkerDragEnd = useCallback((event: any) => {
-    const { lat, lng } = event.lngLat;
-    onLocationSelect(lat, lng);
-  }, [onLocationSelect]);
+  const handleMarkerDragEnd = useCallback(
+    (event: any) => {
+      const { lat, lng } = event.lngLat;
+      onLocationSelect(lat, lng);
+    },
+    [onLocationSelect],
+  );
 
   const mapboxToken = env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -65,7 +81,7 @@ export function LocationPickerMap({ latitude, longitude, onLocationSelect }: Loc
       <Map
         ref={mapRef}
         {...viewState}
-        onMove={evt => setViewState(evt.viewState)}
+        onMove={(evt) => setViewState(evt.viewState)}
         style={{ width: "100%", height: "100%" }}
         mapStyle={mapStyle}
         mapboxAccessToken={mapboxToken}
@@ -82,7 +98,7 @@ export function LocationPickerMap({ latitude, longitude, onLocationSelect }: Loc
           anchor="bottom"
         >
           <div className="text-primary drop-shadow-lg cursor-pointer hover:scale-110 transition-transform">
-             <MapPin className="w-10 h-10 fill-primary text-primary-foreground" />
+            <MapPin className="w-10 h-10 fill-primary text-primary-foreground" />
           </div>
         </Marker>
       </Map>

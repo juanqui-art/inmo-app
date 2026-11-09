@@ -11,11 +11,17 @@
  * NOTA: Todos los usuarios son AGENT por defecto
  */
 
-import { signupAction } from "@/app/actions/auth";
 import { Button, Input, Label } from "@repo/ui";
 import { useActionState } from "react";
+import { signupAction } from "@/app/actions/auth";
 
-export function SignupForm({ redirect, plan }: { redirect?: string; plan?: string }) {
+export function SignupForm({
+  redirect,
+  plan,
+}: {
+  redirect?: string;
+  plan?: string;
+}) {
   const [state, formAction, isPending] = useActionState(
     signupAction,
     undefined,

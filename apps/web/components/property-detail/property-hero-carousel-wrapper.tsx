@@ -1,7 +1,7 @@
 "use client";
 
-import { useFavorites } from "@/hooks/use-favorites";
 import { useCallback } from "react";
+import { useFavorites } from "@/hooks/use-favorites";
 import { PropertyHeroCarousel } from "./property-hero-carousel";
 
 interface PropertyHeroCarouselWrapperProps {
@@ -38,7 +38,7 @@ export function PropertyHeroCarouselWrapper({
       // Since the store handles auth requirement via event, we might want to simply call it
       // regardless, BUT the current store implementation of toggleFavorite calls toggleFavoriteAction
       // which returns "Authentication required" error if not auth.
-      
+
       // However, current wrapper had this check. Let's redirect to login manually or rely on store.
       // The store emits 'favorites:auth-required'.
       // If we just call toggleFavorite, the store attempts the action.

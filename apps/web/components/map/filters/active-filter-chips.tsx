@@ -15,8 +15,8 @@
  * - Allows individual filter removal
  */
 
-import { useMapStore } from "@/stores/map-store";
 import { X } from "lucide-react";
+import { useMapStore } from "@/stores/map-store";
 
 export function ActiveFilterChips() {
   // =========================================================================
@@ -54,7 +54,10 @@ export function ActiveFilterChips() {
         label: type === "SALE" ? "Venta" : "Arriendo",
         onRemove: () => {
           const updated = filters.transactionType?.filter((t) => t !== type);
-          updateFilter("transactionType", updated?.length ? updated : undefined);
+          updateFilter(
+            "transactionType",
+            updated?.length ? updated : undefined,
+          );
         },
       });
     });

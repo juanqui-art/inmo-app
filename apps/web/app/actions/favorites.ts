@@ -50,7 +50,10 @@ export async function toggleFavoriteAction(propertyId: string) {
       await enforceRateLimit({ userId: user.id, tier: "favorite" });
     } catch (error) {
       if (isRateLimitError(error)) {
-        logger.warn({ userId: user.id, tier: "favorite" }, "[Favorite] Rate limit exceeded");
+        logger.warn(
+          { userId: user.id, tier: "favorite" },
+          "[Favorite] Rate limit exceeded",
+        );
         return { success: false, error: error.message };
       }
       throw error;

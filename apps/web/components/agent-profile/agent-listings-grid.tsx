@@ -1,8 +1,8 @@
 "use client";
 
-import { PropertyCard } from "@/components/properties/property-card";
-import { type SerializedProperty } from "@repo/database";
+import type { SerializedProperty } from "@repo/database";
 import { SearchX } from "lucide-react";
+import { PropertyCard } from "@/components/properties/property-card";
 
 interface AgentListingsGridProps {
   properties: SerializedProperty[];
@@ -19,7 +19,8 @@ export function AgentListingsGrid({ properties }: AgentListingsGridProps) {
           Sin propiedades publicadas
         </h3>
         <p className="text-oslo-gray-500 dark:text-oslo-gray-400 max-w-sm mx-auto">
-          Este agente no tiene propiedades activas en este momento. Vuelve a consultar más tarde.
+          Este agente no tiene propiedades activas en este momento. Vuelve a
+          consultar más tarde.
         </p>
       </div>
     );

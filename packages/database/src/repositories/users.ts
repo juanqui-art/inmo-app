@@ -98,11 +98,27 @@ export class UserRepository {
     // Sanitize user-provided fields (Defense in Depth - Layer 2)
     const sanitizedData: Prisma.UserUpdateInput = {
       ...data,
-      ...(data.name && { name: sanitizeOptional(data.name as string | null, sanitizePlainText) }),
-      ...(data.phone && { phone: sanitizeOptional(data.phone as string | null, sanitizePlainText) }),
-      ...(data.bio && { bio: sanitizeOptional(data.bio as string | null, sanitizePlainText) }),
-      ...(data.licenseId && { licenseId: sanitizeOptional(data.licenseId as string | null, sanitizePlainText) }),
-      ...(data.website && { website: sanitizeOptional(data.website as string | null, sanitizePlainText) }),
+      ...(data.name && {
+        name: sanitizeOptional(data.name as string | null, sanitizePlainText),
+      }),
+      ...(data.phone && {
+        phone: sanitizeOptional(data.phone as string | null, sanitizePlainText),
+      }),
+      ...(data.bio && {
+        bio: sanitizeOptional(data.bio as string | null, sanitizePlainText),
+      }),
+      ...(data.licenseId && {
+        licenseId: sanitizeOptional(
+          data.licenseId as string | null,
+          sanitizePlainText,
+        ),
+      }),
+      ...(data.website && {
+        website: sanitizeOptional(
+          data.website as string | null,
+          sanitizePlainText,
+        ),
+      }),
       // brandColor, logoUrl, avatar are validated by format/schema, no HTML sanitization needed
     };
 

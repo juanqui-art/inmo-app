@@ -1,44 +1,48 @@
 /**
  * CLIENT ACTIONS
- * 
+ *
  * Dropdown menu for managing client status and notes.
  * Uses server actions for state updates.
  */
 
 "use client";
 
-import { updateClientNotesAction, updateClientStatusAction } from "@/app/actions/crm";
-import type { LeadStatus } from "@/lib/types/crm";
 import {
-    Button,
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@repo/ui";
 import {
-    CheckCircle2,
-    Edit,
-    MessageSquare,
-    MoreHorizontal,
-    Phone,
-    Sparkles,
-    Target,
-    XCircle
+  CheckCircle2,
+  Edit,
+  MessageSquare,
+  MoreHorizontal,
+  Phone,
+  Sparkles,
+  Target,
+  XCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  updateClientNotesAction,
+  updateClientStatusAction,
+} from "@/app/actions/crm";
+import type { LeadStatus } from "@/lib/types/crm";
 
-const STATUSES: { value: LeadStatus; label: string; icon: typeof Sparkles }[] = [
-  { value: "NEW", label: "Nuevo", icon: Sparkles },
-  { value: "CONTACTED", label: "Contactado", icon: Phone },
-  { value: "INTERESTED", label: "Interesado", icon: Target },
-  { value: "NEGOTIATING", label: "Negociando", icon: MessageSquare },
-  { value: "CLOSED_WON", label: "Cerrado ✓", icon: CheckCircle2 },
-  { value: "CLOSED_LOST", label: "Perdido", icon: XCircle },
-];
+const STATUSES: { value: LeadStatus; label: string; icon: typeof Sparkles }[] =
+  [
+    { value: "NEW", label: "Nuevo", icon: Sparkles },
+    { value: "CONTACTED", label: "Contactado", icon: Phone },
+    { value: "INTERESTED", label: "Interesado", icon: Target },
+    { value: "NEGOTIATING", label: "Negociando", icon: MessageSquare },
+    { value: "CLOSED_WON", label: "Cerrado ✓", icon: CheckCircle2 },
+    { value: "CLOSED_LOST", label: "Perdido", icon: XCircle },
+  ];
 
 interface ClientActionsProps {
   clientId: string;
@@ -46,17 +50,23 @@ interface ClientActionsProps {
   currentNotes: string;
 }
 
-export function ClientActions({ clientId, currentStatus, currentNotes }: ClientActionsProps) {
+export function ClientActions({
+  clientId,
+  currentStatus,
+  currentNotes,
+}: ClientActionsProps) {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleStatusChange = async (newStatus: LeadStatus) => {
     if (newStatus === currentStatus) return;
-    
+
     setIsUpdating(true);
     try {
       const result = await updateClientStatusAction(clientId, newStatus);
       if (result.success) {
-        toast.success(`Estado actualizado a "${STATUSES.find(s => s.value === newStatus)?.label}"`);
+        toast.success(
+          `Estado actualizado a "${STATUSES.find((s) => s.value === newStatus)?.label}"`,
+        );
       } else {
         toast.error(result.error || "Error al actualizar estado");
       }

@@ -1,9 +1,16 @@
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@repo/ui";
+import { ExternalLink, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { ProfileForm } from "@/components/dashboard/profile-form";
 import { UpgradeModal } from "@/components/dashboard/upgrade-modal";
 import { requireRole } from "@/lib/auth";
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui";
-import { ExternalLink, ShieldCheck } from "lucide-react";
-import Link from "next/link";
 
 export default async function ConfigurationPage() {
   const user = await requireRole(["AGENT", "ADMIN"]);
@@ -23,7 +30,8 @@ export default async function ConfigurationPage() {
           <CardHeader>
             <CardTitle>Perfil Profesional</CardTitle>
             <CardDescription>
-              Esta información será visible para tus clientes en tus propiedades.
+              Esta información será visible para tus clientes en tus
+              propiedades.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -47,24 +55,29 @@ export default async function ConfigurationPage() {
                 <ShieldCheck className="h-5 w-5 text-primary" />
                 Suscripción
               </CardTitle>
-              <CardDescription>
-                Plan actual y límites
-              </CardDescription>
+              <CardDescription>Plan actual y límites</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Plan Actual</p>
-                  <p className="text-2xl font-bold text-primary">{user.subscriptionTier}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Plan Actual
+                  </p>
+                  <p className="text-2xl font-bold text-primary">
+                    {user.subscriptionTier}
+                  </p>
                 </div>
                 {user.subscriptionTier !== "PRO" && (
                   <Link href="/pricing">
-                    <Button variant="outline" size="sm">Mejorar Plan</Button>
+                    <Button variant="outline" size="sm">
+                      Mejorar Plan
+                    </Button>
                   </Link>
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
-                ¿Necesitas cancelar o cambiar tu facturación? Contacta a soporte.
+                ¿Necesitas cancelar o cambiar tu facturación? Contacta a
+                soporte.
               </p>
             </CardContent>
           </Card>
@@ -72,9 +85,7 @@ export default async function ConfigurationPage() {
           <Card>
             <CardHeader>
               <CardTitle>Perfil Público</CardTitle>
-              <CardDescription>
-                Ve cómo te ven tus clientes
-              </CardDescription>
+              <CardDescription>Ve cómo te ven tus clientes</CardDescription>
             </CardHeader>
             <CardContent>
               <Link href="/perfil" target="_blank">
@@ -87,7 +98,7 @@ export default async function ConfigurationPage() {
           </Card>
         </div>
       </div>
-      
+
       <UpgradeModal />
     </div>
   );

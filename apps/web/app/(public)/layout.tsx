@@ -1,9 +1,9 @@
+import type { Metadata } from "next";
+import { Suspense } from "react";
 import { BodyStyleManager } from "@/components/layout/body-style-manager";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { PublicHeader } from "@/components/layout/public-header";
 import { ResponsiveToaster } from "@/components/ui/responsive-toaster";
-import type { Metadata } from "next";
-import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: {

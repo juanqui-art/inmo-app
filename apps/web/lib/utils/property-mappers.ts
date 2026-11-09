@@ -5,8 +5,8 @@
  * Ensures type safety when passing data between server and client components.
  */
 
-import type { MapProperty } from "@/components/map/map-view";
 import type { SerializedProperty } from "@repo/database";
+import type { MapProperty } from "@/components/map/map-view";
 
 /**
  * Converts a SerializedProperty to MapProperty format

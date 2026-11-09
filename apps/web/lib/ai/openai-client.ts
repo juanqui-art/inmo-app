@@ -18,8 +18,8 @@
  * ```
  */
 
-import type OpenAI from "openai";
 import { env } from "@repo/env";
+import type OpenAI from "openai";
 
 // Cache the OpenAI client after first load
 let cachedClient: OpenAI | null = null;
@@ -40,7 +40,7 @@ export async function getOpenAIClient(): Promise<OpenAI> {
   const apiKey = env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "OPENAI_API_KEY environment variable is required for AI search"
+      "OPENAI_API_KEY environment variable is required for AI search",
     );
   }
 

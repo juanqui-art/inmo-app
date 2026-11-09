@@ -35,7 +35,7 @@ export function ModalCarousel({ images, title }: ModalCarouselProps) {
   if (!images || images.length === 0) {
     return (
       <div className="relative aspect-[4/3] w-full bg-muted flex items-center justify-center">
-         <span className="text-4xl">🏠</span>
+        <span className="text-4xl">🏠</span>
       </div>
     );
   }
@@ -51,14 +51,14 @@ export function ModalCarousel({ images, title }: ModalCarouselProps) {
             >
               {/* Ambilight Background (Blurred) */}
               <div className="absolute inset-0 z-0">
-                 <Image
-                    src={image.url}
-                    alt=""
-                    fill
-                    className="object-cover blur-2xl scale-110 opacity-60 dark:opacity-40"
-                    aria-hidden="true"
-                 />
-                 <div className="absolute inset-0 bg-black/20" /> 
+                <Image
+                  src={image.url}
+                  alt=""
+                  fill
+                  className="object-cover blur-2xl scale-110 opacity-60 dark:opacity-40"
+                  aria-hidden="true"
+                />
+                <div className="absolute inset-0 bg-black/20" />
               </div>
 
               {/* Main Image */}
@@ -72,7 +72,7 @@ export function ModalCarousel({ images, title }: ModalCarouselProps) {
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
-              
+
               {/* Gradient overlay for text readability */}
               <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 to-transparent opacity-60 z-20" />
             </div>
@@ -83,29 +83,29 @@ export function ModalCarousel({ images, title }: ModalCarouselProps) {
       {/* Navigation Buttons - Visible on hover only for desktop */}
       {images.length > 1 && (
         <>
-            {/* Left Button */}
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">
-             <Button
-                variant="secondary"
-                size="icon"
-                className="h-9 w-9 bg-black/30 hover:bg-black/50 text-white border-0 backdrop-blur-sm rounded-full"
-                onClick={scrollPrev}
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-            </div>
-            
-            {/* Right Button */}
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">
-             <Button
-                variant="secondary"
-                size="icon"
-                className="h-9 w-9 bg-black/30 hover:bg-black/50 text-white border-0 backdrop-blur-sm rounded-full"
-                 onClick={scrollNext}
-              >
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-            </div>
+          {/* Left Button */}
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">
+            <Button
+              variant="secondary"
+              size="icon"
+              className="h-9 w-9 bg-black/30 hover:bg-black/50 text-white border-0 backdrop-blur-sm rounded-full"
+              onClick={scrollPrev}
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Right Button */}
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">
+            <Button
+              variant="secondary"
+              size="icon"
+              className="h-9 w-9 bg-black/30 hover:bg-black/50 text-white border-0 backdrop-blur-sm rounded-full"
+              onClick={scrollNext}
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </div>
         </>
       )}
 
@@ -119,7 +119,7 @@ export function ModalCarousel({ images, title }: ModalCarouselProps) {
                 "w-2 h-2 rounded-full transition-all duration-300",
                 index === selectedIndex
                   ? "bg-white w-6"
-                  : "bg-white/50 hover:bg-white/80"
+                  : "bg-white/50 hover:bg-white/80",
               )}
               onClick={() => emblaApi?.scrollTo(index)}
               aria-label={`Ir a la imagen ${index + 1}`}
@@ -128,14 +128,16 @@ export function ModalCarousel({ images, title }: ModalCarouselProps) {
         </div>
       )}
 
-       {/* Image counter badge */}
-       <div className="absolute bottom-4 right-4 md:right-8 z-10">
-          <div className="bg-white/20 text-white px-3.5 py-2 rounded-full text-sm font-medium backdrop-blur-md flex items-center gap-2 border border-white/30 shadow-sm transition-all hover:bg-white/40">
-            <span className="font-bold">{selectedIndex + 1} / {images.length}</span>
-            <div className="w-px h-3.5 bg-white/40" />
-            <ImageIcon className="w-4 h-4 opacity-90" />
-          </div>
-       </div>
+      {/* Image counter badge */}
+      <div className="absolute bottom-4 right-4 md:right-8 z-10">
+        <div className="bg-white/20 text-white px-3.5 py-2 rounded-full text-sm font-medium backdrop-blur-md flex items-center gap-2 border border-white/30 shadow-sm transition-all hover:bg-white/40">
+          <span className="font-bold">
+            {selectedIndex + 1} / {images.length}
+          </span>
+          <div className="w-px h-3.5 bg-white/40" />
+          <ImageIcon className="w-4 h-4 opacity-90" />
+        </div>
+      </div>
     </div>
   );
 }

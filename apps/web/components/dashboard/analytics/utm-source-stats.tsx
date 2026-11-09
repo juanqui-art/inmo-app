@@ -1,8 +1,8 @@
 "use client";
 
-import type { UtmSourceStat } from "@/lib/dashboard/utm-analytics-helpers";
 import { Card, CardContent, CardHeader, Progress } from "@repo/ui";
 import { ExternalLink, Globe, Hash, Megaphone } from "lucide-react";
+import type { UtmSourceStat } from "@/lib/dashboard/utm-analytics-helpers";
 
 interface UtmSourceStatsProps {
   stats: UtmSourceStat[];
@@ -13,7 +13,12 @@ export function UtmSourceStats({ stats, totalLeads }: UtmSourceStatsProps) {
   // Helper to choose icon based on source
   const getSourceIcon = (source: string) => {
     const s = source.toLowerCase();
-    if (s.includes("facebook") || s.includes("instagram") || s.includes("tiktok")) return <Megaphone className="w-4 h-4" />;
+    if (
+      s.includes("facebook") ||
+      s.includes("instagram") ||
+      s.includes("tiktok")
+    )
+      return <Megaphone className="w-4 h-4" />;
     if (s.includes("google")) return <Globe className="w-4 h-4" />;
     return <ExternalLink className="w-4 h-4" />;
   };
@@ -32,8 +37,8 @@ export function UtmSourceStats({ stats, totalLeads }: UtmSourceStatsProps) {
             </p>
           </div>
           <div className="text-right">
-             <span className="text-2xl font-bold">{totalLeads}</span>
-             <p className="text-xs text-muted-foreground">Total leads</p>
+            <span className="text-2xl font-bold">{totalLeads}</span>
+            <p className="text-xs text-muted-foreground">Total leads</p>
           </div>
         </div>
       </CardHeader>
@@ -41,7 +46,9 @@ export function UtmSourceStats({ stats, totalLeads }: UtmSourceStatsProps) {
         {stats.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground text-sm">
             <p>No hay datos suficientes aún.</p>
-            <p className="text-xs mt-1">Comparte tus propiedades para empezar a rastrear.</p>
+            <p className="text-xs mt-1">
+              Comparte tus propiedades para empezar a rastrear.
+            </p>
           </div>
         ) : (
           stats.map((stat) => (

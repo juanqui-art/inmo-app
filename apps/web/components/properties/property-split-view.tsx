@@ -171,7 +171,6 @@ export function PropertySplitView() {
           />
         </div>
       </div>
-
     </div>
   );
 }

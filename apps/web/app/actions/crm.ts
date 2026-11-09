@@ -1,6 +1,6 @@
 /**
  * CRM SERVER ACTIONS
- * 
+ *
  * Actions for managing AgentClient records:
  * - Update client status
  * - Update client notes
@@ -9,17 +9,17 @@
 
 "use server";
 
-import { requireRole } from "@/lib/auth";
-import type { LeadStatus } from "@/lib/types/crm";
 import { db } from "@repo/database/src/client";
 import { revalidatePath } from "next/cache";
+import { requireRole } from "@/lib/auth";
+import type { LeadStatus } from "@/lib/types/crm";
 
 /**
  * Update client lead status
  */
 export async function updateClientStatusAction(
   agentClientId: string,
-  newStatus: LeadStatus
+  newStatus: LeadStatus,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const user = await requireRole(["AGENT", "ADMIN"]);
@@ -55,7 +55,7 @@ export async function updateClientStatusAction(
  */
 export async function updateClientNotesAction(
   agentClientId: string,
-  notes: string
+  notes: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const user = await requireRole(["AGENT", "ADMIN"]);
@@ -89,7 +89,7 @@ export async function updateClientNotesAction(
 /**
  * Create or get AgentClient record
  * Called when a client interacts with an agent (appointment, favorite, etc.)
- * 
+ *
  * Note: UTM fields require manual migration (see migrations/manual_utm_tracking.sql)
  */
 export async function getOrCreateAgentClient(
@@ -101,7 +101,7 @@ export async function getOrCreateAgentClient(
     utmSource?: string;
     utmMedium?: string;
     utmCampaign?: string;
-  }
+  },
 ): Promise<{ success: boolean; agentClientId?: string; error?: string }> {
   try {
     // Check if relationship already exists
@@ -117,7 +117,9 @@ export async function getOrCreateAgentClient(
     if (existing) {
       // Update UTM if new data provided and existing doesn't have UTM
       // Note: utmSource field added via manual migration
-      const existingWithUtm = existing as typeof existing & { utmSource?: string };
+      const existingWithUtm = existing as typeof existing & {
+        utmSource?: string;
+      };
       if (utmParams?.utmSource && !existingWithUtm.utmSource) {
         await db.agentClient.update({
           where: { id: existing.id },
@@ -159,7 +161,7 @@ export async function getOrCreateAgentClient(
  * Delete client from CRM
  */
 export async function deleteAgentClientAction(
-  agentClientId: string
+  agentClientId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const user = await requireRole(["AGENT", "ADMIN"]);

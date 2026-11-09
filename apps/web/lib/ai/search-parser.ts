@@ -9,11 +9,11 @@
  */
 
 import { logger } from "@/lib/utils/logger";
-import { getOpenAIClient } from "./openai-client";
 import {
   getAvailableCitiesForPrompt,
   validateLocation,
 } from "./location-validator";
+import { getOpenAIClient } from "./openai-client";
 
 interface SearchFilters {
   city?: string; // City (Cuenca, Gualaceo, Paute, etc.)
@@ -247,7 +247,7 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
     } catch (parseError) {
       logger.error(
         { err: parseError, query, content },
-        "[AI] Failed to parse OpenAI response"
+        "[AI] Failed to parse OpenAI response",
       );
       return {
         success: false,
@@ -268,7 +268,7 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
       if (filters.minPrice < 10000 || filters.minPrice > 1000000) {
         logger.warn(
           { query, minPrice: filters.minPrice },
-          "[AI] Price validation: minPrice outside acceptable range [$10k-$1M], setting to null"
+          "[AI] Price validation: minPrice outside acceptable range [$10k-$1M], setting to null",
         );
         filters.minPrice = undefined;
       }
@@ -278,7 +278,7 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
       if (filters.maxPrice < 10000 || filters.maxPrice > 1000000) {
         logger.warn(
           { query, maxPrice: filters.maxPrice },
-          "[AI] Price validation: maxPrice outside acceptable range [$10k-$1M], setting to null"
+          "[AI] Price validation: maxPrice outside acceptable range [$10k-$1M], setting to null",
         );
         filters.maxPrice = undefined;
       }
@@ -292,7 +292,7 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
     ) {
       logger.warn(
         { query, bedrooms: filters.bedrooms },
-        "[AI] Bedroom validation: outside acceptable range [0-10], setting to null"
+        "[AI] Bedroom validation: outside acceptable range [0-10], setting to null",
       );
       filters.bedrooms = undefined;
     }
@@ -304,7 +304,7 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
     ) {
       logger.warn(
         { query, bathrooms: filters.bathrooms },
-        "[AI] Bathroom validation: outside acceptable range [0-10], setting to null"
+        "[AI] Bathroom validation: outside acceptable range [0-10], setting to null",
       );
       filters.bathrooms = undefined;
     }
@@ -325,9 +325,9 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
             query,
             requestedCity: filters.city,
             message: locationValidation.message,
-            suggestedCities: locationValidation.suggestedCities
+            suggestedCities: locationValidation.suggestedCities,
           },
-          "[AI] Location validation failed: city not in inventory"
+          "[AI] Location validation failed: city not in inventory",
         );
       } else if (
         locationValidation.matchedCity &&
@@ -343,14 +343,20 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
         filters.city = locationValidation.matchedCity;
         logger.debug(
           { query, originalCity, matchedCity: locationValidation.matchedCity },
-          "[AI] Location fuzzy-matched"
+          "[AI] Location fuzzy-matched",
         );
       }
     }
 
     logger.debug(
-      { query, confidence: finalConfidence, reasoning, filters, locationValidation },
-      "[AI] Parse result"
+      {
+        query,
+        confidence: finalConfidence,
+        reasoning,
+        filters,
+        locationValidation,
+      },
+      "[AI] Parse result",
     );
 
     return {
@@ -361,10 +367,7 @@ export async function parseSearchQuery(query: string): Promise<ParseResult> {
       locationValidation,
     };
   } catch (error) {
-    logger.error(
-      { err: error, query },
-      "[AI] Error in parseSearchQuery"
-    );
+    logger.error({ err: error, query }, "[AI] Error in parseSearchQuery");
     return {
       success: false,
       filters: {},

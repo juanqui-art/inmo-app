@@ -2,20 +2,14 @@
 
 /**
  * QUICK ACTIONS Component
- * 
+ *
  * Sección de accesos rápidos en el Dashboard con verificación de límites.
  * Si el usuario ha alcanzado su límite de propiedades, muestra un modal
  * en lugar de navegar a /propiedades/nueva.
  */
 
 import { Button } from "@repo/ui";
-import {
-    AlertCircle,
-    Building2,
-    CheckCircle,
-    Sparkles,
-    X,
-} from "lucide-react";
+import { AlertCircle, Building2, CheckCircle, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -37,9 +31,12 @@ export function QuickActions({
   const router = useRouter();
 
   // Calculate next tier info
-  const nextTier = currentTier === "FREE" ? "PLUS" : currentTier === "PLUS" ? "AGENT" : "PRO";
-  const nextTierLimit = nextTier === "PLUS" ? 3 : nextTier === "AGENT" ? 10 : 20;
-  const nextTierPrice = nextTier === "PLUS" ? "$9.99" : nextTier === "AGENT" ? "$29.99" : "$59.99";
+  const nextTier =
+    currentTier === "FREE" ? "PLUS" : currentTier === "PLUS" ? "AGENT" : "PRO";
+  const nextTierLimit =
+    nextTier === "PLUS" ? 3 : nextTier === "AGENT" ? 10 : 20;
+  const nextTierPrice =
+    nextTier === "PLUS" ? "$9.99" : nextTier === "AGENT" ? "$29.99" : "$59.99";
 
   const handleNewPropertyClick = () => {
     if (canCreateProperty) {
@@ -109,9 +106,14 @@ export function QuickActions({
                   Has alcanzado tu límite
                 </h2>
                 <p className="text-muted-foreground">
-                  Tu plan <span className="font-semibold text-foreground">{currentTier}</span> permite{" "}
+                  Tu plan{" "}
                   <span className="font-semibold text-foreground">
-                    {propertyLimit} {propertyLimit === 1 ? "propiedad" : "propiedades"}
+                    {currentTier}
+                  </span>{" "}
+                  permite{" "}
+                  <span className="font-semibold text-foreground">
+                    {propertyLimit}{" "}
+                    {propertyLimit === 1 ? "propiedad" : "propiedades"}
                   </span>
                 </p>
               </div>
@@ -122,11 +124,14 @@ export function QuickActions({
                 <div className="p-4 rounded-xl bg-muted/50 border border-border">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-2 h-2 rounded-full bg-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground">Actual</span>
+                    <span className="text-xs font-medium text-muted-foreground">
+                      Actual
+                    </span>
                   </div>
                   <div className="text-lg font-bold">{currentTier}</div>
                   <div className="text-xs text-muted-foreground">
-                    {propertyLimit} {propertyLimit === 1 ? "propiedad" : "propiedades"}
+                    {propertyLimit}{" "}
+                    {propertyLimit === 1 ? "propiedad" : "propiedades"}
                   </div>
                 </div>
 
@@ -140,9 +145,13 @@ export function QuickActions({
                   </div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-lg font-bold">{nextTier}</span>
-                    <span className="text-xs text-muted-foreground">{nextTierPrice}/mes</span>
+                    <span className="text-xs text-muted-foreground">
+                      {nextTierPrice}/mes
+                    </span>
                   </div>
-                  <div className="text-xs text-muted-foreground">{nextTierLimit} propiedades</div>
+                  <div className="text-xs text-muted-foreground">
+                    {nextTierLimit} propiedades
+                  </div>
                 </div>
               </div>
 
@@ -165,7 +174,10 @@ export function QuickActions({
                   size="lg"
                   className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/25"
                 >
-                  <Link href="/pricing" className="flex items-center justify-center gap-2">
+                  <Link
+                    href="/pricing"
+                    className="flex items-center justify-center gap-2"
+                  >
                     <Sparkles className="w-4 h-4" />
                     Ver planes disponibles
                   </Link>

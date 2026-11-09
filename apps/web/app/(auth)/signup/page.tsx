@@ -14,10 +14,10 @@
  * - redirect: URL to redirect after signup
  */
 
-import { GoogleButton } from "@/components/auth/google-button";
-import { SignupForm } from "@/components/auth/signup-form";
 import Link from "next/link";
 import { Suspense } from "react";
+import { GoogleButton } from "@/components/auth/google-button";
+import { SignupForm } from "@/components/auth/signup-form";
 
 /** Plan display configuration - Matches tiers.ts (FREE/PLUS/AGENT/PRO) */
 const PLAN_CONFIG: Record<

@@ -1,8 +1,11 @@
 "use client";
 
-import { PricingCard, PricingTier } from "@/components/pricing/pricing-card";
 import * as motion from "motion/react-client";
 import { useState } from "react";
+import {
+  PricingCard,
+  type PricingTier,
+} from "@/components/pricing/pricing-card";
 
 interface PricingGridProps {
   tiers: PricingTier[];
@@ -19,7 +22,9 @@ export function PricingGrid({ tiers }: PricingGridProps) {
           <button
             onClick={() => setIsYearly(false)}
             className={`relative px-6 py-2 text-sm font-semibold rounded-full transition-colors z-10 ${
-              !isYearly ? "text-oslo-gray-900 dark:text-white" : "text-oslo-gray-500 hover:text-oslo-gray-900 dark:hover:text-white"
+              !isYearly
+                ? "text-oslo-gray-900 dark:text-white"
+                : "text-oslo-gray-500 hover:text-oslo-gray-900 dark:hover:text-white"
             }`}
           >
             Mensual
@@ -27,7 +32,9 @@ export function PricingGrid({ tiers }: PricingGridProps) {
           <button
             onClick={() => setIsYearly(true)}
             className={`relative px-6 py-2 text-sm font-semibold rounded-full transition-colors z-10 flex items-center gap-2 ${
-              isYearly ? "text-oslo-gray-900 dark:text-white" : "text-oslo-gray-500 hover:text-oslo-gray-900 dark:hover:text-white"
+              isYearly
+                ? "text-oslo-gray-900 dark:text-white"
+                : "text-oslo-gray-500 hover:text-oslo-gray-900 dark:hover:text-white"
             }`}
           >
             Anual
@@ -35,7 +42,7 @@ export function PricingGrid({ tiers }: PricingGridProps) {
               -17%
             </span>
           </button>
-          
+
           {/* Animated Background Pill */}
           <div className="absolute inset-1 pointer-events-none">
             <motion.div
@@ -44,7 +51,7 @@ export function PricingGrid({ tiers }: PricingGridProps) {
               className="h-full bg-white dark:bg-oslo-gray-700 rounded-full shadow-sm"
               style={{
                 width: "50%",
-                x: isYearly ? "100%" : "0%"
+                x: isYearly ? "100%" : "0%",
               }}
             />
           </div>
@@ -54,11 +61,11 @@ export function PricingGrid({ tiers }: PricingGridProps) {
       {/* Pricing Cards */}
       <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
         {tiers.map((tier) => (
-          <PricingCard 
-            key={tier.name} 
-            tier={tier} 
-            compact={true} 
-            isYearly={isYearly} 
+          <PricingCard
+            key={tier.name}
+            tier={tier}
+            compact={true}
+            isYearly={isYearly}
           />
         ))}
       </div>

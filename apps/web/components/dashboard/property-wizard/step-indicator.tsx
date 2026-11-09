@@ -1,9 +1,9 @@
 "use client";
 
-import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
-import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { motion } from "motion/react";
+import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
+import { cn } from "@/lib/utils";
 
 interface Step {
   id: number;
@@ -42,7 +42,10 @@ export function StepIndicator() {
           const isCurrent = currentStep === step.id;
 
           return (
-            <div key={step.id} className="flex flex-col items-center gap-2 bg-background px-2">
+            <div
+              key={step.id}
+              className="flex flex-col items-center gap-2 bg-background px-2"
+            >
               <motion.div
                 className={cn(
                   "flex items-center justify-center w-8 h-8 rounded-full border-2 transition-colors duration-300",
@@ -50,7 +53,7 @@ export function StepIndicator() {
                     ? "bg-primary border-primary text-primary-foreground"
                     : isCurrent
                       ? "border-primary text-primary bg-background"
-                      : "border-muted-foreground/30 text-muted-foreground bg-background"
+                      : "border-muted-foreground/30 text-muted-foreground bg-background",
                 )}
                 initial={false}
                 animate={{
@@ -66,7 +69,9 @@ export function StepIndicator() {
               <span
                 className={cn(
                   "text-xs font-medium absolute top-10 w-24 text-center transition-colors duration-300",
-                  isCurrent || isCompleted ? "text-foreground" : "text-muted-foreground"
+                  isCurrent || isCompleted
+                    ? "text-foreground"
+                    : "text-muted-foreground",
                 )}
               >
                 {step.label}

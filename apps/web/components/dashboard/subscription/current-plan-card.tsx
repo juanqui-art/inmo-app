@@ -1,11 +1,11 @@
 "use client";
 
-import { getNextTierUpgrade } from "@/lib/dashboard/subscription-helpers";
-import { getTierPricing } from "@/lib/pricing/tiers";
 import type { SubscriptionTier } from "@repo/database";
 import { Badge, Button, Card, CardContent, CardHeader } from "@repo/ui";
 import { Check, Crown, Sparkles, Star } from "lucide-react";
 import Link from "next/link";
+import { getNextTierUpgrade } from "@/lib/dashboard/subscription-helpers";
+import { getTierPricing } from "@/lib/pricing/tiers";
 
 interface CurrentPlanCardProps {
   tier: SubscriptionTier;
@@ -21,7 +21,8 @@ const tierIcons: Record<SubscriptionTier, React.ReactNode> = {
 const tierColors: Record<SubscriptionTier, string> = {
   FREE: "bg-oslo-gray-100 text-oslo-gray-700 dark:bg-oslo-gray-800 dark:text-oslo-gray-300",
   PLUS: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-  BUSINESS: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
+  BUSINESS:
+    "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
   PRO: "bg-gradient-to-r from-purple-500 to-pink-500 text-white",
 };
 
@@ -37,7 +38,9 @@ export function CurrentPlanCard({ tier }: CurrentPlanCardProps) {
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground">Plan Actual</p>
             <div className="flex items-center gap-3">
-              <Badge className={`${tierColors[tier]} flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold`}>
+              <Badge
+                className={`${tierColors[tier]} flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold`}
+              >
                 {tierIcons[tier]}
                 {pricing.displayName}
               </Badge>
@@ -55,7 +58,9 @@ export function CurrentPlanCard({ tier }: CurrentPlanCardProps) {
         <div className="space-y-1">
           <div className="flex items-baseline gap-2">
             <span className="text-4xl font-bold">${pricing.price}</span>
-            <span className="text-lg text-muted-foreground">/ {pricing.period}</span>
+            <span className="text-lg text-muted-foreground">
+              / {pricing.period}
+            </span>
           </div>
           {tier === "FREE" && (
             <p className="text-sm text-muted-foreground">
@@ -66,8 +71,7 @@ export function CurrentPlanCard({ tier }: CurrentPlanCardProps) {
             <p className="text-sm text-muted-foreground">
               {tier === "PRO"
                 ? "Todas las funcionalidades premium"
-                : "Acceso a funcionalidades avanzadas"
-              }
+                : "Acceso a funcionalidades avanzadas"}
             </p>
           )}
         </div>
@@ -89,7 +93,9 @@ export function CurrentPlanCard({ tier }: CurrentPlanCardProps) {
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold">${nextTierPricing.price}</p>
-                  <p className="text-xs text-muted-foreground">/{nextTierPricing.period}</p>
+                  <p className="text-xs text-muted-foreground">
+                    /{nextTierPricing.period}
+                  </p>
                 </div>
               </div>
 
@@ -110,7 +116,10 @@ export function CurrentPlanCard({ tier }: CurrentPlanCardProps) {
           <ul className="space-y-1.5 text-sm">
             <li className="flex items-center gap-2">
               <Check className="w-4 h-4 text-green-600" />
-              <span>{pricing.limits?.properties || 1} {pricing.limits?.properties === 1 ? 'propiedad' : 'propiedades'}</span>
+              <span>
+                {pricing.limits?.properties || 1}{" "}
+                {pricing.limits?.properties === 1 ? "propiedad" : "propiedades"}
+              </span>
             </li>
             <li className="flex items-center gap-2">
               <Check className="w-4 h-4 text-green-600" />
@@ -121,9 +130,8 @@ export function CurrentPlanCard({ tier }: CurrentPlanCardProps) {
                 <Check className="w-4 h-4 text-green-600" />
                 <span>
                   {pricing.limits?.featured === Infinity
-                    ? 'Destacados ilimitados'
-                    : `${pricing.limits?.featured} destacado${pricing.limits?.featured === 1 ? '' : 's'}`
-                  }
+                    ? "Destacados ilimitados"
+                    : `${pricing.limits?.featured} destacado${pricing.limits?.featured === 1 ? "" : "s"}`}
                 </span>
               </li>
             )}

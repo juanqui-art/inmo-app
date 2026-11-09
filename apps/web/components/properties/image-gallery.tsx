@@ -10,39 +10,39 @@
 "use client";
 
 import {
-    deletePropertyImageAction,
-    reorderPropertyImagesAction
-} from "@/app/actions/properties";
-import {
-    closestCenter,
-    DndContext,
-    type DragEndEvent,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import {
-    arrayMove,
-    rectSortingStrategy,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    useSortable,
+  arrayMove,
+  rectSortingStrategy,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { SubscriptionTier } from "@repo/database";
 import {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@repo/ui";
 import { GripVertical, Loader2, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import {
+  deletePropertyImageAction,
+  reorderPropertyImagesAction,
+} from "@/app/actions/properties";
 
 interface PropertyImage {
   id: string;
@@ -56,7 +56,7 @@ interface ImageGalleryProps {
   propertyId: string;
   onImageDeleted?: () => void;
   onImagesReordered?: () => void;
-  userTier: SubscriptionTier; 
+  userTier: SubscriptionTier;
 }
 
 // Skeleton loading component
@@ -327,12 +327,16 @@ export function ImageGallery({
         )}
       </div>
 
-      <Dialog open={!!imageToDelete} onOpenChange={(open) => !open && setImageToDelete(null)}>
+      <Dialog
+        open={!!imageToDelete}
+        onOpenChange={(open) => !open && setImageToDelete(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>¿Eliminar imagen?</DialogTitle>
             <DialogDescription>
-              Esta acción no se puede deshacer. La imagen se eliminará permanentemente de la propiedad.
+              Esta acción no se puede deshacer. La imagen se eliminará
+              permanentemente de la propiedad.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

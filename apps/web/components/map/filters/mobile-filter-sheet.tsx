@@ -17,12 +17,12 @@
  * - Scrollable content area
  */
 
-import { useMapStore } from "@/stores/map-store";
 import * as Dialog from "@radix-ui/react-dialog";
 import type { PropertyCategory, TransactionType } from "@repo/database";
 import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useState } from "react";
+import { useMapStore } from "@/stores/map-store";
 import { BathroomsFilterContent } from "./bathrooms-filter-content";
 import { BedroomsFilterContent } from "./bedrooms-filter-content";
 import { CategoryFilterContent } from "./category-filter-content";
@@ -110,7 +110,10 @@ export function MobileFilterSheet({
       const updated = current.includes(type)
         ? current.filter((t) => t !== type)
         : [...current, type];
-      setDraftFilter("transactionType", updated.length > 0 ? updated : undefined);
+      setDraftFilter(
+        "transactionType",
+        updated.length > 0 ? updated : undefined,
+      );
     },
     [currentTransactionType, setDraftFilter],
   );
@@ -208,8 +211,9 @@ export function MobileFilterSheet({
                       </Dialog.Title>
                       {activeFilterCount > 0 && (
                         <p className="text-xs text-oslo-gray-400 mt-0.5">
-                          {activeFilterCount} filtro{activeFilterCount !== 1 ? "s" : ""}{" "}
-                          activo{activeFilterCount !== 1 ? "s" : ""}
+                          {activeFilterCount} filtro
+                          {activeFilterCount !== 1 ? "s" : ""} activo
+                          {activeFilterCount !== 1 ? "s" : ""}
                         </p>
                       )}
                     </div>
@@ -234,13 +238,17 @@ export function MobileFilterSheet({
 
                     {/* Transaction Type */}
                     <TransactionTypeFilterContent
-                      selected={currentTransactionType as TransactionType[] | undefined}
+                      selected={
+                        currentTransactionType as TransactionType[] | undefined
+                      }
                       onToggle={handleTransactionTypeToggle}
                     />
 
                     {/* Category */}
                     <CategoryFilterContent
-                      selected={currentCategory as PropertyCategory[] | undefined}
+                      selected={
+                        currentCategory as PropertyCategory[] | undefined
+                      }
                       onToggle={handleCategoryToggle}
                     />
 

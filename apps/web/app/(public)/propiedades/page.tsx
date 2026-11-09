@@ -51,7 +51,7 @@ const MapPageClient = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 );
 
 const PropertySplitView = dynamic(
@@ -64,22 +64,25 @@ const PropertySplitView = dynamic(
       <div className="flex h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-blue-600 mx-auto" />
-          <p className="mt-4 text-sm text-gray-600">Cargando vista dividida...</p>
+          <p className="mt-4 text-sm text-gray-600">
+            Cargando vista dividida...
+          </p>
         </div>
       </div>
     ),
-  }
+  },
 );
+
+import {
+  getPropertiesList,
+  type PropertyFilters,
+  propertyRepository,
+} from "@repo/database";
+import type { Metadata } from "next";
 import { toMapProperties } from "@/lib/utils/property-mappers";
 import { parseBoundsParams, parseFilterParams } from "@/lib/utils/url-helpers";
 import AuthStoreInitializer from "@/stores/AuthStoreInitializer";
 import PropertyGridStoreInitializer from "@/stores/PropertyGridStoreInitializer";
-import {
-    getPropertiesList,
-    type PropertyFilters,
-    propertyRepository,
-} from "@repo/database";
-import type { Metadata } from "next";
 
 interface PropiedadesPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

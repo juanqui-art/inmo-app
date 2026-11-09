@@ -11,12 +11,12 @@
  */
 
 import {
+  Button,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-  Button,
 } from "@repo/ui";
 import { useState } from "react";
 import { AppointmentForm } from "./appointment-form";
@@ -68,7 +68,10 @@ export function AppointmentDialog({
   return (
     <>
       {/* Main Dialog */}
-      <Dialog open={isOpen && !showConfirmClose} onOpenChange={handleOpenChange}>
+      <Dialog
+        open={isOpen && !showConfirmClose}
+        onOpenChange={handleOpenChange}
+      >
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Agendar una visita</DialogTitle>
@@ -92,7 +95,8 @@ export function AppointmentDialog({
           <DialogHeader>
             <DialogTitle>¿Descartar cambios?</DialogTitle>
             <DialogDescription>
-              Tienes cambios sin guardar. ¿Estás seguro de que quieres cerrar sin agendar la cita?
+              Tienes cambios sin guardar. ¿Estás seguro de que quieres cerrar
+              sin agendar la cita?
             </DialogDescription>
           </DialogHeader>
 
@@ -103,10 +107,7 @@ export function AppointmentDialog({
             >
               Continuar editando
             </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmClose}
-            >
+            <Button variant="destructive" onClick={confirmClose}>
               Descartar cambios
             </Button>
           </div>

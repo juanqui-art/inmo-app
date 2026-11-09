@@ -10,19 +10,19 @@
 
 "use server";
 
+import { AppointmentRepository, PropertyRepository } from "@repo/database";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { validateAppointmentDateTime } from "@/lib/constants/availability";
 import { isCSRFError, validateCSRFToken } from "@/lib/csrf";
 import {
-    sendAppointmentCancelledEmail,
-    sendAppointmentConfirmedEmail,
-    sendAppointmentCreatedEmail,
+  sendAppointmentCancelledEmail,
+  sendAppointmentConfirmedEmail,
+  sendAppointmentCreatedEmail,
 } from "@/lib/email/appointment-emails";
 import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { logger } from "@/lib/utils/logger";
-import { AppointmentRepository, PropertyRepository } from "@repo/database";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
 
 // ==================== SCHEMAS ====================
 
@@ -107,7 +107,10 @@ export async function createAppointmentAction(formData: {
       await enforceRateLimit({ userId: user.id, tier: "appointment" });
     } catch (error) {
       if (isRateLimitError(error)) {
-        logger.warn({ userId: user.id, tier: "appointment" }, "[Appointment] Rate limit exceeded");
+        logger.warn(
+          { userId: user.id, tier: "appointment" },
+          "[Appointment] Rate limit exceeded",
+        );
         return { success: false, error: error.message };
       }
       throw error;
@@ -116,12 +119,15 @@ export async function createAppointmentAction(formData: {
     // 3. Verificar que usuario sea CLIENT (solo clientes pueden agendar citas)
     if (user.role !== "CLIENT") {
       // Logging de seguridad
-      logger.warn({
-        userId: user.id,
-        userRole: user.role,
-        requiredRole: "CLIENT",
-        layer: "server-action",
-      }, "[SECURITY] Role restriction - only CLIENT can book");
+      logger.warn(
+        {
+          userId: user.id,
+          userRole: user.role,
+          requiredRole: "CLIENT",
+          layer: "server-action",
+        },
+        "[SECURITY] Role restriction - only CLIENT can book",
+      );
       throw new Error("Only clients can book appointments");
     }
 
@@ -167,11 +173,14 @@ export async function createAppointmentAction(formData: {
           utmSource: validatedData.utmSource,
           utmMedium: validatedData.utmMedium,
           utmCampaign: validatedData.utmCampaign,
-        }
+        },
       );
     } catch (crmError) {
       // Don't fail appointment creation if CRM integration fails
-      logger.warn({ err: crmError }, "[createAppointmentAction] CRM integration failed");
+      logger.warn(
+        { err: crmError },
+        "[createAppointmentAction] CRM integration failed",
+      );
     }
 
     // 7. Enviar emails de notificación
@@ -188,10 +197,13 @@ export async function createAppointmentAction(formData: {
 
     // Log if email failed (but don't fail the appointment creation)
     if (!emailResult.success) {
-      logger.warn({
-        appointmentId: appointment.id,
-        error: emailResult.error,
-      }, "[createAppointmentAction] Email notification failed");
+      logger.warn(
+        {
+          appointmentId: appointment.id,
+          error: emailResult.error,
+        },
+        "[createAppointmentAction] Email notification failed",
+      );
     }
 
     // 8. Revalidar rutas
@@ -271,7 +283,7 @@ export async function updateAppointmentStatusAction(data: {
     } else {
       logger.warn(
         { appointmentId: data.id, status: data.status },
-        "updateAppointmentStatusAction called without CSRF token"
+        "updateAppointmentStatusAction called without CSRF token",
       );
     }
 
@@ -299,13 +311,16 @@ export async function updateAppointmentStatusAction(data: {
 
     if (!isAgent && !isClient) {
       // Logging de seguridad
-      logger.warn({
-        userId: user.id,
-        appointmentId: validatedData.id,
-        appointmentAgentId: appointment.agentId,
-        appointmentClientId: appointment.userId,
-        layer: "server-action",
-      }, "[SECURITY] Unauthorized appointment access attempt");
+      logger.warn(
+        {
+          userId: user.id,
+          appointmentId: validatedData.id,
+          appointmentAgentId: appointment.agentId,
+          appointmentClientId: appointment.userId,
+          layer: "server-action",
+        },
+        "[SECURITY] Unauthorized appointment access attempt",
+      );
       throw new Error("You are not authorized to manage this appointment");
     }
 
@@ -361,11 +376,14 @@ export async function updateAppointmentStatusAction(data: {
 
     // Log if email failed (but don't fail the status update)
     if (!emailResult.success) {
-      logger.warn({
-        appointmentId: validatedData.id,
-        status: validatedData.status,
-        error: emailResult.error,
-      }, "[updateAppointmentStatusAction] Email notification failed");
+      logger.warn(
+        {
+          appointmentId: validatedData.id,
+          status: validatedData.status,
+          error: emailResult.error,
+        },
+        "[updateAppointmentStatusAction] Email notification failed",
+      );
     }
 
     // 8. Revalidar rutas
@@ -487,12 +505,15 @@ export async function getAgentAppointmentsAction(filters?: {
     // 2. Verificar que sea agente (solo AGENT/ADMIN pueden ver sus citas)
     if (user.role !== "AGENT" && user.role !== "ADMIN") {
       // Logging de seguridad
-      logger.warn({
-        userId: user.id,
-        userRole: user.role,
-        requiredRoles: ["AGENT", "ADMIN"],
-        layer: "server-action",
-      }, "[SECURITY] Role restriction - only AGENT/ADMIN");
+      logger.warn(
+        {
+          userId: user.id,
+          userRole: user.role,
+          requiredRoles: ["AGENT", "ADMIN"],
+          layer: "server-action",
+        },
+        "[SECURITY] Role restriction - only AGENT/ADMIN",
+      );
       throw new Error("Only agents can view their appointments");
     }
 

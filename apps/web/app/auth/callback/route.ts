@@ -20,9 +20,9 @@
  * UPDATED: Dec 2025 - Migrated from 3-tier (FREE/BASIC/PRO) to 4-tier (FREE/PLUS/AGENT/PRO)
  */
 
-import { createClient } from "@/lib/supabase/server";
 import { userRepository } from "@repo/database";
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -70,9 +70,13 @@ export async function GET(request: Request) {
       ) {
         // Upgrade to AGENT
         const newRole = "AGENT";
-        
+
         // 1. Update DB
-        await userRepository.update(existingUser.id, { role: newRole }, existingUser.id);
+        await userRepository.update(
+          existingUser.id,
+          { role: newRole },
+          existingUser.id,
+        );
         userRole = newRole; // Update local for redirect logic
 
         // 2. Update Supabase Metadata
@@ -84,11 +88,11 @@ export async function GET(request: Request) {
           },
         });
 
-        console.log("[AUTH CALLBACK] Upgraded user role", { 
-          userId: existingUser.id, 
-          oldRole: "CLIENT", 
-          newRole, 
-          plan 
+        console.log("[AUTH CALLBACK] Upgraded user role", {
+          userId: existingUser.id,
+          oldRole: "CLIENT",
+          newRole,
+          plan,
         });
       }
 
@@ -100,21 +104,22 @@ export async function GET(request: Request) {
       switch (userRole) {
         case "ADMIN":
           return NextResponse.redirect(`${origin}/admin`);
-        case "AGENT":
+        case "AGENT": {
           // AGENT con plan pago → dashboard con modal de upgrade
           const paidPlans = ["plus", "agent", "pro"];
           if (plan && paidPlans.includes(plan.toLowerCase())) {
             return NextResponse.redirect(
-              `${origin}/dashboard?upgrade=${plan.toLowerCase()}&authSuccess=true`
+              `${origin}/dashboard?upgrade=${plan.toLowerCase()}&authSuccess=true`,
             );
           }
           // AGENT con plan FREE → directo a crear propiedad (si venía de /vender)
           if (plan) {
-             return NextResponse.redirect(
-              `${origin}/dashboard/propiedades/nueva?authSuccess=true`
+            return NextResponse.redirect(
+              `${origin}/dashboard/propiedades/nueva?authSuccess=true`,
             );
           }
           return NextResponse.redirect(`${origin}/dashboard`);
+        }
         case "CLIENT":
         default:
           return NextResponse.redirect(`${origin}/perfil`);
@@ -135,7 +140,8 @@ export async function GET(request: Request) {
     // Fixes race condition: Redirecting before DB user exists
     let dbUser = null;
     let retries = 0;
-    while (retries < 6) { // 6 * 500ms = 3 seconds max
+    while (retries < 6) {
+      // 6 * 500ms = 3 seconds max
       dbUser = await userRepository.findById(data.user.id);
       if (dbUser) break;
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -148,12 +154,12 @@ export async function GET(request: Request) {
       const paidPlansForNew = ["plus", "agent", "pro"];
       if (plan && paidPlansForNew.includes(plan.toLowerCase())) {
         return NextResponse.redirect(
-          `${origin}/dashboard?upgrade=${plan.toLowerCase()}&authSuccess=true`
+          `${origin}/dashboard?upgrade=${plan.toLowerCase()}&authSuccess=true`,
         );
       }
       // AGENT con plan FREE → directo a crear propiedad
       return NextResponse.redirect(
-        `${origin}/dashboard/propiedades/nueva?authSuccess=true`
+        `${origin}/dashboard/propiedades/nueva?authSuccess=true`,
       );
     }
 

@@ -7,16 +7,15 @@
  * - Solo accesible para AGENT y ADMIN
  */
 
+import { db } from "@repo/database";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { UserMenu } from "@/components/dashboard/user-menu";
 import { ResponsiveToaster } from "@/components/ui/responsive-toaster";
 import { requireRole } from "@/lib/auth";
-
 import {
-    getImageLimit,
-    getPropertyLimit,
+  getImageLimit,
+  getPropertyLimit,
 } from "@/lib/permissions/property-limits";
-import { db } from "@repo/database";
 
 export default async function DashboardLayout({
   children,

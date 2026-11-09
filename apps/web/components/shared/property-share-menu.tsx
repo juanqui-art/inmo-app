@@ -84,7 +84,7 @@ export function PropertyShareMenu({
   // Helper to generate URL with UTM parameters
   const getUtmUrl = (source: string) => {
     if (!baseUrl) return "";
-    
+
     try {
       const url = new URL(baseUrl);
       // Don't overwrite existing UTMs if customUrl already has them
@@ -259,7 +259,10 @@ export function PropertyShareMenu({
       } catch (error) {
         // User cancelled or share failed -> Do NOT fallback to custom menu
         // Just log it for debugging purposes
-        if ((error as Error).name !== "AbortError" && (error as Error).name !== "InvalidStateError") {
+        if (
+          (error as Error).name !== "AbortError" &&
+          (error as Error).name !== "InvalidStateError"
+        ) {
           console.error("Native share failed:", error);
         }
       } finally {
@@ -288,7 +291,7 @@ export function PropertyShareMenu({
         onClick={handleMainShare}
         className={cn(
           "rounded-full bg-white/30 backdrop-blur-md border border-white/40 flex items-center justify-center transition-all hover:scale-110 active:scale-95 hover:bg-white/50 shadow-md",
-          buttonClassName
+          buttonClassName,
         )}
         aria-label="Share property"
         aria-expanded={isOpen}

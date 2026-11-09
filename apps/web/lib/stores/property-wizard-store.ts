@@ -8,7 +8,7 @@ export type PropertyFormData = {
   price: number;
   transactionType: "SALE" | "RENT";
   category: string;
-  
+
   // Step 2: Location
   address: string;
   city: string;
@@ -45,7 +45,11 @@ interface WizardState {
     maxVideos: number;
     tierName: string;
   };
-  setLimits: (limits: { maxImages?: number; maxVideos?: number; tierName?: string }) => void;
+  setLimits: (limits: {
+    maxImages?: number;
+    maxVideos?: number;
+    tierName?: string;
+  }) => void;
 }
 
 const initialFormData: PropertyFormData = {
@@ -80,14 +84,17 @@ export const usePropertyWizardStore = create<WizardState>()(
         maxVideos: 0, // Default: no videos for free tier
         tierName: "Free", // Default tier name
       },
-      setLimits: (limits) => set((state) => ({ limits: { ...state.limits, ...limits } })),
+      setLimits: (limits) =>
+        set((state) => ({ limits: { ...state.limits, ...limits } })),
       setStep: (step) => set({ currentStep: step }),
-      nextStep: () => set((state) => ({ 
-        currentStep: Math.min(state.currentStep + 1, state.totalSteps) 
-      })),
-      prevStep: () => set((state) => ({ 
-        currentStep: Math.max(state.currentStep - 1, 1) 
-      })),
+      nextStep: () =>
+        set((state) => ({
+          currentStep: Math.min(state.currentStep + 1, state.totalSteps),
+        })),
+      prevStep: () =>
+        set((state) => ({
+          currentStep: Math.max(state.currentStep - 1, 1),
+        })),
       updateFormData: (data) =>
         set((state) => ({
           formData: { ...state.formData, ...data },
@@ -104,11 +111,11 @@ export const usePropertyWizardStore = create<WizardState>()(
       partialize: (state) => ({
         currentStep: state.currentStep,
         formData: {
-            ...state.formData,
-            images: [] // Don't persist File objects
+          ...state.formData,
+          images: [], // Don't persist File objects
         },
         limits: state.limits, // Persist limits so they survive reload if not re-initialized immediately
       }),
-    }
-  )
+    },
+  ),
 );

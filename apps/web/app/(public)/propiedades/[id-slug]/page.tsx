@@ -15,6 +15,9 @@
  * - Responsive sticky sidebar with floating CTA card
  */
 
+import { PropertyRepository } from "@repo/database";
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
 import { checkIfFavoriteAction } from "@/app/actions/favorites";
 import { MortgageCalculator } from "@/components/property-detail/mortgage-calculator";
 import { PropertyDescriptionCard } from "@/components/property-detail/property-description-card";
@@ -25,9 +28,6 @@ import { PropertyStatsCard } from "@/components/property-detail/property-stats-c
 import { PropertyVideoPlayer } from "@/components/property-detail/property-video-player";
 import { getCurrentUser } from "@/lib/auth";
 import { generateSlug, parseIdSlugParam } from "@/lib/utils/slug-generator";
-import { PropertyRepository } from "@repo/database";
-import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
 
 /**
  * ISR Configuration
@@ -81,24 +81,33 @@ export async function generateMetadata(
     property.bedrooms ? `${property.bedrooms} hab` : null,
     property.bathrooms ? `${property.bathrooms} baños` : null,
     property.area ? `${property.area}m²` : null,
-  ].filter(Boolean).join(" • ");
+  ]
+    .filter(Boolean)
+    .join(" • ");
 
   // Build description for social sharing
-  const description = property.description 
-    ? property.description.slice(0, 160) 
+  const description = property.description
+    ? property.description.slice(0, 160)
     : `${property.title} - ${formattedPrice}${details ? ` • ${details}` : ""}`;
 
   // Get first image for social preview
   const ogImage = property.images?.[0]?.url;
-  
+
   // Build canonical URL
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://vant.ec";
-  const canonicalUrl = `${baseUrl}/propiedades/${id}-${property.title ? property.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "") : "propiedad"}`;
+  const canonicalUrl = `${baseUrl}/propiedades/${id}-${
+    property.title
+      ? property.title
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^\w-]/g, "")
+      : "propiedad"
+  }`;
 
   return {
     title: `${property.title} | ${formattedPrice}`,
     description,
-    
+
     // Open Graph (Facebook, LinkedIn, WhatsApp)
     openGraph: {
       title: `${property.title} - ${formattedPrice}`,
@@ -118,7 +127,7 @@ export async function generateMetadata(
         ],
       }),
     },
-    
+
     // Twitter Card
     twitter: {
       card: ogImage ? "summary_large_image" : "summary",
@@ -214,7 +223,19 @@ export default async function PropertyDetailPage(
           </h1>
           <p className="text-lg text-oslo-gray-600 dark:text-oslo-gray-300 flex items-center gap-2">
             <span className="text-primary">
-               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-5 h-5"
+              >
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
             </span>
             {property.address}
             {property.city && `, ${property.city}`}

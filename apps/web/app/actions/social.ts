@@ -104,7 +104,7 @@ export async function trackPropertyShare(
   } catch (error) {
     logger.error(
       { err: error, propertyId, platform },
-      "[Social] Failed to track share"
+      "[Social] Failed to track share",
     );
     // Don't throw - tracking failure shouldn't break sharing
     return { success: false };
@@ -148,10 +148,7 @@ export async function trackPropertyView(
 
     return { success: true };
   } catch (error) {
-    logger.error(
-      { err: error, propertyId },
-      "[Social] Failed to track view"
-    );
+    logger.error({ err: error, propertyId }, "[Social] Failed to track view");
     return { success: false };
   }
 }
@@ -178,7 +175,7 @@ export async function getPropertyShareCount(
   } catch (error) {
     logger.error(
       { err: error, propertyId },
-      "[Social] Failed to get share count"
+      "[Social] Failed to get share count",
     );
     return 0;
   }
@@ -201,7 +198,7 @@ export async function getPropertyViewCount(
   } catch (error) {
     logger.error(
       { err: error, propertyId },
-      "[Social] Failed to get view count"
+      "[Social] Failed to get view count",
     );
     return 0;
   }
@@ -253,7 +250,7 @@ export async function getPropertySocialStats(propertyId: string): Promise<{
   } catch (error) {
     logger.error(
       { err: error, propertyId },
-      "[Social] Failed to get social stats"
+      "[Social] Failed to get social stats",
     );
     return {
       totalShares: 0,
@@ -321,7 +318,7 @@ export async function getTrendingProperties(limit = 10) {
   } catch (error) {
     logger.error(
       { err: error, limit },
-      "[Social] Failed to get trending properties"
+      "[Social] Failed to get trending properties",
     );
     return [];
   }
@@ -345,9 +342,7 @@ function hashIP(ip: string): string {
 /**
  * First IP in x-forwarded-for is the client; the rest are proxies.
  */
-function getClientIP(
-  headersList: Awaited<ReturnType<typeof headers>>,
-): string {
+function getClientIP(headersList: Awaited<ReturnType<typeof headers>>): string {
   const forwarded = headersList.get("x-forwarded-for");
   return forwarded?.split(",")[0]?.trim() || "unknown";
 }

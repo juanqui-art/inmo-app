@@ -10,14 +10,14 @@
  * - Toggle mensual/anual (futuro)
  */
 
-import { FAQAccordion } from "@/components/faq/faq-accordion";
-import { PricingCard } from "@/components/pricing/pricing-card";
-import { getTierRank, pricingTiers } from "@/lib/pricing/tiers";
-import { createClient } from "@/lib/supabase/server";
 import { ArrowLeft, Check, CheckCircle, HelpCircle, Minus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Fragment } from "react";
+import { FAQAccordion } from "@/components/faq/faq-accordion";
+import { PricingCard } from "@/components/pricing/pricing-card";
+import { getTierRank, pricingTiers } from "@/lib/pricing/tiers";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Planes y Precios | InmoApp",
@@ -56,14 +56,24 @@ const comparisonFeatures = [
     features: [
       { name: "Dashboard Profesional", FREE: true, PLUS: true, AGENT: true },
       { name: "Métricas de Visibilidad", FREE: false, PLUS: true, AGENT: true },
-      { name: "Generador de descripción IA", FREE: false, PLUS: false, AGENT: true },
+      {
+        name: "Generador de descripción IA",
+        FREE: false,
+        PLUS: false,
+        AGENT: true,
+      },
       { name: "Gestión de Clientes", FREE: false, PLUS: false, AGENT: true },
     ],
   },
   {
     category: "Soporte",
     features: [
-      { name: "Nivel de Soporte", FREE: "Digital (72h)", PLUS: "Digital (48h)", AGENT: "Prioritario (24h)" },
+      {
+        name: "Nivel de Soporte",
+        FREE: "Digital (72h)",
+        PLUS: "Digital (48h)",
+        AGENT: "Prioritario (24h)",
+      },
     ],
   },
 ];
@@ -406,7 +416,9 @@ function FeatureValue({
     return (
       <Check
         className={`w-5 h-5 mx-auto ${
-          highlighted ? "text-indigo-600 dark:text-indigo-400" : "text-emerald-500"
+          highlighted
+            ? "text-indigo-600 dark:text-indigo-400"
+            : "text-emerald-500"
         }`}
       />
     );

@@ -1,8 +1,8 @@
+import { db, propertyRepository } from "@repo/database";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { AgentListingsGrid } from "@/components/agent-profile/agent-listings-grid";
 import { AgentProfileHeader } from "@/components/agent-profile/agent-profile-header";
-import { db, propertyRepository } from "@repo/database";
-import { type Metadata } from "next";
-import { notFound } from "next/navigation";
 
 interface AgentProfilePageProps {
   params: Promise<{
@@ -11,7 +11,7 @@ interface AgentProfilePageProps {
 }
 
 export async function generateMetadata(
-  props: AgentProfilePageProps
+  props: AgentProfilePageProps,
 ): Promise<Metadata> {
   const params = await props.params;
   const agent = await db.user.findUnique({
@@ -33,7 +33,7 @@ export async function generateMetadata(
 
 export default async function AgentProfilePage(props: AgentProfilePageProps) {
   const params = await props.params;
-  
+
   // 1. Fetch Agent
   const agent = await db.user.findUnique({
     where: { id: params.id },
@@ -79,7 +79,7 @@ export default async function AgentProfilePage(props: AgentProfilePageProps) {
   return (
     <div className="min-h-screen bg-oslo-gray-50/50 dark:bg-oslo-gray-950/50">
       <AgentProfileHeader agent={agent} />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AgentListingsGrid properties={properties} />
       </div>

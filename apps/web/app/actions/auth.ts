@@ -16,13 +16,13 @@
 
 "use server";
 
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { enforceRateLimit, isRateLimitError } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/utils/logger";
 import { getSafeRedirectPath } from "@/lib/utils/safe-redirect";
 import { loginSchema, signupSchema } from "@/lib/validations/auth";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 /**
  * SIGNUP ACTION - Registrar nuevo usuario
@@ -72,7 +72,8 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
   // - Si viene con plan (desde /vender) → AGENT (puede publicar propiedades)
   // - Si viene sin plan (signup normal) → CLIENT (solo navegar, favoritos, citas)
   const validPlans = ["FREE", "PLUS", "AGENT", "PRO"];
-  const hasPlan = rawData.plan && validPlans.includes(rawData.plan.toUpperCase());
+  const hasPlan =
+    rawData.plan && validPlans.includes(rawData.plan.toUpperCase());
   const role = hasPlan ? "AGENT" : "CLIENT";
 
   // 4. Crear cliente de Supabase
@@ -106,7 +107,10 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
     };
   }
 
-  logger.info({ userId: data.user.id, role, plan: rawData.plan }, "[AUTH] User registered");
+  logger.info(
+    { userId: data.user.id, role, plan: rawData.plan },
+    "[AUTH] User registered",
+  );
 
   // 6. Revalidar
   revalidatePath("/", "layout");
@@ -117,11 +121,12 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
   const { userRepository } = await import("@repo/database");
   let retries = 0;
   let dbUser = null;
-  
-  while (retries < 6) { // 3 seconds max (6 * 500ms)
+
+  while (retries < 6) {
+    // 3 seconds max (6 * 500ms)
     dbUser = await userRepository.findById(data.user.id);
     if (dbUser) break;
-    
+
     await new Promise((resolve) => setTimeout(resolve, 500));
     retries++;
   }

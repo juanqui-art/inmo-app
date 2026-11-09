@@ -1,30 +1,32 @@
 "use client";
 
-import { AIDescriptionButton } from "@/components/property-wizard/ai-description-button";
-import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-    Input,
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-    Textarea,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
 } from "@repo/ui";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { AIDescriptionButton } from "@/components/property-wizard/ai-description-button";
+import { usePropertyWizardStore } from "@/lib/stores/property-wizard-store";
 
 const step1Schema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres"),
-  description: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
+  description: z
+    .string()
+    .min(10, "La descripción debe tener al menos 10 caracteres"),
   price: z.coerce.number().min(1, "El precio es requerido"),
   transactionType: z.enum(["SALE", "RENT"]),
   category: z.string().min(1, "Selecciona una categoría"),
@@ -33,8 +35,9 @@ const step1Schema = z.object({
 type Step1Values = z.infer<typeof step1Schema>;
 
 export function Step1() {
-  const { formData, updateFormData, setStep, limits } = usePropertyWizardStore();
-  
+  const { formData, updateFormData, setStep, limits } =
+    usePropertyWizardStore();
+
   // Check if tier allows AI description (AGENT or PRO)
   const canUseAI = limits.tierName === "Agente" || limits.tierName === "Pro";
 
@@ -67,7 +70,11 @@ export function Step1() {
 
   return (
     <Form {...form}>
-      <form id="wizard-step-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        id="wizard-step-form"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
         <div className="grid gap-6 md:grid-cols-2">
           {/* Title */}
           <FormField
@@ -77,11 +84,18 @@ export function Step1() {
               <FormItem className="col-span-2">
                 <FormLabel>Título de la Propiedad</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ej: Casa moderna en el centro" {...field} />
+                  <Input
+                    placeholder="Ej: Casa moderna en el centro"
+                    {...field}
+                  />
                 </FormControl>
                 <div className="flex justify-between items-center text-xs">
                   <FormMessage />
-                  {!form.formState.errors.title && <span className="text-muted-foreground">Mínimo 5 caracteres</span>}
+                  {!form.formState.errors.title && (
+                    <span className="text-muted-foreground">
+                      Mínimo 5 caracteres
+                    </span>
+                  )}
                 </div>
               </FormItem>
             )}
@@ -95,10 +109,10 @@ export function Step1() {
               <FormItem>
                 <FormLabel>Precio</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="0.00" 
-                    {...field} 
+                  <Input
+                    type="number"
+                    placeholder="0.00"
+                    {...field}
                     onChange={(e) => field.onChange(e.target.valueAsNumber)}
                     value={field.value || ""}
                   />
@@ -115,7 +129,10 @@ export function Step1() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Tipo de Transacción</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona el tipo" />
@@ -138,7 +155,10 @@ export function Step1() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Categoría</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona una categoría" />
@@ -188,7 +208,13 @@ export function Step1() {
                 </FormControl>
                 <div className="flex justify-between items-center text-xs">
                   <FormMessage />
-                  <span className={field.value?.length >= 10 ? "text-green-500" : "text-muted-foreground"}>
+                  <span
+                    className={
+                      field.value?.length >= 10
+                        ? "text-green-500"
+                        : "text-muted-foreground"
+                    }
+                  >
                     {field.value?.length || 0} / 10 caracteres
                   </span>
                 </div>

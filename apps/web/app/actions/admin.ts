@@ -18,7 +18,7 @@ import type {
 import { db, propertyRepository, userRepository } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
-import { validateCSRFToken, isCSRFError } from "@/lib/csrf";
+import { isCSRFError, validateCSRFToken } from "@/lib/csrf";
 import { logger } from "@/lib/utils/logger";
 
 // ==================== TYPES ====================
@@ -170,7 +170,7 @@ export async function getUserByIdAction(
 export async function updateUserRoleAction(
   userId: string,
   newRole: UserRole,
-  csrfToken?: string | null
+  csrfToken?: string | null,
 ): Promise<{ success: boolean; error?: string }> {
   const admin = await requireRole(["ADMIN"]);
 
@@ -187,7 +187,7 @@ export async function updateUserRoleAction(
   } else {
     logger.warn(
       { userId, adminId: admin.id },
-      "updateUserRoleAction called without CSRF token"
+      "updateUserRoleAction called without CSRF token",
     );
   }
 
@@ -236,7 +236,7 @@ export async function updateUserTierAction(
   } catch (error) {
     logger.error(
       { err: error, userId, newTier, adminId: admin.id },
-      "[Admin] Error updating user tier"
+      "[Admin] Error updating user tier",
     );
     return {
       success: false,
@@ -255,7 +255,7 @@ export async function updateUserTierAction(
  */
 export async function deleteUserAction(
   userId: string,
-  csrfToken?: string | null
+  csrfToken?: string | null,
 ): Promise<{ success: boolean; error?: string }> {
   const admin = await requireRole(["ADMIN"]);
 
@@ -272,7 +272,7 @@ export async function deleteUserAction(
   } else {
     logger.warn(
       { userId, adminId: admin.id },
-      "deleteUserAction called without CSRF token"
+      "deleteUserAction called without CSRF token",
     );
   }
 
@@ -290,7 +290,7 @@ export async function deleteUserAction(
   } catch (error) {
     logger.error(
       { err: error, userId, adminId: admin.id },
-      "[Admin] Error deleting user"
+      "[Admin] Error deleting user",
     );
     return {
       success: false,
@@ -396,7 +396,7 @@ export async function updatePropertyStatusAction(
   } catch (error) {
     logger.error(
       { err: error, propertyId, newStatus, adminId: admin.id },
-      "[Admin] Error updating property status"
+      "[Admin] Error updating property status",
     );
     return {
       success: false,
@@ -424,7 +424,7 @@ export async function deletePropertyAction(
   } catch (error) {
     logger.error(
       { err: error, propertyId, adminId: admin.id },
-      "[Admin] Error deleting property"
+      "[Admin] Error deleting property",
     );
     return {
       success: false,

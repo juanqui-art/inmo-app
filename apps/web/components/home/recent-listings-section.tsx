@@ -53,12 +53,12 @@
 
 "use client";
 
-import { PropertyCard } from "@/components/properties/property-card";
-import { useFavorites } from "@/hooks/use-favorites";
 import type { SerializedProperty } from "@repo/database";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { PropertyCard } from "@/components/properties/property-card";
+import { useFavorites } from "@/hooks/use-favorites";
 import { ViewMoreCard } from "./view-more-card";
 
 interface RecentListingsSectionProps {
@@ -169,7 +169,7 @@ export function RecentListingsSection({
         <div className="relative">
           {/* Fade edge gradient - indicates more content */}
           <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-oslo-gray-900/60 via-oslo-gray-900/30 to-transparent pointer-events-none z-10 sm:hidden" />
-          
+
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex gap-4 -ml-4 isolate">
               {displayedProperties.map((property, index) => (

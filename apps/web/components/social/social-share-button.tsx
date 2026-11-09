@@ -41,26 +41,26 @@
 
 "use client";
 
-// No external Button component needed
-import { trackPropertyShare } from "@/app/actions/social";
-import {
-    canUseNativeShare,
-    formatPropertyShareData,
-    type SharePlatform as SharePlatformType,
-    shareProperty,
-    shareViaSystem,
-} from "@/lib/social/share-utils";
 import type { Property } from "@prisma/client";
 import { SocialIcon } from "@repo/ui";
 import {
-    Check,
-    Link as LinkIcon,
-    Mail,
-    MessageCircle,
-    Share2,
+  Check,
+  Link as LinkIcon,
+  Mail,
+  MessageCircle,
+  Share2,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+// No external Button component needed
+import { trackPropertyShare } from "@/app/actions/social";
+import {
+  canUseNativeShare,
+  formatPropertyShareData,
+  type SharePlatform as SharePlatformType,
+  shareProperty,
+  shareViaSystem,
+} from "@/lib/social/share-utils";
 
 interface SocialShareButtonProps {
   property: Property & { images?: { url: string }[] };

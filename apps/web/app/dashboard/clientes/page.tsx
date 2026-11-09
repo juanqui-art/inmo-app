@@ -1,39 +1,43 @@
 /**
  * CLIENTS PAGE - CRM Lite
- * 
+ *
  * Manages agent's clients with:
  * - Lead status tracking (NEW → CLOSED)
  * - Notes per client
  * - Property interest
- * 
+ *
  * Available for AGENT tier and above.
  */
 
-import { ClientActions } from "@/components/crm/client-actions";
-import { ClientStatusBadge } from "@/components/crm/client-status-badge";
-import { requireRole } from "@/lib/auth";
 import { db } from "@repo/database/src/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import {
-    CheckCircle2,
-    Clock,
-    Mail,
-    MessageSquare,
-    Phone,
-    Sparkles,
-    Target,
-    Users,
-    XCircle
+  CheckCircle2,
+  Clock,
+  Mail,
+  MessageSquare,
+  Phone,
+  Sparkles,
+  Target,
+  Users,
+  XCircle,
 } from "lucide-react";
+import { ClientActions } from "@/components/crm/client-actions";
+import { ClientStatusBadge } from "@/components/crm/client-status-badge";
+import { requireRole } from "@/lib/auth";
 
 // Status configuration for display
 const STATUS_CONFIG = {
   NEW: { label: "Nuevo", icon: Sparkles, color: "bg-blue-500" },
   CONTACTED: { label: "Contactado", icon: Phone, color: "bg-yellow-500" },
   INTERESTED: { label: "Interesado", icon: Target, color: "bg-purple-500" },
-  NEGOTIATING: { label: "Negociando", icon: MessageSquare, color: "bg-orange-500" },
+  NEGOTIATING: {
+    label: "Negociando",
+    icon: MessageSquare,
+    color: "bg-orange-500",
+  },
   CLOSED_WON: { label: "Cerrado", icon: CheckCircle2, color: "bg-green-500" },
   CLOSED_LOST: { label: "Perdido", icon: XCircle, color: "bg-red-500" },
 } as const;
@@ -69,10 +73,13 @@ export default async function ClientsPage() {
   });
 
   // Count by status for stats
-  const statusCounts = agentClients.reduce((acc, client) => {
-    acc[client.status] = (acc[client.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const statusCounts = agentClients.reduce(
+    (acc, client) => {
+      acc[client.status] = (acc[client.status] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   return (
     <div className="space-y-6">
@@ -99,7 +106,9 @@ export default async function ClientsPage() {
             >
               <div className="flex items-center gap-2">
                 <div className={`p-1.5 rounded-md ${config.color}/10`}>
-                  <Icon className={`h-4 w-4 text-${config.color.replace('bg-', '')}`} />
+                  <Icon
+                    className={`h-4 w-4 text-${config.color.replace("bg-", "")}`}
+                  />
                 </div>
                 <span className="text-xs font-medium text-muted-foreground">
                   {config.label}
@@ -120,7 +129,8 @@ export default async function ClientsPage() {
             </div>
             <h3 className="text-lg font-semibold">Aún no tienes clientes</h3>
             <p className="text-sm text-muted-foreground max-w-sm mt-2">
-              Los clientes se agregarán automáticamente cuando agenden citas o puedes agregarlos manualmente.
+              Los clientes se agregarán automáticamente cuando agenden citas o
+              puedes agregarlos manualmente.
             </p>
           </div>
         ) : (
@@ -160,7 +170,9 @@ export default async function ClientsPage() {
                         <Avatar className="h-10 w-10">
                           <AvatarImage src={agentClient.client.avatar || ""} />
                           <AvatarFallback>
-                            {agentClient.client.name?.substring(0, 2).toUpperCase() || "CL"}
+                            {agentClient.client.name
+                              ?.substring(0, 2)
+                              .toUpperCase() || "CL"}
                           </AvatarFallback>
                         </Avatar>
                         <div>
@@ -225,7 +237,7 @@ export default async function ClientsPage() {
 
                     {/* Actions */}
                     <td className="p-4 text-right">
-                      <ClientActions 
+                      <ClientActions
                         clientId={agentClient.id}
                         currentStatus={agentClient.status}
                         currentNotes={agentClient.notes || ""}

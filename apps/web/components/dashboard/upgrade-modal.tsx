@@ -1,13 +1,13 @@
 "use client";
 
-import { createSubscriptionCheckout } from "@/app/actions/subscription";
-import { PricingCard } from "@/components/pricing/pricing-card";
-import { getTierByName } from "@/lib/pricing/tiers";
-import type { SubscriptionTier } from "@/lib/payments/lemonsqueezy";
 import { Button } from "@repo/ui";
 import { X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { createSubscriptionCheckout } from "@/app/actions/subscription";
+import { PricingCard } from "@/components/pricing/pricing-card";
+import type { SubscriptionTier } from "@/lib/payments/lemonsqueezy";
+import { getTierByName } from "@/lib/pricing/tiers";
 
 export function UpgradeModal() {
   const searchParams = useSearchParams();
@@ -43,7 +43,10 @@ export function UpgradeModal() {
   };
 
   return (
-    <div data-testid="upgrade-modal" className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div
+      data-testid="upgrade-modal"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+    >
       <div className="relative w-full max-w-4xl bg-white dark:bg-oslo-gray-900 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
         <button
           onClick={handleClose}
@@ -57,30 +60,48 @@ export function UpgradeModal() {
           <div className="p-8 md:p-12 bg-gray-50 dark:bg-oslo-gray-950 flex flex-col justify-center">
             <h2 className="text-3xl font-bold mb-4">Confirma tu plan</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-8">
-              Estás a un paso de potenciar tu negocio inmobiliario con las mejores herramientas del mercado.
+              Estás a un paso de potenciar tu negocio inmobiliario con las
+              mejores herramientas del mercado.
             </p>
-            
+
             <div className="scale-90 origin-top-left">
-               <PricingCard tier={{...tier, ctaText: "Plan Seleccionado", ctaUrl: "#", highlighted: false}} />
+              <PricingCard
+                tier={{
+                  ...tier,
+                  ctaText: "Plan Seleccionado",
+                  ctaUrl: "#",
+                  highlighted: false,
+                }}
+              />
             </div>
           </div>
 
           {/* Right: Payment Summary (Mock) */}
           <div className="p-8 md:p-12 flex flex-col justify-center">
             <h3 className="text-xl font-bold mb-6">Resumen del pedido</h3>
-            
+
             <div className="space-y-4 mb-8">
               <div className="flex justify-between py-3 border-b border-gray-100 dark:border-gray-800">
-                <span className="text-gray-600 dark:text-gray-400">Plan {tier.displayName}</span>
-                <span className="font-semibold">{tier.currency}{tier.price} / mes</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Plan {tier.displayName}
+                </span>
+                <span className="font-semibold">
+                  {tier.currency}
+                  {tier.price} / mes
+                </span>
               </div>
               <div className="flex justify-between py-3 border-b border-gray-100 dark:border-gray-800">
-                <span className="text-gray-600 dark:text-gray-400">Impuestos</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Impuestos
+                </span>
                 <span className="font-semibold">$0.00</span>
               </div>
               <div className="flex justify-between py-4 text-lg font-bold">
                 <span>Total a pagar hoy</span>
-                <span>{tier.currency}{tier.price}</span>
+                <span>
+                  {tier.currency}
+                  {tier.price}
+                </span>
               </div>
             </div>
 
@@ -128,7 +149,7 @@ export function UpgradeModal() {
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Nombre en la tarjeta
@@ -143,11 +164,22 @@ export function UpgradeModal() {
             </div>
 
             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-8 text-sm text-blue-700 dark:text-blue-300 flex gap-2">
-              <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 flex-shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <p>
-                <strong>Modo Simulado:</strong> Puedes usar cualquier dato ficticio. No se realizará ningún cargo real.
+                <strong>Modo Simulado:</strong> Puedes usar cualquier dato
+                ficticio. No se realizará ningún cargo real.
               </p>
             </div>
 
@@ -159,9 +191,10 @@ export function UpgradeModal() {
             >
               {isPending ? "Procesando..." : "Confirmar y Suscribirse"}
             </Button>
-            
+
             <p className="text-center text-xs text-gray-500 mt-4">
-              Al confirmar, aceptas nuestros términos y condiciones. Puedes cancelar en cualquier momento.
+              Al confirmar, aceptas nuestros términos y condiciones. Puedes
+              cancelar en cualquier momento.
             </p>
           </div>
         </div>
