@@ -285,7 +285,7 @@ export default async function VenderPage() {
             items={[
               {
                 question: "¿Qué incluye el plan gratuito?",
-                answer: "El plan gratuito incluye 1 propiedad activa sin expiración, hasta 6 imágenes por propiedad, búsqueda con IA, y acceso completo al dashboard. Es perfecto para comenzar sin compromiso.",
+                answer: "El plan gratuito incluye 1 propiedad activa sin expiración, hasta 10 imágenes por propiedad, búsqueda con IA, y acceso completo al dashboard. Es perfecto para comenzar sin compromiso.",
               },
               {
                 question: "¿Qué pasa si necesito publicar más de 1 propiedad?",

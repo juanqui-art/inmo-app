@@ -31,6 +31,21 @@
 import { z } from "zod";
 
 /**
+ * Treat empty strings as "not set".
+ *
+ * `.env` files often contain `KEY=` for services that are not in use yet.
+ * Zod's `.optional()` only accepts `undefined`, so `OPENAI_API_KEY=` used to
+ * crash the whole app at startup ("must be a valid OpenAI API key").
+ */
+const emptyToUndefined = <T extends Record<string, unknown>>(raw: T): T =>
+  Object.fromEntries(
+    Object.entries(raw).map(([k, v]) => [
+      k,
+      typeof v === "string" && v.trim() === "" ? undefined : v,
+    ]),
+  ) as T;
+
+/**
  * Client-side Environment Variables
  *
  * These are exposed to the browser (prefixed with NEXT_PUBLIC_)
@@ -282,7 +297,7 @@ const parseEnv = (): Env => {
 
   if (isBrowser) {
     // In browser, only validate client vars (server vars aren't available)
-    const result = clientSchema.safeParse({
+    const result = clientSchema.safeParse(emptyToUndefined({
       NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
       NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
@@ -293,7 +308,7 @@ const parseEnv = (): Env => {
       NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
       NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
       NEXT_PUBLIC_SENTRY_ENABLED: process.env.NEXT_PUBLIC_SENTRY_ENABLED,
-    });
+    }));
 
     if (!result.success) {
       console.error("❌ Invalid client environment variables:");
@@ -335,7 +350,7 @@ const parseEnv = (): Env => {
   }
 
   // On server, validate all vars
-  const result = envSchema.safeParse({
+  const result = envSchema.safeParse(emptyToUndefined({
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
@@ -370,7 +385,7 @@ const parseEnv = (): Env => {
     LEMONSQUEEZY_BUSINESS_VARIANT_ID: process.env.LEMONSQUEEZY_BUSINESS_VARIANT_ID,
     LEMONSQUEEZY_PRO_VARIANT_ID: process.env.LEMONSQUEEZY_PRO_VARIANT_ID,
     NODE_ENV: process.env.NODE_ENV,
-  });
+  }));
 
   if (!result.success) {
     console.error("❌ Invalid server environment variables:");

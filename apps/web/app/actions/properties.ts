@@ -343,7 +343,9 @@ export async function saveUploadedPropertyImagesAction(
       const totalAfterUpload = existingImageCount + imageUrls.length;
 
       // Check tier limitations
-      const imageCheck = canUploadImage(user.subscriptionTier, totalAfterUpload);
+      // canUploadImage expects the count BEFORE adding the last image (blocks when count >= limit),
+      // so pass total - 1 to allow exactly `limit` images.
+      const imageCheck = canUploadImage(user.subscriptionTier, totalAfterUpload - 1);
       if (!imageCheck.allowed) {
         // Create error object with limit info for client handling
         const error: any = new Error(imageCheck.reason || "Límite de imágenes excedido");
@@ -433,7 +435,8 @@ export async function uploadPropertyImagesAction(
       await propertyImageRepository.countByProperty(propertyId);
     const totalAfterUpload = existingImageCount + files.length;
 
-    const imageCheck = canUploadImage(user.subscriptionTier, totalAfterUpload);
+    // canUploadImage blocks when count >= limit: pass total - 1 to allow exactly `limit` images
+    const imageCheck = canUploadImage(user.subscriptionTier, totalAfterUpload - 1);
     if (!imageCheck.allowed) {
       return {
         error: imageCheck.reason,

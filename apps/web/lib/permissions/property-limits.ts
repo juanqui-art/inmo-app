@@ -6,7 +6,7 @@
  *
  * Updated: Dic 18, 2025 - Simplified limits for MVP
  * - AGENT renamed to BUSINESS (completed)
- * - Image limits reduced: PLUS=10, BUSINESS=15
+ * - Image limits: FREE=10, PLUS=10, BUSINESS=15
  * - PRO tier on hold (not shown in UI)
  */
 
@@ -40,7 +40,7 @@ export function getPropertyLimit(tier: SubscriptionTier): number {
 export function getImageLimit(tier: SubscriptionTier): number {
   switch (tier) {
     case "FREE":
-      return 6;
+      return 10;
     case "PLUS":
       return 10; // Reduced from 25
     case "BUSINESS":
@@ -48,7 +48,7 @@ export function getImageLimit(tier: SubscriptionTier): number {
     case "PRO":
       return 20; // Reduced from 25 (on hold)
     default:
-      return 6; // Fallback to most restrictive
+      return 10; // Fallback to most restrictive
   }
 }
 

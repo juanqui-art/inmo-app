@@ -4,7 +4,7 @@
  * Source: CLAUDE.md - Freemium Model (Actualizado Dic 18, 2025)
  *
  * MVP Simplificado:
- * - FREE: 1 propiedad, 6 imágenes, sin destacados
+ * - FREE: 1 propiedad, 10 imágenes, sin destacados
  * - PLUS: 3 propiedades, 10 imágenes, 1 destacado (B2C)
  * - BUSINESS: 10 propiedades, 15 imágenes, 5 destacados, CRM Lite (B2B)
  * - PRO: EN ESPERA (no mostrar en UI hasta haya demanda)
@@ -26,7 +26,7 @@ export const pricingTiers: PricingTier[] = [
     description: "Perfecto para empezar a publicar tu primera propiedad",
     features: [
       "1 propiedad activa",
-      "6 imágenes por propiedad",
+      "10 imágenes por propiedad",
       "Publicación sin expiración",
       "Búsqueda y mapas",
       "Formulario de contacto básico",

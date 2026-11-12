@@ -156,7 +156,7 @@ export async function createPropertyFromWizard(
 
         if (imagesToCreate.length > 0) {
           // 2. Check Image Limit (INSIDE TX)
-          const imageCheck = canUploadImage(user.subscriptionTier, imagesToCreate.length);
+          const imageCheck = canUploadImage(user.subscriptionTier, imagesToCreate.length - 1) // -1: function blocks when count >= limit;
           if (!imageCheck.allowed) {
              throw new Error(imageCheck.reason || "Límite de imágenes excedido");
           }

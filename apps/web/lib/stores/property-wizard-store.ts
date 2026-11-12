@@ -76,7 +76,7 @@ export const usePropertyWizardStore = create<WizardState>()(
       totalSteps: 5,
       formData: initialFormData,
       limits: {
-        maxImages: 5, // Default safe limit
+        maxImages: 10, // Default safe limit
         maxVideos: 0, // Default: no videos for free tier
         tierName: "Free", // Default tier name
       },
@@ -96,7 +96,7 @@ export const usePropertyWizardStore = create<WizardState>()(
         set({
           currentStep: 1,
           formData: initialFormData,
-          limits: { maxImages: 5, maxVideos: 0, tierName: "Free" },
+          limits: { maxImages: 10, maxVideos: 0, tierName: "Free" },
         }),
     }),
     {

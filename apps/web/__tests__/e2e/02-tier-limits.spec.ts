@@ -132,7 +132,7 @@ test.describe('Tier Limits: Property Creation', () => {
 });
 
 test.describe('Tier Limits: Image Upload', () => {
-  test('FREE tier user cannot upload more than 6 images per property', async ({
+  test('FREE tier user cannot upload more than 10 images per property', async ({
     page,
   }) => {
     // ARRANGE: Signup with FREE tier
@@ -149,7 +149,7 @@ test.describe('Tier Limits: Image Upload', () => {
       transactionType: 'SALE',
     });
 
-    // Try to upload 7 images (should only accept 6)
+    // Try to upload 11 images (should only accept 10)
     // NOTE: This depends on your UI implementation
     // Adjust selectors based on your wizard
 

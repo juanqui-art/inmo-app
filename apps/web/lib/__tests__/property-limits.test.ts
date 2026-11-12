@@ -57,7 +57,7 @@ describe("Property Limits - Freemium Model", () => {
 
   describe("getImageLimit", () => {
     it("should return 6 for FREE tier", () => {
-      expect(getImageLimit("FREE")).toBe(6);
+      expect(getImageLimit("FREE")).toBe(10);
     });
 
     it("should return 10 for PLUS tier", () => {
@@ -220,18 +220,18 @@ describe("Property Limits - Freemium Model", () => {
   });
 
   describe("canUploadImage", () => {
-    it("should allow upload when under FREE limit (5/6)", () => {
-      const result = canUploadImage("FREE", 5);
+    it("should allow upload when under FREE limit (9/10)", () => {
+      const result = canUploadImage("FREE", 9);
 
       expect(result.allowed).toBe(true);
-      expect(result.limit).toBe(6);
+      expect(result.limit).toBe(10);
     });
 
-    it("should block upload when at FREE limit (6/6)", () => {
-      const result = canUploadImage("FREE", 6);
+    it("should block upload when at FREE limit (10/10)", () => {
+      const result = canUploadImage("FREE", 10);
 
       expect(result.allowed).toBe(false);
-      expect(result.limit).toBe(6);
+      expect(result.limit).toBe(10);
       expect(result.reason).toContain("límite");
     });
 
@@ -304,7 +304,7 @@ describe("Property Limits - Freemium Model", () => {
         tier: "FREE",
         displayName: "Gratuito",
         propertyLimit: 1,
-        imageLimit: 6,
+        imageLimit: 10,
         featuredLimit: 0,
         hasFeatured: false,
         hasUnlimitedFeatured: false,
